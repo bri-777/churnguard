@@ -18,8 +18,8 @@ if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.
 } else {
     // Production (live server)
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'churnguard');
-    define('DB_USER', 'churnguard');
+    define('DB_NAME', 'u393812660_churnguard');
+    define('DB_USER', 'u393812660_churnguard');
     define('DB_PASS', '102202Brian_');
 }
 
