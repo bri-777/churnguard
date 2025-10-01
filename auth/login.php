@@ -13,7 +13,18 @@ function isAjax(): bool {
            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 }
 
-
+// Safely extend the current session cookie (works even after session_start)
+function extendSessionCookie(int $seconds = 604800): void { // 7 days
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        setcookie(session_name(), session_id(), [
+            'expires'  => time() + $seconds,
+            'path'     => '/',
+            'secure'   => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+}
 
 // ---- Early redirect if already logged in ----
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' && isLoggedIn()) {
