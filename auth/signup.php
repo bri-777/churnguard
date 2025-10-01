@@ -23,8 +23,8 @@ const DEV_ECHO_OTP       = false; // set true only when developing
 const SMTP_ALLOW_SELF_SIGNED = true;
 
 /* ---------- reCAPTCHA ---------- */
-define('RECAPTCHA_SITE_KEY',  '6Lcz62grAAAAAEJFjiG9ZqqMqOZtvlA6Hh3DpCIz');
-define('RECAPTCHA_SECRET_KEY','6Lcz62grAAAAAB_ibt7Fryy-aJho2e4MK27PsLyP');
+define('RECAPTCHA_SITE_KEY',  '6LdkHdsrAAAAABhWQHWpWIAFftSI5oRNX_QQMezg');
+define('RECAPTCHA_SECRET_KEY','6LdkHdsrAAAAAF-3Zv0XK8YCb3KGes9M05G06o6w');
 
 $notification = ['message' => '', 'type' => ''];
 $firstname = $lastname = $email = $username = $address = $phone = '';
