@@ -28,9 +28,10 @@ function extendSessionCookie(int $seconds = 604800): void { // 7 days
 
 // ---- Early redirect if already logged in ----
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' && isLoggedIn()) {
-    header('Location: ../index.php');
+    header('Location: /auth/landing.php');
     exit;
 }
+
 
 // ---- Defaults for template ----
 $notification = ['message' => '', 'type' => ''];
@@ -98,7 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             extendSessionCookie(7 * 24 * 60 * 60);
                         }
 
-                        $redirect = '../index.php';
+                       // Send an absolute URL so the browser goes exactly where we want
+$redirect = '/auth/landing.php';
+
 
                         // AJAX?
                         if (isAjax()) {
