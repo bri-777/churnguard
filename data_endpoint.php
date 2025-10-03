@@ -23,7 +23,7 @@ try {
         exit;
     }
     
-    $current_user_id = (int)$_SESSION['user_id']; // Get the actual logged-in user ID
+    $current_user_id = (int)$_SESSION['user_id'];
     
     // --- Validate view ---
     $view = $_GET['view'] ?? '14days';
@@ -45,10 +45,21 @@ try {
         ]
     );
 
-    // --- Dates ---
-    $today     = date('Y-m-d');
-    $yesterday = date('Y-m-d', strtotime('-1 day'));
+    // --- FIX: Get the last available data date instead of using current date ---
+    $stmt = $pdo->prepare("
+        SELECT MAX(date) AS last_date 
+        FROM churn_data 
+        WHERE user_id = :user_id
+    ");
+    $stmt->execute([':user_id' => $current_user_id]);
+    $result = $stmt->fetch();
+    $last_data_date = $result['last_date'] ?? date('Y-m-d');
+    
+    // Use the last data date as "today" for calculations
+    $today = $last_data_date;
+    $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
 
+    // --- Dates based on last available data ---
     switch ($view) {
         case 'today':
             $start_date = $today;
@@ -60,30 +71,30 @@ try {
         case 'yesterday':
             $start_date = $yesterday;
             $end_date   = $yesterday;
-            $compare_start = date('Y-m-d', strtotime('-2 day'));
-            $compare_end   = date('Y-m-d', strtotime('-2 day'));
+            $compare_start = date('Y-m-d', strtotime($today . ' -2 day'));
+            $compare_end   = date('Y-m-d', strtotime($today . ' -2 day'));
             $days_count = 1;
             break;
         case '7days':
-            $start_date = date('Y-m-d', strtotime('-6 day'));
+            $start_date = date('Y-m-d', strtotime($today . ' -6 day'));
             $end_date   = $today;
-            $compare_start = date('Y-m-d', strtotime('-13 day'));
-            $compare_end   = date('Y-m-d', strtotime('-7 day'));
+            $compare_start = date('Y-m-d', strtotime($today . ' -13 day'));
+            $compare_end   = date('Y-m-d', strtotime($today . ' -7 day'));
             $days_count = 7;
             break;
         case '14days':
-            $start_date = date('Y-m-d', strtotime('-13 day'));
+            $start_date = date('Y-m-d', strtotime($today . ' -13 day'));
             $end_date   = $today;
-            $compare_start = date('Y-m-d', strtotime('-27 day'));
-            $compare_end   = date('Y-m-d', strtotime('-14 day'));
+            $compare_start = date('Y-m-d', strtotime($today . ' -27 day'));
+            $compare_end   = date('Y-m-d', strtotime($today . ' -14 day'));
             $days_count = 14;
             break;
         case '30days':
         default:
-            $start_date = date('Y-m-d', strtotime('-29 day'));
+            $start_date = date('Y-m-d', strtotime($today . ' -29 day'));
             $end_date   = $today;
-            $compare_start = date('Y-m-d', strtotime('-59 day'));
-            $compare_end   = date('Y-m-d', strtotime('-30 day'));
+            $compare_start = date('Y-m-d', strtotime($today . ' -59 day'));
+            $compare_end   = date('Y-m-d', strtotime($today . ' -30 day'));
             $days_count = 30;
             break;
     }
@@ -118,7 +129,7 @@ try {
         ];
     }
 
-    // --- Current window aggregate - FIXED to use predictions for accurate risk levels ---
+    // --- Current window aggregate - using churn_predictions for risk levels ---
     $stmt = $pdo->prepare("
         SELECT 
             COUNT(DISTINCT cd.date) AS days_with_data,
@@ -143,7 +154,7 @@ try {
     ]);
     $current = $stmt->fetch();
 
-    // --- Compare window - FIXED to use predictions ---
+    // --- Compare window ---
     $stmt = $pdo->prepare("
         SELECT
             COUNT(DISTINCT cd.date) AS days_with_data,
@@ -177,12 +188,12 @@ try {
     $stmt->execute([':user_id' => $current_user_id, ':t'=>$today]);
     $b30 = $stmt->fetch();
 
-    // === Executive Summary metrics (DATA-FIRST) ===
+    // === Executive Summary metrics ===
     $days_with_data     = (int)($current['days_with_data'] ?? 0);
     $high_days_current  = (int)($current['high_risk_days'] ?? 0);
     $high_days_compare  = (int)($compare['high_risk_days'] ?? 0);
 
-    // At-risk customers = high-risk DAYS × 150 (your design)
+    // At-risk customers = high-risk DAYS × 150
     $at_risk_count = $high_days_current * 150;
 
     // WoW change based on days
@@ -220,7 +231,7 @@ try {
     $retention_rate    = round((float)$retention_rate, 1);
     $retention_change  = round((float)$retention_change, 1);
 
-    // Yesterday risk (for comparison table)
+    // Yesterday risk
     $stmt = $pdo->prepare("
         SELECT risk_percentage
         FROM churn_predictions
@@ -232,7 +243,7 @@ try {
     $yr = $stmt->fetch();
     $yesterday_risk = $yr ? round((float)$yr['risk_percentage'], 1) : 0.0;
 
-    // === Trends with gap filling - FIXED to use churn_predictions for accurate risk ===
+    // === Trends with gap filling - using churn_predictions ---
     $stmt = $pdo->prepare("
         SELECT 
             d.date AS date,
@@ -283,25 +294,26 @@ try {
         'avg_7day' => [
             'revenue'    => round((float)$b7['avg_sales_7'], 2),
             'customers'  => (int)round($b7['avg_traf_7'] ?? 0),
-            'risk_score' => $churn_rate // proxy
+            'risk_score' => $churn_rate
         ],
         'avg_30day' => [
             'revenue'    => round((float)$b30['avg_sales_30'], 2),
             'customers'  => (int)round($b30['avg_traf_30'] ?? 0),
-            'risk_score' => $churn_rate // proxy
+            'risk_score' => $churn_rate
         ]
     ];
 
-    // === Segments (day-count × 150 as per design) ===
+    // === Segments (using predictions for accurate risk levels) ===
     $stmt = $pdo->prepare("
         SELECT 
-            risk_level,
-            COUNT(DISTINCT date) AS days,
-            COALESCE(AVG(risk_percentage),0) AS avg_risk_score,
-            COALESCE(SUM(sales_volume),0) AS total_revenue
-        FROM churn_data
-        WHERE user_id = :user_id AND date BETWEEN :s AND :e
-        GROUP BY risk_level
+            cp.risk_level,
+            COUNT(DISTINCT cd.date) AS days,
+            COALESCE(AVG(cp.risk_percentage),0) AS avg_risk_score,
+            COALESCE(SUM(cd.sales_volume),0) AS total_revenue
+        FROM churn_data cd
+        LEFT JOIN churn_predictions cp ON cp.user_id = cd.user_id AND cp.for_date = cd.date
+        WHERE cd.user_id = :user_id AND cd.date BETWEEN :s AND :e AND cp.risk_level IS NOT NULL
+        GROUP BY cp.risk_level
     ");
     $stmt->execute([':user_id' => $current_user_id, ':s'=>$start_date, ':e'=>$end_date]);
     $segments_raw = $stmt->fetchAll();
@@ -326,7 +338,8 @@ try {
         'timestamp'     => date('Y-m-d H:i:s'),
         'last_updated'  => date('M d, Y h:i A'),
         'view'          => $view,
-        'user_id'       => $current_user_id, // Include for debugging
+        'user_id'       => $current_user_id,
+        'last_data_date' => $today, // Added for debugging
         'data_availability' => [
             'has_data'        => ((int)$current['days_with_data']) > 0,
             'days_with_data'  => (int)$current['days_with_data'],
@@ -375,5 +388,5 @@ try {
 } catch (Throwable $e) {
     http_response_code(500);
     error_log('ChurnGuard API Error: '.$e->getMessage());
-    echo json_encode(['status'=>'error','error'=>'server_error','message'=>'Internal error']);
+    echo json_encode(['status'=>'error','error'=>'server_error','message'=>'Internal error: ' . $e->getMessage()]);
 }
