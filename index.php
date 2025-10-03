@@ -80,6 +80,9 @@ if (!$me) {
 		 <a href="#" class="menu-item" onclick="showPage('customer-monitoring')">
           <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
         </a>
+     <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
+          <i class="fas fa-eye"></i> <span>Performance Monitoring</span>
+        </a>
       </div>
 
       <div class="menu-section">
@@ -1156,38 +1159,37 @@ function doLogout() {
             <div class="form-grid">
               <div class="form-group">
                 <label for="morningReceiptCount"> Morning Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Morning shift transaction count"></i>
+                  <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count"></i>
                 </label>
                 <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required>
               </div>
-              <div class="form-group">
-                <label for="swingReceiptCount"> Swing Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Swing shift transaction count"></i>
-                </label>
-                <input type="number" id="swingReceiptCount" placeholder="e.g., 120" min="0" required>
-              </div>
-              <div class="form-group">
-                <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Graveyard shift transaction count"></i>
-                </label>
-                <input type="number" id="graveyardReceiptCount" placeholder="e.g., 65" min="0" required>
-              </div>
-
-              <div class="form-group">
+			    <div class="form-group">
                 <label for="morningSalesVolume"> Morning Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Morning shift sales performance"></i>
+                  <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance"></i>
                 </label>
                 <input type="number" id="morningSalesVolume" placeholder="e.g., 15000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
+                <label for="swingReceiptCount"> Swing Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count"></i>
+                </label>
+                <input type="number" id="swingReceiptCount" placeholder="e.g., 120" min="0" required>
+              </div>
+			      <div class="form-group">
                 <label for="swingSalesVolume"> Swing Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Swing shift sales performance"></i>
+                  <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
                 </label>
                 <input type="number" id="swingSalesVolume" placeholder="e.g., 20000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
+                <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count"></i>
+                </label>
+                <input type="number" id="graveyardReceiptCount" placeholder="e.g., 65" min="0" required>
+              </div>
+              <div class="form-group">
                 <label for="graveyardSalesVolume"> Graveyard Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Graveyard shift sales performance"></i>
+                  <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
                 </label>
                 <input type="number" id="graveyardSalesVolume" placeholder="e.g., 10000" min="0" step="0.01" required>
               </div>
@@ -1603,28 +1605,6 @@ function doLogout() {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2080,6 +2060,449 @@ window.onclick = function(ev){
 cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: cgx_debugMode});
 </script>
 
+
+
+
+
+
+<div id="dashboard-container" class="page">
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); min-height: 100vh; padding: 20px; margin: 0;">
+    
+    <!-- Main Container -->
+    <div style="max-width: 1200px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h1 style="margin: 0; color: #1e293b; font-size: 28px; font-weight: 600;">Performance Analytics</h1>
+            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 16px;">Year-over-Year Growth Tracking & Target Management</p>
+        </div>
+        
+        <!-- Key Metrics Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
+            
+            <!-- Sales Card -->
+            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6;">
+                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Sales</div>
+                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="totalSales">₱0</div>
+                <div id="salesGrowth" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">+0%</div>
+            </div>
+            
+            <!-- Customers Card -->
+            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #8b5cf6;">
+                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Customers</div>
+                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="totalCustomers">0</div>
+                <div id="customerGrowth" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">+0%</div>
+            </div>
+            
+            <!-- Transactions Card -->
+            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #10b981;">
+                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Avg Transaction</div>
+                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="avgTransaction">₱0</div>
+                <div id="transactionTrend" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">Stable</div>
+            </div>
+            
+        </div>
+        
+        <!-- Year Comparison Table -->
+        <div style="background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Detailed Comparison</h2>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e2e8f0;">
+                            <th style="text-align: left; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Metric</th>
+                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;" id="prevYearLabel">2024</th>
+                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;" id="currYearLabel">2025</th>
+                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Change</th>
+                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTable">
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 16px; color: #1e293b; font-weight: 500;">Revenue</td>
+                            <td style="padding: 16px; text-align: right; color: #64748b;">₱0</td>
+                            <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">₱0</td>
+                            <td style="padding: 16px; text-align: right; color: #64748b;">₱0</td>
+                            <td style="padding: 16px; text-align: right;">
+                                <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: #f1f5f9; color: #64748b;">0%</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Targets Section -->
+        <div style="background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Set Performance Targets</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Sales Target (₱)</label>
+                    <input type="number" id="salesTargetInput" placeholder="0" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Customer Growth (%)</label>
+                    <input type="number" id="customerTargetInput" placeholder="0" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Period</label>
+                    <select id="targetPeriod" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; background: white; cursor: pointer; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
+                        <option value="yearly">Yearly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; align-items: flex-end;">
+                    <button onclick="saveTargets()" style="width: 100%; padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">Save Targets</button>
+                </div>
+            </div>
+            
+            <!-- Progress Bars -->
+            <div style="margin-top: 32px;">
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #475569; font-size: 14px; font-weight: 500;">Sales Target Progress</span>
+                        <span style="color: #3b82f6; font-size: 14px; font-weight: 600;" id="salesProgressText">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 8px; overflow: hidden;">
+                        <div id="salesProgressBar" style="height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 8px; transition: width 1s ease; width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #475569; font-size: 14px; font-weight: 500;">Customer Growth Progress</span>
+                        <span style="color: #8b5cf6; font-size: 14px; font-weight: 600;" id="customerProgressText">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 8px; overflow: hidden;">
+                        <div id="customerProgressBar" style="height: 100%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); border-radius: 8px; transition: width 1s ease; width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart Section -->
+        <div style="background: white; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Monthly Trends</h2>
+            <div style="height: 300px;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// API Configuration
+const API_URL = 'api/performance_tracker.php';
+let chartInstance = null;
+
+// Load Dashboard Data
+async function loadDashboard() {
+    try {
+        const response = await fetch(`${API_URL}?action=dashboard`);
+        const result = await response.json();
+        
+        if (result.success) {
+            updateMetrics(result.data);
+            updateComparisonTable(result.data);
+            updateProgressBars(result.data);
+            updateChart(result.data);
+        }
+    } catch (error) {
+        console.error('Dashboard load error:', error);
+    }
+}
+
+// Update Metric Cards
+function updateMetrics(data) {
+    const current = data.current;
+    const growth = data.growth;
+    
+    // Update sales
+    document.getElementById('totalSales').textContent = '₱' + formatNumber(current.total_sales);
+    updateGrowthIndicator('salesGrowth', growth.sales_percent);
+    
+    // Update customers
+    document.getElementById('totalCustomers').textContent = formatNumber(current.total_customers);
+    updateGrowthIndicator('customerGrowth', growth.customer_percent);
+    
+    // Update average transaction
+    document.getElementById('avgTransaction').textContent = '₱' + formatNumber(current.avg_transaction_value);
+    
+    // Update transaction trend
+    const trendEl = document.getElementById('transactionTrend');
+    if (current.avg_transaction_value > data.previous.avg_transaction_value) {
+        trendEl.textContent = 'Increasing';
+        trendEl.style.background = '#f0fdf4';
+        trendEl.style.color = '#16a34a';
+    } else if (current.avg_transaction_value < data.previous.avg_transaction_value) {
+        trendEl.textContent = 'Declining';
+        trendEl.style.background = '#fef2f2';
+        trendEl.style.color = '#dc2626';
+    } else {
+        trendEl.textContent = 'Stable';
+        trendEl.style.background = '#f1f5f9';
+        trendEl.style.color = '#64748b';
+    }
+}
+
+// Update Growth Indicators
+function updateGrowthIndicator(elementId, percentage) {
+    const element = document.getElementById(elementId);
+    const value = parseFloat(percentage) || 0;
+    
+    if (value > 0) {
+        element.textContent = '+' + value.toFixed(1) + '%';
+        element.style.background = '#f0fdf4';
+        element.style.color = '#16a34a';
+    } else if (value < 0) {
+        element.textContent = value.toFixed(1) + '%';
+        element.style.background = '#fef2f2';
+        element.style.color = '#dc2626';
+    } else {
+        element.textContent = '0%';
+        element.style.background = '#f1f5f9';
+        element.style.color = '#64748b';
+    }
+}
+
+// Update Comparison Table
+function updateComparisonTable(data) {
+    const current = data.current;
+    const previous = data.previous;
+    const growth = data.growth;
+    
+    // Update year labels
+    document.getElementById('prevYearLabel').textContent = previous.year;
+    document.getElementById('currYearLabel').textContent = current.year;
+    
+    // Table data
+    const metrics = [
+        {
+            name: 'Revenue',
+            prev: previous.total_sales,
+            curr: current.total_sales,
+            format: 'currency'
+        },
+        {
+            name: 'Total Customers',
+            prev: previous.total_customers,
+            curr: current.total_customers,
+            format: 'number'
+        },
+        {
+            name: 'New Customers',
+            prev: previous.new_customers,
+            curr: current.new_customers,
+            format: 'number'
+        },
+        {
+            name: 'Returning Customers',
+            prev: previous.returning_customers,
+            curr: current.returning_customers,
+            format: 'number'
+        },
+        {
+            name: 'Total Transactions',
+            prev: previous.total_transactions,
+            curr: current.total_transactions,
+            format: 'number'
+        },
+        {
+            name: 'Avg Transaction Value',
+            prev: previous.avg_transaction_value,
+            curr: current.avg_transaction_value,
+            format: 'currency'
+        }
+    ];
+    
+    const tableBody = document.getElementById('comparisonTable');
+    tableBody.innerHTML = metrics.map(metric => {
+        const change = metric.curr - metric.prev;
+        const growthPct = metric.prev > 0 ? ((change / metric.prev) * 100) : 0;
+        
+        const prevFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.prev) : formatNumber(metric.prev);
+        const currFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.curr) : formatNumber(metric.curr);
+        const changeFormatted = metric.format === 'currency' ? '₱' + formatNumber(Math.abs(change)) : formatNumber(Math.abs(change));
+        
+        const growthColor = growthPct > 0 ? '#dcfce7' : (growthPct < 0 ? '#fee2e2' : '#f1f5f9');
+        const growthTextColor = growthPct > 0 ? '#16a34a' : (growthPct < 0 ? '#dc2626' : '#64748b');
+        const changePrefix = change >= 0 ? '+' : '-';
+        
+        return `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 16px; color: #1e293b; font-weight: 500;">${metric.name}</td>
+                <td style="padding: 16px; text-align: right; color: #64748b;">${prevFormatted}</td>
+                <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">${currFormatted}</td>
+                <td style="padding: 16px; text-align: right; color: #64748b;">${changePrefix}${changeFormatted}</td>
+                <td style="padding: 16px; text-align: right;">
+                    <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: ${growthColor}; color: ${growthTextColor};">
+                        ${growthPct >= 0 ? '+' : ''}${growthPct.toFixed(1)}%
+                    </span>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Update Progress Bars
+function updateProgressBars(data) {
+    const salesTarget = parseFloat(document.getElementById('salesTargetInput').value) || data.previous.total_sales * 1.2;
+    const customerTarget = parseFloat(document.getElementById('customerTargetInput').value) || 15;
+    
+    // Sales progress
+    const salesProgress = Math.min(100, (data.current.total_sales / salesTarget) * 100);
+    document.getElementById('salesProgressText').textContent = salesProgress.toFixed(1) + '%';
+    document.getElementById('salesProgressBar').style.width = salesProgress + '%';
+    
+    // Customer progress
+    const customerProgress = Math.min(100, Math.abs(data.growth.customer_percent / customerTarget) * 100);
+    document.getElementById('customerProgressText').textContent = customerProgress.toFixed(1) + '%';
+    document.getElementById('customerProgressBar').style.width = customerProgress + '%';
+}
+
+// Update Chart
+function updateChart(data) {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    
+    // Process monthly data
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentData = new Array(12).fill(0);
+    const previousData = new Array(12).fill(0);
+    
+    if (data.monthly) {
+        data.monthly.forEach(item => {
+            const monthIndex = item.month - 1;
+            if (item.year == data.current.year) {
+                currentData[monthIndex] = item.total_sales;
+            } else {
+                previousData[monthIndex] = item.total_sales;
+            }
+        });
+    }
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: data.current.year,
+                    data: currentData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: data.previous.year,
+                    data: previousData,
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₱' + formatNumber(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Save Targets
+async function saveTargets() {
+    const salesTarget = document.getElementById('salesTargetInput').value;
+    const customerTarget = document.getElementById('customerTargetInput').value;
+    const period = document.getElementById('targetPeriod').value;
+    
+    try {
+        if (salesTarget) {
+            await fetch(`${API_URL}?action=save_target`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    type: 'sales',
+                    value: salesTarget,
+                    period: period
+                })
+            });
+        }
+        
+        if (customerTarget) {
+            await fetch(`${API_URL}?action=save_target`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    type: 'customers',
+                    value: customerTarget,
+                    period: period
+                })
+            });
+        }
+        
+        alert('Targets saved successfully!');
+        loadDashboard();
+    } catch (error) {
+        console.error('Save error:', error);
+    }
+}
+
+// Format Numbers
+function formatNumber(num) {
+    return new Intl.NumberFormat('en-US').format(num || 0);
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', loadDashboard);
+
+// Auto-refresh every 5 minutes
+setInterval(loadDashboard, 300000);
+</script>
 
 
 
@@ -4998,44 +5421,68 @@ window.debugCustomerInsights = function() {
   
 
 /* -------------------- Profile & settings (api/) -------------------- */
+/* -------------------- Profile & settings -------------------- */
 async function loadProfile() {
   try {
     const r = await api('api/profile.php?action=me&ts=' + Date.now());
     const u = r.user || {};
-
-    // Avatar + name + role
-    const avatarUrl = u.avatar_url || 'uploads/avatars/default-icon.png';
-    const display   = u.display_name || ((`${u.firstname||''} ${u.lastname||''}`).trim() || u.username || 'User');
-    const role      = u.role || 'User';
-
+    
+    // Set avatar (use icon field from database)
+    const avatarUrl = u.avatar_url || u.icon || 'uploads/avatars/default-icon.png';
     const avatarEl = document.getElementById('profileAvatar');
     if (avatarEl) avatarEl.src = avatarUrl;
-
+    
+    // Set display name (use display_name from API or build from firstname/lastname)
+    const display = u.display_name || u.username || 'User';
     const nameEl = document.getElementById('profileName');
     if (nameEl) nameEl.textContent = display;
-
+    
+    // Set role
+    const role = u.role || 'User';
     const roleEl = document.getElementById('profileRole');
     if (roleEl) roleEl.textContent = role;
-
-    // Form fields (no company)
+    
+    // Fill form fields
     const fn = document.getElementById('profileFirstName');
     const ln = document.getElementById('profileLastName');
     const em = document.getElementById('profileEmail');
-
     if (fn) fn.value = u.firstname || '';
     if (ln) ln.value = u.lastname  || '';
     if (em) em.value = u.email     || '';
-
+    
+    // Two-factor toggle
     const tf = document.getElementById('twoFactorToggle');
     if (tf) tf.checked = parseInt(u.two_factor_enabled ?? 0, 10) === 1;
-
-    await refreshLoginHistory();
+    
+    // Refresh login history if function exists
+    if (typeof refreshLoginHistory === 'function') {
+      await refreshLoginHistory();
+    }
+    
+    console.log('Profile loaded:', display);
   } catch (e) {
-    console.error('[Profile]', e.message);
+    console.error('Profile error:', e.message);
+    alert('Failed to load profile: ' + e.message);
   }
 }
 
 
+// When profile page becomes active, load the profile
+document.addEventListener('click', function(e) {
+  // If user clicks on profile link/button
+  const profileLink = e.target.closest('[data-page="profile"], [onclick*="showPage(\'profile\')"]');
+  if (profileLink) {
+    setTimeout(() => loadProfile(), 100);
+  }
+});
+
+// Also load on page load if profile is already active
+document.addEventListener('DOMContentLoaded', function() {
+  const profilePage = document.getElementById('profile');
+  if (profilePage && profilePage.classList.contains('active')) {
+    loadProfile();
+  }
+});
 
 window.updateProfile = async function () {
   try {
@@ -5073,17 +5520,7 @@ window.changePassword = async function () {
   }
 };
 
-window.toggle2FA = async function (enabled) {
-  try {
-    const fd = new FormData();
-    fd.append('enabled', enabled ? '1' : '0');
-    await api('api/profile.php?action=toggle_2fa', { method: 'POST', body: fd });
-  } catch (e) {
-    alert(e.message);
-    const tf = document.getElementById('twoFactorToggle');
-    if (tf) tf.checked = !enabled;
-  }
-};
+
 
 window.uploadAvatar = function () {
   const inp = document.createElement('input');
@@ -5102,14 +5539,18 @@ window.uploadAvatar = function () {
       });
       const j = await res.json();
       if (!j.success) throw new Error(j.message || 'Upload failed');
+      
+      // Update avatar with cache-busting timestamp
       const avatarEl = document.getElementById('profileAvatar');
-      if (avatarEl) avatarEl.src = j.avatar_url;
-      alert('Avatar updated');
-    } catch (e) { alert(e.message); }
+      if (avatarEl) avatarEl.src = j.avatar_url + '?t=' + Date.now();
+      
+      alert('Avatar updated successfully!');
+    } catch (e) { 
+      alert('Failed to upload avatar: ' + e.message); 
+    }
   };
   inp.click();
 };
-
 
 
 
