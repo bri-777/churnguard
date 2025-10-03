@@ -1705,7 +1705,7 @@ function doLogout() {
     </div>
 
   </div>
-</div>
+
 
 <!-- CORRECTED: Inline JavaScript -->
 <script>
