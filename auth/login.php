@@ -27,10 +27,15 @@ function extendSessionCookie(int $seconds = 604800): void { // 7 days
 }
 
 // ---- Early redirect if already logged in ----
+// ---- Early redirect if already logged in ----
+// Only redirect if NOT coming from the landing page
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' && isLoggedIn()) {
-    header('Location: ../index.php');
-    exit;
+    if (!isset($_SERVER['HTTP_REFERER']) || strpos($_SERVER['HTTP_REFERER'], 'landing.php') === false) {
+        header('Location: ../index.php');
+        exit;
+    }
 }
+
 
 // ---- Defaults for template ----
 $notification = ['message' => '', 'type' => ''];
