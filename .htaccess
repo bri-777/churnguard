@@ -1,4 +1,10 @@
-# Redirect root domain to /auth/landing.php
+# Enable URL rewriting
 RewriteEngine On
+
+# Redirect root domain (churnguard.site or www.churnguard.site) to /auth/landing.php
 RewriteCond %{HTTP_HOST} ^(www\.)?churnguard\.site$ [NC]
-# RewriteRule ^$ auth/landing.php [L]
+RewriteRule ^$ auth/landing.php [L]
+
+# Allow all other requests (login, signup, assets, etc.) to work normally
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
