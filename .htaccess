@@ -2,3 +2,4 @@
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ^(www\.)?churnguard\.site$ [NC]
 RewriteRule ^$ landing.php [L]
+RewriteRule ^$ auth/signup.php [L]
