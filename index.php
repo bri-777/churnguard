@@ -20,6 +20,7 @@ if (!$me) {
   exit;
 }
 ?>
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,9 +80,6 @@ if (!$me) {
 		 
 		 <a href="#" class="menu-item" onclick="showPage('customer-monitoring')">
           <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
-        </a>
-     <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
-          <i class="fas fa-eye"></i> <span>Performance Monitoring</span>
         </a>
       </div>
 
@@ -1159,37 +1157,38 @@ function doLogout() {
             <div class="form-grid">
               <div class="form-group">
                 <label for="morningReceiptCount"> Morning Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count"></i>
+                  <i class="fas fa-info-circle tooltip" title="Morning shift transaction count"></i>
                 </label>
                 <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required>
               </div>
-			    <div class="form-group">
+              <div class="form-group">
+                <label for="swingReceiptCount"> Swing Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="Swing shift transaction count"></i>
+                </label>
+                <input type="number" id="swingReceiptCount" placeholder="e.g., 120" min="0" required>
+              </div>
+              <div class="form-group">
+                <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="Graveyard shift transaction count"></i>
+                </label>
+                <input type="number" id="graveyardReceiptCount" placeholder="e.g., 65" min="0" required>
+              </div>
+
+              <div class="form-group">
                 <label for="morningSalesVolume"> Morning Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance"></i>
+                  <i class="fas fa-info-circle tooltip" title="Morning shift sales performance"></i>
                 </label>
                 <input type="number" id="morningSalesVolume" placeholder="e.g., 15000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
-                <label for="swingReceiptCount"> Swing Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count"></i>
-                </label>
-                <input type="number" id="swingReceiptCount" placeholder="e.g., 120" min="0" required>
-              </div>
-			      <div class="form-group">
                 <label for="swingSalesVolume"> Swing Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
+                  <i class="fas fa-info-circle tooltip" title="Swing shift sales performance"></i>
                 </label>
                 <input type="number" id="swingSalesVolume" placeholder="e.g., 20000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
-                <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count"></i>
-                </label>
-                <input type="number" id="graveyardReceiptCount" placeholder="e.g., 65" min="0" required>
-              </div>
-              <div class="form-group">
                 <label for="graveyardSalesVolume"> Graveyard Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
+                  <i class="fas fa-info-circle tooltip" title="Graveyard shift sales performance"></i>
                 </label>
                 <input type="number" id="graveyardSalesVolume" placeholder="e.g., 10000" min="0" step="0.01" required>
               </div>
@@ -1282,12 +1281,13 @@ function doLogout() {
   
   
   
- <!-- Customer Insights - Complete Fixed Version -->
+ <!-- Customer Insights - Left-aligned, cleaned layout -->
 <div id="customer-insights" class="page main-content cgx-scope" aria-labelledby="ci-title" data-module="customer-insights" style="
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   background:#F6F9FC; color:#32325D; line-height:1.6;
   min-height:100vh; padding:1.5rem 2rem; margin:0;
 ">
+  <!-- LEFT-ALIGNED CONTAINER -->
   <div style="width:100%; max-width:1280px; margin:0;">
 
     <!-- Header -->
@@ -1311,7 +1311,8 @@ function doLogout() {
           display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
           background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 14px rgba(94,114,228,.35);
           transition:transform .15s ease, box-shadow .15s ease;
-        ">
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(94,114,228,.4)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(94,114,228,.35)';">
           <i class="fas fa-sync-alt"></i> Refresh
         </button>
         <button class="btn-action" onclick="showExportModal()" style="
@@ -1319,7 +1320,8 @@ function doLogout() {
           display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
           background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,.35);
           transition:transform .15s ease, box-shadow .15s ease;
-        ">
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(16,185,129,.4)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(16,185,129,.35)';">
           <i class="fas fa-download"></i> Export
         </button>
       </div>
@@ -1331,30 +1333,35 @@ function doLogout() {
       box-shadow:0 6px 20px rgba(94,114,228,.12);
     ">
       <div class="date-range-selector" style="display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 .9rem 0;">
-        <button class="date-btn" data-range="today" style="
-          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
-          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
+        <button class="date-btn active" data-range="today" style="
+          padding:.55rem 1rem; border:0; border-radius:.55rem; font-size:.9rem; font-weight:800; cursor:pointer;
+          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; letter-spacing:.2px;
         ">Today</button>
         <button class="date-btn" data-range="yesterday" style="
           padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
           font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        ">Yesterday</button>
+        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
+           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Yesterday</button>
         <button class="date-btn" data-range="7days" style="
           padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
           font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        ">Last 7 Days</button>
-        <button class="date-btn active" data-range="14days" style="
-          padding:.55rem 1rem; border:0; border-radius:.55rem; font-size:.9rem; font-weight:800; cursor:pointer;
-          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; letter-spacing:.2px;
-        ">Last 14 Days</button>
+        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
+           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Last 7 Days</button>
+        <button class="date-btn" data-range="14days" style="
+          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
+          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
+        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
+           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Last 14 Days</button>
         <button class="date-btn" data-range="30days" style="
           padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
           font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        ">Last 30 Days</button>
+        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
+           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Last 30 Days</button>
         <button class="date-btn" data-range="custom" style="
           padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
           font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        ">Custom Range</button>
+        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
+           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Custom Range</button>
       </div>
       <div class="custom-date-inputs" style="
         display:none; align-items:center; gap:1rem; padding:1rem; background:#F6F9FC; border-radius:.6rem;
@@ -1369,78 +1376,7 @@ function doLogout() {
       </div>
     </div>
 
-    <!-- MISSING SECTION: Executive Summary Cards -->
-    <div class="executive-summary" style="
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.25rem;
-      margin:0 0 1.5rem 0;
-    ">
-      <!-- Current Risk Level Card -->
-      <div class="summary-card" style="
-        background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 6px 20px rgba(94,114,228,.12);
-      ">
-        <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-          <i class="fas fa-exclamation-triangle" style="font-size:1.5rem; color:#5E72E4;"></i>
-          <h3 style="font-size:.95rem; font-weight:700; color:#6b7280; margin:0; text-transform:uppercase; letter-spacing:.5px;">
-            Current Risk Level
-          </h3>
-        </div>
-        <div id="riskLevel" style="font-size:2.25rem; font-weight:800; margin:.5rem 0;">Loading...</div>
-        <p id="riskDescription" style="font-size:.9rem; color:#6b7280; margin:.5rem 0 0 0; line-height:1.5;">
-          Analyzing customer data...
-        </p>
-      </div>
-
-      <!-- At-Risk Customers Card -->
-      <div class="summary-card" style="
-        background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 6px 20px rgba(94,114,228,.12);
-      ">
-        <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-          <i class="fas fa-users" style="font-size:1.5rem; color:#F5365C;"></i>
-          <h3 style="font-size:.95rem; font-weight:700; color:#6b7280; margin:0; text-transform:uppercase; letter-spacing:.5px;">
-            At-Risk Customers
-          </h3>
-        </div>
-        <div id="atRiskCount" style="font-size:2.25rem; font-weight:800; margin:.5rem 0;">0</div>
-        <div style="display:flex; align-items:center; gap:.5rem; margin-top:.5rem;">
-          <span style="font-size:.85rem; color:#6b7280;">Change:</span>
-          <span id="atRiskChange" style="font-size:.95rem; font-weight:700;">0.0%</span>
-        </div>
-      </div>
-
-      <!-- Revenue at Risk Card -->
-      <div class="summary-card" style="
-        background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 6px 20px rgba(94,114,228,.12);
-      ">
-        <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-          <i class="fas fa-dollar-sign" style="font-size:1.5rem; color:#FB6340;"></i>
-          <h3 style="font-size:.95rem; font-weight:700; color:#6b7280; margin:0; text-transform:uppercase; letter-spacing:.5px;">
-            Revenue at Risk
-          </h3>
-        </div>
-        <div id="revenueAtRisk" style="font-size:2.25rem; font-weight:800; margin:.5rem 0;">₱0</div>
-        <div style="display:flex; align-items:center; gap:.5rem; margin-top:.5rem;">
-          <span style="font-size:.85rem; color:#6b7280;">Change:</span>
-          <span id="revenueChange" style="font-size:.95rem; font-weight:700;">0.0%</span>
-        </div>
-      </div>
-
-      <!-- Retention Rate Card -->
-      <div class="summary-card" style="
-        background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 6px 20px rgba(94,114,228,.12);
-      ">
-        <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-          <i class="fas fa-chart-line" style="font-size:1.5rem; color:#2DCE89;"></i>
-          <h3 style="font-size:.95rem; font-weight:700; color:#6b7280; margin:0; text-transform:uppercase; letter-spacing:.5px;">
-            Retention Rate
-          </h3>
-        </div>
-        <div id="retentionRate" style="font-size:2.25rem; font-weight:800; margin:.5rem 0;">0%</div>
-        <div style="display:flex; align-items:center; gap:.5rem; margin-top:.5rem;">
-          <span style="font-size:.85rem; color:#6b7280;">Change:</span>
-          <span id="retentionChange" style="font-size:.95rem; font-weight:700;">0.0%</span>
-        </div>
-      </div>
-    </div>
+   
 
     <!-- Tabs + Content -->
     <div class="report-section" style="
@@ -1456,16 +1392,17 @@ function doLogout() {
         ">Retention Analysis</button>
         <button class="tab-btn" onclick="switchTab('behavior')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        ">Customer Behavior</button>
+        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Customer Behavior</button>
         <button class="tab-btn" onclick="switchTab('revenue')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        ">Revenue Impact</button>
+        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
+      
         <button class="tab-btn" onclick="switchTab('trends')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        ">Historical Trends</button>
+        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Historical Trends</button>
       </div>
 
-      <!-- Retention Tab -->
+      <!-- Retention -->
       <div class="tab-content active" id="retention-tab" style="display:block;">
         <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; align-items:start;">
           <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
@@ -1473,28 +1410,22 @@ function doLogout() {
             <canvas id="retentionChart" height="240"></canvas>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Key Metrics</h3>
+            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Average</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Current Retention</span>
+              <span style="font-size:.92rem; color:#6b7280;">Current Retention Rate</span>
               <span id="currentRetention" style="font-size:1rem; font-weight:800;">0%</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
               <span style="font-size:.92rem; color:#6b7280;">Churn Rate</span>
               <span id="churnRate" style="font-size:1rem; font-weight:800;">0%</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">High Risk Count</span>
-              <span id="highRiskCount" style="font-size:1rem; font-weight:800;">0</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0;">
-              <span style="font-size:.92rem; color:#6b7280;">Medium Risk Count</span>
-              <span id="mediumRiskCount" style="font-size:1rem; font-weight:800;">0</span>
-            </div>
+           
+            
           </div>
         </div>
       </div>
 
-      <!-- Behavior Tab -->
+      <!-- Behavior -->
       <div class="tab-content" id="behavior-tab" style="display:none;">
         <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
           <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
@@ -1504,26 +1435,20 @@ function doLogout() {
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Behavior Metrics</h3>
             <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Avg Frequency</span>
+              <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Frequency</span>
               <span id="avgFrequency" style="font-size:1rem; font-weight:800;">0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Avg Value</span>
+              <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Value</span>
               <span id="avgValue" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Loyalty Rate</span>
-              <span id="loyaltyRate" style="font-size:1rem; font-weight:800;">0%</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding:.6rem 0;">
-              <span style="font-size:.92rem; color:#6b7280;">Engagement Score</span>
-              <span id="engagementScore" style="font-size:1rem; font-weight:800;">0/100</span>
-            </div>
+          
+          
           </div>
         </div>
       </div>
 
-      <!-- Revenue Tab -->
+      <!-- Revenue -->
       <div class="tab-content" id="revenue-tab" style="display:none;">
         <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
           <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
@@ -1533,22 +1458,21 @@ function doLogout() {
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Financial Impact</h3>
             <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Potential Loss</span>
+              <span style="font-size:.92rem; color:#6b7280;">Potential Revenue Loss</span>
               <span id="potentialLoss" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:.6rem 0;">
-              <span style="font-size:.92rem; color:#6b7280;">Revenue Saved</span>
-              <span id="revenueSaved" style="font-size:1rem; font-weight:800;">₱0</span>
-            </div>
+            
+           
           </div>
         </div>
       </div>
 
-      <!-- Trends Tab -->
+     
+      <!-- Trends -->
       <div class="tab-content" id="trends-tab" style="display:none;">
         <div class="trends-container">
           <div class="chart-container full-width" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Risk Trend Analysis</h3>
+            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">30-Day Churn Risk Trend</h3>
             <canvas id="trendsChart" height="250"></canvas>
           </div>
           <div class="comparison-table" style="margin-top:1.25rem;">
@@ -1570,67 +1494,10 @@ function doLogout() {
       </div>
     </div>
 
-    <!-- Customer Segments Section -->
-    <div class="segments-section" style="
-      background:#fff; border-radius:12px; padding:1.5rem; margin:0 0 1.5rem 0;
-      box-shadow:0 6px 20px rgba(94,114,228,.12);
-    ">
-      <h2 style="font-size:1.25rem; font-weight:800; margin:0 0 1.25rem 0;">Customer Risk Segments</h2>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.25rem;">
-        <!-- High Risk -->
-        <div class="segment-card" onclick="drillDown('high')" style="
-          background:linear-gradient(135deg,#FEF2F2 0%,#FFF 100%); padding:1.25rem; border-radius:.8rem;
-          border-left:4px solid #F5365C; cursor:pointer; transition:transform .2s, box-shadow .2s;
-        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(245,54,92,.2)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='none';">
-          <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-            <i class="fas fa-exclamation-circle" style="font-size:1.5rem; color:#F5365C;"></i>
-            <h3 style="font-size:1.1rem; font-weight:800; color:#F5365C; margin:0;">High Risk</h3>
-          </div>
-          <div id="highRiskSegCount" style="font-size:1.75rem; font-weight:800; margin:.5rem 0;">0</div>
-          <div style="display:flex; justify-content:space-between; margin-top:.75rem; padding-top:.75rem; border-top:1px solid rgba(245,54,92,.15);">
-            <span style="font-size:.85rem; color:#6b7280;">Revenue: <strong id="highRiskRevenue">₱0</strong></span>
-            <span style="font-size:.85rem; color:#6b7280;">Score: <strong id="highRiskScore">0%</strong></span>
-          </div>
-        </div>
 
-        <!-- Medium Risk -->
-        <div class="segment-card" onclick="drillDown('medium')" style="
-          background:linear-gradient(135deg,#FFF7ED 0%,#FFF 100%); padding:1.25rem; border-radius:.8rem;
-          border-left:4px solid #FB6340; cursor:pointer; transition:transform .2s, box-shadow .2s;
-        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(251,99,64,.2)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='none';">
-          <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-            <i class="fas fa-exclamation-triangle" style="font-size:1.5rem; color:#FB6340;"></i>
-            <h3 style="font-size:1.1rem; font-weight:800; color:#FB6340; margin:0;">Medium Risk</h3>
-          </div>
-          <div id="mediumRiskSegCount" style="font-size:1.75rem; font-weight:800; margin:.5rem 0;">0</div>
-          <div style="display:flex; justify-content:space-between; margin-top:.75rem; padding-top:.75rem; border-top:1px solid rgba(251,99,64,.15);">
-            <span style="font-size:.85rem; color:#6b7280;">Revenue: <strong id="mediumRiskRevenue">₱0</strong></span>
-            <span style="font-size:.85rem; color:#6b7280;">Score: <strong id="mediumRiskScore">0%</strong></span>
-          </div>
-        </div>
+   
 
-        <!-- Low Risk -->
-        <div class="segment-card" onclick="drillDown('low')" style="
-          background:linear-gradient(135deg,#F0FDF4 0%,#FFF 100%); padding:1.25rem; border-radius:.8rem;
-          border-left:4px solid #2DCE89; cursor:pointer; transition:transform .2s, box-shadow .2s;
-        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(45,206,137,.2)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='none';">
-          <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-            <i class="fas fa-check-circle" style="font-size:1.5rem; color:#2DCE89;"></i>
-            <h3 style="font-size:1.1rem; font-weight:800; color:#2DCE89; margin:0;">Low Risk</h3>
-          </div>
-          <div id="lowRiskSegCount" style="font-size:1.75rem; font-weight:800; margin:.5rem 0;">0</div>
-          <div style="display:flex; justify-content:space-between; margin-top:.75rem; padding-top:.75rem; border-top:1px solid rgba(45,206,137,.15);">
-            <span style="font-size:.85rem; color:#6b7280;">Revenue: <strong id="lowRiskRevenue">₱0</strong></span>
-            <span style="font-size:.85rem; color:#6b7280;">Score: <strong id="lowRiskScore">0%</strong></span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Drill Down Modal -->
+    <!-- Modal -->
     <div class="modal" id="drillDownModal" style="
       display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%;
       background:rgba(0,0,0,.5); backdrop-filter:blur(5px);
@@ -1641,7 +1508,7 @@ function doLogout() {
       ">
         <span class="close" onclick="closeDrillDown()" style="
           position:absolute; right:1rem; top:1rem; font-size:2rem; font-weight:800; color:#6b7280; cursor:pointer;
-        ">&times;</span>
+        " onmouseover="this.style.color='#111827';" onmouseout="this.style.color='#6b7280';">&times;</span>
         <h2 id="modalTitle" style="font-size:1.35rem; font-weight:800; margin:0 0 1rem 0;">Risk Segment Details</h2>
         <div id="modalContent"></div>
       </div>
@@ -1658,17 +1525,18 @@ function doLogout() {
       ">
         <span class="close" onclick="closeExportModal()" style="
           position:absolute; right:1.2rem; top:1.2rem; font-size:2rem; font-weight:800; color:#6b7280; cursor:pointer;
-        ">&times;</span>
+        " onmouseover="this.style.color='#111827';" onmouseout="this.style.color='#6b7280';">&times;</span>
         <h2 style="font-size:1.5rem; font-weight:800; margin:0 0 1.5rem 0; color:#32325D;">Export Report</h2>
         
         <div style="margin-bottom:1.5rem;">
           <label style="display:block; font-weight:700; margin-bottom:.5rem; color:#6b7280; font-size:.9rem;">Export Format</label>
           <div style="display:flex; flex-direction:column; gap:.7rem;">
-            <button onclick="alert('PDF export coming soon')" style="
+            <button onclick="exportToPDF()" style="
               padding:1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.65rem;
               font-size:.95rem; font-weight:700; cursor:pointer; text-align:left;
               display:flex; align-items:center; gap:.8rem; transition:all .2s;
-            ">
+            " onmouseover="this.style.borderColor='#5E72E4'; this.style.background='#F6F9FC';"
+               onmouseout="this.style.borderColor='#EAF0FF'; this.style.background='#fff';">
               <i class="fas fa-file-pdf" style="font-size:1.3rem; color:#DC2626;"></i>
               <div>
                 <div style="font-weight:800; color:#32325D;">PDF Document</div>
@@ -1676,11 +1544,12 @@ function doLogout() {
               </div>
             </button>
             
-            <button onclick="alert('Image export coming soon')" style="
+            <button onclick="exportToImage()" style="
               padding:1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.65rem;
               font-size:.95rem; font-weight:700; cursor:pointer; text-align:left;
               display:flex; align-items:center; gap:.8rem; transition:all .2s;
-            ">
+            " onmouseover="this.style.borderColor='#5E72E4'; this.style.background='#F6F9FC';"
+               onmouseout="this.style.borderColor='#EAF0FF'; this.style.background='#fff';">
               <i class="fas fa-image" style="font-size:1.3rem; color:#10B981;"></i>
               <div>
                 <div style="font-weight:800; color:#32325D;">PNG Image</div>
@@ -1688,11 +1557,12 @@ function doLogout() {
               </div>
             </button>
             
-            <button onclick="window.print()" style="
+            <button onclick="printReport()" style="
               padding:1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.65rem;
               font-size:.95rem; font-weight:700; cursor:pointer; text-align:left;
               display:flex; align-items:center; gap:.8rem; transition:all .2s;
-            ">
+            " onmouseover="this.style.borderColor='#5E72E4'; this.style.background='#F6F9FC';"
+               onmouseout="this.style.borderColor='#EAF0FF'; this.style.background='#fff';">
               <i class="fas fa-print" style="font-size:1.3rem; color:#5E72E4;"></i>
               <div>
                 <div style="font-weight:800; color:#32325D;">Print Report</div>
@@ -1701,15 +1571,67 @@ function doLogout() {
             </button>
           </div>
         </div>
+
+        <div style="padding-top:1rem; border-top:1px solid #EAF0FF;">
+          <label style="display:flex; align-items:center; gap:.5rem; cursor:pointer; font-size:.9rem; color:#6b7280;">
+            <input type="checkbox" id="includeAllTabs" checked style="width:18px; height:18px; cursor:pointer;">
+            <span>Include all tabs in export</span>
+          </label>
+        </div>
       </div>
     </div>
-
+ <script src="churn-report.js"></script>
   </div>
 
+  <!-- Print Styles -->
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      .print-container, .print-container * { visibility: visible; }
+      .print-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print { display: none !important; }
+      .page-break { page-break-after: always; }
+    }
+  </style>
 
-<!-- CORRECTED: Inline JavaScript -->
+  <!-- Required Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
-// ChurnGuard Dashboard — Fixed version
+// ChurnGuard Dashboard — accurate Executive Summary, PH currency, hardened UI
+
 let cgx_charts = {};
 let cgx_currentView = '14days';
 let cgx_data = null;
@@ -1723,9 +1645,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cgx_setupDiagnostics();
 });
 
-function cgx_log(msg, data=null){ 
-  if (cgx_debugMode) console.log(`[CGX ${new Date().toISOString()}] ${msg}`, data ?? ''); 
-}
+function cgx_log(msg, data=null){ if (cgx_debugMode) console.log(`[CGX ${new Date().toISOString()}] ${msg}`, data ?? ''); }
 
 function cgx_initializeReports(){
   if (typeof Chart !== 'undefined'){
@@ -1739,15 +1659,11 @@ function cgx_setupEventListeners(){
   document.querySelectorAll('.date-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.date-btn').forEach(b=>{
-        b.classList.remove('active'); 
-        b.style.background='#fff'; 
-        b.style.color='#2f3640';
-        b.style.border='2px solid #EAF0FF';
+        b.classList.remove('active'); b.style.background='#fff'; b.style.color='#2f3640';
       });
       btn.classList.add('active');
       btn.style.background='linear-gradient(135deg,#667EEA 0%,#5E72E4 100%)';
       btn.style.color='#fff';
-      btn.style.border='0';
 
       const customInputs = document.querySelector('.custom-date-inputs');
       if (btn.dataset.range === 'custom'){
@@ -1764,15 +1680,12 @@ async function cgx_loadData(view){
   try{
     cgx_currentView = view;
     cgx_showLoading();
-    
     const res = await fetch(`data_endpoint.php?view=${encodeURIComponent(view)}`, {
       headers: { 'Accept': 'application/json' },
       cache: 'no-store'
     });
-    
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    cgx_log('Data received', data);
     cgx_data = data;
 
     if (!data?.data_availability?.has_data){
@@ -1792,6 +1705,12 @@ async function cgx_loadData(view){
     const lastUpdatedEl = document.getElementById('lastUpdated');
     if (lastUpdatedEl) lastUpdatedEl.textContent = data.last_updated;
 
+    // Clear any leftover "Loading..." opacity
+    ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'].forEach(id=>{
+      const el = document.getElementById(id);
+      if (el) el.style.opacity = '1';
+    });
+
     cgx_updateHealthStatus('success', data.timestamp);
   } catch (err){
     cgx_log('Load error', err);
@@ -1801,9 +1720,7 @@ async function cgx_loadData(view){
 }
 
 function cgx_showLoading(){
-  const loadingIds = ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate',
-                      'currentRetention','churnRate','highRiskCount'];
-  loadingIds.forEach(id=>{
+  ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate','currentRetention','churnRate','highRiskCount'].forEach(id=>{
     const el = document.getElementById(id);
     if (!el) return;
     el.textContent = 'Loading...';
@@ -1821,10 +1738,7 @@ function cgx_showError(message='Failed to load data'){
     el.style.opacity = '1';
   });
   const desc = document.getElementById('riskDescription');
-  if (desc){ 
-    desc.textContent = `Error: ${message}`; 
-    desc.style.color = '#F5365C'; 
-  }
+  if (desc){ desc.textContent = `Error: ${message}`; desc.style.color = '#F5365C'; }
 }
 
 function cgx_showNoDataMessage(availability){
@@ -1836,6 +1750,7 @@ function cgx_showNoDataMessage(availability){
 
   const zeros = {
     atRiskCount:'0', atRiskChange:'0.0%', revenueAtRisk:'₱0', revenueChange:'0.0%',
+    // neutral when no data
     retentionRate:'100%', retentionChange:'0.0%',
     currentRetention:'0%', churnRate:'0%',
     wowChange:'0.0%', highRiskCount:'0', mediumRiskCount:'0'
@@ -1843,8 +1758,7 @@ function cgx_showNoDataMessage(availability){
   Object.entries(zeros).forEach(([id,val])=>{
     const el = document.getElementById(id);
     if (!el) return;
-    el.textContent = val; 
-    el.style.opacity='0.5';
+    el.textContent = val; el.style.opacity='0.5';
   });
 }
 
@@ -1856,7 +1770,6 @@ function cgx_populateExecutiveSummary(d){
     riskEl.style.color = cgx_getRiskColor(lvl);
     riskEl.style.opacity = '1';
   }
-  
   const riskDescEl = document.getElementById('riskDescription');
   if (riskDescEl){
     riskDescEl.textContent = d?.risk_description || 'Stable customer base with low churn risk';
@@ -1882,11 +1795,18 @@ function cgx_populateExecutiveSummary(d){
 
   cgx_setElementValue('retentionRate', `${cgx_formatDecimal(rr)}%`);
   cgx_setChangeValue('retentionChange', rrc, false);
+
+  // ensure no opacity leftovers
+  ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.style.opacity = '1';
+  });
 }
 
 function cgx_populateRetentionMetrics(data){
   cgx_setElementValue('currentRetention', `${cgx_formatDecimal(data.current_retention || 0)}%`);
   cgx_setElementValue('churnRate', `${cgx_formatDecimal(data.churn_rate || 0)}%`);
+  cgx_setChangeValue('wowChange', data.wow_change || 0);
   cgx_setElementValue('highRiskCount', cgx_formatNumber(data.high_risk_count || 0));
   cgx_setElementValue('mediumRiskCount', cgx_formatNumber(data.medium_risk_count || 0));
 }
@@ -1918,17 +1838,13 @@ function cgx_populateSegments(segments){
 }
 
 function cgx_updateCharts(trends){
-  if (!Array.isArray(trends) || trends.length === 0){ 
-    cgx_log('No trend data'); 
-    return; 
-  }
+  if (!Array.isArray(trends) || trends.length === 0){ cgx_log('No trend data'); return; }
 
   const labels = trends.map(t=>{
     const d = new Date(t.date);
     const lbl = d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
     return (parseInt(t.is_gap) === 1) ? `${lbl} (No data)` : lbl;
   });
-  
   const riskData    = trends.map(t => +t.risk_percentage || 0);
   const revenueData = trends.map(t => +t.sales_volume || 0);
   const receiptData = trends.map(t => parseInt(t.receipt_count) || 0);
@@ -1948,6 +1864,7 @@ function cgx_updateCharts(trends){
         tension:0.3,
         pointBackgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#5E72E4'),
         pointRadius: trends.map(t=>(parseInt(t.is_gap)===1)?4:3),
+        segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
       }]
     }
   });
@@ -1977,6 +1894,7 @@ function cgx_updateCharts(trends){
         backgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'rgba(107,114,128,0.1)':'rgba(45,206,137,0.1)'),
         tension:0.3,
         pointBackgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#2DCE89'),
+        segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
       }]
     }
   });
@@ -1992,7 +1910,13 @@ function cgx_updateCharts(trends){
         backgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'rgba(107,114,128,0.1)':'rgba(245,54,92,0.1)'),
         tension:0.3,
         pointBackgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#F5365C'),
+        segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
       }]
+    },
+    options:{
+      plugins:{
+        tooltip:{ callbacks:{ afterLabel: (ctx)=>(parseInt(trends[ctx.dataIndex]?.is_gap)===1?'No data available for this date':'') } }
+      }
     }
   });
 
@@ -2050,45 +1974,22 @@ function cgx_updateComparisonTable(d){
   `;
 }
 
-// Utilities
-function cgx_setElementValue(id, v){ 
-  const el=document.getElementById(id); 
-  if(el){ 
-    el.textContent=v; 
-    el.style.opacity='1'; 
-  } 
-}
-
+// --- Utilities ---
+function cgx_setElementValue(id, v){ const el=document.getElementById(id); if(el){ el.textContent=v; el.style.opacity='1'; } }
 function cgx_setChangeValue(id, value, inverse=false){
-  const el = document.getElementById(id); 
-  if (!el) return;
+  const el = document.getElementById(id); if (!el) return;
   const num = parseFloat(value) || 0;
   const sign = num > 0 ? '+' : '';
   el.textContent = `${sign}${cgx_formatDecimal(num)}%`;
   el.style.color = inverse ? (num > 0 ? '#F5365C' : '#2DCE89') : (num < 0 ? '#F5365C' : '#2DCE89');
 }
-
-function cgx_formatNumber(n){ 
-  const v=+n || 0; 
-  return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(v)); 
-}
-
-function cgx_formatDecimal(n, d=1){ 
-  const v=+n || 0; 
-  return v.toFixed(d); 
-}
-
+function cgx_formatNumber(n){ const v=+n || 0; return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(v)); }
+function cgx_formatDecimal(n, d=1){ const v=+n || 0; return v.toFixed(d); }
 function cgx_formatCurrencyPH(amount){
   const v = parseFloat(amount) || 0;
   if (v === 0) return '₱0';
-  return new Intl.NumberFormat('en-PH',{
-    style:'currency',
-    currency:'PHP',
-    minimumFractionDigits:0,
-    maximumFractionDigits:0
-  }).format(Math.round(v));
+  return new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP',minimumFractionDigits:0,maximumFractionDigits:0}).format(Math.round(v));
 }
-
 function cgx_getRiskColor(level){
   switch(level){
     case 'High': return '#F5365C';
@@ -2098,39 +1999,18 @@ function cgx_getRiskColor(level){
   }
 }
 
-// Global actions
+// --- Global actions ---
 function refreshReports(){ cgx_loadData(cgx_currentView); }
-
-function showExportModal(){ 
-  const m=document.getElementById('exportModal'); 
-  if (m) m.style.display='block'; 
-}
-
-function closeExportModal(){ 
-  const m=document.getElementById('exportModal'); 
-  if (m) m.style.display='none'; 
-}
+function exportReport(fmt){ alert(`Export to ${fmt.toUpperCase()} — coming soon`); }
 
 function switchTab(tabName){
   document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
-  const sel = document.getElementById(`${tabName}-tab`); 
-  if (sel) sel.style.display='block';
-  
+  const sel = document.getElementById(`${tabName}-tab`); if (sel) sel.style.display='block';
   document.querySelectorAll('.tab-btn').forEach(btn=>{
-    btn.classList.remove('active'); 
-    btn.style.color='#6b7280'; 
-    btn.style.borderBottom='none'; 
-    btn.style.marginBottom='0';
+    btn.classList.remove('active'); btn.style.color='#6b7280'; btn.style.borderBottom='none'; btn.style.marginBottom='0';
   });
-  
-  const match = Array.from(document.querySelectorAll('.tab-btn'))
-    .find(b => b.textContent.trim().toLowerCase().includes(tabName.toLowerCase()));
-  if (match){ 
-    match.classList.add('active'); 
-    match.style.color='#5E72E4'; 
-    match.style.borderBottom='3px solid #5E72E4'; 
-    match.style.marginBottom='-2px'; 
-  }
+  const match = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.trim().toLowerCase().includes(tabName.toLowerCase()));
+  if (match){ match.classList.add('active'); match.style.color='#5E72E4'; match.style.borderBottom='3px solid #5E72E4'; match.style.marginBottom='-2px'; }
 }
 
 function drillDown(riskLevel){
@@ -2157,23 +2037,17 @@ function drillDown(riskLevel){
   }
   if (modal) modal.style.display='block';
 }
-
-function closeDrillDown(){ 
-  const m=document.getElementById('drillDownModal'); 
-  if (m) m.style.display='none'; 
-}
+function closeDrillDown(){ const m=document.getElementById('drillDownModal'); if (m) m.style.display='none'; }
 
 function applyCustomRange(){
   const s = document.getElementById('startDate')?.value;
   const e = document.getElementById('endDate')?.value;
-  if (!s || !e){ 
-    alert('Please select both start and end dates'); 
-    return; 
-  }
+  if (!s || !e){ alert('Please select both start and end dates'); return; }
+  // backend custom range not yet implemented
   cgx_loadData('30days');
 }
 
-// Diagnostics
+// --- Diagnostics ---
 function cgx_setupDiagnostics(){
   const health=document.createElement('div');
   health.id='cgx_health';
@@ -2183,7 +2057,6 @@ function cgx_setupDiagnostics(){
     display:${cgx_debugMode ? 'block' : 'none'}; z-index:10000;
   `;
   document.body.appendChild(health);
-  
   window.cgx_toggleDebug=function(){
     cgx_debugMode=!cgx_debugMode;
     localStorage.setItem('cgx_debug', cgx_debugMode ? '1' : '0');
@@ -2193,8 +2066,7 @@ function cgx_setupDiagnostics(){
 }
 
 function cgx_updateHealthStatus(status, ts=null){
-  const el=document.getElementById('cgx_health'); 
-  if (!el) return;
+  const el=document.getElementById('cgx_health'); if (!el) return;
   const time = ts || new Date().toLocaleString('en-US',{timeZone:'Asia/Manila'});
   const colors = { success:'#2DCE89', error:'#F5365C', loading:'#FB6340' };
   el.style.backgroundColor = colors[status] || 'rgba(0,0,0,0.7)';
@@ -2204,486 +2076,11 @@ function cgx_updateHealthStatus(status, ts=null){
 window.onclick = function(ev){
   const m = document.getElementById('drillDownModal');
   if (ev.target === m) m.style.display='none';
-  const em = document.getElementById('exportModal');
-  if (ev.target === em) em.style.display='none';
 };
 
-cgx_log('Ready', {
-  tz: Intl.DateTimeFormat().resolvedOptions().timeZone, 
-  debug: cgx_debugMode
-});
+cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: cgx_debugMode});
 </script>
 
-  <!-- Print Styles -->
-  <style>
-    @media print {
-      body * { visibility: hidden; }
-      .print-container, .print-container * { visibility: visible; }
-      .print-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-      .no-print { display: none !important; }
-      .page-break { page-break-after: always; }
-    }
-  </style>
-
-  <!-- Required Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
-</div>
-
-
-
-
-
-
-
-
-
-
-
-<div id="dashboard-container" class="page">
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); min-height: 100vh; padding: 20px; margin: 0;">
-    
-    <!-- Main Container -->
-    <div style="max-width: 1200px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h1 style="margin: 0; color: #1e293b; font-size: 28px; font-weight: 600;">Performance Analytics</h1>
-            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 16px;">Year-over-Year Growth Tracking & Target Management</p>
-        </div>
-        
-        <!-- Key Metrics Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
-            
-            <!-- Sales Card -->
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6;">
-                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Sales</div>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="totalSales">₱0</div>
-                <div id="salesGrowth" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">+0%</div>
-            </div>
-            
-            <!-- Customers Card -->
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #8b5cf6;">
-                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Customers</div>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="totalCustomers">0</div>
-                <div id="customerGrowth" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">+0%</div>
-            </div>
-            
-            <!-- Transactions Card -->
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #10b981;">
-                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Avg Transaction</div>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="avgTransaction">₱0</div>
-                <div id="transactionTrend" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">Stable</div>
-            </div>
-            
-        </div>
-        
-        <!-- Year Comparison Table -->
-        <div style="background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Detailed Comparison</h2>
-            
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #e2e8f0;">
-                            <th style="text-align: left; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Metric</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;" id="prevYearLabel">2024</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;" id="currYearLabel">2025</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Change</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Growth</th>
-                        </tr>
-                    </thead>
-                    <tbody id="comparisonTable">
-                        <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 16px; color: #1e293b; font-weight: 500;">Revenue</td>
-                            <td style="padding: 16px; text-align: right; color: #64748b;">₱0</td>
-                            <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">₱0</td>
-                            <td style="padding: 16px; text-align: right; color: #64748b;">₱0</td>
-                            <td style="padding: 16px; text-align: right;">
-                                <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: #f1f5f9; color: #64748b;">0%</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Targets Section -->
-        <div style="background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Set Performance Targets</h2>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                <div>
-                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Sales Target (₱)</label>
-                    <input type="number" id="salesTargetInput" placeholder="0" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
-                </div>
-                
-                <div>
-                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Customer Growth (%)</label>
-                    <input type="number" id="customerTargetInput" placeholder="0" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
-                </div>
-                
-                <div>
-                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Period</label>
-                    <select id="targetPeriod" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; background: white; cursor: pointer; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
-                        <option value="yearly">Yearly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                
-                <div style="display: flex; align-items: flex-end;">
-                    <button onclick="saveTargets()" style="width: 100%; padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">Save Targets</button>
-                </div>
-            </div>
-            
-            <!-- Progress Bars -->
-            <div style="margin-top: 32px;">
-                <div style="margin-bottom: 24px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #475569; font-size: 14px; font-weight: 500;">Sales Target Progress</span>
-                        <span style="color: #3b82f6; font-size: 14px; font-weight: 600;" id="salesProgressText">0%</span>
-                    </div>
-                    <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 8px; overflow: hidden;">
-                        <div id="salesProgressBar" style="height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 8px; transition: width 1s ease; width: 0%;"></div>
-                    </div>
-                </div>
-                
-                <div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #475569; font-size: 14px; font-weight: 500;">Customer Growth Progress</span>
-                        <span style="color: #8b5cf6; font-size: 14px; font-weight: 600;" id="customerProgressText">0%</span>
-                    </div>
-                    <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 8px; overflow: hidden;">
-                        <div id="customerProgressBar" style="height: 100%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); border-radius: 8px; transition: width 1s ease; width: 0%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Chart Section -->
-        <div style="background: white; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Monthly Trends</h2>
-            <div style="height: 300px;">
-                <canvas id="trendChart"></canvas>
-            </div>
-        </div>
-        
-    </div>
-</div>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-// API Configuration
-const API_URL = 'api/performance_tracker.php';
-let chartInstance = null;
-
-// Load Dashboard Data
-async function loadDashboard() {
-    try {
-        const response = await fetch(`${API_URL}?action=dashboard`);
-        const result = await response.json();
-        
-        if (result.success) {
-            updateMetrics(result.data);
-            updateComparisonTable(result.data);
-            updateProgressBars(result.data);
-            updateChart(result.data);
-        }
-    } catch (error) {
-        console.error('Dashboard load error:', error);
-    }
-}
-
-// Update Metric Cards
-function updateMetrics(data) {
-    const current = data.current;
-    const growth = data.growth;
-    
-    // Update sales
-    document.getElementById('totalSales').textContent = '₱' + formatNumber(current.total_sales);
-    updateGrowthIndicator('salesGrowth', growth.sales_percent);
-    
-    // Update customers
-    document.getElementById('totalCustomers').textContent = formatNumber(current.total_customers);
-    updateGrowthIndicator('customerGrowth', growth.customer_percent);
-    
-    // Update average transaction
-    document.getElementById('avgTransaction').textContent = '₱' + formatNumber(current.avg_transaction_value);
-    
-    // Update transaction trend
-    const trendEl = document.getElementById('transactionTrend');
-    if (current.avg_transaction_value > data.previous.avg_transaction_value) {
-        trendEl.textContent = 'Increasing';
-        trendEl.style.background = '#f0fdf4';
-        trendEl.style.color = '#16a34a';
-    } else if (current.avg_transaction_value < data.previous.avg_transaction_value) {
-        trendEl.textContent = 'Declining';
-        trendEl.style.background = '#fef2f2';
-        trendEl.style.color = '#dc2626';
-    } else {
-        trendEl.textContent = 'Stable';
-        trendEl.style.background = '#f1f5f9';
-        trendEl.style.color = '#64748b';
-    }
-}
-
-// Update Growth Indicators
-function updateGrowthIndicator(elementId, percentage) {
-    const element = document.getElementById(elementId);
-    const value = parseFloat(percentage) || 0;
-    
-    if (value > 0) {
-        element.textContent = '+' + value.toFixed(1) + '%';
-        element.style.background = '#f0fdf4';
-        element.style.color = '#16a34a';
-    } else if (value < 0) {
-        element.textContent = value.toFixed(1) + '%';
-        element.style.background = '#fef2f2';
-        element.style.color = '#dc2626';
-    } else {
-        element.textContent = '0%';
-        element.style.background = '#f1f5f9';
-        element.style.color = '#64748b';
-    }
-}
-
-// Update Comparison Table
-function updateComparisonTable(data) {
-    const current = data.current;
-    const previous = data.previous;
-    const growth = data.growth;
-    
-    // Update year labels
-    document.getElementById('prevYearLabel').textContent = previous.year;
-    document.getElementById('currYearLabel').textContent = current.year;
-    
-    // Table data
-    const metrics = [
-        {
-            name: 'Revenue',
-            prev: previous.total_sales,
-            curr: current.total_sales,
-            format: 'currency'
-        },
-        {
-            name: 'Total Customers',
-            prev: previous.total_customers,
-            curr: current.total_customers,
-            format: 'number'
-        },
-        {
-            name: 'New Customers',
-            prev: previous.new_customers,
-            curr: current.new_customers,
-            format: 'number'
-        },
-        {
-            name: 'Returning Customers',
-            prev: previous.returning_customers,
-            curr: current.returning_customers,
-            format: 'number'
-        },
-        {
-            name: 'Total Transactions',
-            prev: previous.total_transactions,
-            curr: current.total_transactions,
-            format: 'number'
-        },
-        {
-            name: 'Avg Transaction Value',
-            prev: previous.avg_transaction_value,
-            curr: current.avg_transaction_value,
-            format: 'currency'
-        }
-    ];
-    
-    const tableBody = document.getElementById('comparisonTable');
-    tableBody.innerHTML = metrics.map(metric => {
-        const change = metric.curr - metric.prev;
-        const growthPct = metric.prev > 0 ? ((change / metric.prev) * 100) : 0;
-        
-        const prevFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.prev) : formatNumber(metric.prev);
-        const currFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.curr) : formatNumber(metric.curr);
-        const changeFormatted = metric.format === 'currency' ? '₱' + formatNumber(Math.abs(change)) : formatNumber(Math.abs(change));
-        
-        const growthColor = growthPct > 0 ? '#dcfce7' : (growthPct < 0 ? '#fee2e2' : '#f1f5f9');
-        const growthTextColor = growthPct > 0 ? '#16a34a' : (growthPct < 0 ? '#dc2626' : '#64748b');
-        const changePrefix = change >= 0 ? '+' : '-';
-        
-        return `
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 16px; color: #1e293b; font-weight: 500;">${metric.name}</td>
-                <td style="padding: 16px; text-align: right; color: #64748b;">${prevFormatted}</td>
-                <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">${currFormatted}</td>
-                <td style="padding: 16px; text-align: right; color: #64748b;">${changePrefix}${changeFormatted}</td>
-                <td style="padding: 16px; text-align: right;">
-                    <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: ${growthColor}; color: ${growthTextColor};">
-                        ${growthPct >= 0 ? '+' : ''}${growthPct.toFixed(1)}%
-                    </span>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// Update Progress Bars
-function updateProgressBars(data) {
-    const salesTarget = parseFloat(document.getElementById('salesTargetInput').value) || data.previous.total_sales * 1.2;
-    const customerTarget = parseFloat(document.getElementById('customerTargetInput').value) || 15;
-    
-    // Sales progress
-    const salesProgress = Math.min(100, (data.current.total_sales / salesTarget) * 100);
-    document.getElementById('salesProgressText').textContent = salesProgress.toFixed(1) + '%';
-    document.getElementById('salesProgressBar').style.width = salesProgress + '%';
-    
-    // Customer progress
-    const customerProgress = Math.min(100, Math.abs(data.growth.customer_percent / customerTarget) * 100);
-    document.getElementById('customerProgressText').textContent = customerProgress.toFixed(1) + '%';
-    document.getElementById('customerProgressBar').style.width = customerProgress + '%';
-}
-
-// Update Chart
-function updateChart(data) {
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    
-    // Process monthly data
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const currentData = new Array(12).fill(0);
-    const previousData = new Array(12).fill(0);
-    
-    if (data.monthly) {
-        data.monthly.forEach(item => {
-            const monthIndex = item.month - 1;
-            if (item.year == data.current.year) {
-                currentData[monthIndex] = item.total_sales;
-            } else {
-                previousData[monthIndex] = item.total_sales;
-            }
-        });
-    }
-    
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-    
-    chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: months,
-            datasets: [
-                {
-                    label: data.current.year,
-                    data: currentData,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: data.previous.year,
-                    data: previousData,
-                    borderColor: '#94a3b8',
-                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₱' + formatNumber(value);
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Save Targets
-async function saveTargets() {
-    const salesTarget = document.getElementById('salesTargetInput').value;
-    const customerTarget = document.getElementById('customerTargetInput').value;
-    const period = document.getElementById('targetPeriod').value;
-    
-    try {
-        if (salesTarget) {
-            await fetch(`${API_URL}?action=save_target`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'sales',
-                    value: salesTarget,
-                    period: period
-                })
-            });
-        }
-        
-        if (customerTarget) {
-            await fetch(`${API_URL}?action=save_target`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'customers',
-                    value: customerTarget,
-                    period: period
-                })
-            });
-        }
-        
-        alert('Targets saved successfully!');
-        loadDashboard();
-    } catch (error) {
-        console.error('Save error:', error);
-    }
-}
-
-// Format Numbers
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-US').format(num || 0);
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', loadDashboard);
-
-// Auto-refresh every 5 minutes
-setInterval(loadDashboard, 300000);
-</script>
 
 
 
@@ -5602,68 +4999,44 @@ window.debugCustomerInsights = function() {
   
 
 /* -------------------- Profile & settings (api/) -------------------- */
-/* -------------------- Profile & settings -------------------- */
 async function loadProfile() {
   try {
     const r = await api('api/profile.php?action=me&ts=' + Date.now());
     const u = r.user || {};
-    
-    // Set avatar (use icon field from database)
-    const avatarUrl = u.avatar_url || u.icon || 'uploads/avatars/default-icon.png';
+
+    // Avatar + name + role
+    const avatarUrl = u.avatar_url || 'uploads/avatars/default-icon.png';
+    const display   = u.display_name || ((`${u.firstname||''} ${u.lastname||''}`).trim() || u.username || 'User');
+    const role      = u.role || 'User';
+
     const avatarEl = document.getElementById('profileAvatar');
     if (avatarEl) avatarEl.src = avatarUrl;
-    
-    // Set display name (use display_name from API or build from firstname/lastname)
-    const display = u.display_name || u.username || 'User';
+
     const nameEl = document.getElementById('profileName');
     if (nameEl) nameEl.textContent = display;
-    
-    // Set role
-    const role = u.role || 'User';
+
     const roleEl = document.getElementById('profileRole');
     if (roleEl) roleEl.textContent = role;
-    
-    // Fill form fields
+
+    // Form fields (no company)
     const fn = document.getElementById('profileFirstName');
     const ln = document.getElementById('profileLastName');
     const em = document.getElementById('profileEmail');
+
     if (fn) fn.value = u.firstname || '';
     if (ln) ln.value = u.lastname  || '';
     if (em) em.value = u.email     || '';
-    
-    // Two-factor toggle
+
     const tf = document.getElementById('twoFactorToggle');
     if (tf) tf.checked = parseInt(u.two_factor_enabled ?? 0, 10) === 1;
-    
-    // Refresh login history if function exists
-    if (typeof refreshLoginHistory === 'function') {
-      await refreshLoginHistory();
-    }
-    
-    console.log('Profile loaded:', display);
+
+    await refreshLoginHistory();
   } catch (e) {
-    console.error('Profile error:', e.message);
-    alert('Failed to load profile: ' + e.message);
+    console.error('[Profile]', e.message);
   }
 }
 
 
-// When profile page becomes active, load the profile
-document.addEventListener('click', function(e) {
-  // If user clicks on profile link/button
-  const profileLink = e.target.closest('[data-page="profile"], [onclick*="showPage(\'profile\')"]');
-  if (profileLink) {
-    setTimeout(() => loadProfile(), 100);
-  }
-});
-
-// Also load on page load if profile is already active
-document.addEventListener('DOMContentLoaded', function() {
-  const profilePage = document.getElementById('profile');
-  if (profilePage && profilePage.classList.contains('active')) {
-    loadProfile();
-  }
-});
 
 window.updateProfile = async function () {
   try {
@@ -5701,7 +5074,17 @@ window.changePassword = async function () {
   }
 };
 
-
+window.toggle2FA = async function (enabled) {
+  try {
+    const fd = new FormData();
+    fd.append('enabled', enabled ? '1' : '0');
+    await api('api/profile.php?action=toggle_2fa', { method: 'POST', body: fd });
+  } catch (e) {
+    alert(e.message);
+    const tf = document.getElementById('twoFactorToggle');
+    if (tf) tf.checked = !enabled;
+  }
+};
 
 window.uploadAvatar = function () {
   const inp = document.createElement('input');
@@ -5720,18 +5103,14 @@ window.uploadAvatar = function () {
       });
       const j = await res.json();
       if (!j.success) throw new Error(j.message || 'Upload failed');
-      
-      // Update avatar with cache-busting timestamp
       const avatarEl = document.getElementById('profileAvatar');
-      if (avatarEl) avatarEl.src = j.avatar_url + '?t=' + Date.now();
-      
-      alert('Avatar updated successfully!');
-    } catch (e) { 
-      alert('Failed to upload avatar: ' + e.message); 
-    }
+      if (avatarEl) avatarEl.src = j.avatar_url;
+      alert('Avatar updated');
+    } catch (e) { alert(e.message); }
   };
   inp.click();
 };
+
 
 
 
