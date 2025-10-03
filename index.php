@@ -2065,6 +2065,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
+
 <div id="dashboard-container" class="page">
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); min-height: 100vh; padding: 20px; margin: 0;">
     
