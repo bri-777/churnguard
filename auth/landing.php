@@ -2019,8 +2019,8 @@
       <i class="fas fa-user"></i>
     </a>
     <div class="dropdown-content" style="display:none; position:absolute; right:0; top:45px; background:#fff; border-radius:8px; min-width:160px; box-shadow:0 6px 15px rgba(0,0,0,0.15); overflow:hidden;">
-      <a href="/auth/login.php" style="display:block; padding:12px 15px; color:#000; text-decoration:none;">Login</a>
-      <a href="/auth/signup.php" style="display:block; padding:12px 15px; color:#000; text-decoration:none;">Sign Up</a>
+      <a href="login.php" style="display:block; padding:12px 15px; color:#000; text-decoration:none;">Login</a>
+      <a href="signup.php" style="display:block; padding:12px 15px; color:#000; text-decoration:none;">Sign Up</a>
     </div>
   </li>
 </ul>
