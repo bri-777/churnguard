@@ -2440,7 +2440,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     <script src="performance.js"></script>
    
 
-
+</div>
 
 <style>
   /* Dashboard Wrapper */
