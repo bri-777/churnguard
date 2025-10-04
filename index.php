@@ -2066,137 +2066,377 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 <div id="dashboard-container" class="page">
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); min-height: 100vh; padding: 20px; margin: 0;">
-    
-    <!-- Main Container -->
-    <div style="max-width: 1200px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h1 style="margin: 0; color: #1e293b; font-size: 28px; font-weight: 600;">Performance Analytics</h1>
-            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 16px;">Year-over-Year Growth Tracking & Target Management</p>
-        </div>
-        
-        <!-- Key Metrics Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
-            
-            <!-- Sales Card -->
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6;">
-                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Sales</div>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="totalSales">₱0</div>
-                <div id="salesGrowth" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">+0%</div>
-            </div>
-            
-            <!-- Customers Card -->
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #8b5cf6;">
-                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Customers</div>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="totalCustomers">0</div>
-                <div id="customerGrowth" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">+0%</div>
-            </div>
-            
-            <!-- Transactions Card -->
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #10b981;">
-                <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Avg Transaction</div>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 12px;" id="avgTransaction">₱0</div>
-                <div id="transactionTrend" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; background: #f0fdf4; color: #16a34a;">Stable</div>
-            </div>
-            
-        </div>
-        
-        <!-- Year Comparison Table -->
-        <div style="background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Detailed Comparison</h2>
-            
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #e2e8f0;">
-                            <th style="text-align: left; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Metric</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;" id="prevYearLabel">2024</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;" id="currYearLabel">2025</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Change</th>
-                            <th style="text-align: right; padding: 16px; font-weight: 600; color: #475569; font-size: 14px;">Growth</th>
-                        </tr>
-                    </thead>
-                    <tbody id="comparisonTable">
-                        <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 16px; color: #1e293b; font-weight: 500;">Revenue</td>
-                            <td style="padding: 16px; text-align: right; color: #64748b;">₱0</td>
-                            <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">₱0</td>
-                            <td style="padding: 16px; text-align: right; color: #64748b;">₱0</td>
-                            <td style="padding: 16px; text-align: right;">
-                                <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: #f1f5f9; color: #64748b;">0%</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Targets Section -->
-        <div style="background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Set Performance Targets</h2>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                <div>
-                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Sales Target (₱)</label>
-                    <input type="number" id="salesTargetInput" placeholder="0" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
+   <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Analytics Pro</span>
                 </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
                 
-                <div>
-                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Customer Growth (%)</label>
-                    <input type="number" id="customerTargetInput" placeholder="0" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
-                </div>
+                <a href="#" class="nav-item" data-page="comparison">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 3v18h18"/>
+                        <path d="M7 12l4-4 4 4 5-5"/>
+                    </svg>
+                    <span>Comparison</span>
+                </a>
                 
-                <div>
-                    <label style="display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500;">Period</label>
-                    <select id="targetPeriod" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; background: white; cursor: pointer; outline: none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
-                        <option value="yearly">Yearly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
+                <a href="#" class="nav-item" data-page="targets">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="9"/>
+                        <circle cx="12" cy="12" r="6"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span>Targets</span>
+                </a>
                 
-                <div style="display: flex; align-items: flex-end;">
-                    <button onclick="saveTargets()" style="width: 100%; padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">Save Targets</button>
-                </div>
-            </div>
+                <a href="#" class="nav-item" data-page="reports">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 11H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1Z"/>
+                        <path d="M20 11h-5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1Z"/>
+                    </svg>
+                    <span>Reports</span>
+                </a>
+            </nav>
             
-            <!-- Progress Bars -->
-            <div style="margin-top: 32px;">
-                <div style="margin-bottom: 24px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #475569; font-size: 14px; font-weight: 500;">Sales Target Progress</span>
-                        <span style="color: #3b82f6; font-size: 14px; font-weight: 600;" id="salesProgressText">0%</span>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="avatar.jpg" alt="User" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23667eea\'/%3E%3Ctext x=\'50\' y=\'55\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' font-family=\'Arial\'%3EU%3C/text%3E%3C/svg%3E'">
                     </div>
-                    <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 8px; overflow: hidden;">
-                        <div id="salesProgressBar" style="height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 8px; transition: width 1s ease; width: 0%;"></div>
-                    </div>
-                </div>
-                
-                <div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #475569; font-size: 14px; font-weight: 500;">Customer Growth Progress</span>
-                        <span style="color: #8b5cf6; font-size: 14px; font-weight: 600;" id="customerProgressText">0%</span>
-                    </div>
-                    <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 8px; overflow: hidden;">
-                        <div id="customerProgressBar" style="height: 100%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); border-radius: 8px; transition: width 1s ease; width: 0%;"></div>
+                    <div class="user-info">
+                        <div class="user-name">User Name</div>
+                        <div class="user-role">Administrator</div>
                     </div>
                 </div>
             </div>
-        </div>
+        </aside>
         
-        <!-- Chart Section -->
-        <div style="background: white; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="margin: 0 0 24px 0; color: #1e293b; font-size: 20px; font-weight: 600;">Monthly Trends</h2>
-            <div style="height: 300px;">
-                <canvas id="trendChart"></canvas>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                    </button>
+                    <h1 class="page-title">Performance Analytics</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="date-range-selector">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <select id="yearSelector" class="year-select">
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    
+                    <button class="refresh-btn" id="refreshData">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content" id="dashboardContent">
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card" data-metric="sales">
+                        <div class="kpi-header">
+                            <div class="kpi-icon sales">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend positive" id="salesTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M7 17l5-5 5 5M12 12V3"/>
+                                </svg>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Total Revenue</div>
+                            <div class="kpi-value" id="totalRevenue">₱0</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">vs last year:</span>
+                                <span class="comparison-value" id="revenueComparison">₱0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill sales-progress" id="salesProgress"></div>
+                            </div>
+                            <div class="progress-label">
+                                <span>Target Progress</span>
+                                <span id="salesProgressText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card" data-metric="customers">
+                        <div class="kpi-header">
+                            <div class="kpi-icon customers">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend positive" id="customersTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M7 17l5-5 5 5M12 12V3"/>
+                                </svg>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Total Customers</div>
+                            <div class="kpi-value" id="totalCustomers">0</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">New customers:</span>
+                                <span class="comparison-value" id="newCustomers">0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill customers-progress" id="customersProgress"></div>
+                            </div>
+                            <div class="progress-label">
+                                <span>Target Progress</span>
+                                <span id="customersProgressText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card" data-metric="transactions">
+                        <div class="kpi-header">
+                            <div class="kpi-icon transactions">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend neutral" id="transactionsTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Total Transactions</div>
+                            <div class="kpi-value" id="totalTransactions">0</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">Avg value:</span>
+                                <span class="comparison-value" id="avgTransaction">₱0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="mini-chart" id="transactionsMiniChart"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card" data-metric="growth">
+                        <div class="kpi-header">
+                            <div class="kpi-icon growth">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend positive" id="growthTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M7 17l5-5 5 5M12 12V3"/>
+                                </svg>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Growth Rate</div>
+                            <div class="kpi-value" id="growthRate">0%</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">YoY Growth:</span>
+                                <span class="comparison-value" id="yoyGrowth">0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="growth-indicator">
+                                <div class="indicator-bar">
+                                    <div class="indicator-fill" id="growthIndicator"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Revenue Trend</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-view="monthly">Monthly</button>
+                                <button class="chart-btn" data-view="quarterly">Quarterly</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card medium">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Customer Analysis</h3>
+                            <button class="chart-options">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="1"/>
+                                    <circle cx="12" cy="5" r="1"/>
+                                    <circle cx="12" cy="19" r="1"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="customerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comparison Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Year-over-Year Comparison</h3>
+                        <button class="export-btn" id="exportData">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Export
+                        </button>
+                    </div>
+                    <div class="table-body">
+                        <table class="comparison-table" id="comparisonTable">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th class="text-right">Previous Year</th>
+                                    <th class="text-right">Current Year</th>
+                                    <th class="text-right">Change</th>
+                                    <th class="text-right">Growth %</th>
+                                    <th class="text-center">Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonTableBody">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Target Setting Section -->
+                <div class="targets-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Performance Targets</h3>
+                    </div>
+                    
+                    <div class="targets-grid">
+                        <div class="target-card">
+                            <label class="target-label">Revenue Target</label>
+                            <div class="target-input-group">
+                                <span class="currency-symbol">₱</span>
+                                <input type="number" class="target-input" id="revenueTarget" placeholder="0">
+                                <button class="save-target-btn" data-target="sales">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="target-card">
+                            <label class="target-label">Customer Target</label>
+                            <div class="target-input-group">
+                                <input type="number" class="target-input" id="customerTarget" placeholder="0">
+                                <button class="save-target-btn" data-target="customers">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="target-card">
+                            <label class="target-label">Growth Target (%)</label>
+                            <div class="target-input-group">
+                                <input type="number" class="target-input" id="growthTarget" placeholder="0">
+                                <span class="percent-symbol">%</span>
+                                <button class="save-target-btn" data-target="growth_rate">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
+        </main>
     </div>
-</div>
-
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+        </div>
+        <div class="toast-message" id="toastMessage">Success!</div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <script src="performance.js"></script>
 </div>
 
 
