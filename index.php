@@ -2362,7 +2362,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
     
     <script src="performance.js"></script>
-
+    <link rel = "stylesheet" href = "performance.css">
 </div>
 
 
