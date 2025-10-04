@@ -3,9 +3,9 @@
 
 // --- DB credentials ---
 $db_host = 'localhost';
-$db_name = 'churnguard';
-$db_user = 'root';
-$db_pass = '';
+$db_name = 'u393812660_churnguard';
+$db_user = 'u393812660_churnguard';
+$db_pass = '102202Brian_';
 
 // --- App / headers ---
 date_default_timezone_set('Asia/Manila');
