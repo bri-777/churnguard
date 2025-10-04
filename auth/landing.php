@@ -2068,7 +2068,7 @@
     <p class="fade-in"></p>
    
 <div class="buttons fade-in">
-  <a href="signup.php" class="button primary">
+  <a href="/auth/signup.php" class="button primary">
     <span class="button-text">Get Started</span>
     <span class="button-icon">→</span>
   </a>
