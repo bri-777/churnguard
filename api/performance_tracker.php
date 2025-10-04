@@ -2,171 +2,269 @@
 // api/performance_tracker.php
 declare(strict_types=1);
 
-require __DIR__ . '/_bootstrap.php';
-$uid = require_login();
+// Database configuration
+$db_host = 'localhost';
+$db_name = 'u393812660_churnguard';
+$db_user = 'u393812660_churnguard';
+$db_pass = '102202Brian_';
 
-function j_ok(array $d = []) { json_ok($d); }
-function j_err(string $m, int $c = 400, array $extra = []) { json_error($m, $c, $extra); }
+// Application settings
+date_default_timezone_set('Asia/Manila');
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type');
 
+// Start session and check authentication
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Authentication required']);
+    exit;
+}
+
+$user_id = (int)$_SESSION['user_id'];
+
+try {
+    // Database connection
+    $pdo = new PDO(
+        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+        $db_user,
+        $db_pass,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ]
+    );
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Database connection failed']);
+    exit;
+}
+
+// Get action from request
 $action = $_GET['action'] ?? 'dashboard';
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($action === 'dashboard') {
+// Route handling
+switch ($action) {
+    case 'dashboard':
+        getDashboardData($pdo, $user_id);
+        break;
+        
+    case 'comparison':
+        getYearComparison($pdo, $user_id);
+        break;
+        
+    case 'monthly_trend':
+        getMonthlyTrend($pdo, $user_id);
+        break;
+        
+    case 'targets':
+        if ($method === 'GET') {
+            getTargets($pdo, $user_id);
+        } elseif ($method === 'POST') {
+            saveTarget($pdo, $user_id);
+        }
+        break;
+        
+    case 'save_monthly':
+        saveMonthlyData($pdo, $user_id);
+        break;
+        
+    case 'performance_summary':
+        getPerformanceSummary($pdo, $user_id);
+        break;
+        
+    default:
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
+}
+
+// Function to get dashboard data
+function getDashboardData($pdo, $user_id) {
     try {
         $current_year = date('Y');
         $previous_year = $current_year - 1;
         
-        // Get aggregated data for both years
-        $sql = "
+        // Get current year data
+        $stmt = $pdo->prepare("
             SELECT 
-                year,
-                SUM(total_sales) as total_sales,
-                SUM(total_customers) as total_customers,
-                SUM(new_customers) as new_customers,
-                SUM(returning_customers) as returning_customers,
-                AVG(average_transaction_value) as avg_transaction_value,
-                SUM(total_transactions) as total_transactions,
+                COALESCE(SUM(total_sales), 0) as total_sales,
+                COALESCE(SUM(total_customers), 0) as total_customers,
+                COALESCE(SUM(new_customers), 0) as new_customers,
+                COALESCE(SUM(returning_customers), 0) as returning_customers,
+                COALESCE(AVG(average_transaction_value), 0) as avg_transaction,
+                COALESCE(SUM(total_transactions), 0) as total_transactions,
                 COUNT(DISTINCT month) as months_recorded
             FROM yearly_performance 
+            WHERE user_id = ? AND year = ?
+        ");
+        
+        $stmt->execute([$user_id, $current_year]);
+        $current = $stmt->fetch();
+        
+        // Get previous year data
+        $stmt->execute([$user_id, $previous_year]);
+        $previous = $stmt->fetch();
+        
+        // Calculate growth metrics
+        $sales_growth = $previous['total_sales'] > 0 ? 
+            (($current['total_sales'] - $previous['total_sales']) / $previous['total_sales']) * 100 : 0;
+        
+        $customer_growth = $previous['total_customers'] > 0 ? 
+            (($current['total_customers'] - $previous['total_customers']) / $previous['total_customers']) * 100 : 0;
+        
+        // Get monthly breakdown
+        $stmt = $pdo->prepare("
+            SELECT 
+                month,
+                year,
+                total_sales,
+                total_customers,
+                total_transactions,
+                new_customers,
+                average_transaction_value
+            FROM yearly_performance
             WHERE user_id = ? AND year IN (?, ?)
-            GROUP BY year
-            ORDER BY year DESC
-        ";
+            ORDER BY year DESC, month ASC
+        ");
         
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$uid, $current_year, $previous_year]);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([$user_id, $current_year, $previous_year]);
+        $monthly = $stmt->fetchAll();
         
-        $current_data = null;
-        $previous_data = null;
+        // Get targets and calculate progress
+        $stmt = $pdo->prepare("
+            SELECT target_type, target_value
+            FROM performance_targets
+            WHERE user_id = ? AND year = ?
+        ");
         
-        foreach ($results as $row) {
-            if ($row['year'] == $current_year) {
-                $current_data = $row;
-            } else {
-                $previous_data = $row;
-            }
+        $stmt->execute([$user_id, $current_year]);
+        $targets = $stmt->fetchAll();
+        
+        $targets_map = [];
+        foreach ($targets as $target) {
+            $targets_map[$target['target_type']] = $target['target_value'];
         }
         
-        // Initialize with zeros if no data
-        if (!$current_data) {
-            $current_data = [
-                'year' => $current_year,
-                'total_sales' => 0,
-                'total_customers' => 0,
-                'new_customers' => 0,
-                'returning_customers' => 0,
-                'avg_transaction_value' => 0,
-                'total_transactions' => 0,
-                'months_recorded' => 0
-            ];
-        }
+        // Calculate progress
+        $sales_progress = isset($targets_map['sales']) && $targets_map['sales'] > 0 ?
+            min(100, ($current['total_sales'] / $targets_map['sales']) * 100) : 0;
         
-        if (!$previous_data) {
-            $previous_data = [
-                'year' => $previous_year,
-                'total_sales' => 0,
-                'total_customers' => 0,
-                'new_customers' => 0,
-                'returning_customers' => 0,
-                'avg_transaction_value' => 0,
-                'total_transactions' => 0,
-                'months_recorded' => 0
-            ];
-        }
+        $customer_progress = isset($targets_map['customers']) && $targets_map['customers'] > 0 ?
+            min(100, ($current['total_customers'] / $targets_map['customers']) * 100) : 0;
         
-        // Calculate growth percentages
-        $sales_growth = $previous_data['total_sales'] > 0 ? 
-            (($current_data['total_sales'] - $previous_data['total_sales']) / $previous_data['total_sales']) * 100 : 0;
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'current_year' => $current,
+                'previous_year' => $previous,
+                'growth' => [
+                    'sales' => round($sales_growth, 2),
+                    'customers' => round($customer_growth, 2)
+                ],
+                'monthly' => $monthly,
+                'targets' => $targets_map,
+                'progress' => [
+                    'sales' => round($sales_progress, 2),
+                    'customers' => round($customer_progress, 2)
+                ]
+            ]
+        ]);
         
-        $customer_growth = $previous_data['total_customers'] > 0 ? 
-            (($current_data['total_customers'] - $previous_data['total_customers']) / $previous_data['total_customers']) * 100 : 0;
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to load dashboard data']);
+    }
+}
+
+// Function to get year-over-year comparison
+function getYearComparison($pdo, $user_id) {
+    try {
+        $current_year = date('Y');
+        $previous_year = $current_year - 1;
         
-        // Get monthly data for charts
-        $monthly_sql = "
-            SELECT month, year, total_sales, total_customers, total_transactions
+        $stmt = $pdo->prepare("
+            SELECT 
+                year,
+                month,
+                total_sales,
+                total_customers,
+                new_customers,
+                returning_customers,
+                average_transaction_value,
+                total_transactions
             FROM yearly_performance
             WHERE user_id = ? AND year IN (?, ?)
             ORDER BY year, month
-        ";
+        ");
         
-        $monthly_stmt = $pdo->prepare($monthly_sql);
-        $monthly_stmt->execute([$uid, $current_year, $previous_year]);
-        $monthly_data = $monthly_stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([$user_id, $current_year, $previous_year]);
+        $data = $stmt->fetchAll();
         
-        // Get targets
-        $targets_sql = "
-            SELECT target_type, target_value, target_period
-            FROM performance_targets
-            WHERE user_id = ? AND year = ?
-        ";
-        
-        $targets_stmt = $pdo->prepare($targets_sql);
-        $targets_stmt->execute([$uid, $current_year]);
-        $targets = $targets_stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        j_ok([
-            'current' => $current_data,
-            'previous' => $previous_data,
-            'growth' => [
-                'sales_percent' => round($sales_growth, 2),
-                'customer_percent' => round($customer_growth, 2),
-                'sales_amount' => $current_data['total_sales'] - $previous_data['total_sales'],
-                'customer_count' => $current_data['total_customers'] - $previous_data['total_customers']
-            ],
-            'monthly' => $monthly_data,
-            'targets' => $targets
+        echo json_encode([
+            'status' => 'success',
+            'data' => $data
         ]);
         
-    } catch (Throwable $e) {
-        j_err('Failed to load dashboard', 500, ['detail' => $e->getMessage()]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to load comparison data']);
     }
-    exit;
 }
 
-if ($action === 'save_target') {
+// Function to save target
+function saveTarget($pdo, $user_id) {
     try {
-        $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $input = json_decode(file_get_contents('php://input'), true);
         
         $year = $input['year'] ?? date('Y');
         $type = $input['type'] ?? '';
         $value = (float)($input['value'] ?? 0);
         $period = $input['period'] ?? 'yearly';
         
-        $sql = "
+        if (!in_array($type, ['sales', 'customers', 'growth_rate'])) {
+            throw new Exception('Invalid target type');
+        }
+        
+        $stmt = $pdo->prepare("
             INSERT INTO performance_targets 
                 (user_id, year, target_type, target_value, target_period)
             VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
                 target_value = VALUES(target_value),
                 updated_at = NOW()
-        ";
+        ");
         
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$uid, $year, $type, $value, $period]);
+        $stmt->execute([$user_id, $year, $type, $value, $period]);
         
-        j_ok(['saved' => true]);
+        echo json_encode(['status' => 'success', 'message' => 'Target saved successfully']);
         
-    } catch (Throwable $e) {
-        j_err('Failed to save target', 500, ['detail' => $e->getMessage()]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save target']);
     }
-    exit;
 }
 
-if ($action === 'save_monthly') {
+// Function to save monthly data
+function saveMonthlyData($pdo, $user_id) {
     try {
-        $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $input = json_decode(file_get_contents('php://input'), true);
         
         $year = $input['year'] ?? date('Y');
         $month = $input['month'] ?? date('n');
         $sales = (float)($input['sales'] ?? 0);
         $customers = (int)($input['customers'] ?? 0);
-        $new = (int)($input['new_customers'] ?? 0);
+        $new_customers = (int)($input['new_customers'] ?? 0);
         $transactions = (int)($input['transactions'] ?? 0);
         
         $avg_value = $transactions > 0 ? $sales / $transactions : 0;
-        $returning = max(0, $customers - $new);
+        $returning = max(0, $customers - $new_customers);
         
-        $sql = "
+        $stmt = $pdo->prepare("
             INSERT INTO yearly_performance 
                 (user_id, year, month, total_sales, total_customers, new_customers, 
                  returning_customers, average_transaction_value, total_transactions)
@@ -179,20 +277,95 @@ if ($action === 'save_monthly') {
                 average_transaction_value = VALUES(average_transaction_value),
                 total_transactions = VALUES(total_transactions),
                 updated_at = NOW()
-        ";
+        ");
         
-        $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            $uid, $year, $month, $sales, $customers, $new, 
-            $returning, $avg_value, $transactions
+            $user_id, $year, $month, $sales, $customers, 
+            $new_customers, $returning, $avg_value, $transactions
         ]);
         
-        j_ok(['saved' => true]);
+        echo json_encode(['status' => 'success', 'message' => 'Data saved successfully']);
         
-    } catch (Throwable $e) {
-        j_err('Failed to save monthly data', 500, ['detail' => $e->getMessage()]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save monthly data']);
     }
-    exit;
 }
 
-j_err('Unknown action', 400);
+// Function to get performance summary
+function getPerformanceSummary($pdo, $user_id) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT 
+                year,
+                COUNT(DISTINCT month) as months_recorded,
+                SUM(total_sales) as annual_sales,
+                SUM(total_customers) as annual_customers,
+                AVG(average_transaction_value) as avg_transaction_value
+            FROM yearly_performance
+            WHERE user_id = ?
+            GROUP BY year
+            ORDER BY year DESC
+            LIMIT 5
+        ");
+        
+        $stmt->execute([$user_id]);
+        $data = $stmt->fetchAll();
+        
+        echo json_encode(['status' => 'success', 'data' => $data]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to load summary']);
+    }
+}
+
+// Function to get targets
+function getTargets($pdo, $user_id) {
+    try {
+        $year = $_GET['year'] ?? date('Y');
+        
+        $stmt = $pdo->prepare("
+            SELECT target_type, target_value, target_period
+            FROM performance_targets
+            WHERE user_id = ? AND year = ?
+        ");
+        
+        $stmt->execute([$user_id, $year]);
+        $targets = $stmt->fetchAll();
+        
+        echo json_encode(['status' => 'success', 'data' => $targets]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to load targets']);
+    }
+}
+
+// Function to get monthly trend
+function getMonthlyTrend($pdo, $user_id) {
+    try {
+        $year = $_GET['year'] ?? date('Y');
+        
+        $stmt = $pdo->prepare("
+            SELECT 
+                month,
+                total_sales,
+                total_customers,
+                total_transactions
+            FROM yearly_performance
+            WHERE user_id = ? AND year = ?
+            ORDER BY month
+        ");
+        
+        $stmt->execute([$user_id, $year]);
+        $data = $stmt->fetchAll();
+        
+        echo json_encode(['status' => 'success', 'data' => $data]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to load monthly trend']);
+    }
+}
+?>
