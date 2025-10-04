@@ -1584,7 +1584,9 @@ function doLogout() {
  <script src="churn-report.js"></script>
   </div>
 
-  <!-- Print Styles -->
+</div>
+
+<!-- Print Styles -->
   <style>
     @media print {
       body * { visibility: hidden; }
@@ -1603,10 +1605,6 @@ function doLogout() {
   <!-- Required Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
-</div>
-  </div>
-
 
 <script>
 // ChurnGuard Dashboard — accurate Executive Summary, PH currency, hardened UI
@@ -2438,7 +2436,8 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     
     <script src="performance.js"></script>
 </div>
-</div>
+
+
 <style>
   /* Dashboard Wrapper */
 .dashboard-wrapper {
