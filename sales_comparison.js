@@ -1,4 +1,4 @@
-// Sales Comparison & Target Tracking - Tables Version
+// Sales Comparison & Target Tracking - Complete Improved Version
 'use strict';
 
 // ==================== CONFIGURATION ====================
@@ -24,6 +24,11 @@ const CONFIG = {
     UI: {
         NOTIFICATION_DURATION: 4000,
         DEBOUNCE_DELAY: 300
+    },
+    VALIDATION: {
+        MAX_TARGET_NAME_LENGTH: 100,
+        MAX_TARGET_VALUE: 999999999,
+        MIN_TARGET_VALUE: 0.01
     }
 };
 
@@ -44,6 +49,15 @@ const AppState = {
         if (this.loadingCounter === 0) {
             UIManager.updateLoadingState(false);
         }
+    },
+
+    reset() {
+        this.activeRequests.forEach(controller => {
+            try { controller.abort(); } catch (e) {}
+        });
+        this.activeRequests.clear();
+        this.loadingCounter = 0;
+        this.isInitialized = false;
     }
 };
 
@@ -51,7 +65,9 @@ const AppState = {
 const Utils = {
     formatCurrency(value) {
         if (value === null || value === undefined || isNaN(value)) return '₱0.00';
-        return '₱' + parseFloat(value).toLocaleString('en-PH', { 
+        const num = parseFloat(value);
+        if (!isFinite(num)) return '₱0.00';
+        return '₱' + num.toLocaleString('en-PH', { 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         });
@@ -59,7 +75,17 @@ const Utils = {
 
     formatNumber(value) {
         if (value === null || value === undefined || isNaN(value)) return '0';
-        return parseInt(value).toLocaleString('en-PH');
+        const num = parseInt(value);
+        if (!isFinite(num)) return '0';
+        return num.toLocaleString('en-PH');
+    },
+
+    formatPercentage(value) {
+        if (value === null || value === undefined || isNaN(value)) return '0.0%';
+        const num = parseFloat(value);
+        if (!isFinite(num)) return '0.0%';
+        const capped = Math.min(Math.max(num, -999.9), 999.9);
+        return capped.toFixed(1) + '%';
     },
 
     formatDate(dateString) {
@@ -73,12 +99,14 @@ const Utils = {
                 year: 'numeric' 
             });
         } catch (error) {
+            console.error('Date formatting error:', error);
             return 'Invalid Date';
         }
     },
 
     getISODate(date) {
         if (!(date instanceof Date)) date = new Date(date);
+        if (isNaN(date.getTime())) return '';
         return date.toISOString().split('T')[0];
     },
 
@@ -89,7 +117,7 @@ const Utils = {
             'transactions': 'Transactions',
             'avg_transaction': 'Avg Transaction Value'
         };
-        return types[type] || type;
+        return types[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
     escapeHtml(text) {
@@ -114,6 +142,37 @@ const Utils = {
     calculatePercentageChange(current, previous) {
         if (!previous || previous === 0) return 0;
         return ((current - previous) / previous) * 100;
+    },
+
+    validateDateRange(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return { valid: false, error: 'Invalid date format' };
+        }
+        
+        if (end < start) {
+            return { valid: false, error: 'End date must be after start date' };
+        }
+        
+        return { valid: true };
+    },
+
+    isValidDate(dateString) {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateString)) return false;
+        const date = new Date(dateString);
+        return !isNaN(date.getTime());
+    },
+
+    sanitizeInput(input, maxLength = null) {
+        if (typeof input !== 'string') return '';
+        let sanitized = input.trim();
+        if (maxLength && sanitized.length > maxLength) {
+            sanitized = sanitized.substring(0, maxLength);
+        }
+        return sanitized;
     }
 };
 
@@ -207,14 +266,23 @@ const UIManager = {
         const element = Utils.$(`#${elementId}`);
         if (!element) return;
 
-        const sign = value >= 0 ? '+' : '';
-        element.textContent = sign + value.toFixed(1) + '%';
-        element.className = 'kpi-change ' + (value >= 0 ? 'positive' : 'negative');
+        const numValue = parseFloat(value);
+        if (isNaN(numValue) || !isFinite(numValue)) {
+            element.textContent = '0.0%';
+            element.className = 'kpi-change';
+            return;
+        }
+
+        const sign = numValue >= 0 ? '+' : '';
+        element.textContent = sign + Utils.formatPercentage(numValue).replace('%', '') + '%';
+        element.className = 'kpi-change ' + (numValue >= 0 ? 'positive' : 'negative');
     },
 
     updateTextContent(elementId, value) {
         const element = Utils.$(`#${elementId}`);
-        if (element) element.textContent = value;
+        if (element) {
+            element.textContent = value || '';
+        }
     }
 };
 
@@ -239,17 +307,28 @@ const APIService = {
             AppState.activeRequests.delete(url);
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            return await response.json();
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error || 'API error occurred');
+            }
+
+            return data;
+
         } catch (error) {
             clearTimeout(timeout);
             AppState.activeRequests.delete(url);
 
-            if (error.name === 'AbortError') return null;
+            if (error.name === 'AbortError') {
+                console.log('Request cancelled:', url);
+                return null;
+            }
 
-            if (retries > 0 && error.message.includes('Failed to fetch')) {
+            if (retries > 0 && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+                console.log(`Retrying request (${retries} attempts left):`, url);
                 await new Promise(resolve => setTimeout(resolve, CONFIG.API.RETRY_DELAY));
                 return this.fetchWithRetry(url, options, retries - 1);
             }
@@ -311,8 +390,8 @@ const KPIManager = {
         try {
             const data = await APIService.get(CONFIG.API.ENDPOINTS.kpiSummary);
 
-            if (!data || data.error) {
-                throw new Error(data?.error || 'Failed to load KPI');
+            if (!data) {
+                throw new Error('No data received from server');
             }
 
             UIManager.updateTextContent('todaySales', Utils.formatCurrency(data.today_sales || 0));
@@ -324,7 +403,8 @@ const KPIManager = {
             UIManager.updateTextContent('todayTransactions', Utils.formatNumber(data.today_transactions || 0));
             UIManager.updateChangeIndicator('transactionsChange', data.transactions_change || 0);
 
-            UIManager.updateTextContent('targetAchievement', (data.target_achievement || 0).toFixed(1) + '%');
+            const achievement = parseFloat(data.target_achievement || 0);
+            UIManager.updateTextContent('targetAchievement', Utils.formatPercentage(achievement));
             UIManager.updateTextContent('targetStatus', data.target_status || 'No active target');
 
         } catch (error) {
@@ -346,13 +426,18 @@ const ComparisonManager = {
             return;
         }
 
+        if (!Utils.isValidDate(currentDate) || !Utils.isValidDate(compareDate)) {
+            UIManager.showNotification('Invalid date format', 'warning');
+            return;
+        }
+
         AppState.incrementLoading();
         try {
-            const url = `${CONFIG.API.ENDPOINTS.compare}&currentDate=${currentDate}&compareDate=${compareDate}`;
+            const url = `${CONFIG.API.ENDPOINTS.compare}&currentDate=${encodeURIComponent(currentDate)}&compareDate=${encodeURIComponent(compareDate)}`;
             const data = await APIService.get(url);
 
-            if (!data || data.error) {
-                throw new Error(data?.error || 'Comparison failed');
+            if (!data) {
+                throw new Error('No comparison data received');
             }
 
             this.displayResults(data.comparison || []);
@@ -360,7 +445,7 @@ const ComparisonManager = {
 
         } catch (error) {
             console.error('Comparison error:', error);
-            UIManager.showNotification('Failed to load comparison', 'error');
+            UIManager.showNotification(error.message || 'Failed to load comparison', 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -392,13 +477,17 @@ const ComparisonManager = {
             const isCurrency = item.metric.includes('Sales') || item.metric.includes('Value');
             const formatValue = isCurrency ? Utils.formatCurrency : Utils.formatNumber;
 
+            const percentageValue = parseFloat(item.percentage);
+            const percentageColor = percentageValue >= 0 ? '#10b981' : '#ef4444';
+            const percentageText = percentageValue >= 0 ? '+' : '';
+
             row.innerHTML = `
                 <td><strong>${Utils.escapeHtml(item.metric)}</strong></td>
                 <td>${formatValue(item.current)}</td>
                 <td>${formatValue(item.compare)}</td>
                 <td>${formatValue(Math.abs(item.difference))}</td>
-                <td style="font-weight:600;color:${item.percentage >= 0 ? '#10b981' : '#ef4444'}">
-                    ${item.percentage >= 0 ? '+' : ''}${item.percentage.toFixed(2)}%
+                <td style="font-weight:600;color:${percentageColor}">
+                    ${percentageText}${percentageValue.toFixed(2)}%
                 </td>
                 <td>
                     <span class="trend-indicator ${trendClass}">${trendIcon}</span>
@@ -418,17 +507,17 @@ const TargetManager = {
         AppState.incrementLoading();
         
         try {
-            const url = `${CONFIG.API.ENDPOINTS.targets}&filter=${filter}`;
+            const url = `${CONFIG.API.ENDPOINTS.targets}&filter=${encodeURIComponent(filter)}`;
             const data = await APIService.get(url);
 
-            if (!data || data.error) {
-                throw new Error(data?.error || 'Failed to load targets');
+            if (!data) {
+                throw new Error('No targets data received');
             }
 
             this.displayTargets(data.targets || []);
         } catch (error) {
             console.error('Targets error:', error);
-            UIManager.showNotification('Failed to load targets', 'error');
+            UIManager.showNotification(error.message || 'Failed to load targets', 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -463,7 +552,7 @@ const TargetManager = {
 
     createTargetRow(target) {
         const row = document.createElement('tr');
-        const progress = Math.min(Math.max(target.progress || 0, 0), 100);
+        const progress = Math.min(Math.max(parseFloat(target.progress) || 0, 0), 999.9);
         const progressClass = progress >= 100 ? 'progress-achieved' :
                             progress >= 80 ? 'progress-near' : 'progress-below';
 
@@ -485,9 +574,9 @@ const TargetManager = {
             <td>
                 <div style="display:flex;align-items:center;gap:10px">
                     <div class="progress-container" style="flex:1">
-                        <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+                        <div class="progress-bar ${progressClass}" style="width:${Math.min(progress, 100)}%"></div>
                     </div>
-                    <span style="font-weight:600;min-width:50px;font-size:13px">${progress.toFixed(1)}%</span>
+                    <span style="font-weight:600;min-width:60px;font-size:13px">${progress.toFixed(1)}%</span>
                 </div>
             </td>
             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
@@ -529,21 +618,49 @@ const TargetManager = {
         event.preventDefault();
 
         const formData = {
-            name: Utils.$('#targetName')?.value,
+            name: Utils.sanitizeInput(Utils.$('#targetName')?.value, CONFIG.VALIDATION.MAX_TARGET_NAME_LENGTH),
             type: Utils.$('#targetType')?.value,
             value: parseFloat(Utils.$('#targetValue')?.value),
             start_date: Utils.$('#targetStartDate')?.value,
             end_date: Utils.$('#targetEndDate')?.value,
-            store: Utils.$('#targetStore')?.value || ''
+            store: Utils.sanitizeInput(Utils.$('#targetStore')?.value, 100) || ''
         };
 
-        if (!formData.name || !formData.type || !formData.value || !formData.start_date || !formData.end_date) {
-            UIManager.showNotification('Please fill in all required fields', 'warning');
+        // Enhanced validation
+        if (!formData.name) {
+            UIManager.showNotification('Please enter a target name', 'warning');
             return;
         }
 
-        if (isNaN(formData.value) || formData.value <= 0) {
-            UIManager.showNotification('Target value must be greater than 0', 'warning');
+        if (formData.name.length > CONFIG.VALIDATION.MAX_TARGET_NAME_LENGTH) {
+            UIManager.showNotification(`Target name too long (max ${CONFIG.VALIDATION.MAX_TARGET_NAME_LENGTH} characters)`, 'warning');
+            return;
+        }
+
+        const validTypes = ['sales', 'customers', 'transactions', 'avg_transaction'];
+        if (!validTypes.includes(formData.type)) {
+            UIManager.showNotification('Please select a valid target type', 'warning');
+            return;
+        }
+
+        if (isNaN(formData.value) || formData.value < CONFIG.VALIDATION.MIN_TARGET_VALUE) {
+            UIManager.showNotification(`Target value must be at least ${CONFIG.VALIDATION.MIN_TARGET_VALUE}`, 'warning');
+            return;
+        }
+
+        if (formData.value > CONFIG.VALIDATION.MAX_TARGET_VALUE) {
+            UIManager.showNotification('Target value is too large', 'warning');
+            return;
+        }
+
+        if (!formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please select both start and end dates', 'warning');
+            return;
+        }
+
+        const dateValidation = Utils.validateDateRange(formData.start_date, formData.end_date);
+        if (!dateValidation.valid) {
+            UIManager.showNotification(dateValidation.error, 'warning');
             return;
         }
 
@@ -552,18 +669,20 @@ const TargetManager = {
         try {
             const data = await APIService.post(CONFIG.API.ENDPOINTS.saveTarget, formData);
 
-            if (!data || data.error) {
-                throw new Error(data?.error || 'Failed to save');
+            if (!data) {
+                throw new Error('No response from server');
             }
 
             this.closeModal();
-            await this.loadTargets(AppState.currentFilter);
-            await TableLoaders.loadTargetProgressTable();
-            UIManager.showNotification('Target saved successfully!', 'success');
+            await Promise.all([
+                this.loadTargets(AppState.currentFilter),
+                TableLoaders.loadTargetProgressTable()
+            ]);
+            UIManager.showNotification(data.message || 'Target saved successfully!', 'success');
 
         } catch (error) {
             console.error('Save error:', error);
-            UIManager.showNotification('Failed to save target', 'error');
+            UIManager.showNotification(error.message || 'Failed to save target', 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -572,23 +691,30 @@ const TargetManager = {
     async deleteTarget(id) {
         if (!confirm('Are you sure you want to delete this target?')) return;
 
+        if (!id || id <= 0) {
+            UIManager.showNotification('Invalid target ID', 'error');
+            return;
+        }
+
         AppState.incrementLoading();
 
         try {
-            const url = `${CONFIG.API.ENDPOINTS.deleteTarget}&id=${id}`;
+            const url = `${CONFIG.API.ENDPOINTS.deleteTarget}&id=${encodeURIComponent(id)}`;
             const data = await APIService.get(url);
 
-            if (!data || data.error) {
-                throw new Error(data?.error || 'Failed to delete');
+            if (!data) {
+                throw new Error('No response from server');
             }
 
-            await this.loadTargets(AppState.currentFilter);
-            await TableLoaders.loadTargetProgressTable();
-            UIManager.showNotification('Target deleted successfully!', 'success');
+            await Promise.all([
+                this.loadTargets(AppState.currentFilter),
+                TableLoaders.loadTargetProgressTable()
+            ]);
+            UIManager.showNotification(data.message || 'Target deleted successfully!', 'success');
 
         } catch (error) {
             console.error('Delete error:', error);
-            UIManager.showNotification('Failed to delete target', 'error');
+            UIManager.showNotification(error.message || 'Failed to delete target', 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -604,14 +730,14 @@ const TargetManager = {
     }
 };
 
-// ==================== TABLE LOADERS (Replacing Charts) ====================
+// ==================== TABLE LOADERS ====================
 const TableLoaders = {
     async loadSalesTrendTable() {
         try {
             const url = `${CONFIG.API.ENDPOINTS.trendData}&days=30`;
             const data = await APIService.get(url);
 
-            if (!data || data.error || !data.trend_data || data.trend_data.length === 0) {
+            if (!data || !data.trend_data || data.trend_data.length === 0) {
                 console.log('No trend data available');
                 this.displayEmptyTrendTable();
                 return;
@@ -637,7 +763,6 @@ const TableLoaders = {
         }
 
         const fragment = document.createDocumentFragment();
-
         const sortedData = [...trendData].sort((a, b) => new Date(b.date) - new Date(a.date));
 
         sortedData.forEach((item, index) => {
@@ -691,7 +816,7 @@ const TableLoaders = {
             const url = `${CONFIG.API.ENDPOINTS.targets}&filter=active`;
             const data = await APIService.get(url);
 
-            if (!data || data.error || !data.targets || data.targets.length === 0) {
+            if (!data || !data.targets || data.targets.length === 0) {
                 console.log('No active targets');
                 this.displayEmptyTargetTable();
                 return;
@@ -720,7 +845,7 @@ const TableLoaders = {
 
         targets.forEach(target => {
             const row = document.createElement('tr');
-            const progress = Math.min(Math.max(parseFloat(target.progress) || 0, 0), 100);
+            const progress = Math.min(Math.max(parseFloat(target.progress) || 0, 0), 999.9);
             const progressClass = progress >= 100 ? 'progress-achieved' :
                                 progress >= 80 ? 'progress-near' : 'progress-below';
 
@@ -735,9 +860,9 @@ const TableLoaders = {
                 <td>
                     <div style="display:flex;align-items:center;gap:10px">
                         <div class="progress-container" style="flex:1">
-                            <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+                            <div class="progress-bar ${progressClass}" style="width:${Math.min(progress, 100)}%"></div>
                         </div>
-                        <span style="font-weight:600;min-width:50px;font-size:13px">${progress.toFixed(1)}%</span>
+                        <span style="font-weight:600;min-width:60px;font-size:13px">${progress.toFixed(1)}%</span>
                     </div>
                 </td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
@@ -766,32 +891,45 @@ const TableLoaders = {
 // ==================== APPLICATION ====================
 const App = {
     async init() {
-        if (AppState.isInitialized) return;
+        if (AppState.isInitialized) {
+            console.warn('App already initialized');
+            return;
+        }
 
         console.log('Initializing Sales Tracking App...');
 
-        this.injectStyles();
-        DateManager.setDefaultDates();
-        
-        await this.loadAllData();
-        this.setupEventListeners();
+        try {
+            this.injectStyles();
+            DateManager.setDefaultDates();
+            
+            await this.loadAllData();
+            this.setupEventListeners();
 
-        AppState.isInitialized = true;
-        console.log('✓ App initialized successfully');
+            AppState.isInitialized = true;
+            console.log('✓ App initialized successfully');
+        } catch (error) {
+            console.error('App initialization error:', error);
+            UIManager.showNotification('Failed to initialize application', 'error');
+        }
     },
 
     async loadAllData() {
-        await Promise.allSettled([
+        const results = await Promise.allSettled([
             KPIManager.loadSummary(),
             TargetManager.loadTargets(),
             TableLoaders.loadSalesTrendTable(),
             TableLoaders.loadTargetProgressTable()
         ]);
+
+        const failures = results.filter(r => r.status === 'rejected');
+        if (failures.length > 0) {
+            console.error('Some data failed to load:', failures);
+        }
     },
 
     setupEventListeners() {
         window.addEventListener('beforeunload', () => {
-            AppState.activeRequests.forEach(controller => controller.abort());
+            AppState.reset();
         });
 
         document.addEventListener('visibilitychange', () => {
@@ -799,19 +937,35 @@ const App = {
                 this.refreshData();
             }
         });
+
+        window.addEventListener('online', () => {
+            UIManager.showNotification('Connection restored', 'success');
+            this.refreshData();
+        });
+
+        window.addEventListener('offline', () => {
+            UIManager.showNotification('Connection lost', 'warning');
+        });
     },
 
     refreshData: Utils.debounce(async function() {
         if (!AppState.isInitialized) return;
         
         AppState.incrementLoading();
-        await App.loadAllData();
-        AppState.decrementLoading();
-        UIManager.showNotification('Data refreshed successfully', 'success');
+        try {
+            await App.loadAllData();
+            UIManager.showNotification('Data refreshed successfully', 'success');
+        } catch (error) {
+            console.error('Refresh error:', error);
+            UIManager.showNotification('Failed to refresh data', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
     }, 500),
 
     exportReport() {
         UIManager.showNotification('Preparing report for export...', 'info');
+        // TODO: Implement export functionality
     },
 
     injectStyles() {
@@ -846,9 +1000,24 @@ window.saveTarget = (e) => TargetManager.saveTarget(e);
 window.refreshData = () => App.refreshData();
 window.exportReport = () => App.exportReport();
 
-// ==================== INIT ====================
+// ==================== INITIALIZATION ====================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => App.init());
 } else {
     App.init();
 }
+
+// ==================== ERROR HANDLER ====================
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    if (AppState.isInitialized) {
+        UIManager.showNotification('An error occurred. Please refresh the page.', 'error');
+    }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    if (AppState.isInitialized) {
+        UIManager.showNotification('A network error occurred. Please try again.', 'error');
+    }
+});
