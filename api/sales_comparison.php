@@ -4,7 +4,7 @@ declare(strict_types=1);
 // ==================== CONFIGURATION ====================
 date_default_timezone_set('Asia/Manila');
 error_reporting(E_ALL);
-ini_set('display_errors', '0'); // FIXED: Disabled for production
+ini_set('display_errors', '1'); // Set to '0' in production
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
@@ -18,14 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// FIXED: Move credentials to config file (recommended)
-// For now, kept here but should be in separate config.php
-const DB_CONFIG = [
-    'host' => 'localhost',
-    'name' => 'u393812660_churnguard',
-    'user' => 'u393812660_churnguard',
-    'pass' => '102202Brian_'
-];
+// ==================== INCLUDE CONFIG ====================
+// IMPORTANT: Adjust the path to your config.php file
+require_once __DIR__ . '/../connection/config.php';
 
 // ==================== AUTHENTICATION ====================
 session_start();
@@ -35,33 +30,21 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode([
         'status' => 'error',
         'error' => 'unauthorized',
-        'message' => 'Authentication required'
+        'message' => 'Authentication required. Please log in first.'
     ]);
     exit;
 }
 
 $userId = (int)$_SESSION['user_id'];
 
-// ==================== DATABASE CONNECTION ====================
-try {
-    $pdo = new PDO(
-        "mysql:host={$DB_CONFIG['host']};dbname={$DB_CONFIG['name']};charset=utf8mb4",
-        $DB_CONFIG['user'],
-        $DB_CONFIG['pass'],
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
-        ]
-    );
-} catch (PDOException $e) {
-    error_log("Database connection failed: " . $e->getMessage());
+// Note: $pdo is already created in config.php, so we don't need to recreate it
+// Just verify it exists
+if (!isset($pdo) || !($pdo instanceof PDO)) {
     http_response_code(500);
     echo json_encode([
         'status' => 'error',
         'error' => 'database_error',
-        'message' => 'Database connection failed'
+        'message' => 'Database connection not available'
     ]);
     exit;
 }
