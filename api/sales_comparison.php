@@ -4,7 +4,7 @@ declare(strict_types=1);
 // ==================== CONFIGURATION ====================
 date_default_timezone_set('Asia/Manila');
 error_reporting(E_ALL);
-ini_set('display_errors', '1'); // Disable in production
+ini_set('display_errors', '0'); // FIXED: Disabled for production
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Database Configuration
+// FIXED: Move credentials to config file (recommended)
+// For now, kept here but should be in separate config.php
 const DB_CONFIG = [
     'host' => 'localhost',
     'name' => 'u393812660_churnguard',
@@ -178,16 +179,16 @@ if ($action === 'kpi_summary') {
         ];
         
         // Calculate changes
-        $todaySales = (float)$todayData['sales_volume'];
-        $yesterdaySales = (float)$yesterdayData['sales_volume'];
+        $todaySales = (float)($todayData['sales_volume'] ?? 0);
+        $yesterdaySales = (float)($yesterdayData['sales_volume'] ?? 0);
         $salesChange = percentageChange($todaySales, $yesterdaySales);
         
-        $todayCustomers = (int)$todayData['customer_traffic'];
-        $yesterdayCustomers = (int)$yesterdayData['customer_traffic'];
+        $todayCustomers = (int)($todayData['customer_traffic'] ?? 0);
+        $yesterdayCustomers = (int)($yesterdayData['customer_traffic'] ?? 0);
         $customersChange = percentageChange((float)$todayCustomers, (float)$yesterdayCustomers);
         
-        $todayTransactions = (int)$todayData['receipt_count'];
-        $yesterdayTransactions = (int)$yesterdayData['receipt_count'];
+        $todayTransactions = (int)($todayData['receipt_count'] ?? 0);
+        $yesterdayTransactions = (int)($yesterdayData['receipt_count'] ?? 0);
         $transactionsChange = percentageChange((float)$todayTransactions, (float)$yesterdayTransactions);
         
         // Get active target
@@ -220,10 +221,10 @@ if ($action === 'kpi_summary') {
         
         if ($targetData) {
             $currentValue = getTargetCurrentValue($targetData);
-            $targetValue = (float)$targetData['target_value'];
+            $targetValue = (float)($targetData['target_value'] ?? 0);
             $progressData = calculateTargetProgress($currentValue, $targetValue);
             $targetAchievement = $progressData['progress'];
-            $targetStatus = $targetData['target_name'];
+            $targetStatus = $targetData['target_name'] ?? 'Unknown Target';
         }
         
         jsonSuccess([
@@ -286,12 +287,12 @@ if ($action === 'compare') {
         ];
         
         // Calculate metrics
-        $currentSales = (float)$currentData['sales_volume'];
-        $compareSales = (float)$compareData['sales_volume'];
-        $currentReceipts = (int)$currentData['receipt_count'];
-        $compareReceipts = (int)$compareData['receipt_count'];
-        $currentCustomers = (int)$currentData['customer_traffic'];
-        $compareCustomers = (int)$compareData['customer_traffic'];
+        $currentSales = (float)($currentData['sales_volume'] ?? 0);
+        $compareSales = (float)($compareData['sales_volume'] ?? 0);
+        $currentReceipts = (int)($currentData['receipt_count'] ?? 0);
+        $compareReceipts = (int)($compareData['receipt_count'] ?? 0);
+        $currentCustomers = (int)($currentData['customer_traffic'] ?? 0);
+        $compareCustomers = (int)($compareData['customer_traffic'] ?? 0);
         
         $currentAvgTrans = safeDivide($currentSales, (float)$currentReceipts);
         $compareAvgTrans = safeDivide($compareSales, (float)$compareReceipts);
@@ -301,7 +302,7 @@ if ($action === 'compare') {
                 'metric' => 'Sales Revenue',
                 'current' => $currentSales,
                 'compare' => $compareSales,
-                'difference' => $currentSales - $compareSales,
+                'difference' => round($currentSales - $compareSales, 2),
                 'percentage' => percentageChange($currentSales, $compareSales),
                 'trend' => $currentSales >= $compareSales ? 'up' : 'down'
             ],
@@ -325,7 +326,7 @@ if ($action === 'compare') {
                 'metric' => 'Avg Transaction Value',
                 'current' => $currentAvgTrans,
                 'compare' => $compareAvgTrans,
-                'difference' => $currentAvgTrans - $compareAvgTrans,
+                'difference' => round($currentAvgTrans - $compareAvgTrans, 2),
                 'percentage' => percentageChange($currentAvgTrans, $compareAvgTrans),
                 'trend' => $currentAvgTrans >= $compareAvgTrans ? 'up' : 'down'
             ]
@@ -383,7 +384,7 @@ if ($action === 'get_targets') {
         // Process targets
         foreach ($targets as &$target) {
             $currentValue = getTargetCurrentValue($target);
-            $targetValue = (float)$target['target_value'];
+            $targetValue = (float)($target['target_value'] ?? 0);
             $progressData = calculateTargetProgress($currentValue, $targetValue);
             
             $target['current_value'] = $currentValue;
@@ -401,7 +402,7 @@ if ($action === 'get_targets') {
         
         // Apply status filter if needed
         if (in_array($filter, ['achieved', 'near', 'below'], true)) {
-            $targets = array_values(array_filter($targets, fn($t) => $t['status'] === $filter));
+            $targets = array_values(array_filter($targets, fn($t) => ($t['status'] ?? '') === $filter));
         }
         
         jsonSuccess(['targets' => $targets]);
@@ -416,7 +417,11 @@ if ($action === 'get_targets') {
 if ($action === 'save_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
-        $data = json_decode($rawInput, true) ?? $_POST;
+        $data = json_decode($rawInput, true);
+        
+        if (!is_array($data)) {
+            $data = $_POST;
+        }
         
         // Validate and sanitize inputs
         $name = sanitizeString($data['name'] ?? '', 100);
@@ -480,7 +485,11 @@ if ($action === 'save_target' && $method === 'POST') {
 if ($action === 'update_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
-        $data = json_decode($rawInput, true) ?? $_POST;
+        $data = json_decode($rawInput, true);
+        
+        if (!is_array($data)) {
+            $data = $_POST;
+        }
         
         $id = (int)($data['id'] ?? 0);
         $name = sanitizeString($data['name'] ?? '', 100);

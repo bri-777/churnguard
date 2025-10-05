@@ -35,6 +35,7 @@ const AppState = {
     activeRequests: new Map(),
     loadingCounter: 0,
     editingTargetId: null,
+    chartJsLoaded: false,
     
     incrementLoading() {
         this.loadingCounter++;
@@ -72,16 +73,22 @@ const Utils = {
 
     formatDate(dateString) {
         if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-PH', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
-        });
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'N/A';
+            return date.toLocaleDateString('en-PH', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        } catch (e) {
+            return 'N/A';
+        }
     },
 
     getISODate(date) {
         if (!(date instanceof Date)) date = new Date(date);
+        if (isNaN(date.getTime())) return null;
         return date.toISOString().split('T')[0];
     },
 
@@ -114,6 +121,24 @@ const Utils = {
 
     $$(selector) {
         return document.querySelectorAll(selector);
+    },
+
+    safeSetContent(selector, content) {
+        const el = this.$(selector);
+        if (el) {
+            el.textContent = content;
+            return true;
+        }
+        return false;
+    },
+
+    safeSetHTML(selector, html) {
+        const el = this.$(selector);
+        if (el) {
+            el.innerHTML = html;
+            return true;
+        }
+        return false;
     }
 };
 
@@ -148,8 +173,15 @@ const UIManager = {
             animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         `;
         
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+        
         notification.innerHTML = `
-            <span style="font-size: 20px;">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
+            <span style="font-size: 20px;">${icons[type] || icons.info}</span>
             <span>${Utils.escapeHtml(message)}</span>
         `;
         
@@ -208,15 +240,15 @@ const UIManager = {
         if (trendBadge && change !== undefined) {
             const isPositive = change >= 0;
             trendBadge.className = `kpi-trend-badge ${isPositive ? '' : 'down'}`;
-            trendBadge.querySelector('span').textContent = Utils.formatPercentage(Math.abs(change));
+            const spanEl = trendBadge.querySelector('span');
+            if (spanEl) {
+                spanEl.textContent = Utils.formatPercentage(Math.abs(change));
+            }
         }
     },
 
     updateDateTime() {
-        const dateEl = Utils.$('#currentDateTime');
-        if (dateEl) {
-            dateEl.textContent = Utils.formatDateTime();
-        }
+        Utils.safeSetContent('#currentDateTime', Utils.formatDateTime());
     }
 };
 
@@ -235,11 +267,15 @@ const APIService = {
         try {
             const response = await fetch(url.toString(), {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -262,12 +298,16 @@ const APIService = {
         try {
             const response = await fetch(url.toString(), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin',
                 body: JSON.stringify(body)
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -286,9 +326,24 @@ const APIService = {
 
 // ==================== CHART MANAGER ====================
 const ChartManager = {
+    checkChartJS() {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded');
+            UIManager.showNotification('Chart library not loaded. Please refresh the page.', 'error');
+            return false;
+        }
+        AppState.chartJsLoaded = true;
+        return true;
+    },
+
     createSalesTrendChart(data) {
+        if (!this.checkChartJS()) return;
+        
         const ctx = Utils.$('#salesTrendChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.warn('Sales trend chart canvas not found');
+            return;
+        }
 
         if (AppState.charts.salesTrend) {
             AppState.charts.salesTrend.destroy();
@@ -296,48 +351,58 @@ const ChartManager = {
 
         const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        AppState.charts.salesTrend = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: sortedData.map(d => Utils.formatDate(d.date)),
-                datasets: [{
-                    label: 'Sales Revenue',
-                    data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
-                    borderColor: CONFIG.CHART_COLORS.primary,
-                    backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                ...CONFIG.CHART_OPTIONS,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => '₱' + value.toLocaleString()
-                        }
-                    }
+        try {
+            AppState.charts.salesTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedData.map(d => Utils.formatDate(d.date)),
+                    datasets: [{
+                        label: 'Sales Revenue',
+                        data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
+                        borderColor: CONFIG.CHART_COLORS.primary,
+                        backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
                 },
-                plugins: {
-                    ...CONFIG.CHART_OPTIONS.plugins,
-                    tooltip: {
-                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
-                        callbacks: {
-                            label: ctx => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y)
+                options: {
+                    ...CONFIG.CHART_OPTIONS,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '₱' + value.toLocaleString()
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...CONFIG.CHART_OPTIONS.plugins,
+                        tooltip: {
+                            ...CONFIG.CHART_OPTIONS.plugins.tooltip,
+                            callbacks: {
+                                label: ctx => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y)
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        } catch (error) {
+            console.error('Error creating sales trend chart:', error);
+            UIManager.showNotification('Failed to create chart', 'error');
+        }
     },
 
     createComparisonChart(comparisonData) {
+        if (!this.checkChartJS()) return;
+        
         const ctx = Utils.$('#comparisonChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.warn('Comparison chart canvas not found');
+            return;
+        }
 
         if (AppState.charts.comparison) {
             AppState.charts.comparison.destroy();
@@ -347,43 +412,45 @@ const ChartManager = {
         const currentValues = comparisonData.map(d => parseFloat(d.current || 0));
         const compareValues = comparisonData.map(d => parseFloat(d.compare || 0));
 
-        AppState.charts.comparison = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: metrics,
-                datasets: [
-                    {
-                        label: 'Current Period',
-                        data: currentValues,
-                        backgroundColor: CONFIG.CHART_COLORS.primary,
-                        borderRadius: 8
-                    },
-                    {
-                        label: 'Previous Period',
-                        data: compareValues,
-                        backgroundColor: CONFIG.CHART_COLORS.info,
-                        borderRadius: 8
-                    }
-                ]
-            },
-            options: {
-                ...CONFIG.CHART_OPTIONS,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        try {
+            AppState.charts.comparison = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: metrics,
+                    datasets: [
+                        {
+                            label: 'Current Period',
+                            data: currentValues,
+                            backgroundColor: CONFIG.CHART_COLORS.primary,
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Previous Period',
+                            data: compareValues,
+                            backgroundColor: CONFIG.CHART_COLORS.info,
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    ...CONFIG.CHART_OPTIONS,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
+        } catch (error) {
+            console.error('Error creating comparison chart:', error);
+            UIManager.showNotification('Failed to create chart', 'error');
+        }
     },
 
     updateTrendChart() {
-        const period = Utils.$('#trendPeriod')?.value || 30;
+        const periodEl = Utils.$('#trendPeriod');
+        const period = periodEl ? periodEl.value : 30;
         DataManager.loadTrendData(period);
-    },
-
-    updateComparisonChart() {
-        // Will be implemented with comparison data
     }
 };
 
@@ -399,10 +466,7 @@ const DataManager = {
             UIManager.updateKPICard('todayTransactions', data.today_transactions, data.transactions_change);
             UIManager.updateKPICard('targetAchievement', data.target_achievement);
             
-            const targetStatus = Utils.$('#targetStatus');
-            if (targetStatus) {
-                targetStatus.textContent = data.target_status;
-            }
+            Utils.safeSetContent('#targetStatus', data.target_status);
             
             const miniProgress = Utils.$('#targetMiniProgress');
             if (miniProgress) {
@@ -410,6 +474,7 @@ const DataManager = {
             }
 
         } catch (error) {
+            console.error('KPI load error:', error);
             UIManager.showNotification('Failed to load KPI data', 'error');
         } finally {
             AppState.decrementLoading();
@@ -421,11 +486,14 @@ const DataManager = {
         try {
             const data = await APIService.fetch('trend_data', { days });
             
-            if (data.trend_data && data.trend_data.length > 0) {
+            if (data.trend_data && Array.isArray(data.trend_data) && data.trend_data.length > 0) {
                 ChartManager.createSalesTrendChart(data.trend_data);
                 this.populateTrendTable(data.trend_data);
+            } else {
+                Utils.safeSetHTML('.trend-table tbody', '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9ca3af;">No trend data available</td></tr>');
             }
         } catch (error) {
+            console.error('Trend data error:', error);
             UIManager.showNotification('Failed to load trend data', 'error');
         } finally {
             AppState.decrementLoading();
@@ -470,8 +538,11 @@ const DataManager = {
     },
 
     async loadComparison() {
-        const currentDate = Utils.$('#currentDate')?.value;
-        const compareDate = Utils.$('#compareDate')?.value;
+        const currentDateEl = Utils.$('#currentDate');
+        const compareDateEl = Utils.$('#compareDate');
+        
+        const currentDate = currentDateEl ? currentDateEl.value : null;
+        const compareDate = compareDateEl ? compareDateEl.value : null;
 
         if (!currentDate || !compareDate) {
             UIManager.showNotification('Please select both dates', 'warning');
@@ -482,12 +553,13 @@ const DataManager = {
         try {
             const data = await APIService.fetch('compare', { currentDate, compareDate });
             
-            if (data.comparison) {
+            if (data.comparison && Array.isArray(data.comparison)) {
                 this.displayComparisonResults(data.comparison);
                 ChartManager.createComparisonChart(data.comparison);
                 UIManager.showNotification('Comparison loaded successfully', 'success');
             }
         } catch (error) {
+            console.error('Comparison error:', error);
             UIManager.showNotification('Failed to load comparison', 'error');
         } finally {
             AppState.decrementLoading();
@@ -524,6 +596,7 @@ const DataManager = {
         }).join('');
     }
 };
+
 // ==================== TARGET MANAGER ====================
 const TargetManager = {
     async loadTargets(filter = 'all') {
@@ -531,11 +604,12 @@ const TargetManager = {
         try {
             const data = await APIService.fetch('get_targets', { filter });
             
-            if (data.targets) {
+            if (data.targets && Array.isArray(data.targets)) {
                 this.displayTargetsGrid(data.targets);
                 this.displayTargetsTable(data.targets);
             }
         } catch (error) {
+            console.error('Targets load error:', error);
             UIManager.showNotification('Failed to load targets', 'error');
         } finally {
             AppState.decrementLoading();
@@ -675,16 +749,25 @@ const TargetManager = {
 
             AppState.editingTargetId = id;
             
-            Utils.$('#modalTitle').textContent = 'Edit Target';
-            Utils.$('#targetName').value = target.target_name || '';
-            Utils.$('#targetType').value = target.target_type || '';
-            Utils.$('#targetValue').value = target.target_value || '';
-            Utils.$('#targetStartDate').value = target.start_date || '';
-            Utils.$('#targetEndDate').value = target.end_date || '';
-            Utils.$('#targetStore').value = target.store || '';
+            Utils.safeSetContent('#modalTitle', 'Edit Target');
             
-            openTargetModal();
+            const fields = {
+                '#targetName': target.target_name || '',
+                '#targetType': target.target_type || '',
+                '#targetValue': target.target_value || '',
+                '#targetStartDate': target.start_date || '',
+                '#targetEndDate': target.end_date || '',
+                '#targetStore': target.store || ''
+            };
+
+            Object.entries(fields).forEach(([selector, value]) => {
+                const el = Utils.$(selector);
+                if (el) el.value = value;
+            });
+            
+            ModalManager.open();
         } catch (error) {
+            console.error('Edit target error:', error);
             UIManager.showNotification('Failed to load target', 'error');
         } finally {
             AppState.decrementLoading();
@@ -699,11 +782,16 @@ const TargetManager = {
             await APIService.fetch('delete_target', { id });
             
             UIManager.showNotification('Target deleted successfully', 'success');
+            
+            const filterEl = Utils.$('#targetFilter');
+            const currentFilter = filterEl ? filterEl.value : 'all';
+            
             await Promise.all([
-                this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                this.loadTargets(currentFilter),
                 DataManager.loadKPISummary()
             ]);
         } catch (error) {
+            console.error('Delete target error:', error);
             UIManager.showNotification('Failed to delete target', 'error');
         } finally {
             AppState.decrementLoading();
@@ -715,7 +803,7 @@ const TargetManager = {
 const DateManager = {
     setDefaultDates() {
         const today = new Date();
-        const yesterday = new Date(today - 86400000);
+        const yesterday = new Date(today.getTime() - 86400000);
 
         const currentDate = Utils.$('#currentDate');
         const compareDate = Utils.$('#compareDate');
@@ -725,21 +813,25 @@ const DateManager = {
     },
 
     updateComparisonDates() {
-        const type = Utils.$('#comparisonType')?.value;
+        const typeEl = Utils.$('#comparisonType');
+        const type = typeEl ? typeEl.value : 'today_vs_yesterday';
         const today = new Date();
         
         const dateMap = {
-            'today_vs_yesterday': today - 86400000,
-            'week_vs_week': today - 604800000,
-            'month_vs_month': today - 2592000000,
-            'custom': today - 86400000
+            'today_vs_yesterday': 86400000,      // 1 day
+            'week_vs_week': 604800000,           // 7 days
+            'month_vs_month': 2592000000,        // 30 days
+            'custom': 86400000
         };
 
         const currentDate = Utils.$('#currentDate');
         const compareDate = Utils.$('#compareDate');
 
         if (currentDate) currentDate.value = Utils.getISODate(today);
-        if (compareDate) compareDate.value = Utils.getISODate(new Date(dateMap[type] || dateMap.custom));
+        if (compareDate) {
+            const offset = dateMap[type] || dateMap.custom;
+            compareDate.value = Utils.getISODate(new Date(today.getTime() - offset));
+        }
     }
 };
 
@@ -776,14 +868,18 @@ const ModalManager = {
         
         if (form) form.reset();
         
-        Utils.$('#modalTitle').textContent = 'Create New Target';
-        AppState.editingTargetId = null;
+        if (!AppState.editingTargetId) {
+            Utils.safeSetContent('#modalTitle', 'Create New Target');
+            
+            const today = new Date();
+            const nextMonth = new Date(today.getTime() + 2592000000);
 
-        const today = new Date();
-        const nextMonth = new Date(today.getTime() + 2592000000);
-
-        Utils.$('#targetStartDate').value = Utils.getISODate(today);
-        Utils.$('#targetEndDate').value = Utils.getISODate(nextMonth);
+            const startDateEl = Utils.$('#targetStartDate');
+            const endDateEl = Utils.$('#targetEndDate');
+            
+            if (startDateEl) startDateEl.value = Utils.getISODate(today);
+            if (endDateEl) endDateEl.value = Utils.getISODate(nextMonth);
+        }
     },
 
     close(event) {
@@ -803,11 +899,11 @@ const ModalManager = {
         event.preventDefault();
 
         const formData = {
-            name: Utils.$('#targetName')?.value.trim(),
-            type: Utils.$('#targetType')?.value,
-            value: parseFloat(Utils.$('#targetValue')?.value),
-            start_date: Utils.$('#targetStartDate')?.value,
-            end_date: Utils.$('#targetEndDate')?.value,
+            name: Utils.$('#targetName')?.value.trim() || '',
+            type: Utils.$('#targetType')?.value || '',
+            value: parseFloat(Utils.$('#targetValue')?.value || 0),
+            start_date: Utils.$('#targetStartDate')?.value || '',
+            end_date: Utils.$('#targetEndDate')?.value || '',
             store: Utils.$('#targetStore')?.value.trim() || ''
         };
 
@@ -837,13 +933,17 @@ const ModalManager = {
             await APIService.post(action, formData);
             
             UIManager.showNotification('Target saved successfully', 'success');
-            ModalManager.close();
+            this.close();
+            
+            const filterEl = Utils.$('#targetFilter');
+            const currentFilter = filterEl ? filterEl.value : 'all';
             
             await Promise.all([
-                TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                TargetManager.loadTargets(currentFilter),
                 DataManager.loadKPISummary()
             ]);
         } catch (error) {
+            console.error('Save target error:', error);
             UIManager.showNotification('Failed to save target', 'error');
         } finally {
             AppState.decrementLoading();
@@ -855,15 +955,18 @@ const ModalManager = {
 window.openTargetModal = () => ModalManager.open();
 window.closeTargetModal = (event) => ModalManager.close(event);
 window.saveTarget = (event) => ModalManager.saveTarget(event);
-window.filterTargets = () => TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all');
+window.filterTargets = () => {
+    const filterEl = Utils.$('#targetFilter');
+    TargetManager.loadTargets(filterEl ? filterEl.value : 'all');
+};
 window.loadComparison = () => DataManager.loadComparison();
 window.updateComparisonDates = () => DateManager.updateComparisonDates();
 window.switchTab = (tabName) => TabManager.switchTab(tabName);
 window.updateTrendChart = () => ChartManager.updateTrendChart();
-window.updateComparisonChart = () => ChartManager.updateComparisonChart();
 window.resetComparison = () => {
     DateManager.setDefaultDates();
-    Utils.$('.comparison-grid').innerHTML = '';
+    const container = Utils.$('.comparison-grid');
+    if (container) container.innerHTML = '';
 };
 window.exportTargets = () => {
     UIManager.showNotification('Export feature coming soon', 'info');
@@ -882,6 +985,14 @@ const App = {
         console.log('🚀 Initializing Professional Sales Dashboard...');
 
         try {
+            // Check Chart.js
+            if (typeof Chart === 'undefined') {
+                console.warn('⚠️ Chart.js not loaded. Charts will not be available.');
+                UIManager.showNotification('Chart library not loaded. Some features may be unavailable.', 'warning');
+            } else {
+                AppState.chartJsLoaded = true;
+            }
+
             // Update date/time
             UIManager.updateDateTime();
             setInterval(() => UIManager.updateDateTime(), 60000);
@@ -903,11 +1014,20 @@ const App = {
     },
 
     async loadAllData() {
-        await Promise.allSettled([
+        const promises = [
             DataManager.loadKPISummary(),
             DataManager.loadTrendData(30),
             TargetManager.loadTargets('all')
-        ]);
+        ];
+
+        const results = await Promise.allSettled(promises);
+        
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                const sections = ['KPI', 'Trend', 'Targets'];
+                console.error(`${sections[index]} load failed:`, result.reason);
+            }
+        });
     },
 
     setupEventListeners() {
@@ -931,7 +1051,9 @@ const App = {
         // Refresh on visibility change
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
-                this.loadAllData();
+                this.loadAllData().catch(err => {
+                    console.error('Refresh failed:', err);
+                });
             }
         });
     }
@@ -981,5 +1103,5 @@ window.addEventListener('error', (event) => {
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    UIManager.showNotification('A network error occurred.', 'error');
+    UIManager.showNotification('A network error occurred. Please check your connection.', 'error');
 });
