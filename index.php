@@ -2066,292 +2066,373 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-   <div id="dashboard-container" class="page">
-        <div class="sales-comparison-container">
+  <div id="dashboard-container" class="page">
+        <!-- Main Dashboard Container -->
+    <div class="dashboard-wrapper">
+        
+        <!-- Top Navigation Bar -->
+        <nav class="top-navbar">
+            <div class="navbar-left">
+                <h1 class="brand-title">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                    </svg>
+                    Sales Analytics Pro
+                </h1>
+            </div>
+            <div class="navbar-center">
+                <div class="date-display">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span id="currentDateTime">Loading...</span>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="icon-btn" onclick="toggleNotifications()" title="Notifications">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="icon-btn" onclick="refreshAllData()" title="Refresh Data">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                </button>
+                <button class="btn-primary-small" onclick="openTargetModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </svg>
+                    New Target
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
             
-            <!-- Header Section -->
-            <header class="page-header">
-                <div class="header-left">
-                    <h1 class="page-title">
-                        <svg class="title-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 3v18h18"/>
-                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                        </svg>
-                        Sales Analytics Dashboard
-                    </h1>
-                    <p class="page-subtitle">Track performance and achieve your targets</p>
+            <!-- KPI Summary Cards -->
+            <section class="kpi-section">
+                <h2 class="section-title-main">Performance Overview</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card-pro" data-metric="sales">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro sales-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge" id="salesTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Today's Revenue</span>
+                            <h3 class="kpi-value-pro" id="todaySales">₱0.00</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="salesComparison">vs yesterday</span>
+                                <span class="kpi-sparkline" id="salesSparkline">●●●●●●●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-pro" data-metric="customers">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro customers-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge" id="customersTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Customer Traffic</span>
+                            <h3 class="kpi-value-pro" id="todayCustomers">0</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="customersComparison">vs yesterday</span>
+                                <span class="kpi-sparkline" id="customersSparkline">●●●●●●●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-pro" data-metric="transactions">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro transactions-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                    <path d="M2 10h20"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge" id="transactionsTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Transactions</span>
+                            <h3 class="kpi-value-pro" id="todayTransactions">0</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="transactionsComparison">vs yesterday</span>
+                                <span class="kpi-sparkline" id="transactionsSparkline">●●●●●●●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-pro" data-metric="target">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro target-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="6"/>
+                                    <circle cx="12" cy="12" r="2"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge success" id="targetTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Target Progress</span>
+                            <h3 class="kpi-value-pro" id="targetAchievement">0%</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="targetStatus">No active target</span>
+                                <div class="mini-progress">
+                                    <div class="mini-progress-bar" id="targetMiniProgress" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="header-actions">
-                    <button class="btn btn-refresh" onclick="refreshData()" aria-label="Refresh Data">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                        </svg>
-                        Refresh
-                    </button>
-                    <button class="btn btn-export" onclick="exportReport()" aria-label="Export Report">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                        </svg>
-                        Export
-                    </button>
-                    <button class="btn btn-primary" onclick="openTargetModal()" aria-label="Create New Target">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 8v8M8 12h8"/>
-                        </svg>
-                        New Target
-                    </button>
-                </div>
-            </header>
-
-            <!-- KPI Cards -->
-            <section class="kpi-cards-grid" aria-label="Key Performance Indicators">
-                <article class="kpi-card">
-                    <div class="kpi-icon sales-icon" aria-hidden="true">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Today's Sales</span>
-                        <h3 class="kpi-value" id="todaySales">₱0.00</h3>
-                        <span class="kpi-change" id="salesChange">0%</span>
-                    </div>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-icon customers-icon" aria-hidden="true">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Customer Traffic</span>
-                        <h3 class="kpi-value" id="todayCustomers">0</h3>
-                        <span class="kpi-change" id="customersChange">0%</span>
-                    </div>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-icon transactions-icon" aria-hidden="true">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="5" width="20" height="14" rx="2"/>
-                            <path d="M2 10h20"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Transactions</span>
-                        <h3 class="kpi-value" id="todayTransactions">0</h3>
-                        <span class="kpi-change" id="transactionsChange">0%</span>
-                    </div>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-icon target-icon" aria-hidden="true">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <circle cx="12" cy="12" r="6"/>
-                            <circle cx="12" cy="12" r="2"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Target Achievement</span>
-                        <h3 class="kpi-value" id="targetAchievement">0%</h3>
-                        <span class="kpi-sublabel" id="targetStatus">No active target</span>
-                    </div>
-                </article>
             </section>
 
-            <!-- Comparison Section -->
-            <section class="comparison-filters-section" aria-label="Data Comparison">
-                <div class="section-header-with-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="8.5" cy="7" r="4"/>
-                        <path d="M20 8v6M23 11h-6"/>
-                    </svg>
-                    <h2 class="section-title">Data Comparison</h2>
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container-wrapper">
+                    <!-- Sales Trend Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Sales Trend Analysis</h3>
+                                <p class="chart-subtitle">Last 30 days revenue performance</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select id="trendPeriod" class="chart-select" onchange="updateTrendChart()">
+                                    <option value="7">Last 7 Days</option>
+                                    <option value="30" selected>Last 30 Days</option>
+                                    <option value="90">Last 90 Days</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="salesTrendChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Performance Comparison Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Performance Metrics</h3>
+                                <p class="chart-subtitle">Current vs Previous Period</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select id="comparisonMetric" class="chart-select" onchange="updateComparisonChart()">
+                                    <option value="all" selected>All Metrics</option>
+                                    <option value="sales">Sales Only</option>
+                                    <option value="traffic">Traffic Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="comparisonChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
                 </div>
-                <form class="filters-row" onsubmit="event.preventDefault(); loadComparison();">
-                    <div class="filter-group">
-                        <label for="comparisonType">Comparison Type</label>
-                        <select id="comparisonType" class="form-input" onchange="updateComparisonDates()">
-                            <option value="today_vs_date">Today vs Selected Date</option>
-                            <option value="week_vs_range">This Week vs Last Week</option>
-                            <option value="month_vs_period">This Month vs Last Month</option>
+            </section>
+
+            <!-- Advanced Comparison Section -->
+            <section class="comparison-section-pro">
+                <div class="section-header-pro">
+                    <h2 class="section-title-main">Data Comparison Analysis</h2>
+                    <button class="btn-outline-small" onclick="resetComparison()">Reset</button>
+                </div>
+                
+                <div class="comparison-controls">
+                    <div class="control-group">
+                        <label>Comparison Type</label>
+                        <select id="comparisonType" class="form-select-pro" onchange="updateComparisonDates()">
+                            <option value="today_vs_yesterday">Today vs Yesterday</option>
+                            <option value="week_vs_week">This Week vs Last Week</option>
+                            <option value="month_vs_month">This Month vs Last Month</option>
                             <option value="custom">Custom Comparison</option>
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <label for="currentDate">Current Period</label>
-                        <input type="date" id="currentDate" class="form-input" required>
+                    <div class="control-group">
+                        <label>Current Period</label>
+                        <input type="date" id="currentDate" class="form-input-pro">
                     </div>
-                    <div class="filter-group">
-                        <label for="compareDate">Compare With</label>
-                        <input type="date" id="compareDate" class="form-input" required>
+                    <div class="control-group">
+                        <label>Compare With</label>
+                        <input type="date" id="compareDate" class="form-input-pro">
                     </div>
-                    <div class="filter-group">
-                        <button type="submit" class="btn btn-primary" style="margin-top:24px;">
+                    <div class="control-group">
+                        <button class="btn-primary-pro" onclick="loadComparison()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"/>
                                 <path d="m21 21-4.35-4.35"/>
                             </svg>
-                            Compare
+                            Analyze
                         </button>
                     </div>
-                </form>
-            </section>
+                </div>
 
-            <!-- Comparison Results Table -->
-            <section class="comparison-results-section" aria-label="Comparison Results">
-                <div class="table-container">
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Metric</th>
-                                <th scope="col">Current Value</th>
-                                <th scope="col">Compare Value</th>
-                                <th scope="col">Difference</th>
-                                <th scope="col">% Change</th>
-                                <th scope="col">Trend</th>
-                            </tr>
-                        </thead>
-                        <tbody id="comparisonTableBody">
-                            <tr>
-                                <td colspan="6" class="empty-state">
-                                    Select dates and click Compare to view data
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="comparison-results" id="comparisonResults">
+                    <div class="comparison-grid">
+                        <!-- Results will be populated here -->
+                    </div>
                 </div>
             </section>
 
-            <!-- Data Tables -->
-            <div class="tables-grid">
-                <article class="data-table-card">
-                    <div class="card-header">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 3v18h18"/>
-                            <path d="M7 12l3-3 3 3 5-5"/>
-                        </svg>
-                        <h3 class="table-card-title">Sales Trend (Last 30 Days)</h3>
-                    </div>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Sales Revenue</th>
-                                    <th scope="col">Change</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salesTrendTableBody">
-                                <tr>
-                                    <td colspan="3" class="empty-state">Loading...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </article>
-
-                <article class="data-table-card">
-                    <div class="card-header">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <circle cx="12" cy="12" r="6"/>
-                        </svg>
-                        <h3 class="table-card-title">Active Targets</h3>
-                    </div>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Target Name</th>
-                                    <th scope="col">Progress</th>
-                                    <th scope="col">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="targetProgressTableBody">
-                                <tr>
-                                    <td colspan="3" class="empty-state">Loading...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </article>
-            </div>
-
-            <!-- Target Management -->
-            <section class="target-management-section" aria-label="Target Management">
-                <div class="section-header">
-                    <div class="section-header-with-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <circle cx="12" cy="12" r="6"/>
-                            <circle cx="12" cy="12" r="2"/>
-                        </svg>
-                        <h2 class="section-title">Target Management</h2>
-                    </div>
-                    <div class="section-filters">
-                        <label for="targetFilter" class="sr-only">Filter Targets</label>
-                        <select id="targetFilter" class="form-input" onchange="filterTargets()">
+            <!-- Targets Management -->
+            <section class="targets-section-pro">
+                <div class="section-header-pro">
+                    <h2 class="section-title-main">Target Management</h2>
+                    <div class="filter-controls">
+                        <select id="targetFilter" class="form-select-pro" onchange="filterTargets()">
                             <option value="all">All Targets</option>
                             <option value="active">Active</option>
                             <option value="achieved">Achieved</option>
                             <option value="near">Near Target</option>
                             <option value="below">Below Target</option>
                         </select>
+                        <button class="btn-outline-small" onclick="exportTargets()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                            </svg>
+                            Export
+                        </button>
                     </div>
                 </div>
 
-                <div class="table-container">
-                    <table class="targets-table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Target Name</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Period</th>
-                                <th scope="col">Target Value</th>
-                                <th scope="col">Current</th>
-                                <th scope="col">Progress</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="targetsTableBody">
-                            <tr>
-                                <td colspan="8" class="empty-state">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="targets-grid" id="targetsGrid">
+                    <!-- Targets will be populated here -->
                 </div>
             </section>
 
-            <!-- Target Modal -->
-            <div class="modal" id="targetModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-                <div class="modal-backdrop" onclick="closeTargetModal()"></div>
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="modalTitle">Create New Target</h3>
-                        <button class="modal-close" onclick="closeTargetModal()" aria-label="Close Modal">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 6L6 18M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="targetForm" onsubmit="saveTarget(event)">
-                            <div class="form-group">
-                                <label for="targetName">Target Name</label>
-                                <input type="text" id="targetName" class="form-input" required placeholder="e.g., Q4 Sales Goal" maxlength="100">
-                            </div>
+            <!-- Data Tables -->
+            <section class="tables-section-pro">
+                <div class="table-tabs">
+                    <button class="tab-btn active" onclick="switchTab('trend')" data-tab="trend">Sales Trend</button>
+                    <button class="tab-btn" onclick="switchTab('active-targets')" data-tab="active-targets">Active Targets</button>
+                    <button class="tab-btn" onclick="switchTab('performance')" data-tab="performance">Performance Log</button>
+                </div>
 
-                            <div class="form-group">
-                                <label for="targetType">Target Type</label>
-                                <select id="targetType" class="form-input" required>
+                <div class="tab-content active" id="trend-tab">
+                    <div class="table-wrapper-pro">
+                        <table class="data-table-pro">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Revenue</th>
+                                    <th>Transactions</th>
+                                    <th>Customers</th>
+                                    <th>Avg. Value</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTrendTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="active-targets-tab">
+                    <div class="table-wrapper-pro">
+                        <table class="data-table-pro">
+                            <thead>
+                                <tr>
+                                    <th>Target Name</th>
+                                    <th>Type</th>
+                                    <th>Current / Target</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activeTargetsTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="performance-tab">
+                    <div class="table-wrapper-pro">
+                        <table class="data-table-pro">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Today</th>
+                                    <th>Yesterday</th>
+                                    <th>Last Week</th>
+                                    <th>Last Month</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performanceTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Target Modal -->
+        <div class="modal-overlay" id="targetModal" onclick="closeTargetModal(event)">
+            <div class="modal-container" onclick="event.stopPropagation()">
+                <div class="modal-header-pro">
+                    <h3 id="modalTitle">Create New Target</h3>
+                    <button class="modal-close-btn" onclick="closeTargetModal()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <form id="targetForm" onsubmit="saveTarget(event)">
+                    <div class="modal-body-pro">
+                        <div class="form-grid">
+                            <div class="form-group-pro">
+                                <label>Target Name</label>
+                                <input type="text" id="targetName" class="form-input-pro" required maxlength="100" placeholder="e.g., Q4 Sales Goal">
+                            </div>
+                            <div class="form-group-pro">
+                                <label>Target Type</label>
+                                <select id="targetType" class="form-select-pro" required>
                                     <option value="">Select type...</option>
                                     <option value="sales">Sales Revenue</option>
                                     <option value="customers">Customer Traffic</option>
@@ -2359,55 +2440,49 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                                     <option value="avg_transaction">Avg Transaction Value</option>
                                 </select>
                             </div>
-
-                            <div class="form-group">
-                                <label for="targetValue">Target Value</label>
-                                <input type="number" id="targetValue" class="form-input" required min="0.01" step="0.01" placeholder="Enter target amount">
+                            <div class="form-group-pro full-width">
+                                <label>Target Value</label>
+                                <input type="number" id="targetValue" class="form-input-pro" required min="0.01" step="0.01" placeholder="Enter target amount">
                             </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="targetStartDate">Start Date</label>
-                                    <input type="date" id="targetStartDate" class="form-input" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="targetEndDate">End Date</label>
-                                    <input type="date" id="targetEndDate" class="form-input" required>
-                                </div>
+                            <div class="form-group-pro">
+                                <label>Start Date</label>
+                                <input type="date" id="targetStartDate" class="form-input-pro" required>
                             </div>
-
-                            <div class="form-group">
-                                <label for="targetStore">Store/Branch (Optional)</label>
-                                <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all stores" maxlength="100">
+                            <div class="form-group-pro">
+                                <label>End Date</label>
+                                <input type="date" id="targetEndDate" class="form-input-pro" required>
                             </div>
-
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="closeTargetModal()">Cancel</button>
-                                <button type="submit" class="btn btn-primary">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                        <polyline points="17 21 17 13 7 13 7 21"/>
-                                        <polyline points="7 3 7 8 15 8"/>
-                                    </svg>
-                                    Save Target
-                                </button>
+                            <div class="form-group-pro full-width">
+                                <label>Store/Branch (Optional)</label>
+                                <input type="text" id="targetStore" class="form-input-pro" maxlength="100" placeholder="Leave empty for all stores">
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                    <div class="modal-footer-pro">
+                        <button type="button" class="btn-secondary-pro" onclick="closeTargetModal()">Cancel</button>
+                        <button type="submit" class="btn-primary-pro">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            Save Target
+                        </button>
+                    </div>
+                </form>
             </div>
-
         </div>
+
+    </div>
     </div>
 
     <script src="sales_comparison.js"></script>
 <style>
-/* ==================== ENHANCED SALES ANALYTICS DASHBOARD CSS ==================== */
+ /* ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD CSS ==================== */
 
-/* CSS Variables for Consistent Theming */
+/* CSS Variables */
 :root {
-    /* Primary Colors */
+    /* Primary Colors - Professional Blue/Indigo Palette */
     --primary-50: #eef2ff;
     --primary-100: #e0e7ff;
     --primary-200: #c7d2fe;
@@ -2419,21 +2494,24 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     --primary-800: #3730a3;
     --primary-900: #312e81;
     
-    /* Status Colors */
-    --success-50: #d1fae5;
-    --success-100: #a7f3d0;
+    /* Success Colors */
+    --success-50: #ecfdf5;
+    --success-100: #d1fae5;
     --success-500: #10b981;
-    --success-700: #059669;
+    --success-600: #059669;
+    --success-700: #047857;
     
-    --warning-50: #fef3c7;
-    --warning-100: #fde68a;
+    /* Warning Colors */
+    --warning-50: #fffbeb;
+    --warning-100: #fef3c7;
     --warning-500: #f59e0b;
-    --warning-700: #d97706;
+    --warning-600: #d97706;
     
-    --danger-50: #fee2e2;
-    --danger-100: #fecaca;
+    /* Danger Colors */
+    --danger-50: #fef2f2;
+    --danger-100: #fee2e2;
     --danger-500: #ef4444;
-    --danger-700: #dc2626;
+    --danger-600: #dc2626;
     
     /* Neutral Colors */
     --gray-50: #f9fafb;
@@ -2447,25 +2525,39 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     --gray-800: #1f2937;
     --gray-900: #111827;
     
+    /* Background */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     
     /* Border Radius */
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+    --radius-2xl: 24px;
     
     /* Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reset & Base Styles */
+/* Reset & Base */
 * {
     margin: 0;
     padding: 0;
@@ -2473,356 +2565,680 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: var(--gray-50);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: var(--bg-secondary);
     color: var(--gray-900);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Accessibility */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Container */
-.sales-comparison-container {
-    padding: 24px;
-    max-width: 1400px;
-    margin: 0 auto;
+/* Dashboard Wrapper */
+.dashboard-wrapper {
     min-height: 100vh;
+    background: var(--bg-secondary);
 }
 
-/* ==================== PAGE HEADER ==================== */
-.page-header {
+/* Top Navigation Bar */
+.top-navbar {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 16px 32px;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-    background: white;
-    padding: 24px 32px;
-    border-radius: var(--radius-lg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
 }
 
-.header-left {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.page-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
+.navbar-left .brand-title {
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.title-icon {
-    color: var(--primary-600);
-    flex-shrink: 0;
-}
-
-.page-subtitle {
-    font-size: 14px;
-    color: var(--gray-500);
-    margin: 0;
-}
-
-.header-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-/* ==================== BUTTONS ==================== */
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-    outline: none;
-}
-
-.btn:focus-visible {
-    outline: 2px solid var(--primary-500);
-    outline-offset: 2px;
-}
-
-.btn:active {
-    transform: translateY(1px);
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btn-primary {
-    background: var(--primary-600);
-    color: white;
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: var(--primary-700);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-    background: var(--gray-200);
-    color: var(--gray-700);
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: var(--gray-300);
-}
-
-.btn-refresh {
-    background: var(--success-500);
-    color: white;
-}
-
-.btn-refresh:hover:not(:disabled) {
-    background: var(--success-700);
-}
-
-.btn-export {
-    background: var(--warning-500);
-    color: white;
-}
-
-.btn-export:hover:not(:disabled) {
-    background: var(--warning-700);
-}
-
-/* ==================== KPI CARDS ==================== */
-.kpi-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-bottom: 32px;
-}
-
-.kpi-card {
-    background: white;
-    padding: 24px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: all var(--transition-slow);
-}
-
-.kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-200);
-}
-
-.kpi-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.sales-icon {
-    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
-    color: white;
-}
-
-.customers-icon {
-    background: linear-gradient(135deg, var(--success-500) 0%, var(--success-700) 100%);
-    color: white;
-}
-
-.transactions-icon {
-    background: linear-gradient(135deg, var(--warning-500) 0%, var(--warning-700) 100%);
-    color: white;
-}
-
-.target-icon {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    color: white;
-}
-
-.kpi-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.kpi-label {
-    display: block;
-    font-size: 13px;
-    color: var(--gray-500);
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-
-.kpi-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-    line-height: 1;
-}
-
-.kpi-change {
-    font-size: 13px;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    display: inline-block;
-}
-
-.kpi-change.positive {
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-change.negative {
-    background: var(--danger-50);
-    color: var(--danger-700);
-}
-
-.kpi-sublabel {
-    font-size: 12px;
-    color: var(--gray-400);
-}
-
-/* ==================== SECTIONS ==================== */
-.comparison-filters-section,
-.comparison-results-section,
-.target-management-section,
-.data-table-card {
-    background: white;
-    padding: 24px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
-    margin-bottom: 24px;
-}
-
-.section-header-with-icon {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.section-header-with-icon svg {
-    color: var(--primary-600);
-    flex-shrink: 0;
-}
-
-.section-title {
     font-size: 20px;
     font-weight: 700;
     color: var(--gray-900);
     margin: 0;
 }
 
-.section-header {
+.navbar-left .brand-title svg {
+    color: var(--primary-600);
+}
+
+.navbar-center .date-display {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-/* ==================== FILTERS & FORMS ==================== */
-.filters-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
     gap: 8px;
-}
-
-.filter-group label {
-    font-size: 13px;
-    font-weight: 600;
+    padding: 8px 16px;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    font-size: 14px;
     color: var(--gray-700);
 }
 
-.form-input,
-.section-filters select {
-    padding: 10px 14px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    transition: all var(--transition-base);
-    background: white;
-    color: var(--gray-900);
-    font-family: inherit;
+.navbar-center .date-display svg {
+    color: var(--primary-600);
 }
 
-.form-input:focus {
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.icon-btn:hover {
+    background: var(--gray-50);
+    border-color: var(--primary-300);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--danger-500);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary-small {
+    padding: 8px 16px;
+    background: var(--primary-600);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition-base);
+}
+
+.btn-primary-small:hover {
+    background: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Main Content */
+.dashboard-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+/* Section Titles */
+.section-title-main {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 20px;
+}
+
+/* KPI Section */
+.kpi-section {
+    margin-bottom: 32px;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.kpi-card-pro {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+    transition: all var(--transition-slow);
+    cursor: pointer;
+}
+
+.kpi-card-pro:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-200);
+}
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.kpi-icon-pro {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.sales-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.customers-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.transactions-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.target-gradient { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+
+.kpi-trend-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--success-50);
+    color: var(--success-700);
+}
+
+.kpi-trend-badge.down {
+    background: var(--danger-50);
+    color: var(--danger-700);
+}
+
+.kpi-trend-badge.down svg {
+    transform: rotate(180deg);
+}
+
+.kpi-trend-badge.success {
+    background: var(--success-50);
+    color: var(--success-700);
+}
+
+.kpi-body {
+    margin-top: 16px;
+}
+
+.kpi-label-pro {
+    display: block;
+    font-size: 13px;
+    color: var(--gray-500);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.kpi-value-pro {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+    line-height: 1;
+}
+
+.kpi-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.kpi-comparison {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.kpi-sparkline {
+    font-size: 8px;
+    color: var(--primary-400);
+    letter-spacing: 2px;
+}
+
+.mini-progress {
+    width: 100%;
+    height: 4px;
+    background: var(--gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.mini-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+    transition: width var(--transition-slow);
+}
+
+/* Charts Section */
+.charts-section {
+    margin-bottom: 32px;
+}
+
+.chart-container-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 24px;
+}
+
+.chart-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0 0 4px 0;
+}
+
+.chart-subtitle {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.chart-select {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    background: white;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.chart-select:hover {
+    border-color: var(--primary-400);
+}
+
+.chart-select:focus {
     outline: none;
     border-color: var(--primary-500);
     box-shadow: 0 0 0 3px var(--primary-100);
 }
 
-.form-input:hover:not(:focus) {
+.chart-body {
+    position: relative;
+}
+
+/* Comparison Section */
+.comparison-section-pro {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 32px;
+}
+
+.section-header-pro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.btn-outline-small {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-300);
+    background: transparent;
+    color: var(--gray-700);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-outline-small:hover {
+    background: var(--gray-50);
     border-color: var(--gray-400);
 }
 
-/* ==================== TABLES ==================== */
-.table-container {
+.comparison-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.control-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+}
+
+.form-select-pro,
+.form-input-pro {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: white;
+    color: var(--gray-900);
+    transition: all var(--transition-base);
+}
+
+.form-select-pro:focus,
+.form-input-pro:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.btn-primary-pro {
+    width: 100%;
+    padding: 10px 20px;
+    background: var(--primary-600);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all var(--transition-base);
+    margin-top: 24px;
+}
+
+.btn-primary-pro:hover {
+    background: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.comparison-metric-card {
+    padding: 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.metric-name {
+    font-size: 13px;
+    color: var(--gray-600);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.metric-values {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
+
+.metric-current {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.metric-previous {
+    font-size: 14px;
+    color: var(--gray-500);
+}
+
+.metric-change {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.metric-change.positive {
+    color: var(--success-600);
+}
+
+.metric-change.negative {
+    color: var(--danger-600);
+}
+
+/* Targets Section */
+.targets-section-pro {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 32px;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.targets-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.target-card-pro {
+    padding: 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    transition: all var(--transition-base);
+}
+
+.target-card-pro:hover {
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-md);
+}
+
+.target-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.target-name-pro {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0 0 4px 0;
+}
+
+.target-type-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--primary-100);
+    color: var(--primary-700);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.target-progress-section {
+    margin-bottom: 16px;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    transition: width var(--transition-slow);
+}
+
+.progress-bar-fill.achieved {
+    background: linear-gradient(90deg, var(--success-500), var(--success-600));
+}
+
+.progress-bar-fill.near {
+    background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
+}
+
+.progress-bar-fill.below {
+    background: linear-gradient(90deg, var(--danger-400), var(--danger-500));
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.progress-percentage {
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.progress-values {
+    color: var(--gray-600);
+}
+
+.target-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.target-dates {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.target-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon-small {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-300);
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+}
+
+.btn-icon-small:hover {
+    background: var(--gray-50);
+    border-color: var(--primary-400);
+}
+
+.btn-icon-small.delete:hover {
+    background: var(--danger-50);
+    border-color: var(--danger-400);
+    color: var(--danger-600);
+}
+
+/* Tables Section */
+.tables-section-pro {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+}
+
+.table-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--gray-200);
+    background: var(--gray-50);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition-base);
+}
+
+.tab-btn:hover {
+    background: var(--gray-100);
+}
+
+.tab-btn.active {
+    color: var(--primary-600);
+    border-bottom-color: var(--primary-600);
+    background: white;
+}
+
+.tab-content {
+    display: none;
+    padding: 24px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.table-wrapper-pro {
     overflow-x: auto;
     border-radius: var(--radius-md);
     border: 1px solid var(--gray-200);
 }
 
-.comparison-table,
-.targets-table,
-.data-table {
+.data-table-pro {
     width: 100%;
     border-collapse: collapse;
     background: white;
 }
 
-.comparison-table thead,
-.targets-table thead,
-.data-table thead {
+.data-table-pro thead {
     background: var(--gray-50);
 }
 
-.comparison-table th,
-.targets-table th,
-.data-table th {
-    padding: 14px 16px;
+.data-table-pro th {
+    padding: 12px 16px;
     text-align: left;
     font-size: 12px;
     font-weight: 700;
@@ -2830,208 +3246,86 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 2px solid var(--gray-200);
-    white-space: nowrap;
 }
 
-.comparison-table td,
-.targets-table td,
-.data-table td {
-    padding: 16px;
+.data-table-pro td {
+    padding: 14px 16px;
     border-top: 1px solid var(--gray-200);
     font-size: 14px;
-    color: var(--gray-900);
+    color: var(--gray-700);
 }
 
-.comparison-table tbody tr:hover,
-.targets-table tbody tr:hover,
-.data-table tbody tr:hover {
+.data-table-pro tbody tr:hover {
     background: var(--gray-50);
 }
 
-.empty-state {
+.loading-cell {
     text-align: center;
     padding: 40px;
     color: var(--gray-400);
     font-style: italic;
 }
 
-/* ==================== TREND INDICATORS ==================== */
-.trend-indicator {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.trend-up {
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.trend-down {
-    background: var(--danger-50);
-    color: var(--danger-700);
-}
-
-/* ==================== PROGRESS BARS ==================== */
-.progress-container {
-    position: relative;
-    width: 100%;
-    height: 8px;
-    background: var(--gray-200);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.progress-achieved {
-    background: linear-gradient(90deg, var(--success-500) 0%, var(--success-700) 100%);
-}
-
-.progress-near {
-    background: linear-gradient(90deg, var(--warning-500) 0%, var(--warning-700) 100%);
-}
-
-.progress-below {
-    background: linear-gradient(90deg, var(--danger-500) 0%, var(--danger-700) 100%);
-}
-
-/* ==================== STATUS BADGES ==================== */
-.status-badge {
-    padding: 6px 12px;
+.status-badge-pro {
+    display: inline-block;
+    padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    display: inline-block;
-    white-space: nowrap;
 }
 
-.status-achieved {
-    background: var(--success-50);
+.status-badge-pro.achieved {
+    background: var(--success-100);
     color: var(--success-700);
 }
 
-.status-near {
-    background: var(--warning-50);
+.status-badge-pro.near {
+    background: var(--warning-100);
     color: var(--warning-700);
 }
 
-.status-below {
-    background: var(--danger-50);
-    color: var(--danger-700);
+.status-badge-pro.below {
+    background: var(--danger-100);
+    color: var(--danger-600);
 }
 
-/* ==================== DATA TABLE CARDS ==================== */
-.tables-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 24px;
-    margin-bottom: 24px;
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.card-header svg {
-    color: var(--primary-600);
-    flex-shrink: 0;
-}
-
-.table-card-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-}
-
-/* Scrollable table bodies */
-.data-table tbody {
-    display: block;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.data-table thead,
-.data-table tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-}
-
-.data-table tbody::-webkit-scrollbar {
-    width: 8px;
-}
-
-.data-table tbody::-webkit-scrollbar-track {
-    background: var(--gray-100);
-    border-radius: 4px;
-}
-
-.data-table tbody::-webkit-scrollbar-thumb {
-    background: var(--gray-300);
-    border-radius: 4px;
-}
-
-.data-table tbody::-webkit-scrollbar-thumb:hover {
-    background: var(--gray-400);
-}
-
-/* ==================== MODAL ==================== */
-.modal {
+/* Modal */
+.modal-overlay {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-base);
 }
 
-.modal.active {
+.modal-overlay.active {
     display: flex;
+    opacity: 1;
 }
 
-.modal-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    position: relative;
+.modal-container {
     background: white;
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-2xl);
     width: 90%;
     max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: var(--shadow-xl);
-    animation: modalSlideIn 0.3s ease;
+    box-shadow: var(--shadow-2xl);
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: scale(0.95) translateY(20px);
+        transform: scale(0.9) translateY(20px);
     }
     to {
         opacity: 1;
@@ -3039,7 +3333,7 @@ body {
     }
 }
 
-.modal-header {
+.modal-header-pro {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -3047,199 +3341,118 @@ body {
     border-bottom: 1px solid var(--gray-200);
 }
 
-.modal-title {
+.modal-header-pro h3 {
     font-size: 20px;
     font-weight: 700;
     color: var(--gray-900);
     margin: 0;
 }
 
-.modal-close {
-    background: none;
+.modal-close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
     border: none;
-    color: var(--gray-500);
+    background: var(--gray-100);
     cursor: pointer;
-    padding: 8px;
-    width: 40px;
-    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-md);
     transition: all var(--transition-base);
 }
 
-.modal-close:hover {
-    background: var(--gray-100);
-    color: var(--gray-700);
+.modal-close-btn:hover {
+    background: var(--gray-200);
+    transform: rotate(90deg);
 }
 
-.modal-body {
+.modal-body-pro {
     padding: 24px 32px;
 }
 
-/* ==================== FORM ELEMENTS ==================== */
-.form-group {
-    margin-bottom: 20px;
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.form-group label {
-    display: block;
+.form-group-pro {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group-pro.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group-pro label {
     font-size: 14px;
     font-weight: 600;
     color: var(--gray-700);
-    margin-bottom: 8px;
 }
 
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.form-actions {
+.modal-footer-pro {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 24px;
-    padding-top: 24px;
+    padding: 24px 32px;
     border-top: 1px solid var(--gray-200);
 }
 
-/* ==================== ANIMATIONS ==================== */
-@keyframes spin {
-    to { transform: rotate(360deg); }
+.btn-secondary-pro {
+    padding: 10px 20px;
+    border: 1px solid var(--gray-300);
+    background: white;
+    color: var(--gray-700);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
 }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+.btn-secondary-pro:hover {
+    background: var(--gray-50);
 }
 
-@keyframes slideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
-/* ==================== RESPONSIVE ==================== */
+/* Responsive Design */
 @media (max-width: 1024px) {
-    .tables-grid {
+    .chart-container-wrapper {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
-    .sales-comparison-container {
+    .dashboard-content {
+        padding: 20px;
+    }
+    
+    .top-navbar {
+        flex-wrap: wrap;
+        gap: 16px;
         padding: 16px;
     }
     
-    .page-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
-        padding: 20px;
+    .navbar-center {
+        order: 3;
+        width: 100%;
     }
     
-    .header-actions {
-        flex-wrap: wrap;
-        justify-content: stretch;
-    }
-    
-    .header-actions .btn {
-        flex: 1;
-        justify-content: center;
-    }
-    
-    .kpi-cards-grid {
+    .kpi-grid {
         grid-template-columns: 1fr;
     }
     
-    .filters-row {
+    .comparison-controls {
         grid-template-columns: 1fr;
     }
     
-    .form-row {
+    .form-grid {
         grid-template-columns: 1fr;
     }
     
-    .page-title {
-        font-size: 24px;
-    }
-    
-    .kpi-value {
-        font-size: 24px;
-    }
-    
-    .table-container {
+    .table-tabs {
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-}
-
-@media (max-width: 480px) {
-    .btn {
-        padding: 8px 16px;
-        font-size: 13px;
-    }
-    
-    .modal-content {
-        width: 95%;
-        max-height: 95vh;
-    }
-    
-    .modal-header,
-    .modal-body {
-        padding: 20px;
-    }
-    
-    .kpi-card {
-        padding: 20px;
-    }
-    
-    .kpi-icon {
-        width: 48px;
-        height: 48px;
-    }
-}
-
-/* ==================== PRINT STYLES ==================== */
-@media print {
-    .header-actions,
-    .btn,
-    .modal,
-    .section-filters {
-        display: none !important;
-    }
-    
-    .sales-comparison-container {
-        padding: 0;
-    }
-    
-    .page-header,
-    .kpi-card,
-    .comparison-filters-section,
-    .comparison-results-section,
-    .data-table-card,
-    .target-management-section {
-        box-shadow: none;
-        border: 1px solid var(--gray-300);
-        page-break-inside: avoid;
-    }
-    
-    body {
-        background: white;
     }
 }
   </style>

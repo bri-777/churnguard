@@ -1,148 +1,111 @@
-// ==================== ENHANCED SALES ANALYTICS DASHBOARD ====================
+// ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD ====================
 'use strict';
 
 // ==================== CONFIGURATION ====================
 const CONFIG = {
-    DATES: {
-        ONE_DAY: 86400000,
-        ONE_WEEK: 604800000,
-        ONE_MONTH: 2592000000
+    API_BASE: 'api/sales_comparison.php',
+    CHART_COLORS: {
+        primary: '#6366f1',
+        success: '#10b981',
+        warning: '#f59e0b',
+        danger: '#ef4444',
+        info: '#06b6d4',
+        purple: '#8b5cf6'
     },
-    API: {
-        TIMEOUT: 15000,
-        RETRY_ATTEMPTS: 3,
-        RETRY_DELAY: 1000,
-        BASE_URL: 'api/sales_comparison.php',
-        ENDPOINTS: {
-            kpiSummary: 'action=kpi_summary',
-            compare: 'action=compare',
-            targets: 'action=get_targets',
-            saveTarget: 'action=save_target',
-            updateTarget: 'action=update_target',
-            deleteTarget: 'action=delete_target',
-            trendData: 'action=trend_data'
+    CHART_OPTIONS: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { display: true, position: 'bottom' },
+            tooltip: { 
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                padding: 12,
+                titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
+                cornerRadius: 8
+            }
         }
-    },
-    UI: {
-        NOTIFICATION_DURATION: 4000,
-        DEBOUNCE_DELAY: 300
-    },
-    VALIDATION: {
-        MAX_TARGET_NAME_LENGTH: 100,
-        MAX_TARGET_VALUE: 999999999,
-        MIN_TARGET_VALUE: 0.01
     }
 };
 
 // ==================== STATE MANAGEMENT ====================
 const AppState = {
+    charts: {},
+    currentTab: 'trend',
     activeRequests: new Map(),
-    isInitialized: false,
     loadingCounter: 0,
-    currentFilter: 'all',
     editingTargetId: null,
     
     incrementLoading() {
         this.loadingCounter++;
-        UIManager.updateLoadingState(true);
+        UIManager.showLoader();
     },
     
     decrementLoading() {
         this.loadingCounter = Math.max(0, this.loadingCounter - 1);
         if (this.loadingCounter === 0) {
-            UIManager.updateLoadingState(false);
+            UIManager.hideLoader();
         }
-    },
-
-    reset() {
-        this.activeRequests.forEach(controller => {
-            try { controller.abort(); } catch (e) {}
-        });
-        this.activeRequests.clear();
-        this.loadingCounter = 0;
-        this.editingTargetId = null;
     }
 };
 
 // ==================== UTILITY FUNCTIONS ====================
 const Utils = {
     formatCurrency(value) {
-        if (value === null || value === undefined || isNaN(value)) return '₱0.00';
-        const num = parseFloat(value);
-        if (!isFinite(num)) return '₱0.00';
-        return '₱' + num.toLocaleString('en-PH', { 
+        if (value == null || isNaN(value)) return '₱0.00';
+        return '₱' + parseFloat(value).toLocaleString('en-PH', { 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         });
     },
 
     formatNumber(value) {
-        if (value === null || value === undefined || isNaN(value)) return '0';
-        const num = parseFloat(value);
-        if (!isFinite(num)) return '0';
-        return Math.round(num).toLocaleString('en-PH');
+        if (value == null || isNaN(value)) return '0';
+        return Math.round(parseFloat(value)).toLocaleString('en-PH');
     },
 
     formatPercentage(value) {
-        if (value === null || value === undefined || isNaN(value)) return '0.0%';
-        const num = parseFloat(value);
-        if (!isFinite(num)) return '0.0%';
-        const capped = Math.min(Math.max(num, -999.9), 999.9);
+        if (value == null || isNaN(value)) return '0.0%';
+        const capped = Math.min(Math.max(parseFloat(value), -999.9), 999.9);
         return capped.toFixed(1) + '%';
     },
 
     formatDate(dateString) {
         if (!dateString) return 'N/A';
-        try {
-            const date = new Date(dateString);
-            if (isNaN(date.getTime())) return 'Invalid Date';
-            return date.toLocaleDateString('en-PH', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric' 
-            });
-        } catch (error) {
-            console.error('Date formatting error:', error);
-            return 'Invalid Date';
-        }
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-PH', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
     },
 
     getISODate(date) {
         if (!(date instanceof Date)) date = new Date(date);
-        if (isNaN(date.getTime())) return '';
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        return date.toISOString().split('T')[0];
     },
 
-    formatTargetType(type) {
-        const types = {
-            'sales': 'Sales Revenue',
-            'customers': 'Customer Traffic',
-            'transactions': 'Transactions',
-            'avg_transaction': 'Avg Transaction Value'
-        };
-        return types[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    formatDateTime() {
+        const now = new Date();
+        return now.toLocaleDateString('en-PH', { 
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    },
+
+    calculateChange(current, previous) {
+        if (!previous || previous === 0) return 0;
+        return ((current - previous) / previous) * 100;
     },
 
     escapeHtml(text) {
-        if (!text) return '';
         const div = document.createElement('div');
-        div.textContent = text;
+        div.textContent = text || '';
         return div.innerHTML;
-    },
-
-    debounce(func, wait = CONFIG.UI.DEBOUNCE_DELAY) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func.apply(this, args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
     },
 
     $(selector) {
@@ -151,311 +114,361 @@ const Utils = {
 
     $$(selector) {
         return document.querySelectorAll(selector);
-    },
-
-    calculatePercentageChange(current, previous) {
-        if (!previous || previous === 0) return 0;
-        return ((current - previous) / previous) * 100;
-    },
-
-    validateDateRange(startDate, endDate) {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        
-        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-            return { valid: false, error: 'Invalid date format' };
-        }
-        
-        if (end < start) {
-            return { valid: false, error: 'End date must be after start date' };
-        }
-        
-        return { valid: true };
-    },
-
-    isValidDate(dateString) {
-        const regex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!regex.test(dateString)) return false;
-        const date = new Date(dateString);
-        return !isNaN(date.getTime());
-    },
-
-    sanitizeInput(input, maxLength = null) {
-        if (typeof input !== 'string') return '';
-        let sanitized = input.trim();
-        if (maxLength && sanitized.length > maxLength) {
-            sanitized = sanitized.substring(0, maxLength);
-        }
-        return sanitized;
     }
 };
 
 // ==================== UI MANAGER ====================
 const UIManager = {
     showNotification(message, type = 'info') {
-        const existing = Utils.$('.notification-toast');
-        if (existing) existing.remove();
-
         const colors = {
             success: '#10b981',
             error: '#ef4444',
             warning: '#f59e0b',
-            info: '#4f46e5'
-        };
-
-        const icons = {
-            success: '✓',
-            error: '✕',
-            warning: '⚠',
-            info: 'ℹ'
+            info: '#6366f1'
         };
 
         const notification = document.createElement('div');
-        notification.className = 'notification-toast';
-        notification.setAttribute('role', 'alert');
+        notification.style.cssText = `
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            min-width: 320px;
+            max-width: 500px;
+            padding: 16px 20px;
+            background: ${colors[type] || colors.info};
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 10001;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        `;
+        
         notification.innerHTML = `
-            <span style="font-size:18px;font-weight:700;line-height:1;">${icons[type] || icons.info}</span>
+            <span style="font-size: 20px;">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
             <span>${Utils.escapeHtml(message)}</span>
         `;
         
-        Object.assign(notification.style, {
-            position: 'fixed',
-            top: '24px',
-            right: '24px',
-            minWidth: '320px',
-            maxWidth: '500px',
-            padding: '16px 20px',
-            background: colors[type] || colors.info,
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-            zIndex: '10001',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            fontSize: '14px',
-            fontWeight: '500',
-            animation: 'slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
-        });
-
         document.body.appendChild(notification);
-
+        
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.4s ease';
+            notification.style.animation = 'slideOutRight 0.4s ease';
             setTimeout(() => notification.remove(), 400);
-        }, CONFIG.UI.NOTIFICATION_DURATION);
+        }, 4000);
     },
 
-    updateLoadingState(isLoading) {
+    showLoader() {
         let loader = Utils.$('#globalLoader');
-        
         if (!loader) {
             loader = document.createElement('div');
             loader.id = 'globalLoader';
-            loader.setAttribute('role', 'status');
-            loader.setAttribute('aria-live', 'polite');
-            Object.assign(loader.style, {
-                position: 'fixed',
-                top: '0',
-                left: '0',
-                width: '100%',
-                height: '100%',
-                background: 'rgba(0, 0, 0, 0.4)',
-                display: 'none',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: '10000',
-                backdropFilter: 'blur(4px)'
-            });
+            loader.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.4);
+                backdrop-filter: blur(4px);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
             loader.innerHTML = `
                 <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
-                    <div class="spinner" style="border: 5px solid #f3f4f6; border-top: 5px solid #4f46e5; border-radius: 50%; width: 60px; height: 60px; animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
-                    <div style="color: #6b7280; font-size: 14px; font-weight: 500;">Loading data...</div>
+                    <div class="spinner" style="border: 5px solid #f3f4f6; border-top: 5px solid #6366f1; border-radius: 50%; width: 60px; height: 60px; animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
+                    <div style="color: #6b7280; font-size: 14px; font-weight: 500;">Loading...</div>
                 </div>
             `;
             document.body.appendChild(loader);
         }
-
-        loader.style.display = isLoading ? 'flex' : 'none';
+        loader.style.display = 'flex';
     },
 
-    updateChangeIndicator(elementId, value) {
-        const element = Utils.$(`#${elementId}`);
-        if (!element) return;
+    hideLoader() {
+        const loader = Utils.$('#globalLoader');
+        if (loader) loader.style.display = 'none';
+    },
 
-        const numValue = parseFloat(value);
-        if (isNaN(numValue) || !isFinite(numValue)) {
-            element.textContent = '0.0%';
-            element.className = 'kpi-change';
-            return;
+    updateKPICard(id, value, change) {
+        const valueEl = Utils.$(`#${id}`);
+        const trendBadge = Utils.$(`#${id.replace('today', '')}TrendBadge`);
+        
+        if (valueEl) {
+            valueEl.textContent = id.includes('Sales') || id.includes('target') ? 
+                (id.includes('target') ? Utils.formatPercentage(value) : Utils.formatCurrency(value)) : 
+                Utils.formatNumber(value);
         }
-
-        const sign = numValue >= 0 ? '+' : '';
-        element.textContent = sign + numValue.toFixed(1) + '%';
-        element.className = 'kpi-change ' + (numValue >= 0 ? 'positive' : 'negative');
+        
+        if (trendBadge && change !== undefined) {
+            const isPositive = change >= 0;
+            trendBadge.className = `kpi-trend-badge ${isPositive ? '' : 'down'}`;
+            trendBadge.querySelector('span').textContent = Utils.formatPercentage(Math.abs(change));
+        }
     },
 
-    updateTextContent(elementId, value) {
-        const element = Utils.$(`#${elementId}`);
-        if (element) element.textContent = value || '';
-    },
-
-    setElementValue(elementId, value) {
-        const element = Utils.$(`#${elementId}`);
-        if (element) element.value = value || '';
+    updateDateTime() {
+        const dateEl = Utils.$('#currentDateTime');
+        if (dateEl) {
+            dateEl.textContent = Utils.formatDateTime();
+        }
     }
 };
 
 // ==================== API SERVICE ====================
 const APIService = {
-    buildUrl(endpoint, params = {}) {
-        const url = new URL(CONFIG.API.BASE_URL, window.location.origin);
-        const queryString = CONFIG.API.ENDPOINTS[endpoint] || endpoint;
-        
-        url.search = queryString;
+    async fetch(action, params = {}) {
+        const url = new URL(CONFIG.API_BASE, window.location.origin);
+        url.searchParams.append('action', action);
         
         Object.entries(params).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
                 url.searchParams.append(key, value);
             }
         });
-        
-        return url.toString();
-    },
-
-    async fetchWithRetry(url, options = {}, retries = CONFIG.API.RETRY_ATTEMPTS) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), CONFIG.API.TIMEOUT);
-
-        if (AppState.activeRequests.has(url)) {
-            AppState.activeRequests.get(url).abort();
-        }
-        AppState.activeRequests.set(url, controller);
 
         try {
-            const response = await fetch(url, {
-                ...options,
-                signal: controller.signal,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                }
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
             });
 
-            clearTimeout(timeout);
-            AppState.activeRequests.delete(url);
-
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}`);
             }
 
             const data = await response.json();
             
             if (data.status === 'error') {
-                throw new Error(data.message || 'API error occurred');
+                throw new Error(data.message || 'API error');
             }
 
             return data;
-
         } catch (error) {
-            clearTimeout(timeout);
-            AppState.activeRequests.delete(url);
-
-            if (error.name === 'AbortError') {
-                console.log('Request cancelled:', url);
-                return null;
-            }
-
-            if (retries > 0 && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
-                console.log(`Retrying request (${retries} attempts left):`, url);
-                await new Promise(resolve => setTimeout(resolve, CONFIG.API.RETRY_DELAY));
-                return this.fetchWithRetry(url, options, retries - 1);
-            }
-
+            console.error('API Error:', error);
             throw error;
         }
     },
 
-    get(endpoint, params = {}) {
-        const url = this.buildUrl(endpoint, params);
-        return this.fetchWithRetry(url);
-    },
+    async post(action, body) {
+        const url = new URL(CONFIG.API_BASE, window.location.origin);
+        url.searchParams.append('action', action);
 
-    post(endpoint, body, params = {}) {
-        const url = this.buildUrl(endpoint, params);
-        return this.fetchWithRetry(url, {
-            method: 'POST',
-            body: JSON.stringify(body)
-        });
-    }
-};
-// ==================== DATE MANAGER ====================
-const DateManager = {
-    setDefaultDates() {
-        const today = new Date();
-        const yesterday = new Date(today - CONFIG.DATES.ONE_DAY);
-
-        UIManager.setElementValue('currentDate', Utils.getISODate(today));
-        UIManager.setElementValue('compareDate', Utils.getISODate(yesterday));
-    },
-
-    updateComparisonDates() {
-        const typeSelect = Utils.$('#comparisonType');
-        const currentDate = Utils.$('#currentDate');
-        const compareDate = Utils.$('#compareDate');
-
-        if (!typeSelect || !currentDate || !compareDate) return;
-
-        const today = new Date();
-        currentDate.value = Utils.getISODate(today);
-
-        const dateMap = {
-            'today_vs_date': today - CONFIG.DATES.ONE_DAY,
-            'week_vs_range': today - CONFIG.DATES.ONE_WEEK,
-            'month_vs_period': today - CONFIG.DATES.ONE_MONTH,
-            'custom': today - CONFIG.DATES.ONE_DAY
-        };
-
-        compareDate.value = Utils.getISODate(new Date(dateMap[typeSelect.value] || dateMap.custom));
-    }
-};
-
-// ==================== KPI MANAGER ====================
-const KPIManager = {
-    async loadSummary() {
-        AppState.incrementLoading();
         try {
-            const data = await APIService.get('kpiSummary');
+            const response = await fetch(url.toString(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
 
-            if (!data) {
-                throw new Error('No data received from server');
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
 
-            UIManager.updateTextContent('todaySales', Utils.formatCurrency(data.today_sales || 0));
-            UIManager.updateChangeIndicator('salesChange', data.sales_change || 0);
+            const data = await response.json();
+            
+            if (data.status === 'error') {
+                throw new Error(data.message || 'API error');
+            }
 
-            UIManager.updateTextContent('todayCustomers', Utils.formatNumber(data.today_customers || 0));
-            UIManager.updateChangeIndicator('customersChange', data.customers_change || 0);
-
-            UIManager.updateTextContent('todayTransactions', Utils.formatNumber(data.today_transactions || 0));
-            UIManager.updateChangeIndicator('transactionsChange', data.transactions_change || 0);
-
-            const achievement = parseFloat(data.target_achievement || 0);
-            UIManager.updateTextContent('targetAchievement', Utils.formatPercentage(achievement));
-            UIManager.updateTextContent('targetStatus', data.target_status || 'No active target');
-
+            return data;
         } catch (error) {
-            console.error('KPI error:', error);
-            UIManager.showNotification(error.message || 'Failed to load KPI data', 'error');
-        } finally {
-            AppState.decrementLoading();
+            console.error('API Error:', error);
+            throw error;
         }
     }
 };
 
-// ==================== COMPARISON MANAGER ====================
-const ComparisonManager = {
+// ==================== CHART MANAGER ====================
+const ChartManager = {
+    createSalesTrendChart(data) {
+        const ctx = Utils.$('#salesTrendChart');
+        if (!ctx) return;
+
+        if (AppState.charts.salesTrend) {
+            AppState.charts.salesTrend.destroy();
+        }
+
+        const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        AppState.charts.salesTrend = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedData.map(d => Utils.formatDate(d.date)),
+                datasets: [{
+                    label: 'Sales Revenue',
+                    data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
+                    borderColor: CONFIG.CHART_COLORS.primary,
+                    backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                ...CONFIG.CHART_OPTIONS,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => '₱' + value.toLocaleString()
+                        }
+                    }
+                },
+                plugins: {
+                    ...CONFIG.CHART_OPTIONS.plugins,
+                    tooltip: {
+                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
+                        callbacks: {
+                            label: ctx => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y)
+                        }
+                    }
+                }
+            }
+        });
+    },
+
+    createComparisonChart(comparisonData) {
+        const ctx = Utils.$('#comparisonChart');
+        if (!ctx) return;
+
+        if (AppState.charts.comparison) {
+            AppState.charts.comparison.destroy();
+        }
+
+        const metrics = comparisonData.map(d => d.metric);
+        const currentValues = comparisonData.map(d => parseFloat(d.current || 0));
+        const compareValues = comparisonData.map(d => parseFloat(d.compare || 0));
+
+        AppState.charts.comparison = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: metrics,
+                datasets: [
+                    {
+                        label: 'Current Period',
+                        data: currentValues,
+                        backgroundColor: CONFIG.CHART_COLORS.primary,
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Previous Period',
+                        data: compareValues,
+                        backgroundColor: CONFIG.CHART_COLORS.info,
+                        borderRadius: 8
+                    }
+                ]
+            },
+            options: {
+                ...CONFIG.CHART_OPTIONS,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    },
+
+    updateTrendChart() {
+        const period = Utils.$('#trendPeriod')?.value || 30;
+        DataManager.loadTrendData(period);
+    },
+
+    updateComparisonChart() {
+        // Will be implemented with comparison data
+    }
+};
+
+// ==================== DATA MANAGER ====================
+const DataManager = {
+    async loadKPISummary() {
+        AppState.incrementLoading();
+        try {
+            const data = await APIService.fetch('kpi_summary');
+            
+            UIManager.updateKPICard('todaySales', data.today_sales, data.sales_change);
+            UIManager.updateKPICard('todayCustomers', data.today_customers, data.customers_change);
+            UIManager.updateKPICard('todayTransactions', data.today_transactions, data.transactions_change);
+            UIManager.updateKPICard('targetAchievement', data.target_achievement);
+            
+            const targetStatus = Utils.$('#targetStatus');
+            if (targetStatus) {
+                targetStatus.textContent = data.target_status;
+            }
+            
+            const miniProgress = Utils.$('#targetMiniProgress');
+            if (miniProgress) {
+                miniProgress.style.width = Math.min(data.target_achievement, 100) + '%';
+            }
+
+        } catch (error) {
+            UIManager.showNotification('Failed to load KPI data', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
+    },
+
+    async loadTrendData(days = 30) {
+        AppState.incrementLoading();
+        try {
+            const data = await APIService.fetch('trend_data', { days });
+            
+            if (data.trend_data && data.trend_data.length > 0) {
+                ChartManager.createSalesTrendChart(data.trend_data);
+                this.populateTrendTable(data.trend_data);
+            }
+        } catch (error) {
+            UIManager.showNotification('Failed to load trend data', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
+    },
+
+    populateTrendTable(trendData) {
+        const tbody = Utils.$('#salesTrendTableBody');
+        if (!tbody) return;
+
+        const sorted = [...trendData].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        tbody.innerHTML = sorted.map((item, index) => {
+            const sales = parseFloat(item.sales_volume || 0);
+            const receipts = parseInt(item.receipt_count || 0);
+            const customers = parseInt(item.customer_traffic || 0);
+            const avgValue = receipts > 0 ? sales / receipts : 0;
+            
+            let change = 0;
+            if (index < sorted.length - 1) {
+                const prevSales = parseFloat(sorted[index + 1].sales_volume || 0);
+                change = Utils.calculateChange(sales, prevSales);
+            }
+
+            return `
+                <tr>
+                    <td><strong>${Utils.formatDate(item.date)}</strong></td>
+                    <td>${Utils.formatCurrency(sales)}</td>
+                    <td>${Utils.formatNumber(receipts)}</td>
+                    <td>${Utils.formatNumber(customers)}</td>
+                    <td>${Utils.formatCurrency(avgValue)}</td>
+                    <td>
+                        ${index < sorted.length - 1 ? `
+                            <span class="metric-change ${change >= 0 ? 'positive' : 'negative'}">
+                                ${change >= 0 ? '▲' : '▼'} ${Utils.formatPercentage(Math.abs(change))}
+                            </span>
+                        ` : '—'}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
     async loadComparison() {
         const currentDate = Utils.$('#currentDate')?.value;
         const compareDate = Utils.$('#compareDate')?.value;
@@ -465,201 +478,324 @@ const ComparisonManager = {
             return;
         }
 
-        if (!Utils.isValidDate(currentDate) || !Utils.isValidDate(compareDate)) {
-            UIManager.showNotification('Invalid date format', 'warning');
-            return;
-        }
-
         AppState.incrementLoading();
         try {
-            const data = await APIService.get('compare', {
-                currentDate,
-                compareDate
-            });
-
-            if (!data) {
-                throw new Error('No comparison data received');
+            const data = await APIService.fetch('compare', { currentDate, compareDate });
+            
+            if (data.comparison) {
+                this.displayComparisonResults(data.comparison);
+                ChartManager.createComparisonChart(data.comparison);
+                UIManager.showNotification('Comparison loaded successfully', 'success');
             }
-
-            this.displayResults(data.comparison || []);
-            UIManager.showNotification('Comparison loaded successfully', 'success');
-
         } catch (error) {
-            console.error('Comparison error:', error);
-            UIManager.showNotification(error.message || 'Failed to load comparison', 'error');
+            UIManager.showNotification('Failed to load comparison', 'error');
         } finally {
             AppState.decrementLoading();
         }
     },
 
-    displayResults(comparison) {
-        const tbody = Utils.$('#comparisonTableBody');
-        if (!tbody) return;
+    displayComparisonResults(comparison) {
+        const container = Utils.$('.comparison-grid');
+        if (!container) return;
 
-        tbody.innerHTML = '';
-
-        if (!comparison || comparison.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="empty-state">
-                        No comparison data available for selected dates
-                    </td>
-                </tr>
+        container.innerHTML = comparison.map(item => {
+            const change = parseFloat(item.percentage || 0);
+            const isPositive = change >= 0;
+            
+            return `
+                <div class="comparison-metric-card">
+                    <div class="metric-name">${Utils.escapeHtml(item.metric)}</div>
+                    <div class="metric-values">
+                        <span class="metric-current">${item.metric.includes('Sales') || item.metric.includes('Value') ? 
+                            Utils.formatCurrency(item.current) : 
+                            Utils.formatNumber(item.current)
+                        }</span>
+                        <span class="metric-previous">vs ${item.metric.includes('Sales') || item.metric.includes('Value') ? 
+                            Utils.formatCurrency(item.compare) : 
+                            Utils.formatNumber(item.compare)
+                        }</span>
+                    </div>
+                    <div class="metric-change ${isPositive ? 'positive' : 'negative'}">
+                        <span>${isPositive ? '▲' : '▼'}</span>
+                        <span>${Utils.formatPercentage(Math.abs(change))}</span>
+                    </div>
+                </div>
             `;
-            return;
-        }
-
-        const fragment = document.createDocumentFragment();
-
-        comparison.forEach(item => {
-            const row = document.createElement('tr');
-            const trendIcon = item.trend === 'up' ? '▲' : '▼';
-            const trendClass = item.trend === 'up' ? 'trend-up' : 'trend-down';
-            const isCurrency = item.metric.includes('Sales') || item.metric.includes('Value');
-            const formatValue = isCurrency ? Utils.formatCurrency : Utils.formatNumber;
-
-            const percentageValue = parseFloat(item.percentage);
-            const percentageColor = percentageValue >= 0 ? '#10b981' : '#ef4444';
-            const percentageText = percentageValue >= 0 ? '+' : '';
-
-            row.innerHTML = `
-                <td><strong>${Utils.escapeHtml(item.metric)}</strong></td>
-                <td>${formatValue(item.current)}</td>
-                <td>${formatValue(item.compare)}</td>
-                <td>${formatValue(Math.abs(item.difference))}</td>
-                <td style="font-weight:600;color:${percentageColor}">
-                    ${percentageText}${percentageValue.toFixed(2)}%
-                </td>
-                <td>
-                    <span class="trend-indicator ${trendClass}">${trendIcon}</span>
-                </td>
-            `;
-
-            fragment.appendChild(row);
-        });
-
-        tbody.appendChild(fragment);
+        }).join('');
     }
 };
-
 // ==================== TARGET MANAGER ====================
 const TargetManager = {
     async loadTargets(filter = 'all') {
-        AppState.currentFilter = filter;
         AppState.incrementLoading();
-        
         try {
-            const data = await APIService.get('targets', { filter });
-
-            if (!data) {
-                throw new Error('No targets data received');
+            const data = await APIService.fetch('get_targets', { filter });
+            
+            if (data.targets) {
+                this.displayTargetsGrid(data.targets);
+                this.displayTargetsTable(data.targets);
             }
-
-            this.displayTargets(data.targets || []);
         } catch (error) {
-            console.error('Targets error:', error);
-            UIManager.showNotification(error.message || 'Failed to load targets', 'error');
+            UIManager.showNotification('Failed to load targets', 'error');
         } finally {
             AppState.decrementLoading();
         }
     },
 
-    displayTargets(targets) {
-        const tbody = Utils.$('#targetsTableBody');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
+    displayTargetsGrid(targets) {
+        const grid = Utils.$('#targetsGrid');
+        if (!grid) return;
 
         if (!targets || targets.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="8" class="empty-state">
-                        No targets found. Create your first target to start tracking progress.
-                    </td>
-                </tr>
-            `;
+            grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No targets found</p>';
             return;
         }
 
-        const fragment = document.createDocumentFragment();
+        grid.innerHTML = targets.map(target => {
+            const progress = Math.min(parseFloat(target.progress || 0), 999.9);
+            const statusClass = target.status === 'achieved' ? 'achieved' : 
+                              target.status === 'near' ? 'near' : 'below';
+            const isCurrency = target.target_type === 'sales' || target.target_type === 'avg_transaction';
 
-        targets.forEach(target => {
-            const row = this.createTargetRow(target);
-            fragment.appendChild(row);
+            return `
+                <div class="target-card-pro">
+                    <div class="target-header-row">
+                        <div>
+                            <h4 class="target-name-pro">${Utils.escapeHtml(target.target_name)}</h4>
+                            <span class="target-type-badge">${this.formatTargetType(target.target_type)}</span>
+                        </div>
+                    </div>
+                    <div class="target-progress-section">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(progress, 100)}%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span class="progress-percentage">${progress.toFixed(1)}%</span>
+                            <span class="progress-values">
+                                ${isCurrency ? Utils.formatCurrency(target.current_value) : Utils.formatNumber(target.current_value)} / 
+                                ${isCurrency ? Utils.formatCurrency(target.target_value) : Utils.formatNumber(target.target_value)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="target-footer-row">
+                        <span class="target-dates">${Utils.formatDate(target.start_date)} - ${Utils.formatDate(target.end_date)}</span>
+                        <div class="target-actions">
+                            <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    displayTargetsTable(targets) {
+        const tbody = Utils.$('#activeTargetsTableBody');
+        if (!tbody) return;
+
+        if (!targets || targets.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">No active targets</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = targets.map(target => {
+            const progress = Math.min(parseFloat(target.progress || 0), 999.9);
+            const statusClass = target.status === 'achieved' ? 'achieved' : 
+                              target.status === 'near' ? 'near' : 'below';
+            const statusText = target.status === 'achieved' ? 'Achieved' : 
+                             target.status === 'near' ? 'Near Target' : 'Below Target';
+            const isCurrency = target.target_type === 'sales' || target.target_type === 'avg_transaction';
+
+            return `
+                <tr>
+                    <td><strong>${Utils.escapeHtml(target.target_name)}</strong></td>
+                    <td>${this.formatTargetType(target.target_type)}</td>
+                    <td>
+                        ${isCurrency ? Utils.formatCurrency(target.current_value) : Utils.formatNumber(target.current_value)} / 
+                        ${isCurrency ? Utils.formatCurrency(target.target_value) : Utils.formatNumber(target.target_value)}
+                    </td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;">
+                                <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(progress, 100)}%"></div>
+                            </div>
+                            <span style="font-weight:600;min-width:50px;font-size:13px;">${progress.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td><span class="status-badge-pro ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    formatTargetType(type) {
+        const types = {
+            'sales': 'Sales Revenue',
+            'customers': 'Customer Traffic',
+            'transactions': 'Transactions',
+            'avg_transaction': 'Avg Transaction Value'
+        };
+        return types[type] || type;
+    },
+
+    async editTarget(id) {
+        AppState.incrementLoading();
+        try {
+            const data = await APIService.fetch('get_targets', { filter: 'all' });
+            const target = data.targets?.find(t => t.id === id);
+            
+            if (!target) {
+                UIManager.showNotification('Target not found', 'error');
+                return;
+            }
+
+            AppState.editingTargetId = id;
+            
+            Utils.$('#modalTitle').textContent = 'Edit Target';
+            Utils.$('#targetName').value = target.target_name || '';
+            Utils.$('#targetType').value = target.target_type || '';
+            Utils.$('#targetValue').value = target.target_value || '';
+            Utils.$('#targetStartDate').value = target.start_date || '';
+            Utils.$('#targetEndDate').value = target.end_date || '';
+            Utils.$('#targetStore').value = target.store || '';
+            
+            openTargetModal();
+        } catch (error) {
+            UIManager.showNotification('Failed to load target', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
+    },
+
+    async deleteTarget(id) {
+        if (!confirm('Are you sure you want to delete this target?')) return;
+
+        AppState.incrementLoading();
+        try {
+            await APIService.fetch('delete_target', { id });
+            
+            UIManager.showNotification('Target deleted successfully', 'success');
+            await Promise.all([
+                this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                DataManager.loadKPISummary()
+            ]);
+        } catch (error) {
+            UIManager.showNotification('Failed to delete target', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
+    }
+};
+
+// ==================== DATE MANAGER ====================
+const DateManager = {
+    setDefaultDates() {
+        const today = new Date();
+        const yesterday = new Date(today - 86400000);
+
+        const currentDate = Utils.$('#currentDate');
+        const compareDate = Utils.$('#compareDate');
+
+        if (currentDate) currentDate.value = Utils.getISODate(today);
+        if (compareDate) compareDate.value = Utils.getISODate(yesterday);
+    },
+
+    updateComparisonDates() {
+        const type = Utils.$('#comparisonType')?.value;
+        const today = new Date();
+        
+        const dateMap = {
+            'today_vs_yesterday': today - 86400000,
+            'week_vs_week': today - 604800000,
+            'month_vs_month': today - 2592000000,
+            'custom': today - 86400000
+        };
+
+        const currentDate = Utils.$('#currentDate');
+        const compareDate = Utils.$('#compareDate');
+
+        if (currentDate) currentDate.value = Utils.getISODate(today);
+        if (compareDate) compareDate.value = Utils.getISODate(new Date(dateMap[type] || dateMap.custom));
+    }
+};
+
+// ==================== TAB MANAGER ====================
+const TabManager = {
+    switchTab(tabName) {
+        Utils.$$('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        Utils.$$('.tab-content').forEach(content => {
+            content.classList.remove('active');
         });
 
-        tbody.appendChild(fragment);
-    },
+        const activeBtn = Utils.$(`[data-tab="${tabName}"]`);
+        const activeContent = Utils.$(`#${tabName}-tab`);
 
-    createTargetRow(target) {
-        const row = document.createElement('tr');
-        const progress = Math.min(Math.max(parseFloat(target.progress) || 0, 0), 999.9);
-        const progressClass = progress >= 100 ? 'progress-achieved' :
-                            progress >= 80 ? 'progress-near' : 'progress-below';
+        if (activeBtn) activeBtn.classList.add('active');
+        if (activeContent) activeContent.classList.add('active');
 
-        const statusClass = target.status === 'achieved' ? 'status-achieved' :
-                          target.status === 'near' ? 'status-near' : 'status-below';
+        AppState.currentTab = tabName;
+    }
+};
 
-        const statusText = target.status === 'achieved' ? 'Achieved' :
-                         target.status === 'near' ? 'Near Target' : 'Below Target';
-
-        const isCurrencyType = target.target_type === 'sales' || target.target_type === 'avg_transaction';
-        const formatValue = isCurrencyType ? Utils.formatCurrency : Utils.formatNumber;
-
-        row.innerHTML = `
-            <td><strong>${Utils.escapeHtml(target.target_name)}</strong></td>
-            <td>${Utils.formatTargetType(target.target_type)}</td>
-            <td style="white-space:nowrap">${Utils.formatDate(target.start_date)} - ${Utils.formatDate(target.end_date)}</td>
-            <td>${formatValue(target.target_value)}</td>
-            <td>${formatValue(target.current_value)}</td>
-            <td>
-                <div style="display:flex;align-items:center;gap:10px">
-                    <div class="progress-container" style="flex:1">
-                        <div class="progress-bar ${progressClass}" style="width:${Math.min(progress, 100)}%"></div>
-                    </div>
-                    <span style="font-weight:600;min-width:60px;font-size:13px">${progress.toFixed(1)}%</span>
-                </div>
-            </td>
-            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-            <td style="white-space:nowrap">
-                <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;margin-right:6px" data-id="${target.id}">Edit</button>
-                <button class="btn" style="padding:6px 12px;font-size:12px;background:#ef4444;color:#fff" data-id="${target.id}">Delete</button>
-            </td>
-        `;
-
-        row.querySelector('button[data-id]:first-of-type').addEventListener('click', () => this.editTarget(target));
-        row.querySelector('button[data-id]:last-of-type').addEventListener('click', () => this.deleteTarget(target.id));
-
-        return row;
-    },
-
-    openModal() {
+// ==================== MODAL MANAGER ====================
+const ModalManager = {
+    open() {
         const modal = Utils.$('#targetModal');
         const form = Utils.$('#targetForm');
-        const modalTitle = Utils.$('#modalTitle');
-
+        
         if (modal) {
             modal.classList.add('active');
-            modal.setAttribute('aria-hidden', 'false');
         }
+        
         if (form) form.reset();
-        if (modalTitle) modalTitle.textContent = 'Create New Target';
-
+        
+        Utils.$('#modalTitle').textContent = 'Create New Target';
         AppState.editingTargetId = null;
 
         const today = new Date();
-        const nextMonth = new Date(today.getTime() + CONFIG.DATES.ONE_MONTH);
+        const nextMonth = new Date(today.getTime() + 2592000000);
 
-        UIManager.setElementValue('targetStartDate', Utils.getISODate(today));
-        UIManager.setElementValue('targetEndDate', Utils.getISODate(nextMonth));
+        Utils.$('#targetStartDate').value = Utils.getISODate(today);
+        Utils.$('#targetEndDate').value = Utils.getISODate(nextMonth);
     },
 
-    closeModal() {
+    close(event) {
+        if (event && event.target !== event.currentTarget && !event.target.classList.contains('modal-close-btn')) {
+            return;
+        }
+        
         const modal = Utils.$('#targetModal');
         if (modal) {
             modal.classList.remove('active');
-            modal.setAttribute('aria-hidden', 'true');
         }
+        
         AppState.editingTargetId = null;
     },
 
@@ -667,378 +803,170 @@ const TargetManager = {
         event.preventDefault();
 
         const formData = {
-            name: Utils.sanitizeInput(Utils.$('#targetName')?.value, CONFIG.VALIDATION.MAX_TARGET_NAME_LENGTH),
+            name: Utils.$('#targetName')?.value.trim(),
             type: Utils.$('#targetType')?.value,
             value: parseFloat(Utils.$('#targetValue')?.value),
             start_date: Utils.$('#targetStartDate')?.value,
             end_date: Utils.$('#targetEndDate')?.value,
-            store: Utils.sanitizeInput(Utils.$('#targetStore')?.value, 100) || ''
+            store: Utils.$('#targetStore')?.value.trim() || ''
         };
 
-        // Validation
-        if (!formData.name) {
-            UIManager.showNotification('Please enter a target name', 'warning');
+        if (!formData.name || !formData.type || !formData.value || !formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please fill in all required fields', 'warning');
             return;
         }
 
-        if (formData.name.length > CONFIG.VALIDATION.MAX_TARGET_NAME_LENGTH) {
-            UIManager.showNotification(`Target name too long (max ${CONFIG.VALIDATION.MAX_TARGET_NAME_LENGTH} characters)`, 'warning');
+        if (formData.value <= 0) {
+            UIManager.showNotification('Target value must be greater than 0', 'warning');
             return;
         }
 
-        const validTypes = ['sales', 'customers', 'transactions', 'avg_transaction'];
-        if (!validTypes.includes(formData.type)) {
-            UIManager.showNotification('Please select a valid target type', 'warning');
-            return;
-        }
-
-        if (isNaN(formData.value) || formData.value < CONFIG.VALIDATION.MIN_TARGET_VALUE) {
-            UIManager.showNotification(`Target value must be at least ${CONFIG.VALIDATION.MIN_TARGET_VALUE}`, 'warning');
-            return;
-        }
-
-        if (formData.value > CONFIG.VALIDATION.MAX_TARGET_VALUE) {
-            UIManager.showNotification('Target value is too large', 'warning');
-            return;
-        }
-
-        if (!formData.start_date || !formData.end_date) {
-            UIManager.showNotification('Please select both start and end dates', 'warning');
-            return;
-        }
-
-        const dateValidation = Utils.validateDateRange(formData.start_date, formData.end_date);
-        if (!dateValidation.valid) {
-            UIManager.showNotification(dateValidation.error, 'warning');
+        if (new Date(formData.end_date) < new Date(formData.start_date)) {
+            UIManager.showNotification('End date must be after start date', 'warning');
             return;
         }
 
         AppState.incrementLoading();
-
         try {
-            let data;
+            const action = AppState.editingTargetId ? 'update_target' : 'save_target';
+            
             if (AppState.editingTargetId) {
                 formData.id = AppState.editingTargetId;
-                data = await APIService.post('updateTarget', formData);
-            } else {
-                data = await APIService.post('saveTarget', formData);
             }
 
-            if (!data) {
-                throw new Error('No response from server');
-            }
-
-            this.closeModal();
+            await APIService.post(action, formData);
+            
+            UIManager.showNotification('Target saved successfully', 'success');
+            ModalManager.close();
+            
             await Promise.all([
-                this.loadTargets(AppState.currentFilter),
-                TableLoaders.loadTargetProgressTable(),
-                KPIManager.loadSummary()
+                TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                DataManager.loadKPISummary()
             ]);
-            UIManager.showNotification(data.message || 'Target saved successfully!', 'success');
-
         } catch (error) {
-            console.error('Save error:', error);
-            UIManager.showNotification(error.message || 'Failed to save target', 'error');
+            UIManager.showNotification('Failed to save target', 'error');
         } finally {
             AppState.decrementLoading();
         }
-    },
-
-    async deleteTarget(id) {
-        if (!confirm('Are you sure you want to delete this target? This action cannot be undone.')) return;
-
-        if (!id || id <= 0) {
-            UIManager.showNotification('Invalid target ID', 'error');
-            return;
-        }
-
-        AppState.incrementLoading();
-
-        try {
-            const data = await APIService.get('deleteTarget', { id });
-
-            if (!data) {
-                throw new Error('No response from server');
-            }
-
-            await Promise.all([
-                this.loadTargets(AppState.currentFilter),
-                TableLoaders.loadTargetProgressTable(),
-                KPIManager.loadSummary()
-            ]);
-            UIManager.showNotification(data.message || 'Target deleted successfully!', 'success');
-
-        } catch (error) {
-            console.error('Delete error:', error);
-            UIManager.showNotification(error.message || 'Failed to delete target', 'error');
-        } finally {
-            AppState.decrementLoading();
-        }
-    },
-
-    editTarget(target) {
-        const modal = Utils.$('#targetModal');
-        const modalTitle = Utils.$('#modalTitle');
-
-        if (modalTitle) modalTitle.textContent = 'Edit Target';
-        if (modal) {
-            modal.classList.add('active');
-            modal.setAttribute('aria-hidden', 'false');
-        }
-
-        AppState.editingTargetId = target.id;
-
-        UIManager.setElementValue('targetName', target.target_name || '');
-        UIManager.setElementValue('targetType', target.target_type || 'sales');
-        UIManager.setElementValue('targetValue', target.target_value || '');
-        UIManager.setElementValue('targetStartDate', target.start_date || '');
-        UIManager.setElementValue('targetEndDate', target.end_date || '');
-        UIManager.setElementValue('targetStore', target.store || '');
-    },
-
-    filterTargets() {
-        const filter = Utils.$('#targetFilter')?.value || 'all';
-        this.loadTargets(filter);
     }
 };
 
-// ==================== TABLE LOADERS ====================
-const TableLoaders = {
-    async loadSalesTrendTable() {
-        try {
-            const data = await APIService.get('trendData', { days: 30 });
-
-            if (!data || !data.trend_data || data.trend_data.length === 0) {
-                this.displayEmptyTrendTable();
-                return;
-            }
-
-            this.displaySalesTrendTable(data.trend_data);
-
-        } catch (error) {
-            console.error('Trend table error:', error);
-            this.displayEmptyTrendTable();
-        }
-    },
-
-    displaySalesTrendTable(trendData) {
-        const tbody = Utils.$('#salesTrendTableBody');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
-
-        if (!trendData || trendData.length === 0) {
-            this.displayEmptyTrendTable();
-            return;
-        }
-
-        const fragment = document.createDocumentFragment();
-        const sortedData = [...trendData].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        sortedData.forEach((item, index) => {
-            const row = document.createElement('tr');
-            const salesValue = parseFloat(item.sales_volume) || 0;
-            
-            let changePercent = 0;
-            let changeClass = '';
-            let changeIcon = '';
-            
-            if (index < sortedData.length - 1) {
-                const previousValue = parseFloat(sortedData[index + 1].sales_volume) || 0;
-                changePercent = Utils.calculatePercentageChange(salesValue, previousValue);
-                changeClass = changePercent >= 0 ? 'positive' : 'negative';
-                changeIcon = changePercent >= 0 ? '▲' : '▼';
-            }
-
-            row.innerHTML = `
-                <td><strong>${Utils.formatDate(item.date)}</strong></td>
-                <td style="font-weight:600">${Utils.formatCurrency(salesValue)}</td>
-                <td>
-                    ${index < sortedData.length - 1 ? `
-                        <span class="kpi-change ${changeClass}" style="display:inline-flex;align-items:center;gap:4px;">
-                            ${changeIcon} ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(1)}%
-                        </span>
-                    ` : '<span style="color:#9ca3af;">—</span>'}
-                </td>
-            `;
-
-            fragment.appendChild(row);
-        });
-
-        tbody.appendChild(fragment);
-    },
-
-    displayEmptyTrendTable() {
-        const tbody = Utils.$('#salesTrendTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No sales trend data available</td></tr>`;
-    },
-
-    async loadTargetProgressTable() {
-        try {
-            const data = await APIService.get('targets', { filter: 'active' });
-
-            if (!data || !data.targets || data.targets.length === 0) {
-                this.displayEmptyTargetTable();
-                return;
-            }
-
-            this.displayTargetProgressTable(data.targets);
-
-        } catch (error) {
-            console.error('Target table error:', error);
-            this.displayEmptyTargetTable();
-        }
-    },
-
-    displayTargetProgressTable(targets) {
-        const tbody = Utils.$('#targetProgressTableBody');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
-
-        if (!targets || targets.length === 0) {
-            this.displayEmptyTargetTable();
-            return;
-        }
-
-        const fragment = document.createDocumentFragment();
-
-        targets.forEach(target => {
-            const row = document.createElement('tr');
-            const progress = Math.min(Math.max(parseFloat(target.progress) || 0, 0), 999.9);
-            const progressClass = progress >= 100 ? 'progress-achieved' :
-                                progress >= 80 ? 'progress-near' : 'progress-below';
-
-            const statusClass = target.status === 'achieved' ? 'status-achieved' :
-                              target.status === 'near' ? 'status-near' : 'status-below';
-
-            const statusText = target.status === 'achieved' ? 'Achieved' :
-                             target.status === 'near' ? 'Near Target' : 'Below Target';
-
-            row.innerHTML = `
-                <td><strong>${Utils.escapeHtml(target.target_name)}</strong></td>
-                <td>
-                    <div style="display:flex;align-items:center;gap:10px">
-                        <div class="progress-container" style="flex:1">
-                            <div class="progress-bar ${progressClass}" style="width:${Math.min(progress, 100)}%"></div>
-                        </div>
-                        <span style="font-weight:600;min-width:60px;font-size:13px">${progress.toFixed(1)}%</span>
-                    </div>
-                </td>
-                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-            `;
-
-            fragment.appendChild(row);
-        });
-
-        tbody.appendChild(fragment);
-    },
-
-    displayEmptyTargetTable() {
-        const tbody = Utils.$('#targetProgressTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No active targets available</td></tr>`;
-    }
+// ==================== GLOBAL FUNCTIONS ====================
+window.openTargetModal = () => ModalManager.open();
+window.closeTargetModal = (event) => ModalManager.close(event);
+window.saveTarget = (event) => ModalManager.saveTarget(event);
+window.filterTargets = () => TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all');
+window.loadComparison = () => DataManager.loadComparison();
+window.updateComparisonDates = () => DateManager.updateComparisonDates();
+window.switchTab = (tabName) => TabManager.switchTab(tabName);
+window.updateTrendChart = () => ChartManager.updateTrendChart();
+window.updateComparisonChart = () => ChartManager.updateComparisonChart();
+window.resetComparison = () => {
+    DateManager.setDefaultDates();
+    Utils.$('.comparison-grid').innerHTML = '';
+};
+window.exportTargets = () => {
+    UIManager.showNotification('Export feature coming soon', 'info');
+};
+window.toggleNotifications = () => {
+    UIManager.showNotification('Notifications feature coming soon', 'info');
+};
+window.refreshAllData = async () => {
+    await App.loadAllData();
+    UIManager.showNotification('Data refreshed successfully', 'success');
 };
 
-// ==================== APPLICATION ====================
+// ==================== APP INITIALIZATION ====================
 const App = {
     async init() {
-        if (AppState.isInitialized) {
-            console.warn('App already initialized');
-            return;
-        }
-
-        console.log('Initializing Sales Analytics Dashboard...');
+        console.log('🚀 Initializing Professional Sales Dashboard...');
 
         try {
+            // Update date/time
+            UIManager.updateDateTime();
+            setInterval(() => UIManager.updateDateTime(), 60000);
+
+            // Set default dates
             DateManager.setDefaultDates();
+
+            // Load all data
             await this.loadAllData();
+
+            // Setup event listeners
             this.setupEventListeners();
 
-            AppState.isInitialized = true;
-            console.log('✓ Dashboard initialized successfully');
+            console.log('✅ Dashboard initialized successfully');
         } catch (error) {
-            console.error('App initialization error:', error);
-            UIManager.showNotification('Failed to initialize application', 'error');
+            console.error('❌ Initialization error:', error);
+            UIManager.showNotification('Failed to initialize dashboard', 'error');
         }
     },
 
     async loadAllData() {
-        const results = await Promise.allSettled([
-            KPIManager.loadSummary(),
-            TargetManager.loadTargets(),
-            TableLoaders.loadSalesTrendTable(),
-            TableLoaders.loadTargetProgressTable()
+        await Promise.allSettled([
+            DataManager.loadKPISummary(),
+            DataManager.loadTrendData(30),
+            TargetManager.loadTargets('all')
         ]);
-
-        const failures = results.filter(r => r.status === 'rejected');
-        if (failures.length > 0) {
-            console.error('Some data failed to load:', failures);
-        }
     },
 
     setupEventListeners() {
-        window.addEventListener('beforeunload', () => AppState.reset());
-
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && AppState.isInitialized) {
-                this.refreshData();
-            }
-        });
-
-        window.addEventListener('online', () => {
-            UIManager.showNotification('Connection restored', 'success');
-            this.refreshData();
-        });
-
-        window.addEventListener('offline', () => {
-            UIManager.showNotification('Connection lost - Working offline', 'warning');
-        });
-
+        // Modal backdrop click
         const modal = Utils.$('#targetModal');
         if (modal) {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
-                    TargetManager.closeModal();
+                    ModalManager.close();
                 }
             });
         }
-    },
 
-    refreshData: Utils.debounce(async function() {
-        if (!AppState.isInitialized) return;
-        
-        AppState.incrementLoading();
-        try {
-            await App.loadAllData();
-            UIManager.showNotification('Data refreshed successfully', 'success');
-        } catch (error) {
-            console.error('Refresh error:', error);
-            UIManager.showNotification('Failed to refresh data', 'error');
-        } finally {
-            AppState.decrementLoading();
-        }
-    }, 500),
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ModalManager.close();
+            }
+        });
 
-    exportReport() {
-        UIManager.showNotification('Preparing report for export...', 'info');
-        setTimeout(() => window.print(), 500);
+        // Refresh on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.loadAllData();
+            }
+        });
     }
 };
 
-// ==================== GLOBAL EXPORTS ====================
-window.updateComparisonDates = () => DateManager.updateComparisonDates();
-window.loadComparison = () => ComparisonManager.loadComparison();
-window.filterTargets = () => TargetManager.filterTargets();
-window.openTargetModal = () => TargetManager.openModal();
-window.closeTargetModal = () => TargetManager.closeModal();
-window.saveTarget = (e) => TargetManager.saveTarget(e);
-window.refreshData = () => App.refreshData();
-window.exportReport = () => App.exportReport();
+// ==================== ANIMATIONS ====================
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
 
-// ==================== INITIALIZATION ====================
+// ==================== INITIALIZE ====================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => App.init());
 } else {
@@ -1048,14 +976,10 @@ if (document.readyState === 'loading') {
 // ==================== ERROR HANDLERS ====================
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
-    if (AppState.isInitialized) {
-        UIManager.showNotification('An error occurred. Please refresh the page.', 'error');
-    }
+    UIManager.showNotification('An error occurred. Please refresh the page.', 'error');
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    if (AppState.isInitialized) {
-        UIManager.showNotification('A network error occurred. Please try again.', 'error');
-    }
+    UIManager.showNotification('A network error occurred.', 'error');
 });
