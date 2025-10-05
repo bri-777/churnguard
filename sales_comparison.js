@@ -1,4 +1,4 @@
-// Sales Comparison & Target Tracking - Production Ready
+// Sales Comparison & Target Tracking - Fixed & Improved
 'use strict';
 
 // ==================== CONFIGURATION ====================
@@ -17,6 +17,7 @@ const CONFIG = {
             compare: 'api/sales_comparison.php?action=compare',
             targets: 'api/sales_comparison.php?action=get_targets',
             saveTarget: 'api/sales_comparison.php?action=save_target',
+            updateTarget: 'api/sales_comparison.php?action=update_target',
             deleteTarget: 'api/sales_comparison.php?action=delete_target',
             trendData: 'api/sales_comparison.php?action=trend_data'
         }
@@ -38,6 +39,7 @@ const AppState = {
     isInitialized: false,
     loadingCounter: 0,
     currentFilter: 'all',
+    editingTargetId: null,
     
     incrementLoading() {
         this.loadingCounter++;
@@ -57,6 +59,7 @@ const AppState = {
         });
         this.activeRequests.clear();
         this.loadingCounter = 0;
+        this.editingTargetId = null;
     }
 };
 
@@ -74,9 +77,9 @@ const Utils = {
 
     formatNumber(value) {
         if (value === null || value === undefined || isNaN(value)) return '0';
-        const num = parseInt(value);
+        const num = parseFloat(value);
         if (!isFinite(num)) return '0';
-        return num.toLocaleString('en-PH');
+        return Math.round(num).toLocaleString('en-PH');
     },
 
     formatPercentage(value) {
@@ -304,13 +307,14 @@ const APIService = {
             AppState.activeRequests.delete(url);
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
             
-            if (data.error) {
-                throw new Error(data.error || 'API error occurred');
+            if (data.status === 'error') {
+                throw new Error(data.message || 'API error occurred');
             }
 
             return data;
@@ -377,7 +381,7 @@ const DateManager = {
             'custom': today - CONFIG.DATES.ONE_DAY
         };
 
-        compareDate.value = Utils.getISODate(new Date(dateMap[typeSelect.value]));
+        compareDate.value = Utils.getISODate(new Date(dateMap[typeSelect.value] || dateMap.custom));
     }
 };
 
@@ -406,7 +410,7 @@ const KPIManager = {
 
         } catch (error) {
             console.error('KPI error:', error);
-            UIManager.showNotification('Failed to load KPI data', 'error');
+            UIManager.showNotification(error.message || 'Failed to load KPI data', 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -583,7 +587,7 @@ const TargetManager = {
             </td>
         `;
 
-        row.querySelector('.btn-edit').addEventListener('click', () => this.editTarget(target.id));
+        row.querySelector('.btn-edit').addEventListener('click', () => this.editTarget(target));
         row.querySelector('.btn-delete').addEventListener('click', () => this.deleteTarget(target.id));
 
         return row;
@@ -592,9 +596,13 @@ const TargetManager = {
     openModal() {
         const modal = Utils.$('#targetModal');
         const form = Utils.$('#targetForm');
+        const modalTitle = Utils.$('#modalTitle');
 
         if (modal) modal.classList.add('active');
         if (form) form.reset();
+        if (modalTitle) modalTitle.textContent = 'Create New Target';
+
+        AppState.editingTargetId = null;
 
         const today = new Date();
         const nextMonth = new Date(today.getTime() + CONFIG.DATES.ONE_MONTH);
@@ -609,6 +617,7 @@ const TargetManager = {
     closeModal() {
         const modal = Utils.$('#targetModal');
         if (modal) modal.classList.remove('active');
+        AppState.editingTargetId = null;
     },
 
     async saveTarget(event) {
@@ -663,7 +672,13 @@ const TargetManager = {
         AppState.incrementLoading();
 
         try {
-            const data = await APIService.post(CONFIG.API.ENDPOINTS.saveTarget, formData);
+            let data;
+            if (AppState.editingTargetId) {
+                formData.id = AppState.editingTargetId;
+                data = await APIService.post(CONFIG.API.ENDPOINTS.updateTarget, formData);
+            } else {
+                data = await APIService.post(CONFIG.API.ENDPOINTS.saveTarget, formData);
+            }
 
             if (!data) {
                 throw new Error('No response from server');
@@ -718,8 +733,28 @@ const TargetManager = {
         }
     },
 
-    editTarget(id) {
-        UIManager.showNotification(`Edit target #${id} - Feature coming soon`, 'info');
+    editTarget(target) {
+        const modal = Utils.$('#targetModal');
+        const modalTitle = Utils.$('#modalTitle');
+
+        if (modalTitle) modalTitle.textContent = 'Edit Target';
+        if (modal) modal.classList.add('active');
+
+        AppState.editingTargetId = target.id;
+
+        const nameInput = Utils.$('#targetName');
+        const typeInput = Utils.$('#targetType');
+        const valueInput = Utils.$('#targetValue');
+        const startDateInput = Utils.$('#targetStartDate');
+        const endDateInput = Utils.$('#targetEndDate');
+        const storeInput = Utils.$('#targetStore');
+
+        if (nameInput) nameInput.value = target.target_name || '';
+        if (typeInput) typeInput.value = target.target_type || 'sales';
+        if (valueInput) valueInput.value = target.target_value || '';
+        if (startDateInput) startDateInput.value = target.start_date || '';
+        if (endDateInput) endDateInput.value = target.end_date || '';
+        if (storeInput) storeInput.value = target.store || '';
     },
 
     filterTargets() {
@@ -944,6 +979,15 @@ const App = {
         window.addEventListener('offline', () => {
             UIManager.showNotification('Connection lost - Working offline', 'warning');
         });
+
+        const modal = Utils.$('#targetModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    TargetManager.closeModal();
+                }
+            });
+        }
     },
 
     refreshData: Utils.debounce(async function() {
