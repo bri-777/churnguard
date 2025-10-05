@@ -2076,164 +2076,320 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             --primary-dark: #1e40af;
             --primary-light: #60a5fa;
             --success: #10b981;
+            --success-light: #d1fae5;
             --warning: #f59e0b;
+            --warning-light: #fef3c7;
             --danger: #ef4444;
-            --bg-page: #f8fafc;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --bg-page: #f1f5f9;
             --bg-card: #ffffff;
             --text-primary: #0f172a;
             --text-secondary: #64748b;
+            --text-muted: #94a3b8;
             --border: #e2e8f0;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         .perf-dashboard {
-            padding: 32px;
+            padding: 40px;
             background: var(--bg-page);
             min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
-        .perf-header {
-            margin-bottom: 32px;
+        .page-header {
+            margin-bottom: 40px;
         }
 
-        .perf-title {
-            font-size: 32px;
-            font-weight: 700;
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
             color: var(--text-primary);
-            margin: 0 0 8px 0;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
-        .perf-subtitle {
-            font-size: 16px;
+        .page-subtitle {
+            font-size: 18px;
             color: var(--text-secondary);
-            margin: 0;
+            font-weight: 400;
+        }
+
+        .insights-bar {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .insights-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .insight-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
         }
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
         }
 
         .metric-card {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: var(--shadow-md);
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
 
         .metric-label {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            letter-spacing: 0.8px;
+        }
+
+        .metric-trend {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .metric-trend.up {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .metric-trend.down {
+            background: var(--danger-light);
+            color: var(--danger);
         }
 
         .metric-value {
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 42px;
+            font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             line-height: 1;
+            letter-spacing: -1px;
         }
 
         .metric-comparison {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             padding-top: 16px;
-            border-top: 1px solid var(--border);
+            border-top: 2px solid var(--border);
         }
 
-        .metric-change {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 12px;
-            border-radius: 8px;
+        .metric-prev-label {
             font-size: 14px;
-            font-weight: 600;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        .metric-change.positive {
-            background: #d1fae5;
-            color: var(--success);
-        }
-
-        .metric-change.negative {
-            background: #fee2e2;
-            color: var(--danger);
-        }
-
-        .metric-prev {
+        .metric-prev-value {
             font-size: 14px;
+            font-weight: 700;
             color: var(--text-secondary);
         }
 
         .chart-section {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: 32px;
-            box-shadow: var(--shadow-md);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
             border: 1px solid var(--border);
         }
 
         .section-header {
-            font-size: 20px;
-            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 24px;
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .section-icon {
-            width: 32px;
-            height: 32px;
-            background: var(--primary);
-            border-radius: 8px;
+        .title-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            font-size: 18px;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chart-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .chart-btn:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .chart-container {
-            height: 320px;
+            height: 400px;
             position: relative;
         }
 
         .targets-section {
             background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .target-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--bg-page);
+            border-radius: 16px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .target-form-card {
+            background: var(--bg-page);
             border-radius: 16px;
             padding: 28px;
             margin-bottom: 32px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
         }
 
         .target-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
-            padding: 24px;
-            background: var(--bg-page);
-            border-radius: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
         }
 
         .form-group {
@@ -2243,33 +2399,39 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
         .form-label {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
         }
 
         .form-input, .form-select {
-            padding: 12px 16px;
+            padding: 14px 16px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 15px;
+            font-weight: 500;
             transition: all 0.2s;
             background: white;
+            color: var(--text-primary);
         }
 
         .form-input:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 10px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 700;
             font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
@@ -2277,113 +2439,265 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             align-items: center;
             justify-content: center;
             gap: 8px;
+            letter-spacing: 0.3px;
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
+            box-shadow: var(--shadow-md);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
         }
 
         .btn-danger {
             background: var(--danger);
             color: white;
-            padding: 8px 16px;
-            font-size: 13px;
+            padding: 10px 20px;
+            font-size: 14px;
         }
 
         .btn-danger:hover {
             background: #dc2626;
         }
 
-        .progress-list {
+        .targets-list {
             display: grid;
             gap: 20px;
         }
 
-        .progress-item {
+        .target-card {
             background: var(--bg-page);
-            padding: 20px;
-            border-radius: 12px;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+            border: 2px solid transparent;
         }
 
-        .progress-header {
+        .target-card:hover {
+            border-color: var(--primary);
+        }
+
+        .target-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
 
-        .progress-title {
-            font-weight: 600;
+        .target-info {
+            flex: 1;
+        }
+
+        .target-title {
+            font-size: 18px;
+            font-weight: 700;
             color: var(--text-primary);
-            font-size: 15px;
+            margin-bottom: 6px;
         }
 
-        .progress-badge {
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
+        .target-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        .progress-badge.achieved {
-            background: #d1fae5;
+        .target-status {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .target-status.achieved {
+            background: var(--success-light);
             color: var(--success);
         }
 
-        .progress-badge.on_track {
-            background: #dbeafe;
-            color: var(--primary);
+        .target-status.on_track {
+            background: var(--info-light);
+            color: var(--info);
         }
 
-        .progress-badge.needs_attention {
-            background: #fee2e2;
+        .target-status.needs_attention {
+            background: var(--danger-light);
             color: var(--danger);
         }
 
-        .progress-stats {
-            display: flex;
+        .target-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 16px;
-            margin-bottom: 12px;
-            font-size: 14px;
-            color: var(--text-secondary);
+            margin-bottom: 16px;
         }
 
-        .progress-bar-wrapper {
-            height: 10px;
-            background: var(--border);
-            border-radius: 5px;
+        .target-metric {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .target-metric-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .target-metric-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .progress-container {
+            position: relative;
+            height: 12px;
+            background: white;
+            border-radius: 6px;
             overflow: hidden;
+            margin-bottom: 16px;
         }
 
-        .progress-bar-fill {
+        .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            border-radius: 5px;
-            transition: width 0.6s ease;
+            border-radius: 6px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .target-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-icon {
+            padding: 10px 16px;
+            font-size: 13px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
+            padding: 80px 20px;
         }
 
         .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.3;
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.2;
         }
 
-        .arrow-icon {
-            display: inline-block;
-            font-size: 18px;
+        .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text-primary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -2398,85 +2712,142 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             .target-form {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+            .target-metrics {
+                grid-template-columns: 1fr;
+            }
 
-        .metric-card, .chart-section, .targets-section {
-            animation: fadeIn 0.4s ease;
+            .insights-list {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 
     <div class="perf-dashboard">
-        <div class="perf-header">
-            <h1 class="perf-title">Performance Analytics</h1>
-            <p class="perf-subtitle">Track your business growth and achieve your targets</p>
+        <div class="page-header">
+            <h1 class="page-title">Performance Analytics</h1>
+            <p class="page-subtitle">Track progress, set targets, and achieve business excellence</p>
         </div>
 
-        <div class="metrics-grid" id="metrics-grid">
-            <!-- Metrics will be loaded dynamically -->
+        <div id="insights-bar" class="insights-bar" style="display: none;">
+            <div class="insights-list" id="insights-list"></div>
         </div>
+
+        <div class="metrics-grid" id="metrics-grid"></div>
 
         <div class="chart-section">
             <div class="section-header">
-                <span class="section-icon">📊</span>
-                Year-over-Year Comparison
+                <div class="section-title">
+                    <span class="title-icon">📈</span>
+                    Year-over-Year Performance
+                </div>
+                <div class="chart-controls">
+                    <button class="chart-btn active" data-metric="sales">Sales</button>
+                    <button class="chart-btn" data-metric="customers">Customers</button>
+                    <button class="chart-btn" data-metric="transactions">Transactions</button>
+                </div>
             </div>
             <div class="chart-container">
-                <canvas id="comparisonChart"></canvas>
+                <canvas id="performanceChart"></canvas>
             </div>
         </div>
 
         <div class="targets-section">
             <div class="section-header">
-                <span class="section-icon">🎯</span>
-                Performance Targets
+                <div class="section-title">
+                    <span class="title-icon">🎯</span>
+                    Performance Targets
+                </div>
             </div>
-            
-            <form class="target-form" id="target-form">
-                <div class="form-group">
-                    <label class="form-label">Target Type</label>
-                    <select class="form-select" id="target-type" required>
-                        <option value="sales">Sales Revenue</option>
-                        <option value="customers">Total Customers</option>
-                        <option value="transactions">Transactions</option>
-                        <option value="growth_rate">Growth Rate (%)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Target Value</label>
-                    <input type="number" class="form-input" id="target-value" step="0.01" required placeholder="Enter target value">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Period</label>
-                    <select class="form-select" id="target-period" required>
-                        <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="yearly">Yearly</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Year</label>
-                    <input type="number" class="form-input" id="target-year" value="2025" required>
-                </div>
-                <div class="form-group" style="justify-content: flex-end;">
-                    <button type="submit" class="btn btn-primary">Set Target</button>
-                </div>
-            </form>
 
-            <div class="progress-list" id="progress-list">
-                <!-- Progress items will be loaded dynamically -->
+            <div class="target-summary" id="target-summary">
+                <div class="summary-item">
+                    <div class="summary-value" id="total-targets">0</div>
+                    <div class="summary-label">Total Targets</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="achieved-targets" style="color: var(--success);">0</div>
+                    <div class="summary-label">Achieved</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="ontrack-targets" style="color: var(--info);">0</div>
+                    <div class="summary-label">On Track</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="attention-targets" style="color: var(--danger);">0</div>
+                    <div class="summary-label">Needs Attention</div>
+                </div>
             </div>
+
+            <div class="target-form-card">
+                <div class="form-title">Create New Target</div>
+                <form class="target-form" id="target-form">
+                    <div class="form-group">
+                        <label class="form-label">Target Type</label>
+                        <select class="form-select" id="target-type" required>
+                            <option value="sales">Sales Revenue</option>
+                            <option value="customers">Customer Acquisition</option>
+                            <option value="transactions">Transactions</option>
+                            <option value="growth_rate">Growth Rate (%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Value</label>
+                        <input type="number" class="form-input" id="target-value" step="0.01" required placeholder="Enter target value">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Period</label>
+                        <select class="form-select" id="target-period" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year</label>
+                        <input type="number" class="form-input" id="target-year" value="2025" required min="2020" max="2030">
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end; align-items: flex-end;">
+                        <button type="submit" class="btn btn-primary">Create Target</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="targets-list" id="targets-list"></div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
         const API = 'api/performance_comparison.php';
-        let comparisonChart = null;
+        let performanceChart = null;
+        let currentMetric = 'sales';
+        let dashboardData = null;
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function showLoading() {
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.id = 'loading-overlay';
+            overlay.innerHTML = '<div class="spinner"></div>';
+            document.body.appendChild(overlay);
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) overlay.remove();
+        }
 
         async function loadDashboard() {
             try {
@@ -2484,16 +2855,38 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 const json = await res.json();
                 
                 if (json.status === 'success') {
-                    const data = json.data;
-                    renderMetrics(data);
-                    renderChart(data.monthly_chart);
-                    renderTargets(data.targets);
-                } else {
-                    console.error('API error:', json.message);
+                    dashboardData = json.data;
+                    renderInsights(dashboardData.insights);
+                    renderMetrics(dashboardData);
+                    renderChart(dashboardData.monthly_chart, currentMetric);
+                    renderTargets(dashboardData.targets);
+                    updateTargetSummary(dashboardData.target_summary);
                 }
             } catch (error) {
                 console.error('Load error:', error);
+                showToast('Failed to load dashboard', 'error');
             }
+        }
+
+        function renderInsights(insights) {
+            const bar = document.getElementById('insights-bar');
+            const list = document.getElementById('insights-list');
+            
+            if (!insights || insights.length === 0) {
+                bar.style.display = 'none';
+                return;
+            }
+
+            bar.style.display = 'block';
+            list.innerHTML = insights.map(i => {
+                const icon = i.type === 'success' ? '✓' : '⚠';
+                return `
+                    <div class="insight-item">
+                        <span class="insight-icon">${icon}</span>
+                        <span>${i.text}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderMetrics(data) {
@@ -2519,60 +2912,108 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     growth: data.growth.transactions
                 },
                 {
-                    label: 'Avg Transaction',
+                    label: 'Avg Transaction Value',
                     current: formatCurrency(data.current.avg_value),
                     previous: formatCurrency(data.previous.avg_value),
                     growth: 0
                 }
             ];
 
-            container.innerHTML = metrics.map(m => `
-                <div class="metric-card">
-                    <div class="metric-label">${m.label}</div>
-                    <div class="metric-value">${m.current}</div>
-                    <div class="metric-comparison">
-                        ${m.growth !== 0 ? `
-                            <span class="metric-change ${m.growth >= 0 ? 'positive' : 'negative'}">
-                                <span class="arrow-icon">${m.growth >= 0 ? '↑' : '↓'}</span>
-                                ${Math.abs(m.growth).toFixed(1)}%
-                            </span>
-                        ` : ''}
-                        <span class="metric-prev">vs ${m.previous} last year</span>
+            container.innerHTML = metrics.map(m => {
+                const trendClass = m.growth > 0 ? 'up' : 'down';
+                const trendIcon = m.growth > 0 ? '↑' : '↓';
+                return `
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-label">${m.label}</div>
+                            ${m.growth !== 0 ? `
+                                <div class="metric-trend ${trendClass}">
+                                    <span>${trendIcon}</span>
+                                    <span>${Math.abs(m.growth).toFixed(1)}%</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="metric-value">${m.current}</div>
+                        <div class="metric-comparison">
+                            <span class="metric-prev-label">Previous year:</span>
+                            <span class="metric-prev-value">${m.previous}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        function renderChart(chartData) {
-            const ctx = document.getElementById('comparisonChart');
+        function renderChart(chartData, metric) {
+            const ctx = document.getElementById('performanceChart');
             
-            if (comparisonChart) {
-                comparisonChart.destroy();
+            if (performanceChart) {
+                performanceChart.destroy();
             }
 
-            comparisonChart = new Chart(ctx, {
+            let datasets = [];
+            if (metric === 'sales') {
+                datasets = [
+                    {
+                        label: `${dashboardData.years.current} Sales`,
+                        data: chartData.current_sales,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    },
+                    {
+                        label: `${dashboardData.years.previous} Sales`,
+                        data: chartData.previous_sales,
+                        borderColor: '#94a3b8',
+                        backgroundColor: 'rgba(148, 163, 184, 0.05)',
+                        tension: 0.4,
+                        fill: true,
+                        borderDash: [8, 4],
+                        borderWidth: 2
+                    }
+                ];
+            } else if (metric === 'customers') {
+                datasets = [
+                    {
+                        label: `${dashboardData.years.current} Customers`,
+                        data: chartData.current_customers,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    },
+                    {
+                        label: `${dashboardData.years.previous} Customers`,
+                        data: chartData.previous_customers,
+                        borderColor: '#94a3b8',
+                        backgroundColor: 'rgba(148, 163, 184, 0.05)',
+                        tension: 0.4,
+                        fill: true,
+                        borderDash: [8, 4],
+                        borderWidth: 2
+                    }
+                ];
+            } else {
+                datasets = [
+                    {
+                        label: `${dashboardData.years.current} Transactions`,
+                        data: chartData.current_transactions,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    }
+                ];
+            }
+
+            performanceChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: chartData.labels,
-                    datasets: [
-                        {
-                            label: 'Current Year Sales',
-                            data: chartData.current_sales,
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Previous Year Sales',
-                            data: chartData.previous_sales,
-                            borderColor: '#94a3b8',
-                            backgroundColor: 'rgba(148, 163, 184, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderDash: [5, 5]
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -2582,15 +3023,67 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                             position: 'top',
                             labels: {
                                 usePointStyle: true,
-                                padding: 20
+                                padding: 20,
+                                font: {
+                                    size: 13,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: '700'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (metric === 'sales') {
+                                        label += formatCurrency(context.parsed.y);
+                                    } else {
+                                        label += formatNumber(context.parsed.y);
+                                    }
+                                    return label;
+                                }
                             }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                color: 'rgba(226, 232, 240, 0.5)'
+                            },
                             ticks: {
-                                callback: value => '₱' + formatNumber(value)
+                                callback: function(value) {
+                                    if (metric === 'sales') {
+                                        return '₱' + formatNumber(value);
+                                    }
+                                    return formatNumber(value);
+                                },
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
                             }
                         }
                     }
@@ -2598,50 +3091,100 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             });
         }
 
+        function updateTargetSummary(summary) {
+            document.getElementById('total-targets').textContent = summary.total;
+            document.getElementById('achieved-targets').textContent = summary.achieved;
+            document.getElementById('ontrack-targets').textContent = summary.on_track;
+            document.getElementById('attention-targets').textContent = summary.needs_attention;
+        }
+
         function renderTargets(targets) {
-            const container = document.getElementById('progress-list');
+            const container = document.getElementById('targets-list');
             
             if (!targets || targets.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">🎯</div>
-                        <p>No targets set yet. Create your first target above!</p>
+                        <div class="empty-title">No Targets Set</div>
+                        <div class="empty-text">Create your first performance target to start tracking progress</div>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = targets.map(t => `
-                <div class="progress-item">
-                    <div class="progress-header">
-                        <span class="progress-title">${formatTargetType(t.type)} - ${t.period}</span>
-                        <span class="progress-badge ${t.status}">${formatStatus(t.status)}</span>
+            container.innerHTML = targets.map(t => {
+                const statusText = {
+                    'achieved': 'Achieved',
+                    'on_track': 'On Track',
+                    'needs_attention': 'Needs Attention'
+                };
+                
+                return `
+                    <div class="target-card">
+                        <div class="target-header">
+                            <div class="target-info">
+                                <div class="target-title">${formatTargetType(t.type)}</div>
+                                <div class="target-meta">${capitalizeFirst(t.period)} Target for ${dashboardData.years.current}</div>
+                            </div>
+                            <div class="target-status ${t.status}">${statusText[t.status]}</div>
+                        </div>
+                        
+                        <div class="target-metrics">
+                            <div class="target-metric">
+                                <div class="target-metric-label">Target</div>
+                                <div class="target-metric-value">${formatValue(t.adjusted_target, t.type)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="target-metric-label">Current</div>
+                                <div class="target-metric-value">${formatValue(t.current_value, t.type)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="target-metric-label">Remaining</div>
+                                <div class="target-metric-value">${formatValue(t.remaining, t.type)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="target-metric-label">Progress</div>
+                                <div class="target-metric-value">${t.progress.toFixed(1)}%</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-fill" style="width: ${Math.min(100, t.progress)}%"></div>
+                        </div>
+
+                        <div class="target-actions">
+                            <button class="btn btn-danger btn-icon" onclick="deleteTarget(${t.id})">Delete</button>
+                        </div>
                     </div>
-                    <div class="progress-stats">
-                        <span>Current: <strong>${formatValue(t.current_value, t.type)}</strong></span>
-                        <span>Target: <strong>${formatValue(t.target_value, t.type)}</strong></span>
-                        <span>Progress: <strong>${t.progress.toFixed(1)}%</strong></span>
-                    </div>
-                    <div class="progress-bar-wrapper">
-                        <div class="progress-bar-fill" style="width: ${Math.min(100, t.progress)}%"></div>
-                    </div>
-                    <div style="margin-top: 12px; text-align: right;">
-                        <button class="btn btn-danger" onclick="deleteTarget(${t.id})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
+        // Chart control buttons
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentMetric = this.dataset.metric;
+                if (dashboardData) {
+                    renderChart(dashboardData.monthly_chart, currentMetric);
+                }
+            });
+        });
+
+        // Target form submission
         document.getElementById('target-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const formData = {
                 target_type: document.getElementById('target-type').value,
-                target_value: document.getElementById('target-value').value,
+                target_value: parseFloat(document.getElementById('target-value').value),
                 target_period: document.getElementById('target-period').value,
-                year: document.getElementById('target-year').value
+                year: parseInt(document.getElementById('target-year').value)
             };
 
+            showLoading();
+            
             try {
                 const res = await fetch(`${API}?action=set_target`, {
                     method: 'POST',
@@ -2652,27 +3195,41 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 const json = await res.json();
                 
                 if (json.status === 'success') {
-                    alert('Target set successfully!');
+                    showToast('Target created successfully!');
                     e.target.reset();
-                    loadDashboard();
+                    document.getElementById('target-year').value = new Date().getFullYear();
+                    await loadDashboard();
+                } else {
+                    showToast(json.message || 'Failed to create target', 'error');
                 }
             } catch (error) {
-                console.error('Set target error:', error);
+                console.error('Create target error:', error);
+                showToast('Failed to create target', 'error');
+            } finally {
+                hideLoading();
             }
         });
 
         async function deleteTarget(id) {
-            if (!confirm('Delete this target?')) return;
+            if (!confirm('Are you sure you want to delete this target? This action cannot be undone.')) return;
 
+            showLoading();
+            
             try {
                 const res = await fetch(`${API}?action=delete_target&id=${id}`);
                 const json = await res.json();
                 
                 if (json.status === 'success') {
-                    loadDashboard();
+                    showToast('Target deleted successfully');
+                    await loadDashboard();
+                } else {
+                    showToast(json.message || 'Failed to delete target', 'error');
                 }
             } catch (error) {
                 console.error('Delete error:', error);
+                showToast('Failed to delete target', 'error');
+            } finally {
+                hideLoading();
             }
         }
 
@@ -2681,14 +3238,14 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         }
 
         function formatNumber(value) {
-            return new Intl.NumberFormat('en-PH').format(value);
+            return new Intl.NumberFormat('en-PH', { maximumFractionDigits: 0 }).format(value);
         }
 
         function formatTargetType(type) {
             const types = {
                 sales: 'Sales Revenue',
-                customers: 'Total Customers',
-                transactions: 'Transactions',
+                customers: 'Customer Acquisition',
+                transactions: 'Transaction Volume',
                 growth_rate: 'Growth Rate'
             };
             return types[type] || type;
@@ -2700,17 +3257,15 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             return formatNumber(value);
         }
 
-        function formatStatus(status) {
-            const statuses = {
-                achieved: 'Achieved',
-                on_track: 'On Track',
-                needs_attention: 'Needs Attention'
-            };
-            return statuses[status] || status;
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
+        // Initialize dashboard
         loadDashboard();
-        setInterval(loadDashboard, 60000);
+        
+        // Auto-refresh every 2 minutes
+        setInterval(loadDashboard, 120000);
     </script>
 </div>
 
