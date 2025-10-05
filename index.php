@@ -1282,7 +1282,7 @@ function doLogout() {
   
   
   
-<!-- Customer Insights - Left-aligned, cleaned layout -->
+ <!-- Customer Insights - Left-aligned, cleaned layout -->
 <div id="customer-insights" class="page main-content cgx-scope" aria-labelledby="ci-title" data-module="customer-insights" style="
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   background:#F6F9FC; color:#32325D; line-height:1.6;
@@ -1377,6 +1377,8 @@ function doLogout() {
       </div>
     </div>
 
+   
+
     <!-- Tabs + Content -->
     <div class="report-section" style="
       background:#fff; border-radius:12px; padding:1.5rem; margin:0 0 1.5rem 0;
@@ -1395,6 +1397,7 @@ function doLogout() {
         <button class="tab-btn" onclick="switchTab('revenue')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
         " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
+      
         <button class="tab-btn" onclick="switchTab('trends')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
         " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Historical Trends</button>
@@ -1417,25 +1420,9 @@ function doLogout() {
               <span style="font-size:.92rem; color:#6b7280;">Churn Rate</span>
               <span id="churnRate" style="font-size:1rem; font-weight:800;">0%</span>
             </div>
+           
+            
           </div>
-        </div>
-        
-        <!-- Period Comparison Table for Retention -->
-        <div class="comparison-table" style="margin-top:1.5rem;">
-          <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
-          <table id="retentionComparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
-            <thead style="background:#F6F9FC;">
-              <tr>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Notes</th>
-              </tr>
-            </thead>
-            <tbody><!-- Populated by JavaScript --></tbody>
-          </table>
         </div>
       </div>
 
@@ -1456,25 +1443,9 @@ function doLogout() {
               <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Value</span>
               <span id="avgValue" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
+          
+          
           </div>
-        </div>
-        
-        <!-- Period Comparison Table for Behavior -->
-        <div class="comparison-table" style="margin-top:1.5rem;">
-          <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
-          <table id="behaviorComparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
-            <thead style="background:#F6F9FC;">
-              <tr>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Notes</th>
-              </tr>
-            </thead>
-            <tbody><!-- Populated by JavaScript --></tbody>
-          </table>
         </div>
       </div>
 
@@ -1491,28 +1462,13 @@ function doLogout() {
               <span style="font-size:.92rem; color:#6b7280;">Potential Revenue Loss</span>
               <span id="potentialLoss" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
+            
+           
           </div>
-        </div>
-        
-        <!-- Period Comparison Table for Revenue -->
-        <div class="comparison-table" style="margin-top:1.5rem;">
-          <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
-          <table id="revenueComparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
-            <thead style="background:#F6F9FC;">
-              <tr>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
-                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Notes</th>
-              </tr>
-            </thead>
-            <tbody><!-- Populated by JavaScript --></tbody>
-          </table>
         </div>
       </div>
 
+     
       <!-- Trends -->
       <div class="tab-content" id="trends-tab" style="display:none;">
         <div class="trends-container">
@@ -1538,6 +1494,9 @@ function doLogout() {
         </div>
       </div>
     </div>
+
+
+   
 
     <!-- Modal -->
     <div class="modal" id="drillDownModal" style="
@@ -1622,10 +1581,9 @@ function doLogout() {
         </div>
       </div>
     </div>
-    
-    <script src="churn-report.js"></script>
+ <script src="churn-report.js"></script>
   </div>
-</div>
+
   <!-- Print Styles -->
   <style>
     @media print {
@@ -2108,6 +2066,15 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 <div id="dashboard-container" class="page">
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); min-height: 100vh; padding: 20px; margin: 0;">
+    
+    <!-- Main Container -->
+    <div style="max-width: 1200px; margin: 0 auto;">
+        
+       
+        
+    </div>
+</div>
 
 </div>
 
@@ -2116,6 +2083,305 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// API Configuration
+const API_URL = 'api/performance_tracker.php';
+let chartInstance = null;
+
+// Load Dashboard Data
+async function loadDashboard() {
+    try {
+        const response = await fetch(`${API_URL}?action=dashboard`);
+        const result = await response.json();
+        
+        if (result.success) {
+            updateMetrics(result.data);
+            updateComparisonTable(result.data);
+            updateProgressBars(result.data);
+            updateChart(result.data);
+        }
+    } catch (error) {
+        console.error('Dashboard load error:', error);
+    }
+}
+
+// Update Metric Cards
+function updateMetrics(data) {
+    const current = data.current;
+    const growth = data.growth;
+    
+    // Update sales
+    document.getElementById('totalSales').textContent = '₱' + formatNumber(current.total_sales);
+    updateGrowthIndicator('salesGrowth', growth.sales_percent);
+    
+    // Update customers
+    document.getElementById('totalCustomers').textContent = formatNumber(current.total_customers);
+    updateGrowthIndicator('customerGrowth', growth.customer_percent);
+    
+    // Update average transaction
+    document.getElementById('avgTransaction').textContent = '₱' + formatNumber(current.avg_transaction_value);
+    
+    // Update transaction trend
+    const trendEl = document.getElementById('transactionTrend');
+    if (current.avg_transaction_value > data.previous.avg_transaction_value) {
+        trendEl.textContent = 'Increasing';
+        trendEl.style.background = '#f0fdf4';
+        trendEl.style.color = '#16a34a';
+    } else if (current.avg_transaction_value < data.previous.avg_transaction_value) {
+        trendEl.textContent = 'Declining';
+        trendEl.style.background = '#fef2f2';
+        trendEl.style.color = '#dc2626';
+    } else {
+        trendEl.textContent = 'Stable';
+        trendEl.style.background = '#f1f5f9';
+        trendEl.style.color = '#64748b';
+    }
+}
+
+// Update Growth Indicators
+function updateGrowthIndicator(elementId, percentage) {
+    const element = document.getElementById(elementId);
+    const value = parseFloat(percentage) || 0;
+    
+    if (value > 0) {
+        element.textContent = '+' + value.toFixed(1) + '%';
+        element.style.background = '#f0fdf4';
+        element.style.color = '#16a34a';
+    } else if (value < 0) {
+        element.textContent = value.toFixed(1) + '%';
+        element.style.background = '#fef2f2';
+        element.style.color = '#dc2626';
+    } else {
+        element.textContent = '0%';
+        element.style.background = '#f1f5f9';
+        element.style.color = '#64748b';
+    }
+}
+
+// Update Comparison Table
+function updateComparisonTable(data) {
+    const current = data.current;
+    const previous = data.previous;
+    const growth = data.growth;
+    
+    // Update year labels
+    document.getElementById('prevYearLabel').textContent = previous.year;
+    document.getElementById('currYearLabel').textContent = current.year;
+    
+    // Table data
+    const metrics = [
+        {
+            name: 'Revenue',
+            prev: previous.total_sales,
+            curr: current.total_sales,
+            format: 'currency'
+        },
+        {
+            name: 'Total Customers',
+            prev: previous.total_customers,
+            curr: current.total_customers,
+            format: 'number'
+        },
+        {
+            name: 'New Customers',
+            prev: previous.new_customers,
+            curr: current.new_customers,
+            format: 'number'
+        },
+        {
+            name: 'Returning Customers',
+            prev: previous.returning_customers,
+            curr: current.returning_customers,
+            format: 'number'
+        },
+        {
+            name: 'Total Transactions',
+            prev: previous.total_transactions,
+            curr: current.total_transactions,
+            format: 'number'
+        },
+        {
+            name: 'Avg Transaction Value',
+            prev: previous.avg_transaction_value,
+            curr: current.avg_transaction_value,
+            format: 'currency'
+        }
+    ];
+    
+    const tableBody = document.getElementById('comparisonTable');
+    tableBody.innerHTML = metrics.map(metric => {
+        const change = metric.curr - metric.prev;
+        const growthPct = metric.prev > 0 ? ((change / metric.prev) * 100) : 0;
+        
+        const prevFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.prev) : formatNumber(metric.prev);
+        const currFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.curr) : formatNumber(metric.curr);
+        const changeFormatted = metric.format === 'currency' ? '₱' + formatNumber(Math.abs(change)) : formatNumber(Math.abs(change));
+        
+        const growthColor = growthPct > 0 ? '#dcfce7' : (growthPct < 0 ? '#fee2e2' : '#f1f5f9');
+        const growthTextColor = growthPct > 0 ? '#16a34a' : (growthPct < 0 ? '#dc2626' : '#64748b');
+        const changePrefix = change >= 0 ? '+' : '-';
+        
+        return `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 16px; color: #1e293b; font-weight: 500;">${metric.name}</td>
+                <td style="padding: 16px; text-align: right; color: #64748b;">${prevFormatted}</td>
+                <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">${currFormatted}</td>
+                <td style="padding: 16px; text-align: right; color: #64748b;">${changePrefix}${changeFormatted}</td>
+                <td style="padding: 16px; text-align: right;">
+                    <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: ${growthColor}; color: ${growthTextColor};">
+                        ${growthPct >= 0 ? '+' : ''}${growthPct.toFixed(1)}%
+                    </span>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Update Progress Bars
+function updateProgressBars(data) {
+    const salesTarget = parseFloat(document.getElementById('salesTargetInput').value) || data.previous.total_sales * 1.2;
+    const customerTarget = parseFloat(document.getElementById('customerTargetInput').value) || 15;
+    
+    // Sales progress
+    const salesProgress = Math.min(100, (data.current.total_sales / salesTarget) * 100);
+    document.getElementById('salesProgressText').textContent = salesProgress.toFixed(1) + '%';
+    document.getElementById('salesProgressBar').style.width = salesProgress + '%';
+    
+    // Customer progress
+    const customerProgress = Math.min(100, Math.abs(data.growth.customer_percent / customerTarget) * 100);
+    document.getElementById('customerProgressText').textContent = customerProgress.toFixed(1) + '%';
+    document.getElementById('customerProgressBar').style.width = customerProgress + '%';
+}
+
+// Update Chart
+function updateChart(data) {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    
+    // Process monthly data
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentData = new Array(12).fill(0);
+    const previousData = new Array(12).fill(0);
+    
+    if (data.monthly) {
+        data.monthly.forEach(item => {
+            const monthIndex = item.month - 1;
+            if (item.year == data.current.year) {
+                currentData[monthIndex] = item.total_sales;
+            } else {
+                previousData[monthIndex] = item.total_sales;
+            }
+        });
+    }
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: data.current.year,
+                    data: currentData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: data.previous.year,
+                    data: previousData,
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₱' + formatNumber(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Save Targets
+async function saveTargets() {
+    const salesTarget = document.getElementById('salesTargetInput').value;
+    const customerTarget = document.getElementById('customerTargetInput').value;
+    const period = document.getElementById('targetPeriod').value;
+    
+    try {
+        if (salesTarget) {
+            await fetch(`${API_URL}?action=save_target`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    type: 'sales',
+                    value: salesTarget,
+                    period: period
+                })
+            });
+        }
+        
+        if (customerTarget) {
+            await fetch(`${API_URL}?action=save_target`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    type: 'customers',
+                    value: customerTarget,
+                    period: period
+                })
+            });
+        }
+        
+        alert('Targets saved successfully!');
+        loadDashboard();
+    } catch (error) {
+        console.error('Save error:', error);
+    }
+}
+
+// Format Numbers
+function formatNumber(num) {
+    return new Intl.NumberFormat('en-US').format(num || 0);
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', loadDashboard);
+
+// Auto-refresh every 5 minutes
+setInterval(loadDashboard, 300000);
+</script>
 
 
 
