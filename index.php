@@ -2074,166 +2074,166 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         :root {
             --primary: #2563eb;
             --primary-dark: #1e40af;
-            --primary-light: #3b82f6;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
+            --primary-light: #60a5fa;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
-        .performance-dashboard {
-            padding: 24px;
-            background: var(--bg-secondary);
+        .perf-dashboard {
+            padding: 32px;
+            background: var(--bg-page);
             min-height: 100vh;
         }
 
-        .dashboard-header {
-            background: var(--bg-primary);
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .perf-header {
+            margin-bottom: 32px;
         }
 
-        .dashboard-header h1 {
-            margin: 0 0 8px 0;
-            color: var(--primary);
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .dashboard-header p {
-            margin: 0;
-            color: var(--text-secondary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: var(--bg-primary);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--primary);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .stat-title {
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .stat-value {
+        .perf-title {
             font-size: 32px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin: 0 0 8px 0;
         }
 
-        .stat-comparison {
+        .perf-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .metric-comparison {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
         }
 
-        .stat-growth {
-            display: flex;
+        .metric-change {
+            display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
         }
 
-        .stat-growth.positive {
+        .metric-change.positive {
             background: #d1fae5;
             color: var(--success);
         }
 
-        .stat-growth.negative {
+        .metric-change.negative {
             background: #fee2e2;
             color: var(--danger);
         }
 
-        .progress-section {
-            background: var(--bg-primary);
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .metric-prev {
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        .section-title {
+        .chart-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+        }
+
+        .section-header {
             font-size: 20px;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .progress-item {
-            margin-bottom: 20px;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .progress-label {
-            font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .progress-value {
-            color: var(--text-secondary);
-            font-weight: 600;
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
         }
 
-        .progress-bar-container {
-            height: 12px;
-            background: var(--bg-secondary);
-            border-radius: 6px;
-            overflow: hidden;
+        .chart-container {
+            height: 320px;
+            position: relative;
         }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            border-radius: 6px;
-            transition: width 0.3s ease;
-        }
-
-        .target-section {
-            background: var(--bg-primary);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .targets-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
         }
 
         .target-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
+            padding: 24px;
+            background: var(--bg-page);
+            border-radius: 12px;
         }
 
         .form-group {
@@ -2242,33 +2242,41 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         }
 
         .form-label {
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 6px;
-            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .form-input, .form-select {
-            padding: 10px 12px;
+            padding: 12px 16px;
             border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.2s;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: white;
         }
 
         .form-input:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -2279,68 +2287,111 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         .btn-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-danger {
             background: var(--danger);
             color: white;
+            padding: 8px 16px;
+            font-size: 13px;
         }
 
-        .targets-list {
-            margin-top: 20px;
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
-        .target-item {
+        .progress-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .progress-item {
+            background: var(--bg-page);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
-        .competitiveness-meter {
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            border-radius: 12px;
-            color: white;
-            margin-bottom: 24px;
-        }
-
-        .meter-value {
-            font-size: 64px;
-            font-weight: 700;
-            margin: 10px 0;
-        }
-
-        .meter-label {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .comparison-table th,
-        .comparison-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-table th {
-            background: var(--bg-secondary);
+        .progress-title {
             font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+
+        .progress-badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress-badge.achieved {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .progress-badge.on_track {
+            background: #dbeafe;
             color: var(--primary);
         }
 
+        .progress-badge.needs_attention {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar-wrapper {
+            height: 10px;
+            background: var(--border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .arrow-icon {
+            display: inline-block;
+            font-size: 18px;
+        }
+
         @media (max-width: 768px) {
-            .stats-grid {
+            .perf-dashboard {
+                padding: 20px;
+            }
+            
+            .metrics-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -2348,85 +2399,56 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 grid-template-columns: 1fr;
             }
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .metric-card, .chart-section, .targets-section {
+            animation: fadeIn 0.4s ease;
+        }
     </style>
 
-    <div class="performance-dashboard">
-        <div class="dashboard-header">
-            <h1>Performance Analytics</h1>
-            <p>Track your year-over-year growth and set strategic targets</p>
+    <div class="perf-dashboard">
+        <div class="perf-header">
+            <h1 class="perf-title">Performance Analytics</h1>
+            <p class="perf-subtitle">Track your business growth and achieve your targets</p>
         </div>
 
-        <div class="competitiveness-meter">
-            <div class="meter-label">Competitiveness Score</div>
-            <div class="meter-value" id="competitiveness-score">--</div>
-            <div class="meter-label">Market Position</div>
+        <div class="metrics-grid" id="metrics-grid">
+            <!-- Metrics will be loaded dynamically -->
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Total Sales</span>
-                </div>
-                <div class="stat-value" id="current-sales">₱0</div>
-                <div class="stat-comparison">
-                    <span>vs last year:</span>
-                    <span class="stat-growth" id="sales-growth">--</span>
-                </div>
+        <div class="chart-section">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                Year-over-Year Comparison
             </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Total Customers</span>
-                </div>
-                <div class="stat-value" id="current-customers">0</div>
-                <div class="stat-comparison">
-                    <span>vs last year:</span>
-                    <span class="stat-growth" id="customer-growth">--</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Transactions</span>
-                </div>
-                <div class="stat-value" id="current-transactions">0</div>
-                <div class="stat-comparison">
-                    <span>vs last year:</span>
-                    <span class="stat-growth" id="transaction-growth">--</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Avg Transaction</span>
-                </div>
-                <div class="stat-value" id="current-avg">₱0</div>
-                <div class="stat-comparison">
-                    <span id="prev-year-label">Previous Year</span>
-                </div>
+            <div class="chart-container">
+                <canvas id="comparisonChart"></canvas>
             </div>
         </div>
 
-        <div class="progress-section">
-            <h2 class="section-title">Target Progress</h2>
-            <div id="progress-container"></div>
-        </div>
-
-        <div class="target-section">
-            <h2 class="section-title">Set Performance Targets</h2>
+        <div class="targets-section">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                Performance Targets
+            </div>
+            
             <form class="target-form" id="target-form">
                 <div class="form-group">
                     <label class="form-label">Target Type</label>
                     <select class="form-select" id="target-type" required>
-                        <option value="sales">Sales</option>
-                        <option value="customers">Customers</option>
+                        <option value="sales">Sales Revenue</option>
+                        <option value="customers">Total Customers</option>
                         <option value="transactions">Transactions</option>
                         <option value="growth_rate">Growth Rate (%)</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Target Value</label>
-                    <input type="number" class="form-input" id="target-value" step="0.01" required>
+                    <input type="number" class="form-input" id="target-value" step="0.01" required placeholder="Enter target value">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Period</label>
@@ -2440,118 +2462,174 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     <label class="form-label">Year</label>
                     <input type="number" class="form-input" id="target-year" value="2025" required>
                 </div>
-                <div class="form-group" style="align-self: end;">
+                <div class="form-group" style="justify-content: flex-end;">
                     <button type="submit" class="btn btn-primary">Set Target</button>
                 </div>
             </form>
 
-            <div class="targets-list" id="targets-list"></div>
+            <div class="progress-list" id="progress-list">
+                <!-- Progress items will be loaded dynamically -->
+            </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        const API_BASE = 'api/performance_comparison.php';
+        const API = 'api/performance_comparison.php';
+        let comparisonChart = null;
 
-        async function fetchComparison() {
+        async function loadDashboard() {
             try {
-                const res = await fetch(`${API_BASE}?action=compare`);
-                const data = await res.json();
+                const res = await fetch(`${API}?action=dashboard`);
+                const json = await res.json();
                 
-                if (data.success) {
-                    updateDashboard(data.data);
+                if (json.status === 'success') {
+                    const data = json.data;
+                    renderMetrics(data);
+                    renderChart(data.monthly_chart);
+                    renderTargets(data.targets);
+                } else {
+                    console.error('API error:', json.message);
                 }
             } catch (error) {
-                console.error('Failed to fetch comparison:', error);
+                console.error('Load error:', error);
             }
         }
 
-        function updateDashboard(data) {
-            // Competitiveness score
-            document.getElementById('competitiveness-score').textContent = 
-                data.competitiveness_score.toFixed(1);
-
-            // Sales
-            document.getElementById('current-sales').textContent = 
-                '₱' + formatNumber(data.current.total_sales);
-            updateGrowth('sales-growth', data.growth.sales);
-
-            // Customers
-            document.getElementById('current-customers').textContent = 
-                formatNumber(data.current.total_customers);
-            updateGrowth('customer-growth', data.growth.customers);
-
-            // Transactions
-            document.getElementById('current-transactions').textContent = 
-                formatNumber(data.current.total_transactions);
-            updateGrowth('transaction-growth', data.growth.transactions);
-
-            // Avg transaction
-            document.getElementById('current-avg').textContent = 
-                '₱' + formatNumber(data.current.avg_transaction_value);
-        }
-
-        function updateGrowth(elementId, value) {
-            const el = document.getElementById(elementId);
-            const isPositive = value >= 0;
-            el.className = `stat-growth ${isPositive ? 'positive' : 'negative'}`;
-            el.textContent = `${isPositive ? '+' : ''}${value.toFixed(1)}%`;
-        }
-
-        async function fetchTargets() {
-            try {
-                const year = document.getElementById('target-year').value;
-                const res = await fetch(`${API_BASE}?action=get_targets&year=${year}`);
-                const data = await res.json();
-                
-                if (data.success) {
-                    displayTargets(data.data.targets);
-                    updateProgressBars(data.data.targets);
+        function renderMetrics(data) {
+            const container = document.getElementById('metrics-grid');
+            
+            const metrics = [
+                {
+                    label: 'Total Sales',
+                    current: formatCurrency(data.current.sales),
+                    previous: formatCurrency(data.previous.sales),
+                    growth: data.growth.sales
+                },
+                {
+                    label: 'Total Customers',
+                    current: formatNumber(data.current.customers),
+                    previous: formatNumber(data.previous.customers),
+                    growth: data.growth.customers
+                },
+                {
+                    label: 'Transactions',
+                    current: formatNumber(data.current.transactions),
+                    previous: formatNumber(data.previous.transactions),
+                    growth: data.growth.transactions
+                },
+                {
+                    label: 'Avg Transaction',
+                    current: formatCurrency(data.current.avg_value),
+                    previous: formatCurrency(data.previous.avg_value),
+                    growth: 0
                 }
-            } catch (error) {
-                console.error('Failed to fetch targets:', error);
-            }
-        }
+            ];
 
-        function displayTargets(targets) {
-            const container = document.getElementById('targets-list');
-            if (!targets || targets.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary);">No targets set yet</p>';
-                return;
-            }
-
-            container.innerHTML = targets.map(t => `
-                <div class="target-item">
-                    <div>
-                        <strong>${t.target_type.toUpperCase()}</strong>: 
-                        ${formatNumber(t.target_value)} 
-                        (${t.target_period})
+            container.innerHTML = metrics.map(m => `
+                <div class="metric-card">
+                    <div class="metric-label">${m.label}</div>
+                    <div class="metric-value">${m.current}</div>
+                    <div class="metric-comparison">
+                        ${m.growth !== 0 ? `
+                            <span class="metric-change ${m.growth >= 0 ? 'positive' : 'negative'}">
+                                <span class="arrow-icon">${m.growth >= 0 ? '↑' : '↓'}</span>
+                                ${Math.abs(m.growth).toFixed(1)}%
+                            </span>
+                        ` : ''}
+                        <span class="metric-prev">vs ${m.previous} last year</span>
                     </div>
-                    <button class="btn btn-danger" onclick="deleteTarget(${t.id})" style="padding: 6px 12px; font-size: 12px;">Delete</button>
                 </div>
             `).join('');
         }
 
-        function updateProgressBars(targets) {
-            const container = document.getElementById('progress-container');
+        function renderChart(chartData) {
+            const ctx = document.getElementById('comparisonChart');
+            
+            if (comparisonChart) {
+                comparisonChart.destroy();
+            }
+
+            comparisonChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        {
+                            label: 'Current Year Sales',
+                            data: chartData.current_sales,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Previous Year Sales',
+                            data: chartData.previous_sales,
+                            borderColor: '#94a3b8',
+                            backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '₱' + formatNumber(value)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTargets(targets) {
+            const container = document.getElementById('progress-list');
+            
             if (!targets || targets.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary);">Set targets to track progress</p>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🎯</div>
+                        <p>No targets set yet. Create your first target above!</p>
+                    </div>
+                `;
                 return;
             }
 
-            container.innerHTML = targets.map(t => {
-                const progress = Math.min(100, Math.random() * 100); // Replace with actual calculation
-                return `
-                    <div class="progress-item">
-                        <div class="progress-header">
-                            <span class="progress-label">${t.target_type.toUpperCase()} (${t.target_period})</span>
-                            <span class="progress-value">${progress.toFixed(0)}% of ${formatNumber(t.target_value)}</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${progress}%"></div>
-                        </div>
+            container.innerHTML = targets.map(t => `
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-title">${formatTargetType(t.type)} - ${t.period}</span>
+                        <span class="progress-badge ${t.status}">${formatStatus(t.status)}</span>
                     </div>
-                `;
-            }).join('');
+                    <div class="progress-stats">
+                        <span>Current: <strong>${formatValue(t.current_value, t.type)}</strong></span>
+                        <span>Target: <strong>${formatValue(t.target_value, t.type)}</strong></span>
+                        <span>Progress: <strong>${t.progress.toFixed(1)}%</strong></span>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar-fill" style="width: ${Math.min(100, t.progress)}%"></div>
+                    </div>
+                    <div style="margin-top: 12px; text-align: right;">
+                        <button class="btn btn-danger" onclick="deleteTarget(${t.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         document.getElementById('target-form').addEventListener('submit', async (e) => {
@@ -2565,20 +2643,21 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             };
 
             try {
-                const res = await fetch(`${API_BASE}?action=set_target`, {
+                const res = await fetch(`${API}?action=set_target`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
 
-                const data = await res.json();
-                if (data.success) {
+                const json = await res.json();
+                
+                if (json.status === 'success') {
                     alert('Target set successfully!');
-                    fetchTargets();
                     e.target.reset();
+                    loadDashboard();
                 }
             } catch (error) {
-                console.error('Failed to set target:', error);
+                console.error('Set target error:', error);
             }
         });
 
@@ -2586,30 +2665,52 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             if (!confirm('Delete this target?')) return;
 
             try {
-                const res = await fetch(`${API_BASE}?action=delete_target&id=${id}`);
-                const data = await res.json();
+                const res = await fetch(`${API}?action=delete_target&id=${id}`);
+                const json = await res.json();
                 
-                if (data.success) {
-                    fetchTargets();
+                if (json.status === 'success') {
+                    loadDashboard();
                 }
             } catch (error) {
-                console.error('Failed to delete target:', error);
+                console.error('Delete error:', error);
             }
         }
 
-        function formatNumber(num) {
-            return new Intl.NumberFormat('en-PH').format(num);
+        function formatCurrency(value) {
+            return '₱' + formatNumber(value);
         }
 
-        // Initialize
-        fetchComparison();
-        fetchTargets();
+        function formatNumber(value) {
+            return new Intl.NumberFormat('en-PH').format(value);
+        }
 
-        // Refresh every 30 seconds
-        setInterval(() => {
-            fetchComparison();
-            fetchTargets();
-        }, 30000);
+        function formatTargetType(type) {
+            const types = {
+                sales: 'Sales Revenue',
+                customers: 'Total Customers',
+                transactions: 'Transactions',
+                growth_rate: 'Growth Rate'
+            };
+            return types[type] || type;
+        }
+
+        function formatValue(value, type) {
+            if (type === 'sales') return formatCurrency(value);
+            if (type === 'growth_rate') return value.toFixed(1) + '%';
+            return formatNumber(value);
+        }
+
+        function formatStatus(status) {
+            const statuses = {
+                achieved: 'Achieved',
+                on_track: 'On Track',
+                needs_attention: 'Needs Attention'
+            };
+            return statuses[status] || status;
+        }
+
+        loadDashboard();
+        setInterval(loadDashboard, 60000);
     </script>
 </div>
 
