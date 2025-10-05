@@ -2066,282 +2066,457 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-<div id="dashboard-container" class="page">
-<div class="sales-comparison-container">
-    <!-- Header Section -->
-    <div class="page-header">
-        <h1 class="page-title">Sales Comparison & Target Tracking</h1>
-        <div class="header-actions">
-            <button class="btn btn-refresh" onclick="refreshData()">
-                <i class="icon-refresh"></i> Refresh
-            </button>
-            <button class="btn btn-export" onclick="exportReport()">
-                <i class="icon-download"></i> Export
-            </button>
-            <button class="btn btn-primary" onclick="openTargetModal()">
-                <i class="icon-plus"></i> Set Target
-            </button>
-        </div>
-    </div>
-
-    <!-- Quick KPI Cards -->
-    <div class="kpi-cards-grid">
-        <div class="kpi-card">
-            <div class="kpi-icon sales-icon">
-                <i class="icon-chart-line"></i>
-            </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Today's Sales</span>
-                <h3 class="kpi-value" id="todaySales">₱0.00</h3>
-                <span class="kpi-change positive" id="salesChange">+0%</span>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon customers-icon">
-                <i class="icon-users"></i>
-            </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Customer Traffic</span>
-                <h3 class="kpi-value" id="todayCustomers">0</h3>
-                <span class="kpi-change" id="customersChange">0%</span>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon transactions-icon">
-                <i class="icon-receipt"></i>
-            </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Transactions</span>
-                <h3 class="kpi-value" id="todayTransactions">0</h3>
-                <span class="kpi-change" id="transactionsChange">0%</span>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon target-icon">
-                <i class="icon-target"></i>
-            </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Target Achievement</span>
-                <h3 class="kpi-value" id="targetAchievement">0%</h3>
-                <span class="kpi-sublabel" id="targetStatus">No active target</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Comparison Filters -->
-    <div class="comparison-filters-section">
-        <h2 class="section-title">Data Comparison</h2>
-        <div class="filters-row">
-            <div class="filter-group">
-                <label>Comparison Type</label>
-                <select id="comparisonType" onchange="updateComparisonDates()">
-                    <option value="today_vs_date">Today vs Selected Date</option>
-                    <option value="week_vs_range">This Week vs Custom Range</option>
-                    <option value="month_vs_period">This Month vs Custom Period</option>
-                    <option value="custom">Custom Range Comparison</option>
-                </select>
+  <div id="dashboard-container" class="page">
+        <div class="sales-comparison-container">
+            
+            <!-- Header Section -->
+            <div class="page-header">
+                <div class="header-left">
+                    <h1 class="page-title">
+                        <svg class="title-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                        </svg>
+                        Sales Analytics Dashboard
+                    </h1>
+                    <p class="page-subtitle">Track performance and achieve your targets</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-refresh" onclick="refreshData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button class="btn btn-export" onclick="exportReport()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        </svg>
+                        Export
+                    </button>
+                    <button class="btn btn-primary" onclick="openTargetModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v8M8 12h8"/>
+                        </svg>
+                        New Target
+                    </button>
+                </div>
             </div>
 
-            <div class="filter-group">
-                <label>Current Period</label>
-                <input type="date" id="currentDate" class="form-input">
-            </div>
-
-            <div class="filter-group">
-                <label>Compare With</label>
-                <input type="date" id="compareDate" class="form-input">
-            </div>
-
-            <div class="filter-group">
-                <button class="btn btn-primary" onclick="loadComparison()">
-                    <i class="icon-compare"></i> Compare
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Comparison Results Table -->
-    <div class="comparison-results-section">
-        <div class="table-container">
-            <table class="comparison-table" id="comparisonTable">
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>Current Value</th>
-                        <th>Compare Value</th>
-                        <th>Difference</th>
-                        <th>% Change</th>
-                        <th>Trend</th>
-                    </tr>
-                </thead>
-                <tbody id="comparisonTableBody">
-                    <!-- Dynamic rows -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Data Tables Section (Replacing Charts) -->
-    <div class="tables-grid">
-        <!-- Sales Trend Table -->
-        <div class="data-table-card">
-            <h3 class="table-card-title">Sales Trend (Last 30 Days)</h3>
-            <div class="table-container">
-                <table class="data-table" id="salesTrendTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Sales Revenue</th>
-                            <th>Change</th>
-                        </tr>
-                    </thead>
-                    <tbody id="salesTrendTableBody">
-                        <!-- Dynamic rows -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Target Achievement Table -->
-        <div class="data-table-card">
-            <h3 class="table-card-title">Active Target Progress</h3>
-            <div class="table-container">
-                <table class="data-table" id="targetProgressTable">
-                    <thead>
-                        <tr>
-                            <th>Target Name</th>
-                            <th>Progress</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="targetProgressTableBody">
-                        <!-- Dynamic rows -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Target Management Section -->
-    <div class="target-management-section">
-        <div class="section-header">
-            <h2 class="section-title">Target Management</h2>
-            <div class="section-filters">
-                <select id="targetFilter" onchange="filterTargets()">
-                    <option value="all">All Targets</option>
-                    <option value="active">Active</option>
-                    <option value="achieved">Achieved</option>
-                    <option value="near">Near Target</option>
-                    <option value="below">Below Target</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table class="targets-table" id="targetsTable">
-                <thead>
-                    <tr>
-                        <th>Target Name</th>
-                        <th>Type</th>
-                        <th>Period</th>
-                        <th>Target Value</th>
-                        <th>Current</th>
-                        <th>Progress</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="targetsTableBody">
-                    <!-- Dynamic rows -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Set Target Modal -->
-    <div class="modal" id="targetModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Set New Target</h3>
-                <button class="modal-close" onclick="closeTargetModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="targetForm" onsubmit="saveTarget(event)">
-                    <div class="form-group">
-                        <label>Target Name</label>
-                        <input type="text" id="targetName" class="form-input" required placeholder="e.g., Monthly Sales Goal">
+            <!-- KPI Cards -->
+            <div class="kpi-cards-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon sales-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
                     </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Today's Sales</span>
+                        <h3 class="kpi-value" id="todaySales">₱0.00</h3>
+                        <span class="kpi-change positive" id="salesChange">+0%</span>
+                    </div>
+                </div>
 
-                    <div class="form-group">
-                        <label>Target Type</label>
-                        <select id="targetType" class="form-input" required>
-                            <option value="sales">Sales Revenue</option>
-                            <option value="customers">Customer Traffic</option>
-                            <option value="transactions">Transactions</option>
-                            <option value="avg_transaction">Avg Transaction Value</option>
+                <div class="kpi-card">
+                    <div class="kpi-icon customers-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Customer Traffic</span>
+                        <h3 class="kpi-value" id="todayCustomers">0</h3>
+                        <span class="kpi-change" id="customersChange">0%</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon transactions-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <path d="M2 10h20"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Transactions</span>
+                        <h3 class="kpi-value" id="todayTransactions">0</h3>
+                        <span class="kpi-change" id="transactionsChange">0%</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon target-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Target Achievement</span>
+                        <h3 class="kpi-value" id="targetAchievement">0%</h3>
+                        <span class="kpi-sublabel" id="targetStatus">No active target</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Section -->
+            <div class="comparison-filters-section">
+                <div class="section-header-with-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <path d="M20 8v6M23 11h-6"/>
+                    </svg>
+                    <h2 class="section-title">Data Comparison</h2>
+                </div>
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label>Comparison Type</label>
+                        <select id="comparisonType" class="form-input" onchange="updateComparisonDates()">
+                            <option value="today_vs_date">Today vs Selected Date</option>
+                            <option value="week_vs_range">This Week vs Last Week</option>
+                            <option value="month_vs_period">This Month vs Last Month</option>
+                            <option value="custom">Custom Comparison</option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label>Target Value</label>
-                        <input type="number" id="targetValue" class="form-input" required min="1" step="0.01" placeholder="Enter target amount">
+                    <div class="filter-group">
+                        <label>Current Period</label>
+                        <input type="date" id="currentDate" class="form-input">
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Start Date</label>
-                            <input type="date" id="targetStartDate" class="form-input" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>End Date</label>
-                            <input type="date" id="targetEndDate" class="form-input" required>
-                        </div>
+                    <div class="filter-group">
+                        <label>Compare With</label>
+                        <input type="date" id="compareDate" class="form-input">
                     </div>
-
-                    <div class="form-group">
-                        <label>Store/Branch (Optional)</label>
-                        <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all stores">
+                    <div class="filter-group">
+                        <button class="btn btn-primary" onclick="loadComparison()" style="margin-top:24px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            Compare
+                        </button>
                     </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeTargetModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Target</button>
-                    </div>
-                </form>
+                </div>
             </div>
+
+            <!-- Comparison Results -->
+            <div class="comparison-results-section">
+                <div class="table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current Value</th>
+                                <th>Compare Value</th>
+                                <th>Difference</th>
+                                <th>% Change</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:40px;color:#9ca3af;">
+                                    Select dates and click Compare to view data
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Data Tables -->
+            <div class="tables-grid">
+                <div class="data-table-card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M7 12l3-3 3 3 5-5"/>
+                        </svg>
+                        <h3 class="table-card-title">Sales Trend (Last 30 Days)</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Sales Revenue</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTrendTableBody">
+                                <tr>
+                                    <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
+                                        Loading...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="data-table-card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                        </svg>
+                        <h3 class="table-card-title">Active Targets</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Target Name</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="targetProgressTableBody">
+                                <tr>
+                                    <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
+                                        Loading...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Management -->
+            <div class="target-management-section">
+                <div class="section-header">
+                    <div class="section-header-with-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/>
+                            <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/>
+                            <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14zM14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5zM15.5 19c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
+                        </svg>
+                        <h2 class="section-title">Target Management</h2>
+                    </div>
+                    <div class="section-filters">
+                        <select id="targetFilter" class="form-input" onchange="filterTargets()">
+                            <option value="all">All Targets</option>
+                            <option value="active">Active</option>
+                            <option value="achieved">Achieved</option>
+                            <option value="near">Near Target</option>
+                            <option value="below">Below Target</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="targets-table">
+                        <thead>
+                            <tr>
+                                <th>Target Name</th>
+                                <th>Type</th>
+                                <th>Period</th>
+                                <th>Target Value</th>
+                                <th>Current</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="targetsTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">
+                                    Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Target Modal -->
+            <div class="modal" id="targetModal">
+                <div class="modal-backdrop" onclick="closeTargetModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Create New Target</h3>
+                        <button class="modal-close" onclick="closeTargetModal()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="targetForm" onsubmit="saveTarget(event)">
+                            <div class="form-group">
+                                <label>Target Name</label>
+                                <input type="text" id="targetName" class="form-input" required placeholder="e.g., Q4 Sales Goal" maxlength="100">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Target Type</label>
+                                <select id="targetType" class="form-input" required>
+                                    <option value="">Select type...</option>
+                                    <option value="sales">Sales Revenue</option>
+                                    <option value="customers">Customer Traffic</option>
+                                    <option value="transactions">Transactions</option>
+                                    <option value="avg_transaction">Avg Transaction Value</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Target Value</label>
+                                <input type="number" id="targetValue" class="form-input" required min="0.01" step="0.01" placeholder="Enter target amount">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="targetStartDate" class="form-input" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="targetEndDate" class="form-input" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Store/Branch (Optional)</label>
+                                <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all stores" maxlength="100">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeTargetModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                    Save Target
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
-</div>
-   <script src="sales_comparison.js"></script>
+
+    <script src="sales_comparison.js"></script>
 <style>
-  /* Sales Comparison Styles */
+ /* ==================== RESET & BASE ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Primary Color Theme - Indigo */
+    --primary-50: #eef2ff;
+    --primary-100: #e0e7ff;
+    --primary-200: #c7d2fe;
+    --primary-300: #a5b4fc;
+    --primary-400: #818cf8;
+    --primary-500: #6366f1;
+    --primary-600: #4f46e5;
+    --primary-700: #4338ca;
+    --primary-800: #3730a3;
+    --primary-900: #312e81;
+    
+    /* Status Colors */
+    --success-50: #d1fae5;
+    --success-500: #10b981;
+    --success-700: #059669;
+    
+    --warning-50: #fef3c7;
+    --warning-500: #f59e0b;
+    --warning-700: #d97706;
+    
+    --danger-50: #fee2e2;
+    --danger-500: #ef4444;
+    --danger-700: #dc2626;
+    
+    /* Neutral Colors */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.6;
+}
+
+/* ==================== CONTAINER ==================== */
 .sales-comparison-container {
     padding: 24px;
-    background: #f5f7fa;
+    max-width: 1400px;
+    margin: 0 auto;
     min-height: 100vh;
 }
 
-/* Page Header */
+/* ==================== PAGE HEADER ==================== */
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background: white;
+    padding: 24px 32px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .page-title {
     font-size: 28px;
     font-weight: 700;
-    color: #1a202c;
+    color: var(--gray-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.title-icon {
+    color: var(--primary-600);
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--gray-500);
     margin: 0;
 }
 
@@ -2350,120 +2525,128 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     gap: 12px;
 }
 
-/* Buttons */
+/* ==================== BUTTONS ==================== */
 .btn {
     padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
+}
+
+.btn:active {
+    transform: translateY(1px);
 }
 
 .btn-primary {
-    background: #4f46e5;
-    color: #ffffff;
+    background: var(--primary-600);
+    color: white;
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-    background: #4338ca;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    background: var(--primary-700);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-    background: #e5e7eb;
-    color: #374151;
+    background: var(--gray-200);
+    color: var(--gray-700);
 }
 
 .btn-secondary:hover {
-    background: #d1d5db;
+    background: var(--gray-300);
 }
 
 .btn-refresh {
-    background: #10b981;
-    color: #ffffff;
+    background: var(--success-500);
+    color: white;
 }
 
 .btn-refresh:hover {
-    background: #059669;
+    background: var(--success-700);
 }
 
 .btn-export {
-    background: #f59e0b;
-    color: #ffffff;
+    background: var(--warning-500);
+    color: white;
 }
 
 .btn-export:hover {
-    background: #d97706;
+    background: var(--warning-700);
 }
 
-/* KPI Cards */
+/* ==================== KPI CARDS ==================== */
 .kpi-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
     margin-bottom: 32px;
 }
 
 .kpi-card {
-    background: #ffffff;
+    background: white;
     padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-200);
 }
 
 .kpi-icon {
     width: 56px;
     height: 56px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    flex-shrink: 0;
 }
 
 .sales-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+    color: white;
 }
 
 .customers-icon {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--success-500) 0%, var(--success-700) 100%);
+    color: white;
 }
 
 .transactions-icon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--warning-500) 0%, var(--warning-700) 100%);
+    color: white;
 }
 
 .target-icon {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
 }
 
 .kpi-content {
     flex: 1;
+    min-width: 0;
 }
 
 .kpi-label {
     display: block;
     font-size: 13px;
-    color: #6b7280;
+    color: var(--gray-500);
     margin-bottom: 6px;
     font-weight: 500;
 }
@@ -2471,49 +2654,74 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 .kpi-value {
     font-size: 28px;
     font-weight: 700;
-    color: #1a202c;
+    color: var(--gray-900);
     margin: 0 0 4px 0;
+    line-height: 1;
 }
 
 .kpi-change {
     font-size: 13px;
     font-weight: 600;
     padding: 4px 8px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     display: inline-block;
 }
 
 .kpi-change.positive {
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--success-50);
+    color: var(--success-700);
 }
 
 .kpi-change.negative {
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--danger-50);
+    color: var(--danger-700);
 }
 
 .kpi-sublabel {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--gray-400);
 }
 
-/* Comparison Filters */
-.comparison-filters-section {
-    background: #ffffff;
+/* ==================== SECTIONS ==================== */
+.comparison-filters-section,
+.comparison-results-section,
+.target-management-section,
+.data-table-card {
+    background: white;
     padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
     margin-bottom: 24px;
+}
+
+.section-header-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.section-header-with-icon svg {
+    color: var(--primary-600);
+    flex-shrink: 0;
 }
 
 .section-title {
     font-size: 20px;
     font-weight: 700;
-    color: #1a202c;
-    margin: 0 0 20px 0;
+    color: var(--gray-900);
+    margin: 0;
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* ==================== FILTERS ==================== */
 .filters-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2529,37 +2737,35 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 .filter-group label {
     font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: var(--gray-700);
 }
 
-.form-input {
+.form-input,
+.section-filters select {
     padding: 10px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
     font-size: 14px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    background: white;
+    color: var(--gray-900);
 }
 
 .form-input:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
 }
 
-/* Tables */
-.comparison-results-section,
-.target-management-section {
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 24px;
+.form-input:hover {
+    border-color: var(--gray-400);
 }
 
+/* ==================== TABLES ==================== */
 .table-container {
     overflow-x: auto;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
 }
 
 .comparison-table,
@@ -2572,7 +2778,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 .comparison-table thead,
 .targets-table thead,
 .data-table thead {
-    background: #f9fafb;
+    background: var(--gray-50);
 }
 
 .comparison-table th,
@@ -2580,29 +2786,30 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 .data-table th {
     padding: 14px 16px;
     text-align: left;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    color: #374151;
+    color: var(--gray-600);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .comparison-table td,
 .targets-table td,
 .data-table td {
     padding: 16px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--gray-200);
     font-size: 14px;
-    color: #1f2937;
+    color: var(--gray-900);
 }
 
 .comparison-table tbody tr:hover,
 .targets-table tbody tr:hover,
 .data-table tbody tr:hover {
-    background: #f9fafb;
+    background: var(--gray-50);
 }
 
-/* Trend Indicators */
+/* ==================== TREND INDICATORS ==================== */
 .trend-indicator {
     display: inline-flex;
     align-items: center;
@@ -2610,26 +2817,26 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
 }
 
 .trend-up {
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--success-50);
+    color: var(--success-700);
 }
 
 .trend-down {
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--danger-50);
+    color: var(--danger-700);
 }
 
-/* Progress Bars */
+/* ==================== PROGRESS BARS ==================== */
 .progress-container {
     position: relative;
     width: 100%;
     height: 8px;
-    background: #e5e7eb;
+    background: var(--gray-200);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -2637,22 +2844,22 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 .progress-bar {
     height: 100%;
     border-radius: 4px;
-    transition: width 0.5s ease;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-achieved {
-    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(90deg, var(--success-500) 0%, var(--success-700) 100%);
 }
 
 .progress-near {
-    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    background: linear-gradient(90deg, var(--warning-500) 0%, var(--warning-700) 100%);
 }
 
 .progress-below {
-    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(90deg, var(--danger-500) 0%, var(--danger-700) 100%);
 }
 
-/* Status Badges */
+/* ==================== STATUS BADGES ==================== */
 .status-badge {
     padding: 6px 12px;
     border-radius: 20px;
@@ -2662,40 +2869,45 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 }
 
 .status-achieved {
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--success-50);
+    color: var(--success-700);
 }
 
 .status-near {
-    background: #fef3c7;
-    color: #92400e;
+    background: var(--warning-50);
+    color: var(--warning-700);
 }
 
 .status-below {
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--danger-50);
+    color: var(--danger-700);
 }
 
-/* Data Tables Grid (Replacing Charts) */
+/* ==================== DATA TABLE CARDS ==================== */
 .tables-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
     gap: 24px;
     margin-bottom: 24px;
 }
 
-.data-table-card {
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.card-header svg {
+    color: var(--primary-600);
+    flex-shrink: 0;
 }
 
 .table-card-title {
     font-size: 18px;
     font-weight: 700;
-    color: #1a202c;
-    margin: 0 0 20px 0;
+    color: var(--gray-900);
+    margin: 0;
 }
 
 .data-table tbody {
@@ -2711,7 +2923,25 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     table-layout: fixed;
 }
 
-/* Modal */
+.data-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.data-table tbody::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 4px;
+}
+
+.data-table tbody::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
+}
+
+.data-table tbody::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* ==================== MODAL ==================== */
 .modal {
     display: none;
     position: fixed;
@@ -2719,7 +2949,6 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -2729,56 +2958,79 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     display: flex;
 }
 
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
 .modal-content {
-    background: #ffffff;
-    border-radius: 12px;
+    position: relative;
+    background: white;
+    border-radius: var(--radius-xl);
     width: 90%;
     max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-xl);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .modal-title {
     font-size: 20px;
     font-weight: 700;
-    color: #1a202c;
+    color: var(--gray-900);
     margin: 0;
 }
 
 .modal-close {
     background: none;
     border: none;
-    font-size: 28px;
-    color: #6b7280;
+    color: var(--gray-500);
     cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
-    transition: all 0.3s ease;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
 }
 
 .modal-close:hover {
-    background: #f3f4f6;
-    color: #1f2937;
+    background: var(--gray-100);
+    color: var(--gray-700);
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 24px 32px;
 }
 
+/* ==================== FORMS ==================== */
 .form-group {
     margin-bottom: 20px;
 }
@@ -2787,7 +3039,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     display: block;
     font-size: 14px;
     font-weight: 600;
-    color: #374151;
+    color: var(--gray-700);
     margin-bottom: 8px;
 }
 
@@ -2803,44 +3055,58 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     gap: 12px;
     margin-top: 24px;
     padding-top: 24px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--gray-200);
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+/* ==================== ANIMATIONS ==================== */
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
-.section-filters select {
-    padding: 8px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
-/* Scrollbar Styling for Data Tables */
-.data-table tbody::-webkit-scrollbar {
-    width: 8px;
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }
 
-.data-table tbody::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+    .tables-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.data-table tbody::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 4px;
-}
-
-.data-table tbody::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
+    .sales-comparison-container {
+        padding: 16px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap;
+    }
+    
     .kpi-cards-grid {
         grid-template-columns: 1fr;
     }
@@ -2849,12 +3115,56 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         grid-template-columns: 1fr;
     }
     
-    .tables-grid {
+    .form-row {
         grid-template-columns: 1fr;
     }
     
-    .form-row {
-        grid-template-columns: 1fr;
+    .page-title {
+        font-size: 24px;
+    }
+    
+    .kpi-value {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .modal-content {
+        width: 95%;
+    }
+    
+    .modal-header,
+    .modal-body {
+        padding: 20px;
+    }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    .header-actions,
+    .btn,
+    .modal {
+        display: none !important;
+    }
+    
+    .sales-comparison-container {
+        padding: 0;
+    }
+    
+    .page-header,
+    .kpi-card,
+    .comparison-filters-section,
+    .comparison-results-section,
+    .data-table-card,
+    .target-management-section {
+        box-shadow: none;
+        border: 1px solid var(--gray-300);
+        page-break-inside: avoid;
     }
 }
   </style>

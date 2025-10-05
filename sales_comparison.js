@@ -1,4 +1,4 @@
-// Sales Comparison & Target Tracking - Complete Improved Version
+// Sales Comparison & Target Tracking - Production Ready
 'use strict';
 
 // ==================== CONFIGURATION ====================
@@ -57,7 +57,6 @@ const AppState = {
         });
         this.activeRequests.clear();
         this.loadingCounter = 0;
-        this.isInitialized = false;
     }
 };
 
@@ -186,7 +185,7 @@ const UIManager = {
             success: '#10b981',
             error: '#ef4444',
             warning: '#f59e0b',
-            info: '#3b82f6'
+            info: '#4f46e5'
         };
 
         const icons = {
@@ -274,15 +273,13 @@ const UIManager = {
         }
 
         const sign = numValue >= 0 ? '+' : '';
-        element.textContent = sign + Utils.formatPercentage(numValue).replace('%', '') + '%';
+        element.textContent = sign + numValue.toFixed(1) + '%';
         element.className = 'kpi-change ' + (numValue >= 0 ? 'positive' : 'negative');
     },
 
     updateTextContent(elementId, value) {
         const element = Utils.$(`#${elementId}`);
-        if (element) {
-            element.textContent = value || '';
-        }
+        if (element) element.textContent = value || '';
     }
 };
 
@@ -626,7 +623,6 @@ const TargetManager = {
             store: Utils.sanitizeInput(Utils.$('#targetStore')?.value, 100) || ''
         };
 
-        // Enhanced validation
         if (!formData.name) {
             UIManager.showNotification('Please enter a target name', 'warning');
             return;
@@ -676,7 +672,8 @@ const TargetManager = {
             this.closeModal();
             await Promise.all([
                 this.loadTargets(AppState.currentFilter),
-                TableLoaders.loadTargetProgressTable()
+                TableLoaders.loadTargetProgressTable(),
+                KPIManager.loadSummary()
             ]);
             UIManager.showNotification(data.message || 'Target saved successfully!', 'success');
 
@@ -689,7 +686,7 @@ const TargetManager = {
     },
 
     async deleteTarget(id) {
-        if (!confirm('Are you sure you want to delete this target?')) return;
+        if (!confirm('Are you sure you want to delete this target? This action cannot be undone.')) return;
 
         if (!id || id <= 0) {
             UIManager.showNotification('Invalid target ID', 'error');
@@ -708,7 +705,8 @@ const TargetManager = {
 
             await Promise.all([
                 this.loadTargets(AppState.currentFilter),
-                TableLoaders.loadTargetProgressTable()
+                TableLoaders.loadTargetProgressTable(),
+                KPIManager.loadSummary()
             ]);
             UIManager.showNotification(data.message || 'Target deleted successfully!', 'success');
 
@@ -896,7 +894,7 @@ const App = {
             return;
         }
 
-        console.log('Initializing Sales Tracking App...');
+        console.log('Initializing Sales Analytics Dashboard...');
 
         try {
             this.injectStyles();
@@ -906,7 +904,7 @@ const App = {
             this.setupEventListeners();
 
             AppState.isInitialized = true;
-            console.log('✓ App initialized successfully');
+            console.log('✓ Dashboard initialized successfully');
         } catch (error) {
             console.error('App initialization error:', error);
             UIManager.showNotification('Failed to initialize application', 'error');
@@ -944,7 +942,7 @@ const App = {
         });
 
         window.addEventListener('offline', () => {
-            UIManager.showNotification('Connection lost', 'warning');
+            UIManager.showNotification('Connection lost - Working offline', 'warning');
         });
     },
 
@@ -965,7 +963,7 @@ const App = {
 
     exportReport() {
         UIManager.showNotification('Preparing report for export...', 'info');
-        // TODO: Implement export functionality
+        window.print();
     },
 
     injectStyles() {
@@ -1007,7 +1005,7 @@ if (document.readyState === 'loading') {
     App.init();
 }
 
-// ==================== ERROR HANDLER ====================
+// ==================== ERROR HANDLERS ====================
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
     if (AppState.isInitialized) {
