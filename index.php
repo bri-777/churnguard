@@ -2184,16 +2184,44 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </div>
     </div>
 
-    <!-- Charts Section -->
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h3 class="chart-title">Sales Trend</h3>
-            <canvas id="salesTrendChart"></canvas>
+    <!-- Data Tables Section (Replacing Charts) -->
+    <div class="tables-grid">
+        <!-- Sales Trend Table -->
+        <div class="data-table-card">
+            <h3 class="table-card-title">Sales Trend (Last 30 Days)</h3>
+            <div class="table-container">
+                <table class="data-table" id="salesTrendTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Sales Revenue</th>
+                            <th>Change</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTrendTableBody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="chart-card">
-            <h3 class="chart-title">Target Achievement</h3>
-            <canvas id="targetAchievementChart"></canvas>
+        <!-- Target Achievement Table -->
+        <div class="data-table-card">
+            <h3 class="table-card-title">Active Target Progress</h3>
+            <div class="table-container">
+                <table class="data-table" id="targetProgressTable">
+                    <thead>
+                        <tr>
+                            <th>Target Name</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="targetProgressTableBody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -2289,7 +2317,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
 </div>
 </div>
-<script src="sales_comparison.js"></script>
+   <script src="sales_comparison.js"></script>
 <style>
   /* Sales Comparison Styles */
 .sales-comparison-container {
@@ -2535,18 +2563,21 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 }
 
 .comparison-table,
-.targets-table {
+.targets-table,
+.data-table {
     width: 100%;
     border-collapse: collapse;
 }
 
 .comparison-table thead,
-.targets-table thead {
+.targets-table thead,
+.data-table thead {
     background: #f9fafb;
 }
 
 .comparison-table th,
-.targets-table th {
+.targets-table th,
+.data-table th {
     padding: 14px 16px;
     text-align: left;
     font-size: 13px;
@@ -2557,7 +2588,8 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 }
 
 .comparison-table td,
-.targets-table td {
+.targets-table td,
+.data-table td {
     padding: 16px;
     border-top: 1px solid #e5e7eb;
     font-size: 14px;
@@ -2565,7 +2597,8 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 }
 
 .comparison-table tbody tr:hover,
-.targets-table tbody tr:hover {
+.targets-table tbody tr:hover,
+.data-table tbody tr:hover {
     background: #f9fafb;
 }
 
@@ -2643,26 +2676,39 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     color: #991b1b;
 }
 
-/* Charts */
-.charts-grid {
+/* Data Tables Grid (Replacing Charts) */
+.tables-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 24px;
     margin-bottom: 24px;
 }
 
-.chart-card {
+.data-table-card {
     background: #ffffff;
     padding: 24px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.chart-title {
+.table-card-title {
     font-size: 18px;
     font-weight: 700;
     color: #1a202c;
     margin: 0 0 20px 0;
+}
+
+.data-table tbody {
+    max-height: 400px;
+    overflow-y: auto;
+    display: block;
+}
+
+.data-table thead,
+.data-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 /* Modal */
@@ -2774,6 +2820,25 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     font-size: 14px;
 }
 
+/* Scrollbar Styling for Data Tables */
+.data-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.data-table tbody::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.data-table tbody::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.data-table tbody::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .kpi-cards-grid {
@@ -2784,7 +2849,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         grid-template-columns: 1fr;
     }
     
-    .charts-grid {
+    .tables-grid {
         grid-template-columns: 1fr;
     }
     
@@ -2798,305 +2863,6 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-
-
-
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-// API Configuration
-const API_URL = 'api/performance_tracker.php';
-let chartInstance = null;
-
-// Load Dashboard Data
-async function loadDashboard() {
-    try {
-        const response = await fetch(`${API_URL}?action=dashboard`);
-        const result = await response.json();
-        
-        if (result.success) {
-            updateMetrics(result.data);
-            updateComparisonTable(result.data);
-            updateProgressBars(result.data);
-            updateChart(result.data);
-        }
-    } catch (error) {
-        console.error('Dashboard load error:', error);
-    }
-}
-
-// Update Metric Cards
-function updateMetrics(data) {
-    const current = data.current;
-    const growth = data.growth;
-    
-    // Update sales
-    document.getElementById('totalSales').textContent = '₱' + formatNumber(current.total_sales);
-    updateGrowthIndicator('salesGrowth', growth.sales_percent);
-    
-    // Update customers
-    document.getElementById('totalCustomers').textContent = formatNumber(current.total_customers);
-    updateGrowthIndicator('customerGrowth', growth.customer_percent);
-    
-    // Update average transaction
-    document.getElementById('avgTransaction').textContent = '₱' + formatNumber(current.avg_transaction_value);
-    
-    // Update transaction trend
-    const trendEl = document.getElementById('transactionTrend');
-    if (current.avg_transaction_value > data.previous.avg_transaction_value) {
-        trendEl.textContent = 'Increasing';
-        trendEl.style.background = '#f0fdf4';
-        trendEl.style.color = '#16a34a';
-    } else if (current.avg_transaction_value < data.previous.avg_transaction_value) {
-        trendEl.textContent = 'Declining';
-        trendEl.style.background = '#fef2f2';
-        trendEl.style.color = '#dc2626';
-    } else {
-        trendEl.textContent = 'Stable';
-        trendEl.style.background = '#f1f5f9';
-        trendEl.style.color = '#64748b';
-    }
-}
-
-// Update Growth Indicators
-function updateGrowthIndicator(elementId, percentage) {
-    const element = document.getElementById(elementId);
-    const value = parseFloat(percentage) || 0;
-    
-    if (value > 0) {
-        element.textContent = '+' + value.toFixed(1) + '%';
-        element.style.background = '#f0fdf4';
-        element.style.color = '#16a34a';
-    } else if (value < 0) {
-        element.textContent = value.toFixed(1) + '%';
-        element.style.background = '#fef2f2';
-        element.style.color = '#dc2626';
-    } else {
-        element.textContent = '0%';
-        element.style.background = '#f1f5f9';
-        element.style.color = '#64748b';
-    }
-}
-
-// Update Comparison Table
-function updateComparisonTable(data) {
-    const current = data.current;
-    const previous = data.previous;
-    const growth = data.growth;
-    
-    // Update year labels
-    document.getElementById('prevYearLabel').textContent = previous.year;
-    document.getElementById('currYearLabel').textContent = current.year;
-    
-    // Table data
-    const metrics = [
-        {
-            name: 'Revenue',
-            prev: previous.total_sales,
-            curr: current.total_sales,
-            format: 'currency'
-        },
-        {
-            name: 'Total Customers',
-            prev: previous.total_customers,
-            curr: current.total_customers,
-            format: 'number'
-        },
-        {
-            name: 'New Customers',
-            prev: previous.new_customers,
-            curr: current.new_customers,
-            format: 'number'
-        },
-        {
-            name: 'Returning Customers',
-            prev: previous.returning_customers,
-            curr: current.returning_customers,
-            format: 'number'
-        },
-        {
-            name: 'Total Transactions',
-            prev: previous.total_transactions,
-            curr: current.total_transactions,
-            format: 'number'
-        },
-        {
-            name: 'Avg Transaction Value',
-            prev: previous.avg_transaction_value,
-            curr: current.avg_transaction_value,
-            format: 'currency'
-        }
-    ];
-    
-    const tableBody = document.getElementById('comparisonTable');
-    tableBody.innerHTML = metrics.map(metric => {
-        const change = metric.curr - metric.prev;
-        const growthPct = metric.prev > 0 ? ((change / metric.prev) * 100) : 0;
-        
-        const prevFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.prev) : formatNumber(metric.prev);
-        const currFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.curr) : formatNumber(metric.curr);
-        const changeFormatted = metric.format === 'currency' ? '₱' + formatNumber(Math.abs(change)) : formatNumber(Math.abs(change));
-        
-        const growthColor = growthPct > 0 ? '#dcfce7' : (growthPct < 0 ? '#fee2e2' : '#f1f5f9');
-        const growthTextColor = growthPct > 0 ? '#16a34a' : (growthPct < 0 ? '#dc2626' : '#64748b');
-        const changePrefix = change >= 0 ? '+' : '-';
-        
-        return `
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 16px; color: #1e293b; font-weight: 500;">${metric.name}</td>
-                <td style="padding: 16px; text-align: right; color: #64748b;">${prevFormatted}</td>
-                <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">${currFormatted}</td>
-                <td style="padding: 16px; text-align: right; color: #64748b;">${changePrefix}${changeFormatted}</td>
-                <td style="padding: 16px; text-align: right;">
-                    <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: ${growthColor}; color: ${growthTextColor};">
-                        ${growthPct >= 0 ? '+' : ''}${growthPct.toFixed(1)}%
-                    </span>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// Update Progress Bars
-function updateProgressBars(data) {
-    const salesTarget = parseFloat(document.getElementById('salesTargetInput').value) || data.previous.total_sales * 1.2;
-    const customerTarget = parseFloat(document.getElementById('customerTargetInput').value) || 15;
-    
-    // Sales progress
-    const salesProgress = Math.min(100, (data.current.total_sales / salesTarget) * 100);
-    document.getElementById('salesProgressText').textContent = salesProgress.toFixed(1) + '%';
-    document.getElementById('salesProgressBar').style.width = salesProgress + '%';
-    
-    // Customer progress
-    const customerProgress = Math.min(100, Math.abs(data.growth.customer_percent / customerTarget) * 100);
-    document.getElementById('customerProgressText').textContent = customerProgress.toFixed(1) + '%';
-    document.getElementById('customerProgressBar').style.width = customerProgress + '%';
-}
-
-// Update Chart
-function updateChart(data) {
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    
-    // Process monthly data
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const currentData = new Array(12).fill(0);
-    const previousData = new Array(12).fill(0);
-    
-    if (data.monthly) {
-        data.monthly.forEach(item => {
-            const monthIndex = item.month - 1;
-            if (item.year == data.current.year) {
-                currentData[monthIndex] = item.total_sales;
-            } else {
-                previousData[monthIndex] = item.total_sales;
-            }
-        });
-    }
-    
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-    
-    chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: months,
-            datasets: [
-                {
-                    label: data.current.year,
-                    data: currentData,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: data.previous.year,
-                    data: previousData,
-                    borderColor: '#94a3b8',
-                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₱' + formatNumber(value);
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Save Targets
-async function saveTargets() {
-    const salesTarget = document.getElementById('salesTargetInput').value;
-    const customerTarget = document.getElementById('customerTargetInput').value;
-    const period = document.getElementById('targetPeriod').value;
-    
-    try {
-        if (salesTarget) {
-            await fetch(`${API_URL}?action=save_target`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'sales',
-                    value: salesTarget,
-                    period: period
-                })
-            });
-        }
-        
-        if (customerTarget) {
-            await fetch(`${API_URL}?action=save_target`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'customers',
-                    value: customerTarget,
-                    period: period
-                })
-            });
-        }
-        
-        alert('Targets saved successfully!');
-        loadDashboard();
-    } catch (error) {
-        console.error('Save error:', error);
-    }
-}
-
-// Format Numbers
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-US').format(num || 0);
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', loadDashboard);
-
-// Auto-refresh every 5 minutes
-setInterval(loadDashboard, 300000);
-</script>
 
 
 
