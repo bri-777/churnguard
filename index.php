@@ -2065,161 +2065,159 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-<div id="dashboard-container" class="page" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif; background: #f6f9fc; color: #172b4d; line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; padding: 2rem;">
-    <!-- Top Header -->
-    <header class="top-header" style="height: 70px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 100; margin: -2rem -2rem 2rem -2rem;">
-        <div class="header-left" style="display: flex; align-items: center; gap: 1.5rem;">
-            <h1 class="page-title" style="font-size: 1.5rem; font-weight: 600; color: #172b4d; margin: 0;">Performance Analytics</h1>
-        </div>
-        
-        <div class="header-right" style="display: flex; align-items: center; gap: 1rem;">
-            <div class="date-range-selector" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f4f5f7; border-radius: 8px;">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="20" height="20" style="width: 20px; height: 20px; color: #8898aa;">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                <select id="yearSelector" class="year-select" style="background: none; border: none; color: #172b4d; font-weight: 500; cursor: pointer; outline: none;">
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                </select>
-            </div>
-            
-            <button class="refresh-btn" id="refreshData" style="padding: 0.5rem 1rem; background: #5e72e4; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M1 4v6h6M23 20v-6h-6"/>
-                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-                </svg>
-            </button>
-        </div>
-    </header>
+<div id="dashboard-container" class="page">
+<h1 class="page-title">Performance Analytics</h1>
+
+<div class="header-right">
+    <div class="date-range-selector">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <select id="yearSelector" class="year-select">
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+        </select>
+    </div>
     
+    <button class="refresh-btn" id="refreshData">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M1 4v6h6M23 20v-6h-6"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+        </svg>
+    </button>
+</div>
+</header>
+
+<!-- Dashboard Content -->
+<div class="dashboard-content" id="dashboardContent">
     <!-- KPI Cards -->
-    <div class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="kpi-card" data-metric="sales" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); animation: fadeIn 0.5s ease forwards; animation-delay: 0.1s;">
-            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <div class="kpi-icon sales" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; background: linear-gradient(135deg, #5e72e4, #7b8ff5);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 24px; height: 24px;">
+    <div class="kpi-grid">
+        <div class="kpi-card" data-metric="sales">
+            <div class="kpi-header">
+                <div class="kpi-icon sales">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                     </svg>
                 </div>
-                <div class="kpi-trend positive" id="salesTrend" style="display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600; background: rgba(45, 206, 137, 0.1); color: #2dce89;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px;">
+                <div class="kpi-trend positive" id="salesTrend">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M7 17l5-5 5 5M12 12V3"/>
                     </svg>
                     <span>+0%</span>
                 </div>
             </div>
-            <div class="kpi-body" style="margin-bottom: 1.5rem;">
-                <div class="kpi-label" style="font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem;">Total Revenue</div>
-                <div class="kpi-value" id="totalRevenue" style="font-size: 2rem; font-weight: 700; color: #172b4d; margin-bottom: 0.5rem;">₱0</div>
-                <div class="kpi-comparison" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
-                    <span class="comparison-label" style="color: #8898aa;">vs last year:</span>
-                    <span class="comparison-value" id="revenueComparison" style="color: #172b4d; font-weight: 600;">₱0</span>
+            <div class="kpi-body">
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-value" id="totalRevenue">₱0</div>
+                <div class="kpi-comparison">
+                    <span class="comparison-label">vs last year:</span>
+                    <span class="comparison-value" id="revenueComparison">₱0</span>
                 </div>
             </div>
-            <div class="kpi-footer" style="margin-top: 1rem;">
-                <div class="progress-bar" style="height: 8px; background: #f4f5f7; border-radius: 4px; overflow: hidden; margin-bottom: 0.5rem;">
-                    <div class="progress-fill sales-progress" id="salesProgress" style="height: 100%; border-radius: 4px; transition: width 1s ease; position: relative; overflow: hidden; background: linear-gradient(90deg, #5e72e4, #7b8ff5); width: 0%;"></div>
+            <div class="kpi-footer">
+                <div class="progress-bar">
+                    <div class="progress-fill sales-progress" id="salesProgress"></div>
                 </div>
-                <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #8898aa;">
+                <div class="progress-label">
                     <span>Target Progress</span>
                     <span id="salesProgressText">0%</span>
                 </div>
             </div>
         </div>
         
-        <div class="kpi-card" data-metric="customers" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); animation: fadeIn 0.5s ease forwards; animation-delay: 0.2s;">
-            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <div class="kpi-icon customers" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; background: linear-gradient(135deg, #2dce89, #52e3a4);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 24px; height: 24px;">
+        <div class="kpi-card" data-metric="customers">
+            <div class="kpi-header">
+                <div class="kpi-icon customers">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                         <circle cx="9" cy="7" r="4"/>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                     </svg>
                 </div>
-                <div class="kpi-trend positive" id="customersTrend" style="display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600; background: rgba(45, 206, 137, 0.1); color: #2dce89;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px;">
+                <div class="kpi-trend positive" id="customersTrend">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M7 17l5-5 5 5M12 12V3"/>
                     </svg>
                     <span>+0%</span>
                 </div>
             </div>
-            <div class="kpi-body" style="margin-bottom: 1.5rem;">
-                <div class="kpi-label" style="font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem;">Total Customers</div>
-                <div class="kpi-value" id="totalCustomers" style="font-size: 2rem; font-weight: 700; color: #172b4d; margin-bottom: 0.5rem;">0</div>
-                <div class="kpi-comparison" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
-                    <span class="comparison-label" style="color: #8898aa;">New customers:</span>
-                    <span class="comparison-value" id="newCustomers" style="color: #172b4d; font-weight: 600;">0</span>
+            <div class="kpi-body">
+                <div class="kpi-label">Total Customers</div>
+                <div class="kpi-value" id="totalCustomers">0</div>
+                <div class="kpi-comparison">
+                    <span class="comparison-label">New customers:</span>
+                    <span class="comparison-value" id="newCustomers">0</span>
                 </div>
             </div>
-            <div class="kpi-footer" style="margin-top: 1rem;">
-                <div class="progress-bar" style="height: 8px; background: #f4f5f7; border-radius: 4px; overflow: hidden; margin-bottom: 0.5rem;">
-                    <div class="progress-fill customers-progress" id="customersProgress" style="height: 100%; border-radius: 4px; transition: width 1s ease; position: relative; overflow: hidden; background: linear-gradient(90deg, #2dce89, #52e3a4); width: 0%;"></div>
+            <div class="kpi-footer">
+                <div class="progress-bar">
+                    <div class="progress-fill customers-progress" id="customersProgress"></div>
                 </div>
-                <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #8898aa;">
+                <div class="progress-label">
                     <span>Target Progress</span>
                     <span id="customersProgressText">0%</span>
                 </div>
             </div>
         </div>
         
-        <div class="kpi-card" data-metric="transactions" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); animation: fadeIn 0.5s ease forwards; animation-delay: 0.3s;">
-            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <div class="kpi-icon transactions" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; background: linear-gradient(135deg, #11cdef, #42d3ff);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 24px; height: 24px;">
+        <div class="kpi-card" data-metric="transactions">
+            <div class="kpi-header">
+                <div class="kpi-icon transactions">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                         <line x1="1" y1="10" x2="23" y2="10"/>
                     </svg>
                 </div>
-                <div class="kpi-trend neutral" id="transactionsTrend" style="display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600; background: rgba(136, 152, 170, 0.1); color: #8898aa;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px;">
+                <div class="kpi-trend neutral" id="transactionsTrend">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M5 12h14"/>
                     </svg>
                     <span>0%</span>
                 </div>
             </div>
-            <div class="kpi-body" style="margin-bottom: 1.5rem;">
-                <div class="kpi-label" style="font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem;">Total Transactions</div>
-                <div class="kpi-value" id="totalTransactions" style="font-size: 2rem; font-weight: 700; color: #172b4d; margin-bottom: 0.5rem;">0</div>
-                <div class="kpi-comparison" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
-                    <span class="comparison-label" style="color: #8898aa;">Avg value:</span>
-                    <span class="comparison-value" id="avgTransaction" style="color: #172b4d; font-weight: 600;">₱0</span>
+            <div class="kpi-body">
+                <div class="kpi-label">Total Transactions</div>
+                <div class="kpi-value" id="totalTransactions">0</div>
+                <div class="kpi-comparison">
+                    <span class="comparison-label">Avg value:</span>
+                    <span class="comparison-value" id="avgTransaction">₱0</span>
                 </div>
             </div>
-            <div class="kpi-footer" style="margin-top: 1rem;">
+            <div class="kpi-footer">
                 <div class="mini-chart" id="transactionsMiniChart"></div>
             </div>
         </div>
         
-        <div class="kpi-card" data-metric="growth" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); animation: fadeIn 0.5s ease forwards; animation-delay: 0.4s;">
-            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <div class="kpi-icon growth" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; background: linear-gradient(135deg, #fb6340, #ff7f5c);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 24px; height: 24px;">
+        <div class="kpi-card" data-metric="growth">
+            <div class="kpi-header">
+                <div class="kpi-icon growth">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                     </svg>
                 </div>
-                <div class="kpi-trend positive" id="growthTrend" style="display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600; background: rgba(45, 206, 137, 0.1); color: #2dce89;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px;">
+                <div class="kpi-trend positive" id="growthTrend">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M7 17l5-5 5 5M12 12V3"/>
                     </svg>
                     <span>+0%</span>
                 </div>
             </div>
-            <div class="kpi-body" style="margin-bottom: 1.5rem;">
-                <div class="kpi-label" style="font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem;">Growth Rate</div>
-                <div class="kpi-value" id="growthRate" style="font-size: 2rem; font-weight: 700; color: #172b4d; margin-bottom: 0.5rem;">0%</div>
-                <div class="kpi-comparison" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
-                    <span class="comparison-label" style="color: #8898aa;">YoY Growth:</span>
-                    <span class="comparison-value" id="yoyGrowth" style="color: #172b4d; font-weight: 600;">0%</span>
+            <div class="kpi-body">
+                <div class="kpi-label">Growth Rate</div>
+                <div class="kpi-value" id="growthRate">0%</div>
+                <div class="kpi-comparison">
+                    <span class="comparison-label">YoY Growth:</span>
+                    <span class="comparison-value" id="yoyGrowth">0%</span>
                 </div>
             </div>
-            <div class="kpi-footer" style="margin-top: 1rem;">
+            <div class="kpi-footer">
                 <div class="growth-indicator">
-                    <div class="indicator-bar" style="height: 8px; background: #f4f5f7; border-radius: 4px; overflow: hidden;">
-                        <div class="indicator-fill" id="growthIndicator" style="height: 100%; background: linear-gradient(90deg, #fb6340, #ff7f5c); width: 0%; transition: width 1s ease;"></div>
+                    <div class="indicator-bar">
+                        <div class="indicator-fill" id="growthIndicator"></div>
                     </div>
                 </div>
             </div>
@@ -2227,35 +2225,42 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
     
     <!-- Charts Section -->
-    <div class="charts-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="chart-card large" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); animation: fadeIn 0.5s ease forwards;">
-            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 class="chart-title" style="font-size: 1.125rem; font-weight: 600; color: #172b4d; margin: 0;">Revenue Trend</h3>
-                <div class="chart-controls" style="display: flex; gap: 0.5rem;">
-                    <button class="chart-btn active" data-view="monthly" style="padding: 0.375rem 0.875rem; background: #5e72e4; color: #ffffff; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">Monthly</button>
-                    <button class="chart-btn" data-view="quarterly" style="padding: 0.375rem 0.875rem; background: #f4f5f7; color: #8898aa; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">Quarterly</button>
+    <div class="charts-grid">
+        <div class="chart-card large">
+            <div class="chart-header">
+                <h3 class="chart-title">Revenue Trend</h3>
+                <div class="chart-controls">
+                    <button class="chart-btn active" data-view="monthly">Monthly</button>
+                    <button class="chart-btn" data-view="quarterly">Quarterly</button>
                 </div>
             </div>
-            <div class="chart-body" style="position: relative; height: 300px;">
+            <div class="chart-body">
                 <canvas id="revenueChart"></canvas>
             </div>
         </div>
         
-        <div class="chart-card medium" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); animation: fadeIn 0.5s ease forwards;">
-            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 class="chart-title" style="font-size: 1.125rem; font-weight: 600; color: #172b4d; margin: 0;">Customer Analysis</h3>
+        <div class="chart-card medium">
+            <div class="chart-header">
+                <h3 class="chart-title">Customer Analysis</h3>
+                <button class="chart-options">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="1"/>
+                        <circle cx="12" cy="5" r="1"/>
+                        <circle cx="12" cy="19" r="1"/>
+                    </svg>
+                </button>
             </div>
-            <div class="chart-body" style="position: relative; height: 300px;">
+            <div class="chart-body">
                 <canvas id="customerChart"></canvas>
             </div>
         </div>
     </div>
     
     <!-- Comparison Table -->
-    <div class="table-card" style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.07); margin-bottom: 2rem; animation: fadeIn 0.5s ease forwards;">
-        <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f4f5f7;">
-            <h3 class="table-title" style="font-size: 1.125rem; font-weight: 600; color: #172b4d; margin: 0;">Year-over-Year Comparison</h3>
-            <button class="export-btn" id="exportData" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f4f5f7; color: #172b4d; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+    <div class="table-card">
+        <div class="table-header">
+            <h3 class="table-title">Year-over-Year Comparison</h3>
+            <button class="export-btn" id="exportData">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>
@@ -2264,16 +2269,16 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 Export
             </button>
         </div>
-        <div class="table-body" style="overflow-x: auto;">
-            <table class="comparison-table" id="comparisonTable" style="width: 100%; border-collapse: collapse;">
+        <div class="table-body">
+            <table class="comparison-table" id="comparisonTable">
                 <thead>
                     <tr>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #8898aa; background: #f6f9fc; border-bottom: 1px solid #f4f5f7;">Metric</th>
-                        <th class="text-right" style="padding: 1rem; text-align: right; font-weight: 600; font-size: 0.875rem; color: #8898aa; background: #f6f9fc; border-bottom: 1px solid #f4f5f7;">Previous Year</th>
-                        <th class="text-right" style="padding: 1rem; text-align: right; font-weight: 600; font-size: 0.875rem; color: #8898aa; background: #f6f9fc; border-bottom: 1px solid #f4f5f7;">Current Year</th>
-                        <th class="text-right" style="padding: 1rem; text-align: right; font-weight: 600; font-size: 0.875rem; color: #8898aa; background: #f6f9fc; border-bottom: 1px solid #f4f5f7;">Change</th>
-                        <th class="text-right" style="padding: 1rem; text-align: right; font-weight: 600; font-size: 0.875rem; color: #8898aa; background: #f6f9fc; border-bottom: 1px solid #f4f5f7;">Growth %</th>
-                        <th class="text-center" style="padding: 1rem; text-align: center; font-weight: 600; font-size: 0.875rem; color: #8898aa; background: #f6f9fc; border-bottom: 1px solid #f4f5f7;">Trend</th>
+                        <th>Metric</th>
+                        <th class="text-right">Previous Year</th>
+                        <th class="text-right">Current Year</th>
+                        <th class="text-right">Change</th>
+                        <th class="text-right">Growth %</th>
+                        <th class="text-center">Trend</th>
                     </tr>
                 </thead>
                 <tbody id="comparisonTableBody">
@@ -2284,18 +2289,18 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
     
     <!-- Target Setting Section -->
-    <div class="targets-section" style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07); animation: fadeIn 0.5s ease forwards;">
-        <div class="section-header" style="margin-bottom: 1.5rem;">
-            <h3 class="section-title" style="font-size: 1.125rem; font-weight: 600; color: #172b4d; margin: 0;">Performance Targets</h3>
+    <div class="targets-section">
+        <div class="section-header">
+            <h3 class="section-title">Performance Targets</h3>
         </div>
         
-        <div class="targets-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-            <div class="target-card" style="padding: 1rem; background: #f6f9fc; border-radius: 8px;">
-                <label class="target-label" style="display: block; font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem; font-weight: 500;">Revenue Target</label>
-                <div class="target-input-group" style="display: flex; align-items: center; gap: 0.5rem; position: relative;">
-                    <span class="currency-symbol" style="position: absolute; color: #8898aa; font-weight: 500; left: 0.75rem;">₱</span>
-                    <input type="number" class="target-input" id="revenueTarget" placeholder="0" style="flex: 1; padding: 0.75rem; padding-left: 2rem; border: 2px solid #f4f5f7; border-radius: 8px; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: #ffffff;">
-                    <button class="save-target-btn" data-target="sales" style="padding: 0.75rem; background: #5e72e4; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+        <div class="targets-grid">
+            <div class="target-card">
+                <label class="target-label">Revenue Target</label>
+                <div class="target-input-group">
+                    <span class="currency-symbol">₱</span>
+                    <input type="number" class="target-input" id="revenueTarget" placeholder="0">
+                    <button class="save-target-btn" data-target="sales">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
                             <polyline points="17 21 17 13 7 13 7 21"/>
@@ -2305,11 +2310,11 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 </div>
             </div>
             
-            <div class="target-card" style="padding: 1rem; background: #f6f9fc; border-radius: 8px;">
-                <label class="target-label" style="display: block; font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem; font-weight: 500;">Customer Target</label>
-                <div class="target-input-group" style="display: flex; align-items: center; gap: 0.5rem; position: relative;">
-                    <input type="number" class="target-input" id="customerTarget" placeholder="0" style="flex: 1; padding: 0.75rem; border: 2px solid #f4f5f7; border-radius: 8px; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: #ffffff;">
-                    <button class="save-target-btn" data-target="customers" style="padding: 0.75rem; background: #5e72e4; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+            <div class="target-card">
+                <label class="target-label">Customer Target</label>
+                <div class="target-input-group">
+                    <input type="number" class="target-input" id="customerTarget" placeholder="0">
+                    <button class="save-target-btn" data-target="customers">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
                             <polyline points="17 21 17 13 7 13 7 21"/>
@@ -2319,12 +2324,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 </div>
             </div>
             
-            <div class="target-card" style="padding: 1rem; background: #f6f9fc; border-radius: 8px;">
-                <label class="target-label" style="display: block; font-size: 0.875rem; color: #8898aa; margin-bottom: 0.5rem; font-weight: 500;">Growth Target (%)</label>
-                <div class="target-input-group" style="display: flex; align-items: center; gap: 0.5rem; position: relative;">
-                    <input type="number" class="target-input" id="growthTarget" placeholder="0" style="flex: 1; padding: 0.75rem; padding-right: 2rem; border: 2px solid #f4f5f7; border-radius: 8px; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: #ffffff;">
-                    <span class="percent-symbol" style="position: absolute; color: #8898aa; font-weight: 500; right: 3rem;">%</span>
-                    <button class="save-target-btn" data-target="growth_rate" style="padding: 0.75rem; background: #5e72e4; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+            <div class="target-card">
+                <label class="target-label">Growth Target (%)</label>
+                <div class="target-input-group">
+                    <input type="number" class="target-input" id="growthTarget" placeholder="0">
+                    <span class="percent-symbol">%</span>
+                    <button class="save-target-btn" data-target="growth_rate">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
                             <polyline points="17 21 17 13 7 13 7 21"/>
@@ -2334,70 +2339,33 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div class="toast" id="toast" style="position: fixed; bottom: 2rem; right: 2rem; background: #ffffff; box-shadow: 0 20px 25px rgba(0,0,0,0.1); border-radius: 8px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; transform: translateX(400px); transition: transform 0.3s ease; z-index: 9999;">
-        <div class="toast-icon" style="width: 24px; height: 24px; border-radius: 50%; background: #2dce89; color: #ffffff; display: flex; align-items: center; justify-content: center;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-        </div>
-        <div class="toast-message" id="toastMessage" style="font-weight: 500; color: #172b4d;">Success!</div>
-    </div>
-    
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.9); display: none; align-items: center; justify-content: center; z-index: 9999;">
-        <div class="spinner" style="width: 40px; height: 40px; border: 4px solid #f4f5f7; border-top-color: #5e72e4; border-radius: 50%; animation: spin 1s linear infinite;"></div>
     </div>
 </div>
+</main>
+</div>
 
-<style>
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <div class="toast-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+    </div>
+    <div class="toast-message" id="toastMessage">Success!</div>
+</div>
 
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+<script src="performance.js"></script>
 
-.loading-overlay.active {
-    display: flex !important;
-}
+</div>
 
-.toast.show {
-    transform: translateX(0) !important;
-}
 
-@media (max-width: 1200px) {
-    .charts-grid {
-        grid-template-columns: 1fr !important;
-    }
-}
 
-@media (max-width: 768px) {
-    .kpi-grid {
-        grid-template-columns: 1fr !important;
-    }
-    
-    .targets-grid {
-        grid-template-columns: 1fr !important;
-    }
-}
-</style>
 
 
 
