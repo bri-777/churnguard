@@ -2340,7 +2340,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 <div class="modal-backdrop" onclick="closeTargetModal()"></div>
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title">Create New Target</h3>
+                       <h3 class="modal-title" id="modalTitle">Create New Target</h3>
                         <button class="modal-close" onclick="closeTargetModal()">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12"/>
