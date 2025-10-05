@@ -2066,78 +2066,81 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-<div id="dashboard-container" class="page">
-<div class="sales-comparison-container">
+
+<div id="dashboard-container" style="min-height: 100vh;">
+<div class="sales-comparison-container" style="padding: 24px; background: #f5f7fa; min-height: 100vh;">
+    
     <!-- Header Section -->
-    <div class="page-header">
-        <h1 class="page-title">Sales Comparison & Target Tracking</h1>
-        <div class="header-actions">
-            <button class="btn btn-refresh" onclick="refreshData()">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+        <h1 style="font-size: 28px; font-weight: 700; color: #1a202c; margin: 0;">Sales Comparison & Target Tracking</h1>
+        <div class="header-actions" style="display: flex; gap: 12px;">
+            <button onclick="refreshData()" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; background: #10b981; color: #ffffff;">
                 <i class="icon-refresh"></i> Refresh
             </button>
-            <button class="btn btn-export" onclick="exportReport()">
+            <button onclick="exportReport()" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; background: #f59e0b; color: #ffffff;">
                 <i class="icon-download"></i> Export
             </button>
-            <button class="btn btn-primary" onclick="openTargetModal()">
+            <button onclick="openTargetModal()" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; background: #4f46e5; color: #ffffff;">
                 <i class="icon-plus"></i> Set Target
             </button>
         </div>
     </div>
 
     <!-- Quick KPI Cards -->
-    <div class="kpi-cards-grid">
-        <div class="kpi-card">
-            <div class="kpi-icon sales-icon">
+    <div class="kpi-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px;">
+        
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)'">
+            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff;">
                 <i class="icon-chart-line"></i>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Today's Sales</span>
-                <h3 class="kpi-value" id="todaySales">₱0.00</h3>
-                <span class="kpi-change positive" id="salesChange">+0%</span>
+            <div style="flex: 1;">
+                <span style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500;">Today's Sales</span>
+                <h3 id="todaySales" style="font-size: 28px; font-weight: 700; color: #1a202c; margin: 0 0 4px 0;">₱0.00</h3>
+                <span id="salesChange" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; background: #d1fae5; color: #065f46;">+0%</span>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-icon customers-icon">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)'">
+            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #ffffff;">
                 <i class="icon-users"></i>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Customer Traffic</span>
-                <h3 class="kpi-value" id="todayCustomers">0</h3>
-                <span class="kpi-change" id="customersChange">0%</span>
+            <div style="flex: 1;">
+                <span style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500;">Customer Traffic</span>
+                <h3 id="todayCustomers" style="font-size: 28px; font-weight: 700; color: #1a202c; margin: 0 0 4px 0;">0</h3>
+                <span id="customersChange" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; background: #e5e7eb; color: #374151;">0%</span>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-icon transactions-icon">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)'">
+            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #ffffff;">
                 <i class="icon-receipt"></i>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Transactions</span>
-                <h3 class="kpi-value" id="todayTransactions">0</h3>
-                <span class="kpi-change" id="transactionsChange">0%</span>
+            <div style="flex: 1;">
+                <span style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500;">Transactions</span>
+                <h3 id="todayTransactions" style="font-size: 28px; font-weight: 700; color: #1a202c; margin: 0 0 4px 0;">0</h3>
+                <span id="transactionsChange" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; background: #e5e7eb; color: #374151;">0%</span>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-icon target-icon">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)'">
+            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #ffffff;">
                 <i class="icon-target"></i>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Target Achievement</span>
-                <h3 class="kpi-value" id="targetAchievement">0%</h3>
-                <span class="kpi-sublabel" id="targetStatus">No active target</span>
+            <div style="flex: 1;">
+                <span style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500;">Target Achievement</span>
+                <h3 id="targetAchievement" style="font-size: 28px; font-weight: 700; color: #1a202c; margin: 0 0 4px 0;">0%</h3>
+                <span id="targetStatus" style="font-size: 12px; color: #9ca3af;">No active target</span>
             </div>
         </div>
     </div>
 
     <!-- Comparison Filters -->
-    <div class="comparison-filters-section">
-        <h2 class="section-title">Data Comparison</h2>
-        <div class="filters-row">
-            <div class="filter-group">
-                <label>Comparison Type</label>
-                <select id="comparisonType" onchange="updateComparisonDates()">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 24px;">
+        <h2 style="font-size: 20px; font-weight: 700; color: #1a202c; margin: 0 0 20px 0;">Data Comparison</h2>
+        <div class="filters-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 13px; font-weight: 600; color: #374151;">Comparison Type</label>
+                <select id="comparisonType" onchange="updateComparisonDates()" style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; transition: all 0.3s ease;">
                     <option value="today_vs_date">Today vs Selected Date</option>
                     <option value="week_vs_range">This Week vs Custom Range</option>
                     <option value="month_vs_period">This Month vs Custom Period</option>
@@ -2145,18 +2148,19 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 </select>
             </div>
 
-            <div class="filter-group">
-                <label>Current Period</label>
-                <input type="date" id="currentDate" class="form-input">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 13px; font-weight: 600; color: #374151;">Current Period</label>
+                <input type="date" id="currentDate" style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
             </div>
 
-            <div class="filter-group">
-                <label>Compare With</label>
-                <input type="date" id="compareDate" class="form-input">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 13px; font-weight: 600; color: #374151;">Compare With</label>
+                <input type="date" id="compareDate" style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
             </div>
 
-            <div class="filter-group">
-                <button class="btn btn-primary" onclick="loadComparison()">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 13px; font-weight: 600; color: #374151;">&nbsp;</label>
+                <button onclick="loadComparison()" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; background: #4f46e5; color: #ffffff;" onmouseover="this.style.background='#4338ca'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(79, 70, 229, 0.3)'" onmouseout="this.style.background='#4f46e5'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                     <i class="icon-compare"></i> Compare
                 </button>
             </div>
@@ -2164,17 +2168,17 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
 
     <!-- Comparison Results Table -->
-    <div class="comparison-results-section">
-        <div class="table-container">
-            <table class="comparison-table" id="comparisonTable">
-                <thead>
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 24px;">
+        <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <table id="comparisonTable" style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #f9fafb;">
                     <tr>
-                        <th>Metric</th>
-                        <th>Current Value</th>
-                        <th>Compare Value</th>
-                        <th>Difference</th>
-                        <th>% Change</th>
-                        <th>Trend</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Metric</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Current Value</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Compare Value</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Difference</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">% Change</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Trend</th>
                     </tr>
                 </thead>
                 <tbody id="comparisonTableBody">
@@ -2185,24 +2189,24 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
 
     <!-- Charts Section -->
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h3 class="chart-title">Sales Trend</h3>
+    <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+            <h3 style="font-size: 18px; font-weight: 700; color: #1a202c; margin: 0 0 20px 0;">Sales Trend</h3>
             <canvas id="salesTrendChart"></canvas>
         </div>
 
-        <div class="chart-card">
-            <h3 class="chart-title">Target Achievement</h3>
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+            <h3 style="font-size: 18px; font-weight: 700; color: #1a202c; margin: 0 0 20px 0;">Target Achievement</h3>
             <canvas id="targetAchievementChart"></canvas>
         </div>
     </div>
 
     <!-- Target Management Section -->
-    <div class="target-management-section">
-        <div class="section-header">
-            <h2 class="section-title">Target Management</h2>
-            <div class="section-filters">
-                <select id="targetFilter" onchange="filterTargets()">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 700; color: #1a202c; margin: 0;">Target Management</h2>
+            <div>
+                <select id="targetFilter" onchange="filterTargets()" style="padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
                     <option value="all">All Targets</option>
                     <option value="active">Active</option>
                     <option value="achieved">Achieved</option>
@@ -2212,18 +2216,18 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             </div>
         </div>
 
-        <div class="table-container">
-            <table class="targets-table" id="targetsTable">
-                <thead>
+        <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <table id="targetsTable" style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #f9fafb;">
                     <tr>
-                        <th>Target Name</th>
-                        <th>Type</th>
-                        <th>Period</th>
-                        <th>Target Value</th>
-                        <th>Current</th>
-                        <th>Progress</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Target Name</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Type</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Period</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Target Value</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Current</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Progress</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Status</th>
+                        <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="targetsTableBody">
@@ -2234,22 +2238,22 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
 
     <!-- Set Target Modal -->
-    <div class="modal" id="targetModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Set New Target</h3>
-                <button class="modal-close" onclick="closeTargetModal()">&times;</button>
+    <div id="targetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: #ffffff; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px; border-bottom: 1px solid #e5e7eb;">
+                <h3 style="font-size: 20px; font-weight: 700; color: #1a202c; margin: 0;">Set New Target</h3>
+                <button onclick="closeTargetModal()" style="background: none; border: none; font-size: 28px; color: #6b7280; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.3s ease;" onmouseover="this.style.background='#f3f4f6'; this.style.color='#1f2937'" onmouseout="this.style.background='none'; this.style.color='#6b7280'">&times;</button>
             </div>
-            <div class="modal-body">
+            <div style="padding: 24px;">
                 <form id="targetForm" onsubmit="saveTarget(event)">
-                    <div class="form-group">
-                        <label>Target Name</label>
-                        <input type="text" id="targetName" class="form-input" required placeholder="e.g., Monthly Sales Goal">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Target Name</label>
+                        <input type="text" id="targetName" required placeholder="e.g., Monthly Sales Goal" style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 100%; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
                     </div>
 
-                    <div class="form-group">
-                        <label>Target Type</label>
-                        <select id="targetType" class="form-input" required>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Target Type</label>
+                        <select id="targetType" required style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 100%; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
                             <option value="sales">Sales Revenue</option>
                             <option value="customers">Customer Traffic</option>
                             <option value="transactions">Transactions</option>
@@ -2257,31 +2261,31 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Target Value</label>
-                        <input type="number" id="targetValue" class="form-input" required min="1" step="0.01" placeholder="Enter target amount">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Target Value</label>
+                        <input type="number" id="targetValue" required min="1" step="0.01" placeholder="Enter target amount" style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 100%; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Start Date</label>
-                            <input type="date" id="targetStartDate" class="form-input" required>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Start Date</label>
+                            <input type="date" id="targetStartDate" required style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 100%; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
                         </div>
 
-                        <div class="form-group">
-                            <label>End Date</label>
-                            <input type="date" id="targetEndDate" class="form-input" required>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">End Date</label>
+                            <input type="date" id="targetEndDate" required style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 100%; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Store/Branch (Optional)</label>
-                        <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all stores">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Store/Branch (Optional)</label>
+                        <input type="text" id="targetStore" placeholder="Leave empty for all stores" style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 100%; transition: all 0.3s ease;" onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79, 70, 229, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
                     </div>
 
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeTargetModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Target</button>
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                        <button type="button" onclick="closeTargetModal()" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: #e5e7eb; color: #374151;" onmouseover="this.style.background='#d1d5db'" onmouseout="this.style.background='#e5e7eb'">Cancel</button>
+                        <button type="submit" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: #4f46e5; color: #ffffff;" onmouseover="this.style.background='#4338ca'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(79, 70, 229, 0.3)'" onmouseout="this.style.background='#4f46e5'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">Save Target</button>
                     </div>
                 </form>
             </div>
@@ -2289,511 +2293,8 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
 </div>
 </div>
+
 <script src="sales_comparison.js"></script>
-<style>
-  /* Sales Comparison Styles */
-.sales-comparison-container {
-    padding: 24px;
-    background: #f5f7fa;
-    min-height: 100vh;
-}
-
-/* Page Header */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.page-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0;
-}
-
-.header-actions {
-    display: flex;
-    gap: 12px;
-}
-
-/* Buttons */
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: #4f46e5;
-    color: #ffffff;
-}
-
-.btn-primary:hover {
-    background: #4338ca;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.btn-secondary {
-    background: #e5e7eb;
-    color: #374151;
-}
-
-.btn-secondary:hover {
-    background: #d1d5db;
-}
-
-.btn-refresh {
-    background: #10b981;
-    color: #ffffff;
-}
-
-.btn-refresh:hover {
-    background: #059669;
-}
-
-.btn-export {
-    background: #f59e0b;
-    color: #ffffff;
-}
-
-.btn-export:hover {
-    background: #d97706;
-}
-
-/* KPI Cards */
-.kpi-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 32px;
-}
-
-.kpi-card {
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.kpi-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-}
-
-.sales-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
-}
-
-.customers-icon {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: #ffffff;
-}
-
-.transactions-icon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: #ffffff;
-}
-
-.target-icon {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    color: #ffffff;
-}
-
-.kpi-content {
-    flex: 1;
-}
-
-.kpi-label {
-    display: block;
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-
-.kpi-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0 0 4px 0;
-}
-
-.kpi-change {
-    font-size: 13px;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 6px;
-    display: inline-block;
-}
-
-.kpi-change.positive {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.kpi-change.negative {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.kpi-sublabel {
-    font-size: 12px;
-    color: #9ca3af;
-}
-
-/* Comparison Filters */
-.comparison-filters-section {
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 24px;
-}
-
-.section-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0 0 20px 0;
-}
-
-.filters-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.filter-group label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-}
-
-.form-input {
-    padding: 10px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-/* Tables */
-.comparison-results-section,
-.target-management-section {
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 24px;
-}
-
-.table-container {
-    overflow-x: auto;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-}
-
-.comparison-table,
-.targets-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.comparison-table thead,
-.targets-table thead {
-    background: #f9fafb;
-}
-
-.comparison-table th,
-.targets-table th {
-    padding: 14px 16px;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 700;
-    color: #374151;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.comparison-table td,
-.targets-table td {
-    padding: 16px;
-    border-top: 1px solid #e5e7eb;
-    font-size: 14px;
-    color: #1f2937;
-}
-
-.comparison-table tbody tr:hover,
-.targets-table tbody tr:hover {
-    background: #f9fafb;
-}
-
-/* Trend Indicators */
-.trend-indicator {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.trend-up {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.trend-down {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-/* Progress Bars */
-.progress-container {
-    position: relative;
-    width: 100%;
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-}
-
-.progress-achieved {
-    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-}
-
-.progress-near {
-    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-}
-
-.progress-below {
-    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-}
-
-/* Status Badges */
-.status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.status-achieved {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.status-near {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.status-below {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-/* Charts */
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 24px;
-    margin-bottom: 24px;
-}
-
-.chart-card {
-    background: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.chart-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0 0 20px 0;
-}
-
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background: #ffffff;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.modal-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.modal-close:hover {
-    background: #f3f4f6;
-    color: #1f2937;
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.section-filters select {
-    padding: 8px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .kpi-cards-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .filters-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .charts-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-}
-  </style>
-
 
 
 
