@@ -1,50 +1,89 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . '/_bootstrap.php';
-$uid = require_login();
+// ==================== CONFIGURATION ====================
+date_default_timezone_set('Asia/Manila');
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// Database credentials
+$db_host = 'localhost';
+$db_name = 'u393812660_churnguard';
+$db_user = 'u393812660_churnguard';
+$db_pass = '102202Brian_';
+
+// ==================== AUTHENTICATION ====================
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode([
+        'status' => 'error',
+        'error' => 'unauthorized',
+        'message' => 'User not authenticated. Please login.'
+    ]);
+    exit;
+}
+
+$uid = (int)$_SESSION['user_id'];
+
+// ==================== DATABASE CONNECTION ====================
+try {
+    $pdo = new PDO(
+        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+        $db_user,
+        $db_pass,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]
+    );
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode([
+        'status' => 'error',
+        'error' => 'db_connection',
+        'message' => 'Database connection failed'
+    ]);
+    exit;
+}
 
 // ==================== HELPER FUNCTIONS ====================
-
-function j_ok(array $d = []) { 
-    json_ok($d); 
+function j_ok(array $d = []) {
+    echo json_encode(array_merge(['status' => 'success'], $d));
+    exit;
 }
 
-function j_err(string $m, int $c = 400, array $extra = []) { 
-    json_error($m, $c, $extra); 
+function j_err(string $m, int $c = 400) {
+    http_response_code($c);
+    echo json_encode([
+        'status' => 'error',
+        'message' => $m
+    ]);
+    exit;
 }
 
-/**
- * Safe division to prevent divide by zero errors
- */
 function safeDivide(float $numerator, float $denominator): float {
     return $denominator > 0 ? round($numerator / $denominator, 2) : 0;
 }
 
-/**
- * Calculate percentage change between two values
- */
 function percentageChange(float $current, float $previous): float {
     return $previous > 0 ? round((($current - $previous) / $previous) * 100, 2) : 0;
 }
 
-/**
- * Validate date format
- */
 function isValidDate(string $date): bool {
     return (bool)preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) && strtotime($date) !== false;
 }
 
-/**
- * Sanitize and validate target type
- */
-function validateTargetType(string $type): bool {
-    return in_array($type, ['sales', 'customers', 'transactions', 'avg_transaction'], true);
-}
-
-/**
- * Get target current value based on type
- */
 function getTargetCurrentValue(array $target): float {
     switch ($target['target_type']) {
         case 'sales':
@@ -60,12 +99,9 @@ function getTargetCurrentValue(array $target): float {
     }
 }
 
-/**
- * Calculate target progress and status
- */
 function calculateTargetProgress(float $current, float $targetValue): array {
     $progress = safeDivide($current * 100, $targetValue);
-    $progress = min($progress, 999.9); // Cap at 999.9%
+    $progress = min($progress, 999.9);
     
     if ($progress >= 100) {
         $status = 'achieved';
@@ -81,8 +117,7 @@ function calculateTargetProgress(float $current, float $targetValue): array {
     ];
 }
 
-// ==================== API ENDPOINTS ====================
-
+// ==================== GET ACTION ====================
 $action = $_GET['action'] ?? '';
 
 // ==================== KPI SUMMARY ====================
@@ -91,7 +126,7 @@ if ($action === 'kpi_summary') {
         $today = date('Y-m-d');
         $yesterday = date('Y-m-d', strtotime('-1 day'));
         
-        // Get today's data
+        // Today's data
         $stmtToday = $pdo->prepare("
             SELECT 
                 COALESCE(sales_volume, 0) as sales_volume,
@@ -103,7 +138,7 @@ if ($action === 'kpi_summary') {
         $stmtToday->execute([$uid, $today]);
         $todayData = $stmtToday->fetch(PDO::FETCH_ASSOC);
         
-        // Get yesterday's data
+        // Yesterday's data
         $stmtYesterday = $pdo->prepare("
             SELECT 
                 COALESCE(sales_volume, 0) as sales_volume,
@@ -115,7 +150,6 @@ if ($action === 'kpi_summary') {
         $stmtYesterday->execute([$uid, $yesterday]);
         $yesterdayData = $stmtYesterday->fetch(PDO::FETCH_ASSOC);
         
-        // Default to zeros if no data
         if (!$todayData) {
             $todayData = ['sales_volume' => 0, 'receipt_count' => 0, 'customer_traffic' => 0];
         }
@@ -123,7 +157,6 @@ if ($action === 'kpi_summary') {
             $yesterdayData = ['sales_volume' => 0, 'receipt_count' => 0, 'customer_traffic' => 0];
         }
         
-        // Calculate changes
         $todaySales = (float)$todayData['sales_volume'];
         $yesterdaySales = (float)$yesterdayData['sales_volume'];
         $salesChange = percentageChange($todaySales, $yesterdaySales);
@@ -136,17 +169,12 @@ if ($action === 'kpi_summary') {
         $yesterdayTransactions = (int)$yesterdayData['receipt_count'];
         $transactionsChange = percentageChange((float)$todayTransactions, (float)$yesterdayTransactions);
         
-        // Get most recent active target
+        // Get active target
         $stmtTarget = $pdo->prepare("
             SELECT t.*, 
                    COALESCE(SUM(cd.sales_volume), 0) as current_sales,
                    COALESCE(SUM(cd.receipt_count), 0) as current_receipts,
-                   COALESCE(SUM(cd.customer_traffic), 0) as current_customers,
-                   COALESCE(AVG(CASE 
-                       WHEN cd.receipt_count > 0 
-                       THEN cd.sales_volume / cd.receipt_count 
-                       ELSE 0 
-                   END), 0) as current_avg_transaction
+                   COALESCE(SUM(cd.customer_traffic), 0) as current_customers
             FROM targets t
             LEFT JOIN churn_data cd ON cd.user_id = t.user_id 
                 AND cd.date BETWEEN t.start_date AND t.end_date
@@ -183,10 +211,9 @@ if ($action === 'kpi_summary') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("KPI Summary Error: " . $e->getMessage());
-        j_err('Failed to load KPI summary', 500, ['detail' => $e->getMessage()]);
+        error_log("KPI Error: " . $e->getMessage());
+        j_err('Failed to load KPI summary', 500);
     }
-    exit;
 }
 
 // ==================== COMPARISON ====================
@@ -195,12 +222,10 @@ if ($action === 'compare') {
         $currentDate = $_GET['currentDate'] ?? date('Y-m-d');
         $compareDate = $_GET['compareDate'] ?? date('Y-m-d', strtotime('-1 day'));
         
-        // Validate dates
         if (!isValidDate($currentDate) || !isValidDate($compareDate)) {
-            j_err('Invalid date format. Use YYYY-MM-DD', 422);
+            j_err('Invalid date format', 422);
         }
         
-        // Get current period data
         $stmtCurrent = $pdo->prepare("
             SELECT 
                 COALESCE(sales_volume, 0) as sales_volume,
@@ -212,7 +237,6 @@ if ($action === 'compare') {
         $stmtCurrent->execute([$uid, $currentDate]);
         $currentData = $stmtCurrent->fetch(PDO::FETCH_ASSOC);
         
-        // Get compare period data
         $stmtCompare = $pdo->prepare("
             SELECT 
                 COALESCE(sales_volume, 0) as sales_volume,
@@ -224,7 +248,6 @@ if ($action === 'compare') {
         $stmtCompare->execute([$uid, $compareDate]);
         $compareData = $stmtCompare->fetch(PDO::FETCH_ASSOC);
         
-        // Default to zeros
         if (!$currentData) {
             $currentData = ['sales_volume' => 0, 'receipt_count' => 0, 'customer_traffic' => 0];
         }
@@ -232,7 +255,6 @@ if ($action === 'compare') {
             $compareData = ['sales_volume' => 0, 'receipt_count' => 0, 'customer_traffic' => 0];
         }
         
-        // Calculate metrics
         $currentSales = (float)$currentData['sales_volume'];
         $compareSales = (float)$compareData['sales_volume'];
         $currentReceipts = (int)$currentData['receipt_count'];
@@ -286,9 +308,8 @@ if ($action === 'compare') {
         
     } catch (Throwable $e) {
         error_log("Comparison Error: " . $e->getMessage());
-        j_err('Comparison failed', 500, ['detail' => $e->getMessage()]);
+        j_err('Comparison failed', 500);
     }
-    exit;
 }
 
 // ==================== GET TARGETS ====================
@@ -298,7 +319,7 @@ if ($action === 'get_targets') {
         $validFilters = ['all', 'active', 'achieved', 'near', 'below'];
         
         if (!in_array($filter, $validFilters, true)) {
-            j_err('Invalid filter parameter', 422);
+            j_err('Invalid filter', 422);
         }
         
         $query = "
@@ -317,9 +338,6 @@ if ($action === 'get_targets') {
             WHERE t.user_id = ?
         ";
         
-        $params = [$uid];
-        
-        // Add filter conditions
         if ($filter === 'active') {
             $query .= " AND t.end_date >= CURDATE() AND t.start_date <= CURDATE()";
         }
@@ -327,10 +345,9 @@ if ($action === 'get_targets') {
         $query .= " GROUP BY t.id ORDER BY t.created_at DESC";
         
         $stmt = $pdo->prepare($query);
-        $stmt->execute($params);
+        $stmt->execute([$uid]);
         $targets = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Calculate progress for each target
         foreach ($targets as &$target) {
             $current = getTargetCurrentValue($target);
             $targetValue = (float)$target['target_value'];
@@ -340,26 +357,21 @@ if ($action === 'get_targets') {
             $target['progress'] = $progressData['progress'];
             $target['status'] = $progressData['status'];
             
-            // Clean up temporary fields
             unset($target['current_sales'], $target['current_receipts'], 
                   $target['current_customers'], $target['current_avg_transaction']);
         }
         
-        // Apply status filter after calculation
         if (in_array($filter, ['achieved', 'near', 'below'], true)) {
-            $targets = array_filter($targets, function($t) use ($filter) {
-                return $t['status'] === $filter;
-            });
-            $targets = array_values($targets); // Re-index
+            $targets = array_filter($targets, fn($t) => $t['status'] === $filter);
+            $targets = array_values($targets);
         }
         
         j_ok(['targets' => $targets]);
         
     } catch (Throwable $e) {
         error_log("Get Targets Error: " . $e->getMessage());
-        j_err('Failed to load targets', 500, ['detail' => $e->getMessage()]);
+        j_err('Failed to load targets', 500);
     }
-    exit;
 }
 
 // ==================== SAVE TARGET ====================
@@ -375,40 +387,14 @@ if ($action === 'save_target') {
         $endDate = trim($data['end_date'] ?? '');
         $store = trim($data['store'] ?? '');
         
-        // Validation
-        if (empty($name)) {
-            j_err('Target name is required', 422);
-        }
+        if (empty($name)) j_err('Target name is required', 422);
+        if (strlen($name) > 100) j_err('Target name too long', 422);
+        if (!in_array($type, ['sales', 'customers', 'transactions', 'avg_transaction'])) j_err('Invalid target type', 422);
+        if ($value <= 0) j_err('Target value must be greater than 0', 422);
+        if ($value > 999999999) j_err('Target value too large', 422);
+        if (!isValidDate($startDate) || !isValidDate($endDate)) j_err('Invalid date format', 422);
+        if (strtotime($endDate) < strtotime($startDate)) j_err('End date must be after start date', 422);
         
-        if (strlen($name) > 100) {
-            j_err('Target name too long (max 100 characters)', 422);
-        }
-        
-        if (!validateTargetType($type)) {
-            j_err('Invalid target type', 422);
-        }
-        
-        if ($value <= 0) {
-            j_err('Target value must be greater than 0', 422);
-        }
-        
-        if ($value > 999999999) {
-            j_err('Target value too large', 422);
-        }
-        
-        if (!isValidDate($startDate) || !isValidDate($endDate)) {
-            j_err('Invalid date format. Use YYYY-MM-DD', 422);
-        }
-        
-        if (strtotime($endDate) < strtotime($startDate)) {
-            j_err('End date must be after start date', 422);
-        }
-        
-        if (strlen($store) > 100) {
-            j_err('Store name too long (max 100 characters)', 422);
-        }
-        
-        // Insert target
         $stmt = $pdo->prepare("
             INSERT INTO targets 
             (user_id, target_name, target_type, target_value, start_date, end_date, store, created_at)
@@ -418,16 +404,15 @@ if ($action === 'save_target') {
         $stmt->execute([$uid, $name, $type, $value, $startDate, $endDate, $store]);
         
         j_ok([
-            'saved' => true, 
+            'saved' => true,
             'id' => (int)$pdo->lastInsertId(),
             'message' => 'Target created successfully'
         ]);
         
     } catch (Throwable $e) {
         error_log("Save Target Error: " . $e->getMessage());
-        j_err('Failed to save target', 500, ['detail' => $e->getMessage()]);
+        j_err('Failed to save target', 500);
     }
-    exit;
 }
 
 // ==================== DELETE TARGET ====================
@@ -435,19 +420,13 @@ if ($action === 'delete_target') {
     try {
         $id = (int)($_GET['id'] ?? 0);
         
-        if ($id <= 0) {
-            j_err('Invalid target ID', 422);
-        }
+        if ($id <= 0) j_err('Invalid target ID', 422);
         
-        // Check if target exists and belongs to user
         $stmtCheck = $pdo->prepare("SELECT id FROM targets WHERE id = ? AND user_id = ?");
         $stmtCheck->execute([$id, $uid]);
         
-        if (!$stmtCheck->fetch()) {
-            j_err('Target not found', 404);
-        }
+        if (!$stmtCheck->fetch()) j_err('Target not found', 404);
         
-        // Delete target
         $stmt = $pdo->prepare("DELETE FROM targets WHERE id = ? AND user_id = ?");
         $stmt->execute([$id, $uid]);
         
@@ -458,16 +437,15 @@ if ($action === 'delete_target') {
         
     } catch (Throwable $e) {
         error_log("Delete Target Error: " . $e->getMessage());
-        j_err('Failed to delete target', 500, ['detail' => $e->getMessage()]);
+        j_err('Failed to delete target', 500);
     }
-    exit;
 }
 
 // ==================== TREND DATA ====================
 if ($action === 'trend_data') {
     try {
         $days = (int)($_GET['days'] ?? 30);
-        $days = max(7, min(90, $days)); // Limit between 7 and 90 days
+        $days = max(7, min(90, $days));
         
         $stmt = $pdo->prepare("
             SELECT 
@@ -488,9 +466,8 @@ if ($action === 'trend_data') {
         
     } catch (Throwable $e) {
         error_log("Trend Data Error: " . $e->getMessage());
-        j_err('Failed to load trend data', 500, ['detail' => $e->getMessage()]);
+        j_err('Failed to load trend data', 500);
     }
-    exit;
 }
 
 // ==================== INVALID ACTION ====================
