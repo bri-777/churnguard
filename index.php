@@ -2066,138 +2066,931 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 <div id="dashboard-container" class="page">
-    <h1 class="page-title">Performance Analytics</h1>
-
-    <div class="date-range-selector">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-
-        <select id="yearSelector" class="year-select">
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-        </select>
-
-        <button class="refresh-btn" id="refreshData">
+ <h1 class="page-title">Performance Analytics</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="date-range-selector">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <select id="yearSelector" class="year-select">
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    
+                    <button class="refresh-btn" id="refreshData">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content" id="dashboardContent">
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card" data-metric="sales">
+                        <div class="kpi-header">
+                            <div class="kpi-icon sales">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend positive" id="salesTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M7 17l5-5 5 5M12 12V3"/>
+                                </svg>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Total Revenue</div>
+                            <div class="kpi-value" id="totalRevenue">₱0</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">vs last year:</span>
+                                <span class="comparison-value" id="revenueComparison">₱0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill sales-progress" id="salesProgress"></div>
+                            </div>
+                            <div class="progress-label">
+                                <span>Target Progress</span>
+                                <span id="salesProgressText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card" data-metric="customers">
+                        <div class="kpi-header">
+                            <div class="kpi-icon customers">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend positive" id="customersTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M7 17l5-5 5 5M12 12V3"/>
+                                </svg>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Total Customers</div>
+                            <div class="kpi-value" id="totalCustomers">0</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">New customers:</span>
+                                <span class="comparison-value" id="newCustomers">0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill customers-progress" id="customersProgress"></div>
+                            </div>
+                            <div class="progress-label">
+                                <span>Target Progress</span>
+                                <span id="customersProgressText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card" data-metric="transactions">
+                        <div class="kpi-header">
+                            <div class="kpi-icon transactions">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend neutral" id="transactionsTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Total Transactions</div>
+                            <div class="kpi-value" id="totalTransactions">0</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">Avg value:</span>
+                                <span class="comparison-value" id="avgTransaction">₱0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="mini-chart" id="transactionsMiniChart"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card" data-metric="growth">
+                        <div class="kpi-header">
+                            <div class="kpi-icon growth">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend positive" id="growthTrend">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M7 17l5-5 5 5M12 12V3"/>
+                                </svg>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Growth Rate</div>
+                            <div class="kpi-value" id="growthRate">0%</div>
+                            <div class="kpi-comparison">
+                                <span class="comparison-label">YoY Growth:</span>
+                                <span class="comparison-value" id="yoyGrowth">0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <div class="growth-indicator">
+                                <div class="indicator-bar">
+                                    <div class="indicator-fill" id="growthIndicator"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Revenue Trend</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-view="monthly">Monthly</button>
+                                <button class="chart-btn" data-view="quarterly">Quarterly</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card medium">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Customer Analysis</h3>
+                            <button class="chart-options">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="1"/>
+                                    <circle cx="12" cy="5" r="1"/>
+                                    <circle cx="12" cy="19" r="1"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="customerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comparison Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Year-over-Year Comparison</h3>
+                        <button class="export-btn" id="exportData">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Export
+                        </button>
+                    </div>
+                    <div class="table-body">
+                        <table class="comparison-table" id="comparisonTable">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th class="text-right">Previous Year</th>
+                                    <th class="text-right">Current Year</th>
+                                    <th class="text-right">Change</th>
+                                    <th class="text-right">Growth %</th>
+                                    <th class="text-center">Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonTableBody">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Target Setting Section -->
+                <div class="targets-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Performance Targets</h3>
+                    </div>
+                    
+                    <div class="targets-grid">
+                        <div class="target-card">
+                            <label class="target-label">Revenue Target</label>
+                            <div class="target-input-group">
+                                <span class="currency-symbol">₱</span>
+                                <input type="number" class="target-input" id="revenueTarget" placeholder="0">
+                                <button class="save-target-btn" data-target="sales">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="target-card">
+                            <label class="target-label">Customer Target</label>
+                            <div class="target-input-group">
+                                <input type="number" class="target-input" id="customerTarget" placeholder="0">
+                                <button class="save-target-btn" data-target="customers">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="target-card">
+                            <label class="target-label">Growth Target (%)</label>
+                            <div class="target-input-group">
+                                <input type="number" class="target-input" id="growthTarget" placeholder="0">
+                                <span class="percent-symbol">%</span>
+                                <button class="save-target-btn" data-target="growth_rate">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M1 4v6h6M23 20v-6h-6"/>
-                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-        </button>
+        </div>
+        <div class="toast-message" id="toastMessage">Success!</div>
     </div>
-
-    <!-- Dashboard Content -->
-    <div class="dashboard-content" id="dashboardContent">
-
-        <!-- KPI Cards -->
-        <div class="kpi-cards">
-            <div class="kpi-card">
-                <h3>Total Sales</h3>
-                <p id="totalSales">$120,450</p>
-            </div>
-            <div class="kpi-card">
-                <h3>New Customers</h3>
-                <p id="newCustomers">1,245</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Customer Retention</h3>
-                <p id="retentionRate">87%</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Revenue Growth</h3>
-                <p id="growthRate">+12%</p>
-            </div>
-        </div>
-
-        <!-- Charts Section -->
-        <div class="charts-section">
-            <div class="chart-card">
-                <h3>Sales Overview</h3>
-                <canvas id="salesChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h3>Customer Trends</h3>
-                <canvas id="customerChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Performance Table -->
-        <div class="table-section">
-            <h3>Store Performance Summary</h3>
-            <table class="performance-table">
-                <thead>
-                    <tr>
-                        <th>Store</th>
-                        <th>Sales</th>
-                        <th>Customers</th>
-                        <th>Target</th>
-                        <th>Progress</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Store A</td>
-                        <td>$45,000</td>
-                        <td>420</td>
-                        <td>$50,000</td>
-                        <td><progress value="90" max="100"></progress></td>
-                    </tr>
-                    <tr>
-                        <td>Store B</td>
-                        <td>$30,500</td>
-                        <td>280</td>
-                        <td>$35,000</td>
-                        <td><progress value="87" max="100"></progress></td>
-                    </tr>
-                    <tr>
-                        <td>Store C</td>
-                        <td>$44,950</td>
-                        <td>330</td>
-                        <td>$40,000</td>
-                        <td><progress value="112" max="100"></progress></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Targets Section -->
-        <div class="targets-section">
-            <h3>Performance Targets</h3>
-            <p>Set your goals to improve competitiveness and increase sales and customer numbers.</p>
-            <form id="targetsForm">
-                <label for="salesTarget">Sales Target ($):</label>
-                <input type="number" id="salesTarget" placeholder="Enter sales target" />
-
-                <label for="customerTarget">Customer Target:</label>
-                <input type="number" id="customerTarget" placeholder="Enter customer target" />
-
-                <button type="submit" class="btn-save">Save Targets</button>
-            </form>
-        </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
     </div>
+    
+    <script src="performance.js"></script>
 </div>
+<style>
+  .date-range-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--secondary);
+    border-radius: 8px;
+}
 
-<!-- Toast Notification -->
-<div class="toast" id="toast">
-    <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-    </div>
-    <div class="toast-message" id="toastMessage">Success!</div>
-</div>
+.date-range-selector .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--gray);
+}
 
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-</div>
+.year-select {
+    background: none;
+    border: none;
+    color: var(--dark);
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+}
 
-<script src="performance.js"></script>
+.refresh-btn {
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
 
+.refresh-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.refresh-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    padding: 2rem;
+}
+
+/* KPI Grid */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+}
+
+.kpi-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.kpi-icon.sales {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+}
+
+.kpi-icon.customers {
+    background: linear-gradient(135deg, var(--success), #52e3a4);
+}
+
+.kpi-icon.transactions {
+    background: linear-gradient(135deg, var(--info), #42d3ff);
+}
+
+.kpi-icon.growth {
+    background: linear-gradient(135deg, var(--warning), #ff7f5c);
+}
+
+.kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.kpi-trend svg {
+    width: 16px;
+    height: 16px;
+}
+
+.kpi-trend.positive {
+    background: rgba(45, 206, 137, 0.1);
+    color: var(--success);
+}
+
+.kpi-trend.negative {
+    background: rgba(245, 54, 92, 0.1);
+    color: var(--danger);
+}
+
+.kpi-trend.neutral {
+    background: rgba(136, 152, 170, 0.1);
+    color: var(--gray);
+}
+
+.kpi-body {
+    margin-bottom: 1.5rem;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+
+.kpi-comparison {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.comparison-label {
+    color: var(--gray);
+}
+
+.comparison-value {
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.kpi-footer {
+    margin-top: 1rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.sales-progress {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+.customers-progress {
+    background: linear-gradient(90deg, var(--success), #52e3a4);
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.chart-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.chart-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chart-btn {
+    padding: 0.375rem 0.875rem;
+    background: var(--secondary);
+    color: var(--gray);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.chart-btn.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.chart-options {
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.chart-body {
+    position: relative;
+    height: 300px;
+}
+
+/* Comparison Table */
+.table-card {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--secondary);
+}
+
+.table-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.export-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--secondary);
+    color: var(--dark);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.export-btn:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.table-body {
+    overflow-x: auto;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparison-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--gray);
+    background: var(--light);
+    border-bottom: 1px solid var(--secondary);
+}
+
+.comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--secondary);
+    font-size: 0.9375rem;
+}
+
+.comparison-table tbody tr:hover {
+    background: var(--light);
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.trend-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.trend-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.trend-icon.up {
+    background: rgba(45, 206, 137, 0.1);
+    color: var(--success);
+}
+
+.trend-icon.down {
+    background: rgba(245, 54, 92, 0.1);
+    color: var(--danger);
+}
+
+.trend-icon.neutral {
+    background: rgba(136, 152, 170, 0.1);
+    color: var(--gray);
+}
+
+/* Targets Section */
+.targets-section {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.targets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.target-card {
+    padding: 1rem;
+    background: var(--light);
+    border-radius: 8px;
+}
+
+.target-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.target-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.target-input {
+    flex: 1;
+    padding: 0.75rem;
+    padding-left: 2rem;
+    border: 2px solid var(--secondary);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.target-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.1);
+}
+
+.currency-symbol,
+.percent-symbol {
+    position: absolute;
+    color: var(--gray);
+    font-weight: 500;
+}
+
+.currency-symbol {
+    left: 0.75rem;
+}
+
+.percent-symbol {
+    right: 3rem;
+}
+
+.save-target-btn {
+    padding: 0.75rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.save-target-btn:hover {
+    background: var(--primary-dark);
+}
+
+.save-target-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--white);
+    box-shadow: var(--shadow-xl);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 9999;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--success);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.toast-message {
+    font-weight: 500;
+    color: var(--dark);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--secondary);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+    
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .targets-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-content {
+        padding: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kpi-card,
+.chart-card,
+.table-card,
+.targets-section {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.kpi-card:nth-child(1) { animation-delay: 0.1s; }
+.kpi-card:nth-child(2) { animation-delay: 0.2s; }
+.kpi-card:nth-child(3) { animation-delay: 0.3s; }
+.kpi-card:nth-child(4) { animation-delay: 0.4s; }
+</style>
 
 
 
