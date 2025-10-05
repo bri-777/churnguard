@@ -2068,19 +2068,18 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 <div id="dashboard-container" class="page">
     <h1 class="page-title">Performance Analytics</h1>
 
-    <div class="header-right">
-        <div class="date-range-selector">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <select id="yearSelector" class="year-select">
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-            </select>
-        </div>
+    <div class="date-range-selector">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+
+        <select id="yearSelector" class="year-select">
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+        </select>
 
         <button class="refresh-btn" id="refreshData">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -2092,8 +2091,92 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
     <!-- Dashboard Content -->
     <div class="dashboard-content" id="dashboardContent">
-        <!-- your existing dashboard content remains unchanged -->
-        <!-- KPI cards, charts, tables, targets section, etc. -->
+
+        <!-- KPI Cards -->
+        <div class="kpi-cards">
+            <div class="kpi-card">
+                <h3>Total Sales</h3>
+                <p id="totalSales">$120,450</p>
+            </div>
+            <div class="kpi-card">
+                <h3>New Customers</h3>
+                <p id="newCustomers">1,245</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Customer Retention</h3>
+                <p id="retentionRate">87%</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Revenue Growth</h3>
+                <p id="growthRate">+12%</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3>Sales Overview</h3>
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Customer Trends</h3>
+                <canvas id="customerChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Performance Table -->
+        <div class="table-section">
+            <h3>Store Performance Summary</h3>
+            <table class="performance-table">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Sales</th>
+                        <th>Customers</th>
+                        <th>Target</th>
+                        <th>Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Store A</td>
+                        <td>$45,000</td>
+                        <td>420</td>
+                        <td>$50,000</td>
+                        <td><progress value="90" max="100"></progress></td>
+                    </tr>
+                    <tr>
+                        <td>Store B</td>
+                        <td>$30,500</td>
+                        <td>280</td>
+                        <td>$35,000</td>
+                        <td><progress value="87" max="100"></progress></td>
+                    </tr>
+                    <tr>
+                        <td>Store C</td>
+                        <td>$44,950</td>
+                        <td>330</td>
+                        <td>$40,000</td>
+                        <td><progress value="112" max="100"></progress></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Targets Section -->
+        <div class="targets-section">
+            <h3>Performance Targets</h3>
+            <p>Set your goals to improve competitiveness and increase sales and customer numbers.</p>
+            <form id="targetsForm">
+                <label for="salesTarget">Sales Target ($):</label>
+                <input type="number" id="salesTarget" placeholder="Enter sales target" />
+
+                <label for="customerTarget">Customer Target:</label>
+                <input type="number" id="customerTarget" placeholder="Enter customer target" />
+
+                <button type="submit" class="btn-save">Save Targets</button>
+            </form>
+        </div>
     </div>
 </div>
 
