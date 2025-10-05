@@ -1282,7 +1282,7 @@ function doLogout() {
   
   
   
- <!-- Customer Insights - Left-aligned, cleaned layout -->
+<!-- Customer Insights - Left-aligned, cleaned layout -->
 <div id="customer-insights" class="page main-content cgx-scope" aria-labelledby="ci-title" data-module="customer-insights" style="
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   background:#F6F9FC; color:#32325D; line-height:1.6;
@@ -1377,8 +1377,6 @@ function doLogout() {
       </div>
     </div>
 
-   
-
     <!-- Tabs + Content -->
     <div class="report-section" style="
       background:#fff; border-radius:12px; padding:1.5rem; margin:0 0 1.5rem 0;
@@ -1397,7 +1395,6 @@ function doLogout() {
         <button class="tab-btn" onclick="switchTab('revenue')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
         " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
-      
         <button class="tab-btn" onclick="switchTab('trends')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
         " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Historical Trends</button>
@@ -1420,9 +1417,25 @@ function doLogout() {
               <span style="font-size:.92rem; color:#6b7280;">Churn Rate</span>
               <span id="churnRate" style="font-size:1rem; font-weight:800;">0%</span>
             </div>
-           
-            
           </div>
+        </div>
+        
+        <!-- Period Comparison Table for Retention -->
+        <div class="comparison-table" style="margin-top:1.5rem;">
+          <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
+          <table id="retentionComparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
+            <thead style="background:#F6F9FC;">
+              <tr>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Notes</th>
+              </tr>
+            </thead>
+            <tbody><!-- Populated by JavaScript --></tbody>
+          </table>
         </div>
       </div>
 
@@ -1443,9 +1456,25 @@ function doLogout() {
               <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Value</span>
               <span id="avgValue" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
-          
-          
           </div>
+        </div>
+        
+        <!-- Period Comparison Table for Behavior -->
+        <div class="comparison-table" style="margin-top:1.5rem;">
+          <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
+          <table id="behaviorComparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
+            <thead style="background:#F6F9FC;">
+              <tr>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Notes</th>
+              </tr>
+            </thead>
+            <tbody><!-- Populated by JavaScript --></tbody>
+          </table>
         </div>
       </div>
 
@@ -1462,13 +1491,28 @@ function doLogout() {
               <span style="font-size:.92rem; color:#6b7280;">Potential Revenue Loss</span>
               <span id="potentialLoss" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
-            
-           
           </div>
+        </div>
+        
+        <!-- Period Comparison Table for Revenue -->
+        <div class="comparison-table" style="margin-top:1.5rem;">
+          <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
+          <table id="revenueComparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
+            <thead style="background:#F6F9FC;">
+              <tr>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
+                <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Notes</th>
+              </tr>
+            </thead>
+            <tbody><!-- Populated by JavaScript --></tbody>
+          </table>
         </div>
       </div>
 
-     
       <!-- Trends -->
       <div class="tab-content" id="trends-tab" style="display:none;">
         <div class="trends-container">
@@ -1494,9 +1538,6 @@ function doLogout() {
         </div>
       </div>
     </div>
-
-
-   
 
     <!-- Modal -->
     <div class="modal" id="drillDownModal" style="
@@ -1581,9 +1622,10 @@ function doLogout() {
         </div>
       </div>
     </div>
- <script src="churn-report.js"></script>
+    
+    <script src="churn-report.js"></script>
   </div>
-
+</div>
   <!-- Print Styles -->
   <style>
     @media print {
