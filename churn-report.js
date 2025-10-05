@@ -58,6 +58,8 @@ async function cgx_loadData(view){
     const data = await res.json();
     cgx_data = data;
 
+    console.log('Data loaded:', data); // DEBUG
+
     if (!data?.data_availability?.has_data){
       cgx_showNoDataMessage(data?.data_availability ?? {days_with_data:0,total_days:0,coverage_percent:0});
       cgx_updateHealthStatus('success', data.timestamp);
@@ -71,12 +73,18 @@ async function cgx_loadData(view){
     cgx_populateSegments(data.segments);
     cgx_updateCharts(data.trends);
     cgx_updateComparisonTable(data.period_comparison);
-    cgx_updateAllComparisonTables(data.period_comparison);
+    
+    // FIX: Ensure period_comparison exists before calling
+    if (data.period_comparison) {
+      console.log('Updating comparison tables with:', data.period_comparison); // DEBUG
+      cgx_updateAllComparisonTables(data.period_comparison);
+    } else {
+      console.error('No period_comparison data available');
+    }
 
     const lastUpdatedEl = document.getElementById('lastUpdated');
     if (lastUpdatedEl) lastUpdatedEl.textContent = data.last_updated;
 
-    // Clear any leftover "Loading..." opacity
     ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'].forEach(id=>{
       const el = document.getElementById(id);
       if (el) el.style.opacity = '1';
@@ -85,6 +93,7 @@ async function cgx_loadData(view){
     cgx_updateHealthStatus('success', data.timestamp);
   } catch (err){
     cgx_log('Load error', err);
+    console.error('Full error:', err); // DEBUG
     cgx_showError(err.message);
     cgx_updateHealthStatus('error');
   }
@@ -344,18 +353,39 @@ function cgx_updateComparisonTable(d){
 }
 
 function cgx_updateAllComparisonTables(d){
+  console.log('cgx_updateAllComparisonTables called with:', d); // DEBUG
+  
+  if (!d) {
+    console.error('No data provided to cgx_updateAllComparisonTables');
+    return;
+  }
+
+  // Ensure all required properties exist with defaults
+  const safeData = {
+    today: d.today || { revenue: 0, customers: 0, risk_score: 0 },
+    yesterday: d.yesterday || { revenue: 0, customers: 0, risk_score: 0 },
+    avg_7day: d.avg_7day || { revenue: 0, customers: 0, risk_score: 0 },
+    avg_30day: d.avg_30day || { revenue: 0, customers: 0, risk_score: 0 }
+  };
+
   // Retention Table
   const retentionTbody = document.querySelector('#retentionComparisonTable tbody');
+  console.log('Retention tbody found:', retentionTbody !== null); // DEBUG
+  
   if (retentionTbody){
-    const retentionRate = (metric) => 100 - (metric?.risk_score || 0);
+    const retentionRate = (metric) => {
+      const rate = 100 - (metric?.risk_score || 0);
+      return Math.max(0, Math.min(100, rate));
+    };
+    
     retentionTbody.innerHTML = `
       <tr>
-        <td style="padding:.75rem;font-weight:600;">Retention Rate</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(retentionRate(d.today))}%</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(retentionRate(d.yesterday))}%</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(retentionRate(d.avg_7day))}%</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(retentionRate(d.avg_30day))}%</td>
-        <td style="padding:.5rem;">
+        <td style="padding:.75rem;font-weight:600;border-bottom:1px solid #E5E7EB;">Retention Rate</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(retentionRate(safeData.today))}%</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(retentionRate(safeData.yesterday))}%</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(retentionRate(safeData.avg_7day))}%</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(retentionRate(safeData.avg_30day))}%</td>
+        <td style="padding:.5rem;border-bottom:1px solid #E5E7EB;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('retention_rate')}"
                  onchange="cgx_saveAnnotation('retention_rate', this.value)"
@@ -363,12 +393,12 @@ function cgx_updateAllComparisonTables(d){
         </td>
       </tr>
       <tr style="background:#F6F9FC;">
-        <td style="padding:.75rem;font-weight:600;">Churn Rate</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(d.today.risk_score)}%</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(d.yesterday.risk_score)}%</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(d.avg_7day.risk_score)}%</td>
-        <td style="padding:.75rem;">${cgx_formatDecimal(d.avg_30day.risk_score)}%</td>
-        <td style="padding:.5rem;">
+        <td style="padding:.75rem;font-weight:600;border-bottom:1px solid #E5E7EB;">Churn Rate</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(safeData.today.risk_score)}%</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(safeData.yesterday.risk_score)}%</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(safeData.avg_7day.risk_score)}%</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatDecimal(safeData.avg_30day.risk_score)}%</td>
+        <td style="padding:.5rem;border-bottom:1px solid #E5E7EB;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('churn_rate')}"
                  onchange="cgx_saveAnnotation('churn_rate', this.value)"
@@ -377,10 +407,10 @@ function cgx_updateAllComparisonTables(d){
       </tr>
       <tr>
         <td style="padding:.75rem;font-weight:600;">Active Customers</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.today.customers)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.yesterday.customers)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.avg_7day.customers)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.avg_30day.customers)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.today.customers)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.yesterday.customers)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.avg_7day.customers)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.avg_30day.customers)}</td>
         <td style="padding:.5rem;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('active_customers')}"
@@ -389,22 +419,25 @@ function cgx_updateAllComparisonTables(d){
         </td>
       </tr>
     `;
+    console.log('Retention table populated'); // DEBUG
   }
 
   // Behavior Table
   const behaviorTbody = document.querySelector('#behaviorComparisonTable tbody');
+  console.log('Behavior tbody found:', behaviorTbody !== null); // DEBUG
+  
   if (behaviorTbody && cgx_data?.behavior_metrics){
     const avgFreq = cgx_data.behavior_metrics.avg_frequency || 0;
     const avgVal = cgx_data.behavior_metrics.avg_value || 0;
     
     behaviorTbody.innerHTML = `
       <tr>
-        <td style="padding:.75rem;font-weight:600;">Transaction Frequency</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(avgFreq)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(avgFreq * 0.95)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(avgFreq)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(avgFreq * 0.98)}</td>
-        <td style="padding:.5rem;">
+        <td style="padding:.75rem;font-weight:600;border-bottom:1px solid #E5E7EB;">Transaction Frequency</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatNumber(avgFreq)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatNumber(avgFreq * 0.95)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatNumber(avgFreq)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatNumber(avgFreq * 0.98)}</td>
+        <td style="padding:.5rem;border-bottom:1px solid #E5E7EB;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('transaction_frequency')}"
                  onchange="cgx_saveAnnotation('transaction_frequency', this.value)"
@@ -412,12 +445,12 @@ function cgx_updateAllComparisonTables(d){
         </td>
       </tr>
       <tr style="background:#F6F9FC;">
-        <td style="padding:.75rem;font-weight:600;">Avg Transaction Value</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(avgVal)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(avgVal * 0.97)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(avgVal)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(avgVal * 0.99)}</td>
-        <td style="padding:.5rem;">
+        <td style="padding:.75rem;font-weight:600;border-bottom:1px solid #E5E7EB;">Avg Transaction Value</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(avgVal)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(avgVal * 0.97)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(avgVal)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(avgVal * 0.99)}</td>
+        <td style="padding:.5rem;border-bottom:1px solid #E5E7EB;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('avg_transaction_value')}"
                  onchange="cgx_saveAnnotation('avg_transaction_value', this.value)"
@@ -426,10 +459,10 @@ function cgx_updateAllComparisonTables(d){
       </tr>
       <tr>
         <td style="padding:.75rem;font-weight:600;">Total Transactions</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.today.customers * avgFreq)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.yesterday.customers * avgFreq * 0.95)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.avg_7day.customers * avgFreq)}</td>
-        <td style="padding:.75rem;">${cgx_formatNumber(d.avg_30day.customers * avgFreq * 0.98)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.today.customers * avgFreq)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.yesterday.customers * avgFreq * 0.95)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.avg_7day.customers * avgFreq)}</td>
+        <td style="padding:.75rem;">${cgx_formatNumber(safeData.avg_30day.customers * avgFreq * 0.98)}</td>
         <td style="padding:.5rem;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('total_transactions')}"
@@ -438,19 +471,22 @@ function cgx_updateAllComparisonTables(d){
         </td>
       </tr>
     `;
+    console.log('Behavior table populated'); // DEBUG
   }
 
   // Revenue Table
   const revenueTbody = document.querySelector('#revenueComparisonTable tbody');
+  console.log('Revenue tbody found:', revenueTbody !== null); // DEBUG
+  
   if (revenueTbody){
     revenueTbody.innerHTML = `
       <tr>
-        <td style="padding:.75rem;font-weight:600;">Total Revenue</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.today.revenue)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.yesterday.revenue)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.avg_7day.revenue)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.avg_30day.revenue)}</td>
-        <td style="padding:.5rem;">
+        <td style="padding:.75rem;font-weight:600;border-bottom:1px solid #E5E7EB;">Total Revenue</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.today.revenue)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.yesterday.revenue)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.avg_7day.revenue)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.avg_30day.revenue)}</td>
+        <td style="padding:.5rem;border-bottom:1px solid #E5E7EB;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('total_revenue')}"
                  onchange="cgx_saveAnnotation('total_revenue', this.value)"
@@ -458,12 +494,12 @@ function cgx_updateAllComparisonTables(d){
         </td>
       </tr>
       <tr style="background:#F6F9FC;">
-        <td style="padding:.75rem;font-weight:600;">Revenue per Customer</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.today.customers > 0 ? d.today.revenue / d.today.customers : 0)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.yesterday.customers > 0 ? d.yesterday.revenue / d.yesterday.customers : 0)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.avg_7day.customers > 0 ? d.avg_7day.revenue / d.avg_7day.customers : 0)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.avg_30day.customers > 0 ? d.avg_30day.revenue / d.avg_30day.customers : 0)}</td>
-        <td style="padding:.5rem;">
+        <td style="padding:.75rem;font-weight:600;border-bottom:1px solid #E5E7EB;">Revenue per Customer</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.today.customers > 0 ? safeData.today.revenue / safeData.today.customers : 0)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.yesterday.customers > 0 ? safeData.yesterday.revenue / safeData.yesterday.customers : 0)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.avg_7day.customers > 0 ? safeData.avg_7day.revenue / safeData.avg_7day.customers : 0)}</td>
+        <td style="padding:.75rem;border-bottom:1px solid #E5E7EB;">${cgx_formatCurrencyPH(safeData.avg_30day.customers > 0 ? safeData.avg_30day.revenue / safeData.avg_30day.customers : 0)}</td>
+        <td style="padding:.5rem;border-bottom:1px solid #E5E7EB;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('revenue_per_customer')}"
                  onchange="cgx_saveAnnotation('revenue_per_customer', this.value)"
@@ -472,10 +508,10 @@ function cgx_updateAllComparisonTables(d){
       </tr>
       <tr>
         <td style="padding:.75rem;font-weight:600;">At-Risk Revenue</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH((d.today.revenue * d.today.risk_score) / 100)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH((d.yesterday.revenue * d.yesterday.risk_score) / 100)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH((d.avg_7day.revenue * d.avg_7day.risk_score) / 100)}</td>
-        <td style="padding:.75rem;">${cgx_formatCurrencyPH((d.avg_30day.revenue * d.avg_30day.risk_score) / 100)}</td>
+        <td style="padding:.75rem;">${cgx_formatCurrencyPH((safeData.today.revenue * safeData.today.risk_score) / 100)}</td>
+        <td style="padding:.75rem;">${cgx_formatCurrencyPH((safeData.yesterday.revenue * safeData.yesterday.risk_score) / 100)}</td>
+        <td style="padding:.75rem;">${cgx_formatCurrencyPH((safeData.avg_7day.revenue * safeData.avg_7day.risk_score) / 100)}</td>
+        <td style="padding:.75rem;">${cgx_formatCurrencyPH((safeData.avg_30day.revenue * safeData.avg_30day.risk_score) / 100)}</td>
         <td style="padding:.5rem;">
           <input type="text" placeholder="Add note..." 
                  value="${cgx_getAnnotation('at_risk_revenue')}"
@@ -484,7 +520,10 @@ function cgx_updateAllComparisonTables(d){
         </td>
       </tr>
     `;
+    console.log('Revenue table populated'); // DEBUG
   }
+  
+  console.log('All comparison tables update complete'); // DEBUG
 }
 
 function cgx_getAnnotation(key){
