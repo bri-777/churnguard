@@ -4,7 +4,7 @@ declare(strict_types=1);
 // ==================== CONFIGURATION ====================
 date_default_timezone_set('Asia/Manila');
 error_reporting(E_ALL);
-ini_set('display_errors', '0'); // Disable in production
+ini_set('display_errors', '1'); // Disable in production
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
