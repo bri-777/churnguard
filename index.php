@@ -2289,6 +2289,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
 </div>
 </div>
+<script src="sales_comparison.js"></script>
 <style>
   /* Sales Comparison Styles */
 .sales-comparison-container {
