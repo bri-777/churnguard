@@ -2066,16 +2066,227 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 <div id="dashboard-container" class="page">
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); min-height: 100vh; padding: 20px; margin: 0;">
-    
-    <!-- Main Container -->
-    <div style="max-width: 1200px; margin: 0 auto;">
-        
-       
-        
+<div class="sales-comparison-container">
+    <!-- Header Section -->
+    <div class="page-header">
+        <h1 class="page-title">Sales Comparison & Target Tracking</h1>
+        <div class="header-actions">
+            <button class="btn btn-refresh" onclick="refreshData()">
+                <i class="icon-refresh"></i> Refresh
+            </button>
+            <button class="btn btn-export" onclick="exportReport()">
+                <i class="icon-download"></i> Export
+            </button>
+            <button class="btn btn-primary" onclick="openTargetModal()">
+                <i class="icon-plus"></i> Set Target
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick KPI Cards -->
+    <div class="kpi-cards-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon sales-icon">
+                <i class="icon-chart-line"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-label">Today's Sales</span>
+                <h3 class="kpi-value" id="todaySales">₱0.00</h3>
+                <span class="kpi-change positive" id="salesChange">+0%</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon customers-icon">
+                <i class="icon-users"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-label">Customer Traffic</span>
+                <h3 class="kpi-value" id="todayCustomers">0</h3>
+                <span class="kpi-change" id="customersChange">0%</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon transactions-icon">
+                <i class="icon-receipt"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-label">Transactions</span>
+                <h3 class="kpi-value" id="todayTransactions">0</h3>
+                <span class="kpi-change" id="transactionsChange">0%</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon target-icon">
+                <i class="icon-target"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-label">Target Achievement</span>
+                <h3 class="kpi-value" id="targetAchievement">0%</h3>
+                <span class="kpi-sublabel" id="targetStatus">No active target</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Filters -->
+    <div class="comparison-filters-section">
+        <h2 class="section-title">Data Comparison</h2>
+        <div class="filters-row">
+            <div class="filter-group">
+                <label>Comparison Type</label>
+                <select id="comparisonType" onchange="updateComparisonDates()">
+                    <option value="today_vs_date">Today vs Selected Date</option>
+                    <option value="week_vs_range">This Week vs Custom Range</option>
+                    <option value="month_vs_period">This Month vs Custom Period</option>
+                    <option value="custom">Custom Range Comparison</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Current Period</label>
+                <input type="date" id="currentDate" class="form-input">
+            </div>
+
+            <div class="filter-group">
+                <label>Compare With</label>
+                <input type="date" id="compareDate" class="form-input">
+            </div>
+
+            <div class="filter-group">
+                <button class="btn btn-primary" onclick="loadComparison()">
+                    <i class="icon-compare"></i> Compare
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Results Table -->
+    <div class="comparison-results-section">
+        <div class="table-container">
+            <table class="comparison-table" id="comparisonTable">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Value</th>
+                        <th>Compare Value</th>
+                        <th>Difference</th>
+                        <th>% Change</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3 class="chart-title">Sales Trend</h3>
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3 class="chart-title">Target Achievement</h3>
+            <canvas id="targetAchievementChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Target Management Section -->
+    <div class="target-management-section">
+        <div class="section-header">
+            <h2 class="section-title">Target Management</h2>
+            <div class="section-filters">
+                <select id="targetFilter" onchange="filterTargets()">
+                    <option value="all">All Targets</option>
+                    <option value="active">Active</option>
+                    <option value="achieved">Achieved</option>
+                    <option value="near">Near Target</option>
+                    <option value="below">Below Target</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="targets-table" id="targetsTable">
+                <thead>
+                    <tr>
+                        <th>Target Name</th>
+                        <th>Type</th>
+                        <th>Period</th>
+                        <th>Target Value</th>
+                        <th>Current</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="targetsTableBody">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Set Target Modal -->
+    <div class="modal" id="targetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Set New Target</h3>
+                <button class="modal-close" onclick="closeTargetModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="targetForm" onsubmit="saveTarget(event)">
+                    <div class="form-group">
+                        <label>Target Name</label>
+                        <input type="text" id="targetName" class="form-input" required placeholder="e.g., Monthly Sales Goal">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Type</label>
+                        <select id="targetType" class="form-input" required>
+                            <option value="sales">Sales Revenue</option>
+                            <option value="customers">Customer Traffic</option>
+                            <option value="transactions">Transactions</option>
+                            <option value="avg_transaction">Avg Transaction Value</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Value</label>
+                        <input type="number" id="targetValue" class="form-input" required min="1" step="0.01" placeholder="Enter target amount">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="targetStartDate" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="targetEndDate" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Store/Branch (Optional)</label>
+                        <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all stores">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeTargetModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Target</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-
 </div>
 
 
