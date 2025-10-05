@@ -2065,1236 +2065,556 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
+
+
+
+
 <div id="dashboard-container" class="page">
- <h1 class="page-title">Performance Analytics</h1>
-                </div>
-                
-                <div class="header-right">
-                    <div class="date-range-selector">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        <select id="yearSelector" class="year-select">
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                        </select>
-                    </div>
-                    
-                    <button class="refresh-btn" id="refreshData">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M1 4v6h6M23 20v-6h-6"/>
-                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-                        </svg>
-                    </button>
-                </div>
-            </header>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        .performance-dashboard {
+            padding: 24px;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: var(--bg-primary);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header h1 {
+            margin: 0 0 8px 0;
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-comparison {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .stat-growth {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .stat-growth.positive {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .stat-growth.negative {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .progress-section {
+            background: var(--bg-primary);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .progress-item {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-value {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            height: 12px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .target-section {
+            background: var(--bg-primary);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .target-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .targets-list {
+            margin-top: 20px;
+        }
+
+        .target-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .competitiveness-meter {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .meter-value {
+            font-size: 64px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .meter-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
             
-            <!-- Dashboard Content -->
-            <div class="dashboard-content" id="dashboardContent">
-                <!-- KPI Cards -->
-                <div class="kpi-grid">
-                    <div class="kpi-card" data-metric="sales">
-                        <div class="kpi-header">
-                            <div class="kpi-icon sales">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend positive" id="salesTrend">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M7 17l5-5 5 5M12 12V3"/>
-                                </svg>
-                                <span>+0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <div class="kpi-label">Total Revenue</div>
-                            <div class="kpi-value" id="totalRevenue">₱0</div>
-                            <div class="kpi-comparison">
-                                <span class="comparison-label">vs last year:</span>
-                                <span class="comparison-value" id="revenueComparison">₱0</span>
-                            </div>
-                        </div>
-                        <div class="kpi-footer">
-                            <div class="progress-bar">
-                                <div class="progress-fill sales-progress" id="salesProgress"></div>
-                            </div>
-                            <div class="progress-label">
-                                <span>Target Progress</span>
-                                <span id="salesProgressText">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="kpi-card" data-metric="customers">
-                        <div class="kpi-header">
-                            <div class="kpi-icon customers">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend positive" id="customersTrend">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M7 17l5-5 5 5M12 12V3"/>
-                                </svg>
-                                <span>+0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <div class="kpi-label">Total Customers</div>
-                            <div class="kpi-value" id="totalCustomers">0</div>
-                            <div class="kpi-comparison">
-                                <span class="comparison-label">New customers:</span>
-                                <span class="comparison-value" id="newCustomers">0</span>
-                            </div>
-                        </div>
-                        <div class="kpi-footer">
-                            <div class="progress-bar">
-                                <div class="progress-fill customers-progress" id="customersProgress"></div>
-                            </div>
-                            <div class="progress-label">
-                                <span>Target Progress</span>
-                                <span id="customersProgressText">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="kpi-card" data-metric="transactions">
-                        <div class="kpi-header">
-                            <div class="kpi-icon transactions">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                                    <line x1="1" y1="10" x2="23" y2="10"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend neutral" id="transactionsTrend">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M5 12h14"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <div class="kpi-label">Total Transactions</div>
-                            <div class="kpi-value" id="totalTransactions">0</div>
-                            <div class="kpi-comparison">
-                                <span class="comparison-label">Avg value:</span>
-                                <span class="comparison-value" id="avgTransaction">₱0</span>
-                            </div>
-                        </div>
-                        <div class="kpi-footer">
-                            <div class="mini-chart" id="transactionsMiniChart"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="kpi-card" data-metric="growth">
-                        <div class="kpi-header">
-                            <div class="kpi-icon growth">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend positive" id="growthTrend">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M7 17l5-5 5 5M12 12V3"/>
-                                </svg>
-                                <span>+0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <div class="kpi-label">Growth Rate</div>
-                            <div class="kpi-value" id="growthRate">0%</div>
-                            <div class="kpi-comparison">
-                                <span class="comparison-label">YoY Growth:</span>
-                                <span class="comparison-value" id="yoyGrowth">0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-footer">
-                            <div class="growth-indicator">
-                                <div class="indicator-bar">
-                                    <div class="indicator-fill" id="growthIndicator"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            .target-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="performance-dashboard">
+        <div class="dashboard-header">
+            <h1>Performance Analytics</h1>
+            <p>Track your year-over-year growth and set strategic targets</p>
+        </div>
+
+        <div class="competitiveness-meter">
+            <div class="meter-label">Competitiveness Score</div>
+            <div class="meter-value" id="competitiveness-score">--</div>
+            <div class="meter-label">Market Position</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Sales</span>
                 </div>
-                
-                <!-- Charts Section -->
-                <div class="charts-grid">
-                    <div class="chart-card large">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Revenue Trend</h3>
-                            <div class="chart-controls">
-                                <button class="chart-btn active" data-view="monthly">Monthly</button>
-                                <button class="chart-btn" data-view="quarterly">Quarterly</button>
-                            </div>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card medium">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Customer Analysis</h3>
-                            <button class="chart-options">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="12" cy="12" r="1"/>
-                                    <circle cx="12" cy="5" r="1"/>
-                                    <circle cx="12" cy="19" r="1"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="customerChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Comparison Table -->
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3 class="table-title">Year-over-Year Comparison</h3>
-                        <button class="export-btn" id="exportData">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="7 10 12 15 17 10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Export
-                        </button>
-                    </div>
-                    <div class="table-body">
-                        <table class="comparison-table" id="comparisonTable">
-                            <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th class="text-right">Previous Year</th>
-                                    <th class="text-right">Current Year</th>
-                                    <th class="text-right">Change</th>
-                                    <th class="text-right">Growth %</th>
-                                    <th class="text-center">Trend</th>
-                                </tr>
-                            </thead>
-                            <tbody id="comparisonTableBody">
-                                <!-- Dynamic content -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Target Setting Section -->
-                <div class="targets-section">
-                    <div class="section-header">
-                        <h3 class="section-title">Performance Targets</h3>
-                    </div>
-                    
-                    <div class="targets-grid">
-                        <div class="target-card">
-                            <label class="target-label">Revenue Target</label>
-                            <div class="target-input-group">
-                                <span class="currency-symbol">₱</span>
-                                <input type="number" class="target-input" id="revenueTarget" placeholder="0">
-                                <button class="save-target-btn" data-target="sales">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                        <polyline points="17 21 17 13 7 13 7 21"/>
-                                        <polyline points="7 3 7 8 15 8"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="target-card">
-                            <label class="target-label">Customer Target</label>
-                            <div class="target-input-group">
-                                <input type="number" class="target-input" id="customerTarget" placeholder="0">
-                                <button class="save-target-btn" data-target="customers">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                        <polyline points="17 21 17 13 7 13 7 21"/>
-                                        <polyline points="7 3 7 8 15 8"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="target-card">
-                            <label class="target-label">Growth Target (%)</label>
-                            <div class="target-input-group">
-                                <input type="number" class="target-input" id="growthTarget" placeholder="0">
-                                <span class="percent-symbol">%</span>
-                                <button class="save-target-btn" data-target="growth_rate">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                        <polyline points="17 21 17 13 7 13 7 21"/>
-                                        <polyline points="7 3 7 8 15 8"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="stat-value" id="current-sales">₱0</div>
+                <div class="stat-comparison">
+                    <span>vs last year:</span>
+                    <span class="stat-growth" id="sales-growth">--</span>
                 </div>
             </div>
-        </main>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div class="toast" id="toast">
-        <div class="toast-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Customers</span>
+                </div>
+                <div class="stat-value" id="current-customers">0</div>
+                <div class="stat-comparison">
+                    <span>vs last year:</span>
+                    <span class="stat-growth" id="customer-growth">--</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Transactions</span>
+                </div>
+                <div class="stat-value" id="current-transactions">0</div>
+                <div class="stat-comparison">
+                    <span>vs last year:</span>
+                    <span class="stat-growth" id="transaction-growth">--</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Avg Transaction</span>
+                </div>
+                <div class="stat-value" id="current-avg">₱0</div>
+                <div class="stat-comparison">
+                    <span id="prev-year-label">Previous Year</span>
+                </div>
+            </div>
         </div>
-        <div class="toast-message" id="toastMessage">Success!</div>
+
+        <div class="progress-section">
+            <h2 class="section-title">Target Progress</h2>
+            <div id="progress-container"></div>
+        </div>
+
+        <div class="target-section">
+            <h2 class="section-title">Set Performance Targets</h2>
+            <form class="target-form" id="target-form">
+                <div class="form-group">
+                    <label class="form-label">Target Type</label>
+                    <select class="form-select" id="target-type" required>
+                        <option value="sales">Sales</option>
+                        <option value="customers">Customers</option>
+                        <option value="transactions">Transactions</option>
+                        <option value="growth_rate">Growth Rate (%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Value</label>
+                    <input type="number" class="form-input" id="target-value" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Period</label>
+                    <select class="form-select" id="target-period" required>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Year</label>
+                    <input type="number" class="form-input" id="target-year" value="2025" required>
+                </div>
+                <div class="form-group" style="align-self: end;">
+                    <button type="submit" class="btn btn-primary">Set Target</button>
+                </div>
+            </form>
+
+            <div class="targets-list" id="targets-list"></div>
+        </div>
     </div>
-    
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-    </div>
-    
-    <script src="performance.js"></script>
-</div>
-<style>
-  .date-range-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--secondary);
-    border-radius: 8px;
-}
 
-.date-range-selector .icon {
-    width: 20px;
-    height: 20px;
-    color: var(--gray);
-}
-
-.year-select {
-    background: none;
-    border: none;
-    color: var(--dark);
-    font-weight: 500;
-    cursor: pointer;
-    outline: none;
-}
-
-.refresh-btn {
-    padding: 0.5rem 1rem;
-    background: var(--primary);
-    color: var(--white);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: var(--transition);
-}
-
-.refresh-btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.refresh-btn svg {
-    width: 20px;
-    height: 20px;
-}
-
-/* Dashboard Content */
-.dashboard-content {
-    padding: 2rem;
-}
-
-/* KPI Grid */
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.kpi-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-    transition: var(--transition);
-}
-
-.kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-}
-
-.kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.kpi-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--white);
-}
-
-.kpi-icon svg {
-    width: 24px;
-    height: 24px;
-}
-
-.kpi-icon.sales {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-}
-
-.kpi-icon.customers {
-    background: linear-gradient(135deg, var(--success), #52e3a4);
-}
-
-.kpi-icon.transactions {
-    background: linear-gradient(135deg, var(--info), #42d3ff);
-}
-
-.kpi-icon.growth {
-    background: linear-gradient(135deg, var(--warning), #ff7f5c);
-}
-
-.kpi-trend {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.kpi-trend svg {
-    width: 16px;
-    height: 16px;
-}
-
-.kpi-trend.positive {
-    background: rgba(45, 206, 137, 0.1);
-    color: var(--success);
-}
-
-.kpi-trend.negative {
-    background: rgba(245, 54, 92, 0.1);
-    color: var(--danger);
-}
-
-.kpi-trend.neutral {
-    background: rgba(136, 152, 170, 0.1);
-    color: var(--gray);
-}
-
-.kpi-body {
-    margin-bottom: 1.5rem;
-}
-
-.kpi-label {
-    font-size: 0.875rem;
-    color: var(--gray);
-    margin-bottom: 0.5rem;
-}
-
-.kpi-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 0.5rem;
-}
-
-.kpi-comparison {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.comparison-label {
-    color: var(--gray);
-}
-
-.comparison-value {
-    color: var(--dark);
-    font-weight: 600;
-}
-
-.kpi-footer {
-    margin-top: 1rem;
-}
-
-.progress-bar {
-    height: 8px;
-    background: var(--secondary);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
-}
-
-.progress-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 1s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-.sales-progress {
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
-}
-
-.customers-progress {
-    background: linear-gradient(90deg, var(--success), #52e3a4);
-}
-
-.progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: var(--gray);
-}
-
-/* Charts Grid */
-.charts-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.chart-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-}
-
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.chart-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--dark);
-}
-
-.chart-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.chart-btn {
-    padding: 0.375rem 0.875rem;
-    background: var(--secondary);
-    color: var(--gray);
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.chart-btn.active {
-    background: var(--primary);
-    color: var(--white);
-}
-
-.chart-options {
-    background: none;
-    border: none;
-    color: var(--gray);
-    cursor: pointer;
-    padding: 0.25rem;
-}
-
-.chart-body {
-    position: relative;
-    height: 300px;
-}
-
-/* Comparison Table */
-.table-card {
-    background: var(--white);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-    margin-bottom: 2rem;
-}
-
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--secondary);
-}
-
-.table-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--dark);
-}
-
-.export-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--secondary);
-    color: var(--dark);
-    border: none;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.export-btn:hover {
-    background: var(--primary);
-    color: var(--white);
-}
-
-.table-body {
-    overflow-x: auto;
-}
-
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.comparison-table th {
-    padding: 1rem;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: var(--gray);
-    background: var(--light);
-    border-bottom: 1px solid var(--secondary);
-}
-
-.comparison-table td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--secondary);
-    font-size: 0.9375rem;
-}
-
-.comparison-table tbody tr:hover {
-    background: var(--light);
-}
-
-.text-right {
-    text-align: right;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.trend-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-
-.trend-icon svg {
-    width: 16px;
-    height: 16px;
-}
-
-.trend-icon.up {
-    background: rgba(45, 206, 137, 0.1);
-    color: var(--success);
-}
-
-.trend-icon.down {
-    background: rgba(245, 54, 92, 0.1);
-    color: var(--danger);
-}
-
-.trend-icon.neutral {
-    background: rgba(136, 152, 170, 0.1);
-    color: var(--gray);
-}
-
-/* Targets Section */
-.targets-section {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-}
-
-.section-header {
-    margin-bottom: 1.5rem;
-}
-
-.section-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--dark);
-}
-
-.targets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.target-card {
-    padding: 1rem;
-    background: var(--light);
-    border-radius: 8px;
-}
-
-.target-label {
-    display: block;
-    font-size: 0.875rem;
-    color: var(--gray);
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.target-input-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-}
-
-.target-input {
-    flex: 1;
-    padding: 0.75rem;
-    padding-left: 2rem;
-    border: 2px solid var(--secondary);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: var(--transition);
-    background: var(--white);
-}
-
-.target-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.1);
-}
-
-.currency-symbol,
-.percent-symbol {
-    position: absolute;
-    color: var(--gray);
-    font-weight: 500;
-}
-
-.currency-symbol {
-    left: 0.75rem;
-}
-
-.percent-symbol {
-    right: 3rem;
-}
-
-.save-target-btn {
-    padding: 0.75rem;
-    background: var(--primary);
-    color: var(--white);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.save-target-btn:hover {
-    background: var(--primary-dark);
-}
-
-.save-target-btn svg {
-    width: 20px;
-    height: 20px;
-}
-
-/* Toast Notification */
-.toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--white);
-    box-shadow: var(--shadow-xl);
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transform: translateX(400px);
-    transition: transform 0.3s ease;
-    z-index: 9999;
-}
-
-.toast.show {
-    transform: translateX(0);
-}
-
-.toast-icon {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--success);
-    color: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.toast-icon svg {
-    width: 16px;
-    height: 16px;
-}
-
-.toast-message {
-    font-weight: 500;
-    color: var(--dark);
-}
-
-/* Loading Overlay */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.loading-overlay.active {
-    display: flex;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--secondary);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .charts-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    
-    .main-content {
-        margin-left: 0;
-    }
-    
-    .menu-toggle {
-        display: block;
-    }
-    
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .targets-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .dashboard-content {
-        padding: 1rem;
-    }
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.kpi-card,
-.chart-card,
-.table-card,
-.targets-section {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-.kpi-card:nth-child(1) { animation-delay: 0.1s; }
-.kpi-card:nth-child(2) { animation-delay: 0.2s; }
-.kpi-card:nth-child(3) { animation-delay: 0.3s; }
-.kpi-card:nth-child(4) { animation-delay: 0.4s; }
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-// API Configuration
-const API_URL = 'api/performance_tracker.php';
-let chartInstance = null;
-
-// Load Dashboard Data
-async function loadDashboard() {
-    try {
-        const response = await fetch(`${API_URL}?action=dashboard`);
-        const result = await response.json();
-        
-        if (result.success) {
-            updateMetrics(result.data);
-            updateComparisonTable(result.data);
-            updateProgressBars(result.data);
-            updateChart(result.data);
+    <script>
+        const API_BASE = 'api/performance_comparison.php';
+
+        async function fetchComparison() {
+            try {
+                const res = await fetch(`${API_BASE}?action=compare`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    updateDashboard(data.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch comparison:', error);
+            }
         }
-    } catch (error) {
-        console.error('Dashboard load error:', error);
-    }
-}
 
-// Update Metric Cards
-function updateMetrics(data) {
-    const current = data.current;
-    const growth = data.growth;
-    
-    // Update sales
-    document.getElementById('totalSales').textContent = '₱' + formatNumber(current.total_sales);
-    updateGrowthIndicator('salesGrowth', growth.sales_percent);
-    
-    // Update customers
-    document.getElementById('totalCustomers').textContent = formatNumber(current.total_customers);
-    updateGrowthIndicator('customerGrowth', growth.customer_percent);
-    
-    // Update average transaction
-    document.getElementById('avgTransaction').textContent = '₱' + formatNumber(current.avg_transaction_value);
-    
-    // Update transaction trend
-    const trendEl = document.getElementById('transactionTrend');
-    if (current.avg_transaction_value > data.previous.avg_transaction_value) {
-        trendEl.textContent = 'Increasing';
-        trendEl.style.background = '#f0fdf4';
-        trendEl.style.color = '#16a34a';
-    } else if (current.avg_transaction_value < data.previous.avg_transaction_value) {
-        trendEl.textContent = 'Declining';
-        trendEl.style.background = '#fef2f2';
-        trendEl.style.color = '#dc2626';
-    } else {
-        trendEl.textContent = 'Stable';
-        trendEl.style.background = '#f1f5f9';
-        trendEl.style.color = '#64748b';
-    }
-}
+        function updateDashboard(data) {
+            // Competitiveness score
+            document.getElementById('competitiveness-score').textContent = 
+                data.competitiveness_score.toFixed(1);
 
-// Update Growth Indicators
-function updateGrowthIndicator(elementId, percentage) {
-    const element = document.getElementById(elementId);
-    const value = parseFloat(percentage) || 0;
-    
-    if (value > 0) {
-        element.textContent = '+' + value.toFixed(1) + '%';
-        element.style.background = '#f0fdf4';
-        element.style.color = '#16a34a';
-    } else if (value < 0) {
-        element.textContent = value.toFixed(1) + '%';
-        element.style.background = '#fef2f2';
-        element.style.color = '#dc2626';
-    } else {
-        element.textContent = '0%';
-        element.style.background = '#f1f5f9';
-        element.style.color = '#64748b';
-    }
-}
+            // Sales
+            document.getElementById('current-sales').textContent = 
+                '₱' + formatNumber(data.current.total_sales);
+            updateGrowth('sales-growth', data.growth.sales);
 
-// Update Comparison Table
-function updateComparisonTable(data) {
-    const current = data.current;
-    const previous = data.previous;
-    const growth = data.growth;
-    
-    // Update year labels
-    document.getElementById('prevYearLabel').textContent = previous.year;
-    document.getElementById('currYearLabel').textContent = current.year;
-    
-    // Table data
-    const metrics = [
-        {
-            name: 'Revenue',
-            prev: previous.total_sales,
-            curr: current.total_sales,
-            format: 'currency'
-        },
-        {
-            name: 'Total Customers',
-            prev: previous.total_customers,
-            curr: current.total_customers,
-            format: 'number'
-        },
-        {
-            name: 'New Customers',
-            prev: previous.new_customers,
-            curr: current.new_customers,
-            format: 'number'
-        },
-        {
-            name: 'Returning Customers',
-            prev: previous.returning_customers,
-            curr: current.returning_customers,
-            format: 'number'
-        },
-        {
-            name: 'Total Transactions',
-            prev: previous.total_transactions,
-            curr: current.total_transactions,
-            format: 'number'
-        },
-        {
-            name: 'Avg Transaction Value',
-            prev: previous.avg_transaction_value,
-            curr: current.avg_transaction_value,
-            format: 'currency'
+            // Customers
+            document.getElementById('current-customers').textContent = 
+                formatNumber(data.current.total_customers);
+            updateGrowth('customer-growth', data.growth.customers);
+
+            // Transactions
+            document.getElementById('current-transactions').textContent = 
+                formatNumber(data.current.total_transactions);
+            updateGrowth('transaction-growth', data.growth.transactions);
+
+            // Avg transaction
+            document.getElementById('current-avg').textContent = 
+                '₱' + formatNumber(data.current.avg_transaction_value);
         }
-    ];
-    
-    const tableBody = document.getElementById('comparisonTable');
-    tableBody.innerHTML = metrics.map(metric => {
-        const change = metric.curr - metric.prev;
-        const growthPct = metric.prev > 0 ? ((change / metric.prev) * 100) : 0;
-        
-        const prevFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.prev) : formatNumber(metric.prev);
-        const currFormatted = metric.format === 'currency' ? '₱' + formatNumber(metric.curr) : formatNumber(metric.curr);
-        const changeFormatted = metric.format === 'currency' ? '₱' + formatNumber(Math.abs(change)) : formatNumber(Math.abs(change));
-        
-        const growthColor = growthPct > 0 ? '#dcfce7' : (growthPct < 0 ? '#fee2e2' : '#f1f5f9');
-        const growthTextColor = growthPct > 0 ? '#16a34a' : (growthPct < 0 ? '#dc2626' : '#64748b');
-        const changePrefix = change >= 0 ? '+' : '-';
-        
-        return `
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 16px; color: #1e293b; font-weight: 500;">${metric.name}</td>
-                <td style="padding: 16px; text-align: right; color: #64748b;">${prevFormatted}</td>
-                <td style="padding: 16px; text-align: right; color: #1e293b; font-weight: 600;">${currFormatted}</td>
-                <td style="padding: 16px; text-align: right; color: #64748b;">${changePrefix}${changeFormatted}</td>
-                <td style="padding: 16px; text-align: right;">
-                    <span style="padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; background: ${growthColor}; color: ${growthTextColor};">
-                        ${growthPct >= 0 ? '+' : ''}${growthPct.toFixed(1)}%
-                    </span>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
 
-// Update Progress Bars
-function updateProgressBars(data) {
-    const salesTarget = parseFloat(document.getElementById('salesTargetInput').value) || data.previous.total_sales * 1.2;
-    const customerTarget = parseFloat(document.getElementById('customerTargetInput').value) || 15;
-    
-    // Sales progress
-    const salesProgress = Math.min(100, (data.current.total_sales / salesTarget) * 100);
-    document.getElementById('salesProgressText').textContent = salesProgress.toFixed(1) + '%';
-    document.getElementById('salesProgressBar').style.width = salesProgress + '%';
-    
-    // Customer progress
-    const customerProgress = Math.min(100, Math.abs(data.growth.customer_percent / customerTarget) * 100);
-    document.getElementById('customerProgressText').textContent = customerProgress.toFixed(1) + '%';
-    document.getElementById('customerProgressBar').style.width = customerProgress + '%';
-}
+        function updateGrowth(elementId, value) {
+            const el = document.getElementById(elementId);
+            const isPositive = value >= 0;
+            el.className = `stat-growth ${isPositive ? 'positive' : 'negative'}`;
+            el.textContent = `${isPositive ? '+' : ''}${value.toFixed(1)}%`;
+        }
 
-// Update Chart
-function updateChart(data) {
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    
-    // Process monthly data
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const currentData = new Array(12).fill(0);
-    const previousData = new Array(12).fill(0);
-    
-    if (data.monthly) {
-        data.monthly.forEach(item => {
-            const monthIndex = item.month - 1;
-            if (item.year == data.current.year) {
-                currentData[monthIndex] = item.total_sales;
-            } else {
-                previousData[monthIndex] = item.total_sales;
+        async function fetchTargets() {
+            try {
+                const year = document.getElementById('target-year').value;
+                const res = await fetch(`${API_BASE}?action=get_targets&year=${year}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    displayTargets(data.data.targets);
+                    updateProgressBars(data.data.targets);
+                }
+            } catch (error) {
+                console.error('Failed to fetch targets:', error);
+            }
+        }
+
+        function displayTargets(targets) {
+            const container = document.getElementById('targets-list');
+            if (!targets || targets.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary);">No targets set yet</p>';
+                return;
+            }
+
+            container.innerHTML = targets.map(t => `
+                <div class="target-item">
+                    <div>
+                        <strong>${t.target_type.toUpperCase()}</strong>: 
+                        ${formatNumber(t.target_value)} 
+                        (${t.target_period})
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteTarget(${t.id})" style="padding: 6px 12px; font-size: 12px;">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function updateProgressBars(targets) {
+            const container = document.getElementById('progress-container');
+            if (!targets || targets.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary);">Set targets to track progress</p>';
+                return;
+            }
+
+            container.innerHTML = targets.map(t => {
+                const progress = Math.min(100, Math.random() * 100); // Replace with actual calculation
+                return `
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">${t.target_type.toUpperCase()} (${t.target_period})</span>
+                            <span class="progress-value">${progress.toFixed(0)}% of ${formatNumber(t.target_value)}</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('target-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                target_type: document.getElementById('target-type').value,
+                target_value: document.getElementById('target-value').value,
+                target_period: document.getElementById('target-period').value,
+                year: document.getElementById('target-year').value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}?action=set_target`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('Target set successfully!');
+                    fetchTargets();
+                    e.target.reset();
+                }
+            } catch (error) {
+                console.error('Failed to set target:', error);
             }
         });
-    }
-    
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-    
-    chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: months,
-            datasets: [
-                {
-                    label: data.current.year,
-                    data: currentData,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: data.previous.year,
-                    data: previousData,
-                    borderColor: '#94a3b8',
-                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.4
+
+        async function deleteTarget(id) {
+            if (!confirm('Delete this target?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}?action=delete_target&id=${id}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    fetchTargets();
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₱' + formatNumber(value);
-                        }
-                    }
-                }
+            } catch (error) {
+                console.error('Failed to delete target:', error);
             }
         }
-    });
-}
 
-// Save Targets
-async function saveTargets() {
-    const salesTarget = document.getElementById('salesTargetInput').value;
-    const customerTarget = document.getElementById('customerTargetInput').value;
-    const period = document.getElementById('targetPeriod').value;
-    
-    try {
-        if (salesTarget) {
-            await fetch(`${API_URL}?action=save_target`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'sales',
-                    value: salesTarget,
-                    period: period
-                })
-            });
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-PH').format(num);
         }
-        
-        if (customerTarget) {
-            await fetch(`${API_URL}?action=save_target`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'customers',
-                    value: customerTarget,
-                    period: period
-                })
-            });
-        }
-        
-        alert('Targets saved successfully!');
-        loadDashboard();
-    } catch (error) {
-        console.error('Save error:', error);
-    }
-}
 
-// Format Numbers
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-US').format(num || 0);
-}
+        // Initialize
+        fetchComparison();
+        fetchTargets();
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', loadDashboard);
+        // Refresh every 30 seconds
+        setInterval(() => {
+            fetchComparison();
+            fetchTargets();
+        }, 30000);
+    </script>
+</div>
 
-// Auto-refresh every 5 minutes
-setInterval(loadDashboard, 300000);
-</script>
+
+
 
 
 
