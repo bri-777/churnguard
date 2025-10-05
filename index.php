@@ -2066,7 +2066,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-
+<div id="dashboard-container" class="page">
 <div id="dashboard-container" style="min-height: 100vh;">
 <div class="sales-comparison-container" style="padding: 24px; background: #f5f7fa; min-height: 100vh;">
     
@@ -2295,6 +2295,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 </div>
 
 <script src="sales_comparison.js"></script>
+</div>
 
 
 
