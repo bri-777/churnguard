@@ -45,6 +45,7 @@ try {
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
         ]
     );
 } catch (PDOException $e) {
@@ -58,12 +59,12 @@ try {
 }
 
 // ==================== HELPER FUNCTIONS ====================
-function j_ok(array $d = []) {
+function j_ok(array $d = []): void {
     echo json_encode(array_merge(['status' => 'success'], $d));
     exit;
 }
 
-function j_err(string $m, int $c = 400) {
+function j_err(string $m, int $c = 400): void {
     http_response_code($c);
     echo json_encode([
         'status' => 'error',
@@ -134,6 +135,7 @@ if ($action === 'kpi_summary') {
                 COALESCE(customer_traffic, 0) as customer_traffic
             FROM churn_data 
             WHERE user_id = ? AND date = ?
+            LIMIT 1
         ");
         $stmtToday->execute([$uid, $today]);
         $todayData = $stmtToday->fetch(PDO::FETCH_ASSOC);
@@ -146,6 +148,7 @@ if ($action === 'kpi_summary') {
                 COALESCE(customer_traffic, 0) as customer_traffic
             FROM churn_data 
             WHERE user_id = ? AND date = ?
+            LIMIT 1
         ");
         $stmtYesterday->execute([$uid, $yesterday]);
         $yesterdayData = $stmtYesterday->fetch(PDO::FETCH_ASSOC);
@@ -174,7 +177,12 @@ if ($action === 'kpi_summary') {
             SELECT t.*, 
                    COALESCE(SUM(cd.sales_volume), 0) as current_sales,
                    COALESCE(SUM(cd.receipt_count), 0) as current_receipts,
-                   COALESCE(SUM(cd.customer_traffic), 0) as current_customers
+                   COALESCE(SUM(cd.customer_traffic), 0) as current_customers,
+                   COALESCE(AVG(CASE 
+                       WHEN cd.receipt_count > 0 
+                       THEN cd.sales_volume / cd.receipt_count 
+                       ELSE 0 
+                   END), 0) as current_avg_transaction
             FROM targets t
             LEFT JOIN churn_data cd ON cd.user_id = t.user_id 
                 AND cd.date BETWEEN t.start_date AND t.end_date
@@ -233,6 +241,7 @@ if ($action === 'compare') {
                 COALESCE(customer_traffic, 0) as customer_traffic
             FROM churn_data 
             WHERE user_id = ? AND date = ?
+            LIMIT 1
         ");
         $stmtCurrent->execute([$uid, $currentDate]);
         $currentData = $stmtCurrent->fetch(PDO::FETCH_ASSOC);
@@ -244,6 +253,7 @@ if ($action === 'compare') {
                 COALESCE(customer_traffic, 0) as customer_traffic
             FROM churn_data 
             WHERE user_id = ? AND date = ?
+            LIMIT 1
         ");
         $stmtCompare->execute([$uid, $compareDate]);
         $compareData = $stmtCompare->fetch(PDO::FETCH_ASSOC);
@@ -412,6 +422,55 @@ if ($action === 'save_target') {
     } catch (Throwable $e) {
         error_log("Save Target Error: " . $e->getMessage());
         j_err('Failed to save target', 500);
+    }
+}
+
+// ==================== UPDATE TARGET ====================
+if ($action === 'update_target') {
+    try {
+        $raw = file_get_contents('php://input') ?: '';
+        $data = json_decode($raw, true) ?: $_POST;
+        
+        $id = (int)($data['id'] ?? 0);
+        $name = trim($data['name'] ?? '');
+        $type = trim($data['type'] ?? '');
+        $value = (float)($data['value'] ?? 0);
+        $startDate = trim($data['start_date'] ?? '');
+        $endDate = trim($data['end_date'] ?? '');
+        $store = trim($data['store'] ?? '');
+        
+        if ($id <= 0) j_err('Invalid target ID', 422);
+        if (empty($name)) j_err('Target name is required', 422);
+        if (strlen($name) > 100) j_err('Target name too long', 422);
+        if (!in_array($type, ['sales', 'customers', 'transactions', 'avg_transaction'])) j_err('Invalid target type', 422);
+        if ($value <= 0) j_err('Target value must be greater than 0', 422);
+        if ($value > 999999999) j_err('Target value too large', 422);
+        if (!isValidDate($startDate) || !isValidDate($endDate)) j_err('Invalid date format', 422);
+        if (strtotime($endDate) < strtotime($startDate)) j_err('End date must be after start date', 422);
+        
+        // Check ownership
+        $stmtCheck = $pdo->prepare("SELECT id FROM targets WHERE id = ? AND user_id = ?");
+        $stmtCheck->execute([$id, $uid]);
+        if (!$stmtCheck->fetch()) j_err('Target not found or unauthorized', 404);
+        
+        $stmt = $pdo->prepare("
+            UPDATE targets 
+            SET target_name = ?, target_type = ?, target_value = ?, 
+                start_date = ?, end_date = ?, store = ?, updated_at = NOW()
+            WHERE id = ? AND user_id = ?
+        ");
+        
+        $stmt->execute([$name, $type, $value, $startDate, $endDate, $store, $id, $uid]);
+        
+        j_ok([
+            'updated' => true,
+            'id' => $id,
+            'message' => 'Target updated successfully'
+        ]);
+        
+    } catch (Throwable $e) {
+        error_log("Update Target Error: " . $e->getMessage());
+        j_err('Failed to update target', 500);
     }
 }
 

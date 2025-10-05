@@ -1,4 +1,4 @@
-// Sales Comparison & Target Tracking - Fixed & Improved
+// ==================== ENHANCED SALES ANALYTICS DASHBOARD ====================
 'use strict';
 
 // ==================== CONFIGURATION ====================
@@ -12,14 +12,15 @@ const CONFIG = {
         TIMEOUT: 15000,
         RETRY_ATTEMPTS: 3,
         RETRY_DELAY: 1000,
+        BASE_URL: 'api/sales_comparison.php',
         ENDPOINTS: {
-            kpiSummary: 'api/sales_comparison.php?action=kpi_summary',
-            compare: 'api/sales_comparison.php?action=compare',
-            targets: 'api/sales_comparison.php?action=get_targets',
-            saveTarget: 'api/sales_comparison.php?action=save_target',
-            updateTarget: 'api/sales_comparison.php?action=update_target',
-            deleteTarget: 'api/sales_comparison.php?action=delete_target',
-            trendData: 'api/sales_comparison.php?action=trend_data'
+            kpiSummary: 'action=kpi_summary',
+            compare: 'action=compare',
+            targets: 'action=get_targets',
+            saveTarget: 'action=save_target',
+            updateTarget: 'action=update_target',
+            deleteTarget: 'action=delete_target',
+            trendData: 'action=trend_data'
         }
     },
     UI: {
@@ -109,7 +110,10 @@ const Utils = {
     getISODate(date) {
         if (!(date instanceof Date)) date = new Date(date);
         if (isNaN(date.getTime())) return '';
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     },
 
     formatTargetType(type) {
@@ -131,14 +135,22 @@ const Utils = {
 
     debounce(func, wait = CONFIG.UI.DEBOUNCE_DELAY) {
         let timeout;
-        return function(...args) {
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func.apply(this, args);
+            };
             clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
+            timeout = setTimeout(later, wait);
         };
     },
 
     $(selector) {
         return document.querySelector(selector);
+    },
+
+    $$(selector) {
+        return document.querySelectorAll(selector);
     },
 
     calculatePercentageChange(current, previous) {
@@ -200,30 +212,31 @@ const UIManager = {
 
         const notification = document.createElement('div');
         notification.className = 'notification-toast';
+        notification.setAttribute('role', 'alert');
         notification.innerHTML = `
-            <span style="font-size:18px;font-weight:700;">${icons[type] || icons.info}</span>
+            <span style="font-size:18px;font-weight:700;line-height:1;">${icons[type] || icons.info}</span>
             <span>${Utils.escapeHtml(message)}</span>
         `;
         
-        notification.style.cssText = `
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            min-width: 320px;
-            max-width: 500px;
-            padding: 16px 20px;
-            background: ${colors[type] || colors.info};
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        `;
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            minWidth: '320px',
+            maxWidth: '500px',
+            padding: '16px 20px',
+            background: colors[type] || colors.info,
+            color: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            zIndex: '10001',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            fontSize: '14px',
+            fontWeight: '500',
+            animation: 'slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+        });
 
         document.body.appendChild(notification);
 
@@ -239,19 +252,21 @@ const UIManager = {
         if (!loader) {
             loader = document.createElement('div');
             loader.id = 'globalLoader';
-            loader.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.4);
-                display: none;
-                justify-content: center;
-                align-items: center;
-                z-index: 10000;
-                backdrop-filter: blur(4px);
-            `;
+            loader.setAttribute('role', 'status');
+            loader.setAttribute('aria-live', 'polite');
+            Object.assign(loader.style, {
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, 0.4)',
+                display: 'none',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: '10000',
+                backdropFilter: 'blur(4px)'
+            });
             loader.innerHTML = `
                 <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
                     <div class="spinner" style="border: 5px solid #f3f4f6; border-top: 5px solid #4f46e5; border-radius: 50%; width: 60px; height: 60px; animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
@@ -283,11 +298,31 @@ const UIManager = {
     updateTextContent(elementId, value) {
         const element = Utils.$(`#${elementId}`);
         if (element) element.textContent = value || '';
+    },
+
+    setElementValue(elementId, value) {
+        const element = Utils.$(`#${elementId}`);
+        if (element) element.value = value || '';
     }
 };
 
 // ==================== API SERVICE ====================
 const APIService = {
+    buildUrl(endpoint, params = {}) {
+        const url = new URL(CONFIG.API.BASE_URL, window.location.origin);
+        const queryString = CONFIG.API.ENDPOINTS[endpoint] || endpoint;
+        
+        url.search = queryString;
+        
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== null && value !== undefined) {
+                url.searchParams.append(key, value);
+            }
+        });
+        
+        return url.toString();
+    },
+
     async fetchWithRetry(url, options = {}, retries = CONFIG.API.RETRY_ATTEMPTS) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), CONFIG.API.TIMEOUT);
@@ -300,7 +335,11 @@ const APIService = {
         try {
             const response = await fetch(url, {
                 ...options,
-                signal: controller.signal
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
             });
 
             clearTimeout(timeout);
@@ -338,30 +377,27 @@ const APIService = {
         }
     },
 
-    get(url) {
+    get(endpoint, params = {}) {
+        const url = this.buildUrl(endpoint, params);
         return this.fetchWithRetry(url);
     },
 
-    post(url, body) {
+    post(endpoint, body, params = {}) {
+        const url = this.buildUrl(endpoint, params);
         return this.fetchWithRetry(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
     }
 };
-
-// ==================== DATA MANAGERS ====================
+// ==================== DATE MANAGER ====================
 const DateManager = {
     setDefaultDates() {
         const today = new Date();
         const yesterday = new Date(today - CONFIG.DATES.ONE_DAY);
 
-        const currentDate = Utils.$('#currentDate');
-        const compareDate = Utils.$('#compareDate');
-
-        if (currentDate) currentDate.value = Utils.getISODate(today);
-        if (compareDate) compareDate.value = Utils.getISODate(yesterday);
+        UIManager.setElementValue('currentDate', Utils.getISODate(today));
+        UIManager.setElementValue('compareDate', Utils.getISODate(yesterday));
     },
 
     updateComparisonDates() {
@@ -385,11 +421,12 @@ const DateManager = {
     }
 };
 
+// ==================== KPI MANAGER ====================
 const KPIManager = {
     async loadSummary() {
         AppState.incrementLoading();
         try {
-            const data = await APIService.get(CONFIG.API.ENDPOINTS.kpiSummary);
+            const data = await APIService.get('kpiSummary');
 
             if (!data) {
                 throw new Error('No data received from server');
@@ -417,6 +454,7 @@ const KPIManager = {
     }
 };
 
+// ==================== COMPARISON MANAGER ====================
 const ComparisonManager = {
     async loadComparison() {
         const currentDate = Utils.$('#currentDate')?.value;
@@ -434,8 +472,10 @@ const ComparisonManager = {
 
         AppState.incrementLoading();
         try {
-            const url = `${CONFIG.API.ENDPOINTS.compare}&currentDate=${encodeURIComponent(currentDate)}&compareDate=${encodeURIComponent(compareDate)}`;
-            const data = await APIService.get(url);
+            const data = await APIService.get('compare', {
+                currentDate,
+                compareDate
+            });
 
             if (!data) {
                 throw new Error('No comparison data received');
@@ -461,7 +501,7 @@ const ComparisonManager = {
         if (!comparison || comparison.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align:center;padding:40px;color:#9ca3af;">
+                    <td colspan="6" class="empty-state">
                         No comparison data available for selected dates
                     </td>
                 </tr>
@@ -502,14 +542,14 @@ const ComparisonManager = {
     }
 };
 
+// ==================== TARGET MANAGER ====================
 const TargetManager = {
     async loadTargets(filter = 'all') {
         AppState.currentFilter = filter;
         AppState.incrementLoading();
         
         try {
-            const url = `${CONFIG.API.ENDPOINTS.targets}&filter=${encodeURIComponent(filter)}`;
-            const data = await APIService.get(url);
+            const data = await APIService.get('targets', { filter });
 
             if (!data) {
                 throw new Error('No targets data received');
@@ -533,7 +573,7 @@ const TargetManager = {
         if (!targets || targets.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">
+                    <td colspan="8" class="empty-state">
                         No targets found. Create your first target to start tracking progress.
                     </td>
                 </tr>
@@ -582,13 +622,13 @@ const TargetManager = {
             </td>
             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
             <td style="white-space:nowrap">
-                <button class="btn btn-secondary btn-edit" style="padding:6px 12px;font-size:12px;margin-right:6px" data-id="${target.id}">Edit</button>
-                <button class="btn btn-secondary btn-delete" style="padding:6px 12px;font-size:12px;background:#ef4444;color:#fff" data-id="${target.id}">Delete</button>
+                <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;margin-right:6px" data-id="${target.id}">Edit</button>
+                <button class="btn" style="padding:6px 12px;font-size:12px;background:#ef4444;color:#fff" data-id="${target.id}">Delete</button>
             </td>
         `;
 
-        row.querySelector('.btn-edit').addEventListener('click', () => this.editTarget(target));
-        row.querySelector('.btn-delete').addEventListener('click', () => this.deleteTarget(target.id));
+        row.querySelector('button[data-id]:first-of-type').addEventListener('click', () => this.editTarget(target));
+        row.querySelector('button[data-id]:last-of-type').addEventListener('click', () => this.deleteTarget(target.id));
 
         return row;
     },
@@ -598,7 +638,10 @@ const TargetManager = {
         const form = Utils.$('#targetForm');
         const modalTitle = Utils.$('#modalTitle');
 
-        if (modal) modal.classList.add('active');
+        if (modal) {
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
         if (form) form.reset();
         if (modalTitle) modalTitle.textContent = 'Create New Target';
 
@@ -607,16 +650,16 @@ const TargetManager = {
         const today = new Date();
         const nextMonth = new Date(today.getTime() + CONFIG.DATES.ONE_MONTH);
 
-        const startDate = Utils.$('#targetStartDate');
-        const endDate = Utils.$('#targetEndDate');
-
-        if (startDate) startDate.value = Utils.getISODate(today);
-        if (endDate) endDate.value = Utils.getISODate(nextMonth);
+        UIManager.setElementValue('targetStartDate', Utils.getISODate(today));
+        UIManager.setElementValue('targetEndDate', Utils.getISODate(nextMonth));
     },
 
     closeModal() {
         const modal = Utils.$('#targetModal');
-        if (modal) modal.classList.remove('active');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
         AppState.editingTargetId = null;
     },
 
@@ -632,6 +675,7 @@ const TargetManager = {
             store: Utils.sanitizeInput(Utils.$('#targetStore')?.value, 100) || ''
         };
 
+        // Validation
         if (!formData.name) {
             UIManager.showNotification('Please enter a target name', 'warning');
             return;
@@ -675,9 +719,9 @@ const TargetManager = {
             let data;
             if (AppState.editingTargetId) {
                 formData.id = AppState.editingTargetId;
-                data = await APIService.post(CONFIG.API.ENDPOINTS.updateTarget, formData);
+                data = await APIService.post('updateTarget', formData);
             } else {
-                data = await APIService.post(CONFIG.API.ENDPOINTS.saveTarget, formData);
+                data = await APIService.post('saveTarget', formData);
             }
 
             if (!data) {
@@ -711,8 +755,7 @@ const TargetManager = {
         AppState.incrementLoading();
 
         try {
-            const url = `${CONFIG.API.ENDPOINTS.deleteTarget}&id=${encodeURIComponent(id)}`;
-            const data = await APIService.get(url);
+            const data = await APIService.get('deleteTarget', { id });
 
             if (!data) {
                 throw new Error('No response from server');
@@ -738,23 +781,19 @@ const TargetManager = {
         const modalTitle = Utils.$('#modalTitle');
 
         if (modalTitle) modalTitle.textContent = 'Edit Target';
-        if (modal) modal.classList.add('active');
+        if (modal) {
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
 
         AppState.editingTargetId = target.id;
 
-        const nameInput = Utils.$('#targetName');
-        const typeInput = Utils.$('#targetType');
-        const valueInput = Utils.$('#targetValue');
-        const startDateInput = Utils.$('#targetStartDate');
-        const endDateInput = Utils.$('#targetEndDate');
-        const storeInput = Utils.$('#targetStore');
-
-        if (nameInput) nameInput.value = target.target_name || '';
-        if (typeInput) typeInput.value = target.target_type || 'sales';
-        if (valueInput) valueInput.value = target.target_value || '';
-        if (startDateInput) startDateInput.value = target.start_date || '';
-        if (endDateInput) endDateInput.value = target.end_date || '';
-        if (storeInput) storeInput.value = target.store || '';
+        UIManager.setElementValue('targetName', target.target_name || '');
+        UIManager.setElementValue('targetType', target.target_type || 'sales');
+        UIManager.setElementValue('targetValue', target.target_value || '');
+        UIManager.setElementValue('targetStartDate', target.start_date || '');
+        UIManager.setElementValue('targetEndDate', target.end_date || '');
+        UIManager.setElementValue('targetStore', target.store || '');
     },
 
     filterTargets() {
@@ -767,11 +806,9 @@ const TargetManager = {
 const TableLoaders = {
     async loadSalesTrendTable() {
         try {
-            const url = `${CONFIG.API.ENDPOINTS.trendData}&days=30`;
-            const data = await APIService.get(url);
+            const data = await APIService.get('trendData', { days: 30 });
 
             if (!data || !data.trend_data || data.trend_data.length === 0) {
-                console.log('No trend data available');
                 this.displayEmptyTrendTable();
                 return;
             }
@@ -834,23 +871,14 @@ const TableLoaders = {
     displayEmptyTrendTable() {
         const tbody = Utils.$('#salesTrendTableBody');
         if (!tbody) return;
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
-                    No sales trend data available
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No sales trend data available</td></tr>`;
     },
 
     async loadTargetProgressTable() {
         try {
-            const url = `${CONFIG.API.ENDPOINTS.targets}&filter=active`;
-            const data = await APIService.get(url);
+            const data = await APIService.get('targets', { filter: 'active' });
 
             if (!data || !data.targets || data.targets.length === 0) {
-                console.log('No active targets');
                 this.displayEmptyTargetTable();
                 return;
             }
@@ -910,14 +938,7 @@ const TableLoaders = {
     displayEmptyTargetTable() {
         const tbody = Utils.$('#targetProgressTableBody');
         if (!tbody) return;
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
-                    No active targets available
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No active targets available</td></tr>`;
     }
 };
 
@@ -932,9 +953,7 @@ const App = {
         console.log('Initializing Sales Analytics Dashboard...');
 
         try {
-            this.injectStyles();
             DateManager.setDefaultDates();
-            
             await this.loadAllData();
             this.setupEventListeners();
 
@@ -961,9 +980,7 @@ const App = {
     },
 
     setupEventListeners() {
-        window.addEventListener('beforeunload', () => {
-            AppState.reset();
-        });
+        window.addEventListener('beforeunload', () => AppState.reset());
 
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && AppState.isInitialized) {
@@ -1007,28 +1024,7 @@ const App = {
 
     exportReport() {
         UIManager.showNotification('Preparing report for export...', 'info');
-        window.print();
-    },
-
-    injectStyles() {
-        if (Utils.$('#appAnimations')) return;
-
-        const style = document.createElement('style');
-        style.id = 'appAnimations';
-        style.textContent = `
-            @keyframes spin {
-                to { transform: rotate(360deg); }
-            }
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
+        setTimeout(() => window.print(), 500);
     }
 };
 

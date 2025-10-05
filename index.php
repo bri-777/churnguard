@@ -2066,11 +2066,11 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-  <div id="dashboard-container" class="page">
+   <div id="dashboard-container" class="page">
         <div class="sales-comparison-container">
             
             <!-- Header Section -->
-            <div class="page-header">
+            <header class="page-header">
                 <div class="header-left">
                     <h1 class="page-title">
                         <svg class="title-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2082,19 +2082,19 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     <p class="page-subtitle">Track performance and achieve your targets</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-refresh" onclick="refreshData()">
+                    <button class="btn btn-refresh" onclick="refreshData()" aria-label="Refresh Data">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                         </svg>
                         Refresh
                     </button>
-                    <button class="btn btn-export" onclick="exportReport()">
+                    <button class="btn btn-export" onclick="exportReport()" aria-label="Export Report">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
                         </svg>
                         Export
                     </button>
-                    <button class="btn btn-primary" onclick="openTargetModal()">
+                    <button class="btn btn-primary" onclick="openTargetModal()" aria-label="Create New Target">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
                             <path d="M12 8v8M8 12h8"/>
@@ -2102,12 +2102,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         New Target
                     </button>
                 </div>
-            </div>
+            </header>
 
             <!-- KPI Cards -->
-            <div class="kpi-cards-grid">
-                <div class="kpi-card">
-                    <div class="kpi-icon sales-icon">
+            <section class="kpi-cards-grid" aria-label="Key Performance Indicators">
+                <article class="kpi-card">
+                    <div class="kpi-icon sales-icon" aria-hidden="true">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                         </svg>
@@ -2115,12 +2115,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     <div class="kpi-content">
                         <span class="kpi-label">Today's Sales</span>
                         <h3 class="kpi-value" id="todaySales">₱0.00</h3>
-                        <span class="kpi-change positive" id="salesChange">+0%</span>
+                        <span class="kpi-change" id="salesChange">0%</span>
                     </div>
-                </div>
+                </article>
 
-                <div class="kpi-card">
-                    <div class="kpi-icon customers-icon">
+                <article class="kpi-card">
+                    <div class="kpi-icon customers-icon" aria-hidden="true">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
@@ -2132,10 +2132,10 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         <h3 class="kpi-value" id="todayCustomers">0</h3>
                         <span class="kpi-change" id="customersChange">0%</span>
                     </div>
-                </div>
+                </article>
 
-                <div class="kpi-card">
-                    <div class="kpi-icon transactions-icon">
+                <article class="kpi-card">
+                    <div class="kpi-icon transactions-icon" aria-hidden="true">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="2" y="5" width="20" height="14" rx="2"/>
                             <path d="M2 10h20"/>
@@ -2146,10 +2146,10 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         <h3 class="kpi-value" id="todayTransactions">0</h3>
                         <span class="kpi-change" id="transactionsChange">0%</span>
                     </div>
-                </div>
+                </article>
 
-                <div class="kpi-card">
-                    <div class="kpi-icon target-icon">
+                <article class="kpi-card">
+                    <div class="kpi-icon target-icon" aria-hidden="true">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
                             <circle cx="12" cy="12" r="6"/>
@@ -2161,11 +2161,11 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         <h3 class="kpi-value" id="targetAchievement">0%</h3>
                         <span class="kpi-sublabel" id="targetStatus">No active target</span>
                     </div>
-                </div>
-            </div>
+                </article>
+            </section>
 
             <!-- Comparison Section -->
-            <div class="comparison-filters-section">
+            <section class="comparison-filters-section" aria-label="Data Comparison">
                 <div class="section-header-with-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -2174,9 +2174,9 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     </svg>
                     <h2 class="section-title">Data Comparison</h2>
                 </div>
-                <div class="filters-row">
+                <form class="filters-row" onsubmit="event.preventDefault(); loadComparison();">
                     <div class="filter-group">
-                        <label>Comparison Type</label>
+                        <label for="comparisonType">Comparison Type</label>
                         <select id="comparisonType" class="form-input" onchange="updateComparisonDates()">
                             <option value="today_vs_date">Today vs Selected Date</option>
                             <option value="week_vs_range">This Week vs Last Week</option>
@@ -2185,15 +2185,15 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label>Current Period</label>
-                        <input type="date" id="currentDate" class="form-input">
+                        <label for="currentDate">Current Period</label>
+                        <input type="date" id="currentDate" class="form-input" required>
                     </div>
                     <div class="filter-group">
-                        <label>Compare With</label>
-                        <input type="date" id="compareDate" class="form-input">
+                        <label for="compareDate">Compare With</label>
+                        <input type="date" id="compareDate" class="form-input" required>
                     </div>
                     <div class="filter-group">
-                        <button class="btn btn-primary" onclick="loadComparison()" style="margin-top:24px;">
+                        <button type="submit" class="btn btn-primary" style="margin-top:24px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"/>
                                 <path d="m21 21-4.35-4.35"/>
@@ -2201,37 +2201,37 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                             Compare
                         </button>
                     </div>
-                </div>
-            </div>
+                </form>
+            </section>
 
-            <!-- Comparison Results -->
-            <div class="comparison-results-section">
+            <!-- Comparison Results Table -->
+            <section class="comparison-results-section" aria-label="Comparison Results">
                 <div class="table-container">
                     <table class="comparison-table">
                         <thead>
                             <tr>
-                                <th>Metric</th>
-                                <th>Current Value</th>
-                                <th>Compare Value</th>
-                                <th>Difference</th>
-                                <th>% Change</th>
-                                <th>Trend</th>
+                                <th scope="col">Metric</th>
+                                <th scope="col">Current Value</th>
+                                <th scope="col">Compare Value</th>
+                                <th scope="col">Difference</th>
+                                <th scope="col">% Change</th>
+                                <th scope="col">Trend</th>
                             </tr>
                         </thead>
                         <tbody id="comparisonTableBody">
                             <tr>
-                                <td colspan="6" style="text-align:center;padding:40px;color:#9ca3af;">
+                                <td colspan="6" class="empty-state">
                                     Select dates and click Compare to view data
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
 
             <!-- Data Tables -->
             <div class="tables-grid">
-                <div class="data-table-card">
+                <article class="data-table-card">
                     <div class="card-header">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 3v18h18"/>
@@ -2243,23 +2243,21 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Sales Revenue</th>
-                                    <th>Change</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Sales Revenue</th>
+                                    <th scope="col">Change</th>
                                 </tr>
                             </thead>
                             <tbody id="salesTrendTableBody">
                                 <tr>
-                                    <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
-                                        Loading...
-                                    </td>
+                                    <td colspan="3" class="empty-state">Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </article>
 
-                <div class="data-table-card">
+                <article class="data-table-card">
                     <div class="card-header">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
@@ -2271,35 +2269,34 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Target Name</th>
-                                    <th>Progress</th>
-                                    <th>Status</th>
+                                    <th scope="col">Target Name</th>
+                                    <th scope="col">Progress</th>
+                                    <th scope="col">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="targetProgressTableBody">
                                 <tr>
-                                    <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
-                                        Loading...
-                                    </td>
+                                    <td colspan="3" class="empty-state">Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </article>
             </div>
 
             <!-- Target Management -->
-            <div class="target-management-section">
+            <section class="target-management-section" aria-label="Target Management">
                 <div class="section-header">
                     <div class="section-header-with-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/>
-                            <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/>
-                            <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14zM14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5zM15.5 19c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
                         </svg>
                         <h2 class="section-title">Target Management</h2>
                     </div>
                     <div class="section-filters">
+                        <label for="targetFilter" class="sr-only">Filter Targets</label>
                         <select id="targetFilter" class="form-input" onchange="filterTargets()">
                             <option value="all">All Targets</option>
                             <option value="active">Active</option>
@@ -2314,34 +2311,32 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     <table class="targets-table">
                         <thead>
                             <tr>
-                                <th>Target Name</th>
-                                <th>Type</th>
-                                <th>Period</th>
-                                <th>Target Value</th>
-                                <th>Current</th>
-                                <th>Progress</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th scope="col">Target Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Period</th>
+                                <th scope="col">Target Value</th>
+                                <th scope="col">Current</th>
+                                <th scope="col">Progress</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="targetsTableBody">
                             <tr>
-                                <td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">
-                                    Loading...
-                                </td>
+                                <td colspan="8" class="empty-state">Loading...</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
 
             <!-- Target Modal -->
-            <div class="modal" id="targetModal">
+            <div class="modal" id="targetModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
                 <div class="modal-backdrop" onclick="closeTargetModal()"></div>
                 <div class="modal-content">
                     <div class="modal-header">
-                       <h3 class="modal-title" id="modalTitle">Create New Target</h3>
-                        <button class="modal-close" onclick="closeTargetModal()">
+                        <h3 class="modal-title" id="modalTitle">Create New Target</h3>
+                        <button class="modal-close" onclick="closeTargetModal()" aria-label="Close Modal">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
@@ -2350,12 +2345,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     <div class="modal-body">
                         <form id="targetForm" onsubmit="saveTarget(event)">
                             <div class="form-group">
-                                <label>Target Name</label>
+                                <label for="targetName">Target Name</label>
                                 <input type="text" id="targetName" class="form-input" required placeholder="e.g., Q4 Sales Goal" maxlength="100">
                             </div>
 
                             <div class="form-group">
-                                <label>Target Type</label>
+                                <label for="targetType">Target Type</label>
                                 <select id="targetType" class="form-input" required>
                                     <option value="">Select type...</option>
                                     <option value="sales">Sales Revenue</option>
@@ -2366,24 +2361,24 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                             </div>
 
                             <div class="form-group">
-                                <label>Target Value</label>
+                                <label for="targetValue">Target Value</label>
                                 <input type="number" id="targetValue" class="form-input" required min="0.01" step="0.01" placeholder="Enter target amount">
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Start Date</label>
+                                    <label for="targetStartDate">Start Date</label>
                                     <input type="date" id="targetStartDate" class="form-input" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>End Date</label>
+                                    <label for="targetEndDate">End Date</label>
                                     <input type="date" id="targetEndDate" class="form-input" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label>Store/Branch (Optional)</label>
+                                <label for="targetStore">Store/Branch (Optional)</label>
                                 <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all stores" maxlength="100">
                             </div>
 
@@ -2408,15 +2403,11 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
     <script src="sales_comparison.js"></script>
 <style>
- /* ==================== RESET & BASE ==================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ==================== ENHANCED SALES ANALYTICS DASHBOARD CSS ==================== */
 
+/* CSS Variables for Consistent Theming */
 :root {
-    /* Primary Color Theme - Indigo */
+    /* Primary Colors */
     --primary-50: #eef2ff;
     --primary-100: #e0e7ff;
     --primary-200: #c7d2fe;
@@ -2430,14 +2421,17 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     
     /* Status Colors */
     --success-50: #d1fae5;
+    --success-100: #a7f3d0;
     --success-500: #10b981;
     --success-700: #059669;
     
     --warning-50: #fef3c7;
+    --warning-100: #fde68a;
     --warning-500: #f59e0b;
     --warning-700: #d97706;
     
     --danger-50: #fee2e2;
+    --danger-100: #fecaca;
     --danger-500: #ef4444;
     --danger-700: #dc2626;
     
@@ -2455,15 +2449,27 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     
     /* Border Radius */
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+    
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -2471,9 +2477,24 @@ body {
     background: var(--gray-50);
     color: var(--gray-900);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* ==================== CONTAINER ==================== */
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Container */
 .sales-comparison-container {
     padding: 24px;
     max-width: 1400px;
@@ -2512,6 +2533,7 @@ body {
 
 .title-icon {
     color: var(--primary-600);
+    flex-shrink: 0;
 }
 
 .page-subtitle {
@@ -2523,6 +2545,7 @@ body {
 .header-actions {
     display: flex;
     gap: 12px;
+    align-items: center;
 }
 
 /* ==================== BUTTONS ==================== */
@@ -2533,15 +2556,26 @@ body {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
     display: inline-flex;
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    outline: none;
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
 }
 
 .btn:active {
     transform: translateY(1px);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .btn-primary {
@@ -2550,7 +2584,7 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
     background: var(--primary-700);
     box-shadow: var(--shadow-md);
 }
@@ -2560,7 +2594,7 @@ body {
     color: var(--gray-700);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
     background: var(--gray-300);
 }
 
@@ -2569,7 +2603,7 @@ body {
     color: white;
 }
 
-.btn-refresh:hover {
+.btn-refresh:hover:not(:disabled) {
     background: var(--success-700);
 }
 
@@ -2578,7 +2612,7 @@ body {
     color: white;
 }
 
-.btn-export:hover {
+.btn-export:hover:not(:disabled) {
     background: var(--warning-700);
 }
 
@@ -2599,7 +2633,7 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow);
 }
 
 .kpi-card:hover {
@@ -2719,9 +2753,11 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
-/* ==================== FILTERS ==================== */
+/* ==================== FILTERS & FORMS ==================== */
 .filters-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2746,9 +2782,10 @@ body {
     border: 1px solid var(--gray-300);
     border-radius: var(--radius-md);
     font-size: 14px;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
     background: white;
     color: var(--gray-900);
+    font-family: inherit;
 }
 
 .form-input:focus {
@@ -2757,7 +2794,7 @@ body {
     box-shadow: 0 0 0 3px var(--primary-100);
 }
 
-.form-input:hover {
+.form-input:hover:not(:focus) {
     border-color: var(--gray-400);
 }
 
@@ -2773,6 +2810,7 @@ body {
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    background: white;
 }
 
 .comparison-table thead,
@@ -2791,7 +2829,8 @@ body {
     color: var(--gray-600);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 2px solid var(--gray-200);
+    white-space: nowrap;
 }
 
 .comparison-table td,
@@ -2807,6 +2846,13 @@ body {
 .targets-table tbody tr:hover,
 .data-table tbody tr:hover {
     background: var(--gray-50);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--gray-400);
+    font-style: italic;
 }
 
 /* ==================== TREND INDICATORS ==================== */
@@ -2866,6 +2912,7 @@ body {
     font-size: 12px;
     font-weight: 600;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .status-achieved {
@@ -2910,10 +2957,11 @@ body {
     margin: 0;
 }
 
+/* Scrollable table bodies */
 .data-table tbody {
+    display: block;
     max-height: 400px;
     overflow-y: auto;
-    display: block;
 }
 
 .data-table thead,
@@ -3018,7 +3066,7 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-md);
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
 }
 
 .modal-close:hover {
@@ -3030,7 +3078,7 @@ body {
     padding: 24px 32px;
 }
 
-/* ==================== FORMS ==================== */
+/* ==================== FORM ELEMENTS ==================== */
 .form-group {
     margin-bottom: 20px;
 }
@@ -3101,10 +3149,17 @@ body {
         flex-direction: column;
         align-items: stretch;
         gap: 16px;
+        padding: 20px;
     }
     
     .header-actions {
         flex-wrap: wrap;
+        justify-content: stretch;
+    }
+    
+    .header-actions .btn {
+        flex: 1;
+        justify-content: center;
     }
     
     .kpi-cards-grid {
@@ -3126,6 +3181,11 @@ body {
     .kpi-value {
         font-size: 24px;
     }
+    
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 @media (max-width: 480px) {
@@ -3136,11 +3196,21 @@ body {
     
     .modal-content {
         width: 95%;
+        max-height: 95vh;
     }
     
     .modal-header,
     .modal-body {
         padding: 20px;
+    }
+    
+    .kpi-card {
+        padding: 20px;
+    }
+    
+    .kpi-icon {
+        width: 48px;
+        height: 48px;
     }
 }
 
@@ -3148,7 +3218,8 @@ body {
 @media print {
     .header-actions,
     .btn,
-    .modal {
+    .modal,
+    .section-filters {
         display: none !important;
     }
     
@@ -3165,6 +3236,10 @@ body {
         box-shadow: none;
         border: 1px solid var(--gray-300);
         page-break-inside: avoid;
+    }
+    
+    body {
+        background: white;
     }
 }
   </style>
