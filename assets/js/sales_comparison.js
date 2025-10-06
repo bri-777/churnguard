@@ -1,37 +1,54 @@
-// ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD ====================
+// ==================== ULTRA-ACCURATE SALES ANALYTICS DASHBOARD v2.0 ====================
 'use strict';
 
-// ==================== CONFIGURATION ====================
+// ==================== ENHANCED CONFIGURATION ====================
 const CONFIG = {
     API_BASE: 'api/sales_comparison.php',
     REQUEST_TIMEOUT: 30000,
     MAX_RETRIES: 3,
     RETRY_DELAY: 1000,
+    DECIMAL_PRECISION: 2,
+    PERCENTAGE_PRECISION: 1,
     CHART_COLORS: {
         primary: '#6366f1',
         success: '#10b981',
         warning: '#f59e0b',
         danger: '#ef4444',
         info: '#06b6d4',
-        purple: '#8b5cf6'
+        purple: '#8b5cf6',
+        gradient: ['#6366f1', '#8b5cf6', '#06b6d4']
     },
     CHART_OPTIONS: {
         responsive: true,
         maintainAspectRatio: true,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
         plugins: {
-            legend: { display: true, position: 'bottom' },
+            legend: { 
+                display: true, 
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                    padding: 15
+                }
+            },
             tooltip: { 
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                padding: 12,
+                backgroundColor: 'rgba(0,0,0,0.9)',
+                padding: 16,
                 titleFont: { size: 14, weight: 'bold' },
                 bodyFont: { size: 13 },
-                cornerRadius: 8
+                cornerRadius: 8,
+                displayColors: true,
+                borderColor: '#6366f1',
+                borderWidth: 1
             }
         }
     }
 };
 
-// ==================== STATE MANAGEMENT ====================
+// ==================== ENHANCED STATE MANAGEMENT ====================
 const AppState = {
     charts: {},
     currentTab: 'trend',
@@ -39,10 +56,13 @@ const AppState = {
     loadingCounter: 0,
     editingTargetId: null,
     lastDataUpdate: null,
+    cache: new Map(),
     
     incrementLoading() {
         this.loadingCounter++;
-        UIManager.showLoader();
+        if (this.loadingCounter === 1) {
+            UIManager.showLoader();
+        }
     },
     
     decrementLoading() {
@@ -53,111 +73,200 @@ const AppState = {
     },
 
     cancelPendingRequests() {
-        this.activeRequests.forEach(controller => controller.abort());
+        this.activeRequests.forEach(controller => {
+            try { controller.abort(); } catch(e) {}
+        });
         this.activeRequests.clear();
-    }
-};
+    },
 
-// ==================== UTILITY FUNCTIONS ====================
-const Utils = {
-    formatCurrency(value) {
-        if (value == null || isNaN(value)) return '₱0.00';
-        const num = parseFloat(value);
-        return '₱' + num.toLocaleString('en-PH', { 
-            minimumFractionDigits: 2, 
-            maximumFractionDigits: 2 
+    setCache(key, value, ttl = 300000) { // 5 min default TTL
+        this.cache.set(key, {
+            value,
+            expires: Date.now() + ttl
         });
     },
 
+    getCache(key) {
+        const item = this.cache.get(key);
+        if (!item) return null;
+        if (Date.now() > item.expires) {
+            this.cache.delete(key);
+            return null;
+        }
+        return item.value;
+    },
+
+    clearCache() {
+        this.cache.clear();
+    }
+};
+
+// ==================== ENHANCED UTILITY FUNCTIONS ====================
+const Utils = {
+    // Precise currency formatting with validation
+    formatCurrency(value) {
+        const num = parseFloat(value);
+        if (!isFinite(num) || isNaN(num)) return '₱0.00';
+        
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(num);
+    },
+
+    // Precise number formatting
     formatNumber(value) {
-        if (value == null || isNaN(value)) return '0';
-        return Math.round(parseFloat(value)).toLocaleString('en-PH');
+        const num = parseFloat(value);
+        if (!isFinite(num) || isNaN(num)) return '0';
+        
+        return new Intl.NumberFormat('en-PH', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(Math.round(num));
     },
 
-    formatPercentage(value) {
-        if (value == null || isNaN(value)) return '0.0%';
-        const capped = Math.min(Math.max(parseFloat(value), -999.9), 999.9);
-        return capped.toFixed(1) + '%';
+    // Enhanced percentage formatting with bounds
+    formatPercentage(value, precision = CONFIG.PERCENTAGE_PRECISION) {
+        const num = parseFloat(value);
+        if (!isFinite(num) || isNaN(num)) return '0.0%';
+        
+        const bounded = Math.max(-999.9, Math.min(999.9, num));
+        return bounded.toFixed(precision) + '%';
     },
 
+    // Enhanced date formatting with timezone awareness
     formatDate(dateString) {
         if (!dateString) return 'N/A';
+        
         try {
-            const date = new Date(dateString);
+            const date = new Date(dateString + 'T00:00:00'); // Force local timezone
             if (isNaN(date.getTime())) return 'Invalid Date';
-            return date.toLocaleDateString('en-PH', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric' 
-            });
-        } catch {
+            
+            return new Intl.DateTimeFormat('en-PH', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                timeZone: 'Asia/Manila'
+            }).format(date);
+        } catch (error) {
+            console.error('Date format error:', error);
             return 'Invalid Date';
         }
     },
 
+    // ISO date with timezone handling
     getISODate(date) {
         try {
-            if (!(date instanceof Date)) date = new Date(date);
-            if (isNaN(date.getTime())) return new Date().toISOString().split('T')[0];
-            return date.toISOString().split('T')[0];
+            const d = date instanceof Date ? date : new Date(date);
+            if (isNaN(d.getTime())) {
+                return new Date().toISOString().split('T')[0];
+            }
+            return d.toISOString().split('T')[0];
         } catch {
             return new Date().toISOString().split('T')[0];
         }
     },
 
+    // Enhanced datetime formatting
     formatDateTime() {
         try {
-            const now = new Date();
-            return now.toLocaleDateString('en-PH', { 
+            return new Intl.DateTimeFormat('en-PH', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
-            });
+                minute: '2-digit',
+                timeZone: 'Asia/Manila'
+            }).format(new Date());
         } catch {
             return 'N/A';
         }
     },
 
+    // Precise percentage change calculation
     calculateChange(current, previous) {
-        if (!previous || previous === 0) {
-            return current > 0 ? 100 : 0;
-        }
-        return ((current - previous) / previous) * 100;
+        const curr = parseFloat(current);
+        const prev = parseFloat(previous);
+        
+        if (!isFinite(curr) || !isFinite(prev)) return 0;
+        if (prev === 0) return curr > 0 ? 100 : 0;
+        if (curr === prev) return 0;
+        
+        return ((curr - prev) / Math.abs(prev)) * 100;
     },
 
+    // Enhanced HTML escaping
     escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text || '';
-        return div.innerHTML;
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return String(text || '').replace(/[&<>"']/g, m => map[m]);
     },
 
-    debounce(func, wait) {
+    // Debounce with immediate option
+    debounce(func, wait, immediate = false) {
         let timeout;
         return function executedFunction(...args) {
+            const context = this;
             const later = () => {
-                clearTimeout(timeout);
-                func(...args);
+                timeout = null;
+                if (!immediate) func.apply(context, args);
             };
+            const callNow = immediate && !timeout;
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
         };
     },
 
+    // Throttle function for performance
+    throttle(func, limit) {
+        let inThrottle;
+        return function(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
+    // Safe DOM selectors
     $(selector) {
-        return document.querySelector(selector);
+        try {
+            return document.querySelector(selector);
+        } catch (e) {
+            console.error('Selector error:', selector, e);
+            return null;
+        }
     },
 
     $$(selector) {
-        return document.querySelectorAll(selector);
+        try {
+            return document.querySelectorAll(selector);
+        } catch (e) {
+            console.error('Selector error:', selector, e);
+            return [];
+        }
+    },
+
+    // Validate number
+    isValidNumber(value) {
+        const num = parseFloat(value);
+        return isFinite(num) && !isNaN(num);
     }
 };
 
-// ==================== UI MANAGER ====================
+// ==================== ENHANCED UI MANAGER ====================
 const UIManager = {
-    showNotification(message, type = 'info') {
+    showNotification(message, type = 'info', duration = 4000) {
         const colors = {
             success: '#10b981',
             error: '#ef4444',
@@ -173,6 +282,8 @@ const UIManager = {
         };
 
         const notification = document.createElement('div');
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'polite');
         notification.style.cssText = `
             position: fixed;
             top: 24px;
@@ -194,7 +305,7 @@ const UIManager = {
         `;
         
         notification.innerHTML = `
-            <span style="font-size: 20px;">${icons[type] || icons.info}</span>
+            <span style="font-size: 20px;" aria-hidden="true">${icons[type] || icons.info}</span>
             <span>${Utils.escapeHtml(message)}</span>
         `;
         
@@ -203,7 +314,7 @@ const UIManager = {
         setTimeout(() => {
             notification.style.animation = 'slideOutRight 0.4s ease';
             setTimeout(() => notification.remove(), 400);
-        }, 4000);
+        }, duration);
     },
 
     showLoader() {
@@ -211,13 +322,15 @@ const UIManager = {
         if (!loader) {
             loader = document.createElement('div');
             loader.id = 'globalLoader';
+            loader.setAttribute('role', 'status');
+            loader.setAttribute('aria-label', 'Loading');
             loader.style.cssText = `
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0,0,0,0.4);
+                background: rgba(0,0,0,0.5);
                 backdrop-filter: blur(4px);
                 display: flex;
                 justify-content: center;
@@ -237,7 +350,9 @@ const UIManager = {
 
     hideLoader() {
         const loader = Utils.$('#globalLoader');
-        if (loader) loader.style.display = 'none';
+        if (loader) {
+            loader.style.display = 'none';
+        }
     },
 
     updateKPICard(id, value, change) {
@@ -245,44 +360,67 @@ const UIManager = {
         const trendBadge = Utils.$(`#${id.replace('today', '')}TrendBadge`);
         
         if (valueEl) {
-            const formattedValue = id.includes('Sales') || id.includes('target') ? 
-                (id.includes('target') ? Utils.formatPercentage(value) : Utils.formatCurrency(value)) : 
-                Utils.formatNumber(value);
-            valueEl.textContent = formattedValue;
+            let formattedValue;
+            if (id.includes('Sales')) {
+                formattedValue = Utils.formatCurrency(value);
+            } else if (id.includes('target')) {
+                formattedValue = Utils.formatPercentage(value);
+            } else {
+                formattedValue = Utils.formatNumber(value);
+            }
+            
+            // Animate value change
+            valueEl.style.opacity = '0';
+            setTimeout(() => {
+                valueEl.textContent = formattedValue;
+                valueEl.style.opacity = '1';
+            }, 150);
         }
         
-        if (trendBadge && change !== undefined) {
+        if (trendBadge && Utils.isValidNumber(change)) {
             const isPositive = change >= 0;
-            trendBadge.className = `kpi-trend-badge ${isPositive ? '' : 'down'}`;
+            const isZero = change === 0;
+            
+            trendBadge.className = `kpi-trend-badge ${isZero ? 'neutral' : (isPositive ? '' : 'down')}`;
             const span = trendBadge.querySelector('span');
             if (span) {
-                span.textContent = Utils.formatPercentage(Math.abs(change));
+                span.textContent = isZero ? '0%' : Utils.formatPercentage(Math.abs(change));
             }
         }
     },
 
-    updateDateTime() {
+    updateDateTime: Utils.throttle(function() {
         const dateEl = Utils.$('#currentDateTime');
         if (dateEl) {
             dateEl.textContent = Utils.formatDateTime();
         }
-    }
+    }, 1000)
 };
 
-// ==================== API SERVICE ====================
+// ==================== ENHANCED API SERVICE ====================
 const APIService = {
     async fetch(action, params = {}, retryCount = 0) {
+        // Check cache first
+        const cacheKey = `${action}_${JSON.stringify(params)}`;
+        const cached = AppState.getCache(cacheKey);
+        if (cached) {
+            console.log('Using cached data for:', action);
+            return cached;
+        }
+
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
         
         Object.entries(params).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-                url.searchParams.append(key, value);
+            if (value !== null && value !== undefined && value !== '') {
+                url.searchParams.append(key, String(value));
             }
         });
 
         const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
         const requestId = `${action}-${Date.now()}`;
+        
         AppState.activeRequests.set(requestId, controller);
 
         try {
@@ -290,16 +428,20 @@ const APIService = {
                 method: 'GET',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Cache-Control': 'no-cache'
                 },
                 signal: controller.signal,
                 credentials: 'same-origin'
             });
 
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
+            // Handle authentication errors
             if (response.status === 401) {
-                window.location.href = '/login.php';
+                UIManager.showNotification('Session expired. Redirecting to login...', 'warning');
+                setTimeout(() => window.location.href = '/login.php', 2000);
                 throw new Error('Unauthorized');
             }
 
@@ -310,11 +452,16 @@ const APIService = {
             const data = await response.json();
             
             if (data.status === 'error') {
-                throw new Error(data.message || 'API error');
+                throw new Error(data.message || 'API error occurred');
             }
 
+            // Cache successful responses
+            AppState.setCache(cacheKey, data);
+            
             return data;
+
         } catch (error) {
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
             if (error.name === 'AbortError') {
@@ -322,7 +469,9 @@ const APIService = {
                 return null;
             }
 
+            // Retry logic
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                console.log(`Retrying ${action} (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
                 await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
                 return this.fetch(action, params, retryCount + 1);
             }
@@ -337,7 +486,9 @@ const APIService = {
         url.searchParams.append('action', action);
 
         const controller = new AbortController();
-        const requestId = `${action}-${Date.now()}`;
+        const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
+        const requestId = `${action}-post-${Date.now()}`;
+        
         AppState.activeRequests.set(requestId, controller);
 
         try {
@@ -352,10 +503,12 @@ const APIService = {
                 credentials: 'same-origin'
             });
 
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
             if (response.status === 401) {
-                window.location.href = '/login.php';
+                UIManager.showNotification('Session expired. Redirecting...', 'warning');
+                setTimeout(() => window.location.href = '/login.php', 2000);
                 throw new Error('Unauthorized');
             }
 
@@ -366,11 +519,16 @@ const APIService = {
             const data = await response.json();
             
             if (data.status === 'error') {
-                throw new Error(data.message || 'API error');
+                throw new Error(data.message || 'API error occurred');
             }
 
+            // Clear cache on mutations
+            AppState.clearCache();
+            
             return data;
+
         } catch (error) {
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
             if (error.name === 'AbortError') {
@@ -389,12 +547,16 @@ const APIService = {
     }
 };
 
-// ==================== CHART MANAGER ====================
+// ==================== ENHANCED CHART MANAGER ====================
 const ChartManager = {
     destroyChart(chartName) {
         if (AppState.charts[chartName]) {
-            AppState.charts[chartName].destroy();
-            delete AppState.charts[chartName];
+            try {
+                AppState.charts[chartName].destroy();
+                delete AppState.charts[chartName];
+            } catch (e) {
+                console.error('Chart destroy error:', e);
+            }
         }
     },
 
@@ -422,12 +584,15 @@ const ChartManager = {
                     label: 'Sales Revenue',
                     data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
                     borderColor: CONFIG.CHART_COLORS.primary,
-                    backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
+                    backgroundColor: `${CONFIG.CHART_COLORS.primary}30`,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
                     pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: CONFIG.CHART_COLORS.primary,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
                 }]
             },
             options: {
@@ -436,7 +601,15 @@ const ChartManager = {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: value => '₱' + value.toLocaleString()
+                            callback: value => Utils.formatCurrency(value)
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 },
@@ -445,7 +618,9 @@ const ChartManager = {
                     tooltip: {
                         ...CONFIG.CHART_OPTIONS.plugins.tooltip,
                         callbacks: {
-                            label: ctx => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y)
+                            label: (ctx) => {
+                                return 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y);
+                            }
                         }
                     }
                 }
@@ -480,13 +655,15 @@ const ChartManager = {
                         label: 'Current Period',
                         data: currentValues,
                         backgroundColor: CONFIG.CHART_COLORS.primary,
-                        borderRadius: 8
+                        borderRadius: 8,
+                        borderWidth: 0
                     },
                     {
                         label: 'Previous Period',
                         data: compareValues,
                         backgroundColor: CONFIG.CHART_COLORS.info,
-                        borderRadius: 8
+                        borderRadius: 8,
+                        borderWidth: 0
                     }
                 ]
             },
@@ -497,6 +674,22 @@ const ChartManager = {
                         beginAtZero: true,
                         ticks: {
                             callback: value => Utils.formatNumber(value)
+                        }
+                    }
+                },
+                plugins: {
+                    ...CONFIG.CHART_OPTIONS.plugins,
+                    tooltip: {
+                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => {
+                                const label = ctx.dataset.label || '';
+                                const value = ctx.parsed.y;
+                                const metric = ctx.label;
+                                const formatted = metric.includes('Sales') || metric.includes('Value') ? 
+                                    Utils.formatCurrency(value) : Utils.formatNumber(value);
+                                return `${label}: ${formatted}`;
+                            }
                         }
                     }
                 }
@@ -510,7 +703,7 @@ const ChartManager = {
     }
 };
 
-// ==================== DATA MANAGER ====================
+// ==================== DATA MANAGER (Continued in next message due to length) ====================
 const DataManager = {
     async loadKPISummary() {
         AppState.incrementLoading();
@@ -519,6 +712,7 @@ const DataManager = {
             
             if (!data) return;
 
+            // Update KPI cards with precise values
             UIManager.updateKPICard('todaySales', data.today_sales, data.sales_change);
             UIManager.updateKPICard('todayCustomers', data.today_customers, data.customers_change);
             UIManager.updateKPICard('todayTransactions', data.today_transactions, data.transactions_change);
@@ -532,14 +726,14 @@ const DataManager = {
             const miniProgress = Utils.$('#targetMiniProgress');
             if (miniProgress) {
                 const progress = Math.min(parseFloat(data.target_achievement) || 0, 100);
-                miniProgress.style.width = progress + '%';
+                miniProgress.style.width = progress.toFixed(1) + '%';
             }
 
             AppState.lastDataUpdate = new Date();
 
         } catch (error) {
             console.error('KPI Summary Error:', error);
-            UIManager.showNotification('Failed to load KPI data', 'error');
+            UIManager.showNotification('Failed to load KPI data: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -559,14 +753,18 @@ const DataManager = {
                 ChartManager.createSalesTrendChart(data.trend_data);
                 this.populateTrendTable(data.trend_data);
             } else {
-                const chart = Utils.$('#salesTrendChart');
-                if (chart) {
-                    chart.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No data available for selected period</p>';
+                const chartContainer = Utils.$('#salesTrendChart')?.parentElement;
+                if (chartContainer) {
+                    chartContainer.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No data available for the selected period</p>';
+                }
+                const tableBody = Utils.$('#salesTrendTableBody');
+                if (tableBody) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">No data available</td></tr>';
                 }
             }
         } catch (error) {
             console.error('Trend Data Error:', error);
-            UIManager.showNotification('Failed to load trend data', 'error');
+            UIManager.showNotification('Failed to load trend data: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -607,7 +805,7 @@ const DataManager = {
                             <span class="metric-change ${change >= 0 ? 'positive' : 'negative'}">
                                 ${change >= 0 ? '▲' : '▼'} ${Utils.formatPercentage(Math.abs(change))}
                             </span>
-                        ` : '—'}
+                        ` : '<span style="color:#9ca3af;">—</span>'}
                     </td>
                 </tr>
             `;
@@ -620,6 +818,11 @@ const DataManager = {
 
         if (!currentDate || !compareDate) {
             UIManager.showNotification('Please select both dates', 'warning');
+            return;
+        }
+
+        if (currentDate === compareDate) {
+            UIManager.showNotification('Please select different dates', 'warning');
             return;
         }
 
@@ -638,7 +841,7 @@ const DataManager = {
             }
         } catch (error) {
             console.error('Comparison Error:', error);
-            UIManager.showNotification('Failed to load comparison', 'error');
+            UIManager.showNotification('Failed to load comparison: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -676,7 +879,7 @@ const DataManager = {
     }
 };
 
-// ==================== TARGET MANAGER ====================
+// ==================== ENHANCED TARGET MANAGER ====================
 const TargetManager = {
     async loadTargets(filter = 'all') {
         AppState.incrementLoading();
@@ -688,10 +891,12 @@ const TargetManager = {
             if (data.targets) {
                 this.displayTargetsGrid(data.targets);
                 this.displayTargetsTable(data.targets);
+            } else {
+                console.warn('No targets data received');
             }
         } catch (error) {
             console.error('Load Targets Error:', error);
-            UIManager.showNotification('Failed to load targets', 'error');
+            UIManager.showNotification('Failed to load targets: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -702,18 +907,19 @@ const TargetManager = {
         if (!grid) return;
 
         if (!targets || targets.length === 0) {
-            grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No targets found</p>';
+            grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;font-size:14px;">No targets found. Create one to get started!</p>';
             return;
         }
 
         grid.innerHTML = targets.map(target => {
-            const progress = Math.min(parseFloat(target.progress || 0), 999.9);
+            const progress = parseFloat(target.progress || 0);
+            const cappedProgress = Math.min(progress, 100);
             const statusClass = target.status === 'achieved' ? 'achieved' : 
                               target.status === 'near' ? 'near' : 'below';
             const isCurrency = target.target_type === 'sales' || target.target_type === 'avg_transaction';
 
             return `
-                <div class="target-card-pro">
+                <div class="target-card-pro" data-target-id="${target.id}">
                     <div class="target-header-row">
                         <div>
                             <h4 class="target-name-pro">${Utils.escapeHtml(target.target_name)}</h4>
@@ -722,7 +928,7 @@ const TargetManager = {
                     </div>
                     <div class="target-progress-section">
                         <div class="progress-bar-container">
-                            <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(progress, 100)}%"></div>
+                            <div class="progress-bar-fill ${statusClass}" style="width:${cappedProgress.toFixed(1)}%"></div>
                         </div>
                         <div class="progress-stats">
                             <span class="progress-percentage">${progress.toFixed(1)}%</span>
@@ -735,13 +941,13 @@ const TargetManager = {
                     <div class="target-footer-row">
                         <span class="target-dates">${Utils.formatDate(target.start_date)} - ${Utils.formatDate(target.end_date)}</span>
                         <div class="target-actions">
-                            <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})" title="Edit">
+                            <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})" title="Edit Target" aria-label="Edit ${Utils.escapeHtml(target.target_name)}">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
-                            <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})" title="Delete">
+                            <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})" title="Delete Target" aria-label="Delete ${Utils.escapeHtml(target.target_name)}">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"/>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -759,12 +965,13 @@ const TargetManager = {
         if (!tbody) return;
 
         if (!targets || targets.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">No active targets</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">No targets available</td></tr>';
             return;
         }
 
         tbody.innerHTML = targets.map(target => {
-            const progress = Math.min(parseFloat(target.progress || 0), 999.9);
+            const progress = parseFloat(target.progress || 0);
+            const cappedProgress = Math.min(progress, 100);
             const statusClass = target.status === 'achieved' ? 'achieved' : 
                               target.status === 'near' ? 'near' : 'below';
             const statusText = target.status === 'achieved' ? 'Achieved' : 
@@ -772,7 +979,7 @@ const TargetManager = {
             const isCurrency = target.target_type === 'sales' || target.target_type === 'avg_transaction';
 
             return `
-                <tr>
+                <tr data-target-id="${target.id}">
                     <td><strong>${Utils.escapeHtml(target.target_name)}</strong></td>
                     <td>${this.formatTargetType(target.target_type)}</td>
                     <td>
@@ -782,9 +989,9 @@ const TargetManager = {
                     <td>
                         <div style="display:flex;align-items:center;gap:8px;">
                             <div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;">
-                                <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(progress, 100)}%"></div>
+                                <div class="progress-bar-fill ${statusClass}" style="width:${cappedProgress.toFixed(1)}%"></div>
                             </div>
-                            <span style="font-weight:600;min-width:50px;font-size:13px;">${progress.toFixed(1)}%</span>
+                            <span style="font-weight:600;min-width:55px;font-size:13px;">${progress.toFixed(1)}%</span>
                         </div>
                     </td>
                     <td><span class="status-badge-pro ${statusClass}">${statusText}</span></td>
@@ -833,25 +1040,36 @@ const TargetManager = {
 
             AppState.editingTargetId = id;
             
-            Utils.$('#modalTitle').textContent = 'Edit Target';
-            Utils.$('#targetName').value = target.target_name || '';
-            Utils.$('#targetType').value = target.target_type || '';
-            Utils.$('#targetValue').value = target.target_value || '';
-            Utils.$('#targetStartDate').value = target.start_date || '';
-            Utils.$('#targetEndDate').value = target.end_date || '';
-            Utils.$('#targetStore').value = target.store || '';
+            const modalTitle = Utils.$('#modalTitle');
+            if (modalTitle) modalTitle.textContent = 'Edit Target';
+            
+            const fields = {
+                '#targetName': target.target_name || '',
+                '#targetType': target.target_type || '',
+                '#targetValue': target.target_value || '',
+                '#targetStartDate': target.start_date || '',
+                '#targetEndDate': target.end_date || '',
+                '#targetStore': target.store || ''
+            };
+
+            Object.entries(fields).forEach(([selector, value]) => {
+                const el = Utils.$(selector);
+                if (el) el.value = value;
+            });
             
             ModalManager.open();
         } catch (error) {
             console.error('Edit Target Error:', error);
-            UIManager.showNotification('Failed to load target', 'error');
+            UIManager.showNotification('Failed to load target: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
     },
 
     async deleteTarget(id) {
-        if (!confirm('Are you sure you want to delete this target?')) return;
+        if (!confirm('Are you sure you want to delete this target? This action cannot be undone.')) {
+            return;
+        }
 
         AppState.incrementLoading();
         try {
@@ -861,77 +1079,108 @@ const TargetManager = {
 
             UIManager.showNotification('Target deleted successfully', 'success');
             
+            // Reload data
             await Promise.all([
                 this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
             ]);
         } catch (error) {
             console.error('Delete Target Error:', error);
-            UIManager.showNotification('Failed to delete target', 'error');
+            UIManager.showNotification('Failed to delete target: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
     }
 };
 
-// ==================== DATE MANAGER ====================
+// ==================== ENHANCED DATE MANAGER ====================
 const DateManager = {
     setDefaultDates() {
         const today = new Date();
         const yesterday = new Date(today - 86400000);
 
-        const currentDate = Utils.$('#currentDate');
-        const compareDate = Utils.$('#compareDate');
+        const fields = {
+            '#currentDate': today,
+            '#compareDate': yesterday
+        };
 
-        if (currentDate) currentDate.value = Utils.getISODate(today);
-        if (compareDate) compareDate.value = Utils.getISODate(yesterday);
+        Object.entries(fields).forEach(([selector, date]) => {
+            const el = Utils.$(selector);
+            if (el) el.value = Utils.getISODate(date);
+        });
     },
 
     updateComparisonDates() {
         const type = Utils.$('#comparisonType')?.value;
         const today = new Date();
         
-        const dateMap = {
+        const dateOffsets = {
             'today_vs_yesterday': 86400000,
             'week_vs_week': 604800000,
             'month_vs_month': 2592000000,
             'custom': 86400000
         };
 
-        const currentDate = Utils.$('#currentDate');
-        const compareDate = Utils.$('#compareDate');
+        const currentEl = Utils.$('#currentDate');
+        const compareEl = Utils.$('#compareDate');
 
-        if (currentDate) currentDate.value = Utils.getISODate(today);
-        if (compareDate) {
-            const offset = dateMap[type] || dateMap.custom;
-            compareDate.value = Utils.getISODate(new Date(today - offset));
+        if (currentEl) currentEl.value = Utils.getISODate(today);
+        if (compareEl) {
+            const offset = dateOffsets[type] || dateOffsets.custom;
+            compareEl.value = Utils.getISODate(new Date(today - offset));
         }
     }
 };
 
-// ==================== TAB MANAGER ====================
+// ==================== ENHANCED TAB MANAGER ====================
 const TabManager = {
     switchTab(tabName) {
-        Utils.$$('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        Utils.$$('.tab-content').forEach(content => content.classList.remove('active'));
+        // Update tab buttons
+        Utils.$$('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
+        
+        // Update tab content
+        Utils.$$('.tab-content').forEach(content => {
+            content.classList.remove('active');
+            content.setAttribute('aria-hidden', 'true');
+        });
 
         const activeBtn = Utils.$(`[data-tab="${tabName}"]`);
         const activeContent = Utils.$(`#${tabName}-tab`);
 
-        if (activeBtn) activeBtn.classList.add('active');
-        if (activeContent) activeContent.classList.add('active');
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-selected', 'true');
+        }
+        
+        if (activeContent) {
+            activeContent.classList.add('active');
+            activeContent.setAttribute('aria-hidden', 'false');
+        }
 
         AppState.currentTab = tabName;
     }
 };
 
-// ==================== MODAL MANAGER ====================
+// ==================== ENHANCED MODAL MANAGER ====================
 const ModalManager = {
     open() {
         const modal = Utils.$('#targetModal');
         const form = Utils.$('#targetForm');
         
-        if (modal) modal.classList.add('active');
+        if (modal) {
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            
+            // Focus first input
+            setTimeout(() => {
+                const firstInput = modal.querySelector('input:not([type="hidden"])');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+        
         if (form) form.reset();
         
         const modalTitle = Utils.$('#modalTitle');
@@ -947,6 +1196,9 @@ const ModalManager = {
 
         if (startDate) startDate.value = Utils.getISODate(today);
         if (endDate) endDate.value = Utils.getISODate(nextMonth);
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
     },
 
     close(event) {
@@ -955,9 +1207,15 @@ const ModalManager = {
         }
         
         const modal = Utils.$('#targetModal');
-        if (modal) modal.classList.remove('active');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
         
         AppState.editingTargetId = null;
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
     },
 
     async saveTarget(event) {
@@ -972,18 +1230,29 @@ const ModalManager = {
             store: Utils.$('#targetStore')?.value.trim() || ''
         };
 
-        if (!formData.name || !formData.type || !formData.value || !formData.start_date || !formData.end_date) {
-            UIManager.showNotification('Please fill in all required fields', 'warning');
+        // Validate
+        if (!formData.name || formData.name.length < 3) {
+            UIManager.showNotification('Target name must be at least 3 characters', 'warning');
             return;
         }
 
-        if (isNaN(formData.value) || formData.value <= 0) {
+        if (!formData.type) {
+            UIManager.showNotification('Please select a target type', 'warning');
+            return;
+        }
+
+        if (!Utils.isValidNumber(formData.value) || formData.value <= 0) {
             UIManager.showNotification('Target value must be greater than 0', 'warning');
             return;
         }
 
+        if (!formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please select both start and end dates', 'warning');
+            return;
+        }
+
         if (new Date(formData.end_date) < new Date(formData.start_date)) {
-            UIManager.showNotification('End date must be after start date', 'warning');
+            UIManager.showNotification('End date must be after or equal to start date', 'warning');
             return;
         }
 
@@ -999,9 +1268,14 @@ const ModalManager = {
             
             if (!result) return;
 
-            UIManager.showNotification('Target saved successfully', 'success');
+            UIManager.showNotification(
+                AppState.editingTargetId ? 'Target updated successfully' : 'Target created successfully', 
+                'success'
+            );
+            
             this.close();
             
+            // Reload data
             await Promise.all([
                 TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
@@ -1027,24 +1301,27 @@ window.updateTrendChart = () => ChartManager.updateTrendChart();
 window.resetComparison = () => {
     DateManager.setDefaultDates();
     const grid = Utils.$('.comparison-grid');
-    if (grid) grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">Select dates and click "Load Comparison"</p>';
+    if (grid) {
+        grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">Select dates and click "Analyze" to compare periods</p>';
+    }
     ChartManager.destroyChart('comparison');
 };
 window.refreshAllData = async () => {
+    AppState.clearCache();
     await App.loadAllData();
     UIManager.showNotification('Data refreshed successfully', 'success');
 };
 
-// ==================== APP INITIALIZATION ====================
+// ==================== ENHANCED APP INITIALIZATION ====================
 const App = {
     async init() {
-        console.log('🚀 Initializing Professional Sales Dashboard...');
+        console.log('🚀 Initializing Ultra-Accurate Sales Dashboard v2.0...');
 
         try {
-            // Check Chart.js
+            // Check dependencies
             if (typeof Chart === 'undefined') {
                 console.error('Chart.js not loaded!');
-                UIManager.showNotification('Chart library not loaded. Please refresh.', 'error');
+                UIManager.showNotification('Chart library not loaded. Please refresh the page.', 'error');
                 return;
             }
 
@@ -1061,27 +1338,29 @@ const App = {
             // Setup event listeners
             this.setupEventListeners();
 
+            // Setup auto-refresh
+            this.setupAutoRefresh();
+
             console.log('✅ Dashboard initialized successfully');
+            
         } catch (error) {
             console.error('❌ Initialization error:', error);
-            UIManager.showNotification('Failed to initialize dashboard', 'error');
+            UIManager.showNotification('Failed to initialize dashboard: ' + error.message, 'error');
         }
     },
 
     async loadAllData() {
+        console.log('Loading all data...');
+        
         const promises = [
-            DataManager.loadKPISummary(),
-            DataManager.loadTrendData(30),
-            TargetManager.loadTargets('all')
+            DataManager.loadKPISummary().catch(e => console.error('KPI load failed:', e)),
+            DataManager.loadTrendData(30).catch(e => console.error('Trend load failed:', e)),
+            TargetManager.loadTargets('all').catch(e => console.error('Targets load failed:', e))
         ];
 
-        const results = await Promise.allSettled(promises);
+        await Promise.allSettled(promises);
         
-        results.forEach((result, index) => {
-            if (result.status === 'rejected') {
-                console.error(`Failed to load data [${index}]:`, result.reason);
-            }
-        });
+        console.log('Data loading complete');
     },
 
     setupEventListeners() {
@@ -1102,29 +1381,49 @@ const App = {
             }
         });
 
-        // Refresh on visibility change
+        // Visibility change - refresh data when tab becomes visible
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && AppState.lastDataUpdate) {
-                const timeSinceUpdate = Date.now() - AppState.lastDataUpdate;
+                const timeSinceUpdate = Date.now() - AppState.lastDataUpdate.getTime();
                 if (timeSinceUpdate > 300000) { // 5 minutes
+                    console.log('Auto-refreshing data after visibility change');
                     this.loadAllData();
                 }
             }
         });
 
-        // Handle network errors
+        // Online/offline events
         window.addEventListener('online', () => {
             UIManager.showNotification('Connection restored', 'success');
             this.loadAllData();
         });
 
         window.addEventListener('offline', () => {
-            UIManager.showNotification('No internet connection', 'warning');
+            UIManager.showNotification('No internet connection', 'warning', 6000);
         });
+
+        // Prevent form submission on Enter key
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            });
+        });
+    },
+
+    setupAutoRefresh() {
+        // Auto-refresh KPI every 2 minutes
+        setInterval(() => {
+            if (!document.hidden) {
+                console.log('Auto-refreshing KPI...');
+                DataManager.loadKPISummary();
+            }
+        }, 120000);
     }
 };
 
-// ==================== ANIMATIONS ====================
+// ==================== ENHANCED ANIMATIONS ====================
 const style = document.createElement('style');
 style.textContent = `
     @keyframes spin {
@@ -1150,6 +1449,21 @@ style.textContent = `
             opacity: 0;
         }
     }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Smooth transitions */
+    .kpi-value-display, .progress-bar-fill {
+        transition: all 0.3s ease;
+    }
+    
+    /* Accessibility improvements */
+    *:focus-visible {
+        outline: 2px solid #6366f1;
+        outline-offset: 2px;
+    }
 `;
 document.head.appendChild(style);
 
@@ -1160,15 +1474,35 @@ if (document.readyState === 'loading') {
     App.init();
 }
 
-// ==================== ERROR HANDLERS ====================
+// ==================== ENHANCED ERROR HANDLERS ====================
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
-    UIManager.showNotification('An error occurred. Please refresh the page.', 'error');
+    if (event.error?.message !== 'ResizeObserver loop limit exceeded') {
+        UIManager.showNotification('An error occurred. Please refresh if issues persist.', 'error');
+    }
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    if (event.reason?.message !== 'Unauthorized') {
-        UIManager.showNotification('A network error occurred.', 'error');
+    if (event.reason?.message && !event.reason.message.includes('Unauthorized')) {
+        UIManager.showNotification('A network error occurred. Please check your connection.', 'error');
     }
 });
+
+// ==================== PERFORMANCE MONITORING ====================
+if ('PerformanceObserver' in window) {
+    try {
+        const perfObserver = new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (entry.duration > 1000) {
+                    console.warn(`Slow operation detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+                }
+            }
+        });
+        perfObserver.observe({ entryTypes: ['measure'] });
+    } catch (e) {
+        console.log('Performance monitoring not available');
+    }
+}
+
+console.log('📊 Sales Analytics Dashboard v2.0 loaded successfully');

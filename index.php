@@ -2129,48 +2129,9 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                                 </svg>
                             </div>
-                            <div class="kpi-trend-badge" id="salesTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Today's Revenue</span>
-                            <h3 class="kpi-value-pro" id="todaySales">₱0.00</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="salesComparison">vs yesterday</span>
-                                <span class="kpi-sparkline" id="salesSparkline">●●●●●●●</span>
-                            </div>
-                        </div>
-                    </div>
+                          
 
-                    <div class="kpi-card-pro" data-metric="customers">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro customers-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge" id="customersTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Customer Traffic</span>
-                            <h3 class="kpi-value-pro" id="todayCustomers">0</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="customersComparison">vs yesterday</span>
-                                <span class="kpi-sparkline" id="customersSparkline">●●●●●●●</span>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <div class="kpi-card-pro" data-metric="transactions">
                         <div class="kpi-header">
