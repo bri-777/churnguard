@@ -82,7 +82,7 @@ if (!$me) {
           <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
         </a>
      <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
-          <i class="fas fa-eye"></i> <span>Target Sales</span>
+          <i class="fas fa-chart"></i> <span>Target Sales</span>
         </a>
       </div>
 
