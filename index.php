@@ -1610,6 +1610,7 @@ function doLogout() {
 
         </div>
     </div>
+</div>
     <link rel = "stylesheet" href = "sales_comparison.css">
     <script src = "assets/js/sales_comparison.js"
   
