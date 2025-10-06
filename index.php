@@ -141,6 +141,110 @@ if (!$me) {
 
 
 <style>
+/* Date Range Filter Styles */
+.history-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.date-range-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background: #f3f4f6;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.filter-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+/* Custom Date Picker */
+.custom-date-picker {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.custom-date-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-input-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.date-input-group input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.apply-custom-btn, .cancel-custom-btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.apply-custom-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.apply-custom-btn:hover {
+  background: #2563eb;
+}
+
+.cancel-custom-btn {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.cancel-custom-btn:hover {
+  background: #f3f4f6;
+}
+
+
   .date-wrap {
     position: relative;
     display: inline-block;
@@ -2143,32 +2247,57 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     
 
   <div class="history-section">
-    <div class="history-header">
-      <div class="history-title">📋Historical Analysis</div>
+  <div class="history-header">
+    <div class="history-title">📋 Historical Analysis</div>
+    <div class="history-controls">
+      <!-- Date Range Filter -->
+      <div class="date-range-filter">
+        <button class="filter-btn active" data-range="14days" onclick="filterHistoricalData('14days')">14 Days</button>
+        <button class="filter-btn" data-range="7days" onclick="filterHistoricalData('7days')">7 Days</button>
+        <button class="filter-btn" data-range="today" onclick="filterHistoricalData('today')">Today</button>
+        <button class="filter-btn" data-range="30days" onclick="filterHistoricalData('30days')">30 Days</button>
+        <button class="filter-btn" data-range="custom" onclick="showCustomDatePicker()">Custom</button>
+      </div>
       <div class="last-updated">
         Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
       </div>
     </div>
-    <div class="history-table-container">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Customer Traffic</th>
-            <th>Revenue</th>
-            <th>Transactions</th>
-            <th>Risk Level</th>
-          
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="historicalAnalysisTableBody">
-          <tr>
-            <td colspan="7" class="no-data">Loading 14-day historical analysis...</td>
-          </tr>
-        </tbody>
-      </table>
+  </div>
+  
+  <!-- Custom Date Picker (hidden by default) -->
+  <div id="customDateRangeSelector" class="custom-date-picker" style="display: none;">
+    <div class="custom-date-inputs">
+      <div class="date-input-group">
+        <label>From:</label>
+        <input type="date" id="customStartDate" />
+      </div>
+      <div class="date-input-group">
+        <label>To:</label>
+        <input type="date" id="customEndDate" />
+      </div>
+      <button class="apply-custom-btn" onclick="applyCustomDateRange()">Apply</button>
+      <button class="cancel-custom-btn" onclick="cancelCustomDatePicker()">Cancel</button>
     </div>
+  </div>
+  
+  <div class="history-table-container">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer Traffic</th>
+          <th>Revenue</th>
+          <th>Transactions</th>
+          <th>Risk Level</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="historicalAnalysisTableBody">
+        <tr>
+          <td colspan="6" class="no-data">Loading 14-day historical analysis...</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -2176,9 +2305,242 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     <script src="customer-monitoring-dashboard.js"></script>
 	<link rel="stylesheet" href="assets/monitoring.css"><!-- use YOUR provided CSS file -->
  
+<script>
+  // Add to CustomerMonitoringDashboard class
 
+filterHistoricalData(dateRange) {
+    if (!this.historicalData || this.historicalData.length === 0) {
+        console.warn('No historical data to filter');
+        return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let filteredData = [];
+    let rangeText = '';
+
+    switch(dateRange) {
+        case 'today':
+            const todayStr = today.toISOString().split('T')[0];
+            filteredData = this.historicalData.filter(record => record.date === todayStr);
+            rangeText = 'Today';
+            break;
+            
+        case '7days':
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+            filteredData = this.historicalData.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate >= sevenDaysAgo && recordDate <= today;
+            });
+            rangeText = 'Last 7 days';
+            break;
+            
+        case '14days':
+            const fourteenDaysAgo = new Date(today);
+            fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
+            filteredData = this.historicalData.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate >= fourteenDaysAgo && recordDate <= today;
+            });
+            rangeText = 'Last 14 days';
+            break;
+            
+        case '30days':
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+            filteredData = this.historicalData.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate >= thirtyDaysAgo && recordDate <= today;
+            });
+            rangeText = 'Last 30 days';
+            break;
+            
+        default:
+            filteredData = this.historicalData;
+            rangeText = 'All data';
+    }
+
+    // Update the display
+    this.updateFilteredTable(filteredData);
+    
+    // Update range text
+    const rangeDisplay = document.getElementById('currentAnalysisDataRange');
+    if (rangeDisplay) {
+        rangeDisplay.textContent = rangeText;
+    }
+    
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.range === dateRange) {
+            btn.classList.add('active');
+        }
+    });
+    
+    console.log(`Filtered to ${dateRange}: ${filteredData.length} records`);
+}
+
+updateFilteredTable(filteredData) {
+    const tableBody = document.getElementById('historicalAnalysisTableBody');
+    if (!tableBody) return;
+
+    if (!filteredData || filteredData.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="no-data">No data available for selected date range</td></tr>';
+        return;
+    }
+
+    let rows = '';
+    
+    filteredData.forEach((record, index) => {
+        const date = new Date(record.date);
+        const dateStr = date.toLocaleDateString('en-PH');
+        
+        const traffic = parseInt(record.customer_traffic) || 0;
+        const revenue = parseFloat(record.sales_volume) || 0;
+        const transactions = parseInt(record.receipt_count) || 0;
+        
+        let riskLevel = record.risk_level || 'Low';
+        let riskPercentage = parseFloat(record.risk_percentage) || 0;
+        let hasPrediction = record.has_real_prediction === true;
+        
+        riskLevel = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase();
+        
+        // Calculate trend
+        let trendClass = 'trend-neutral';
+        let trendText = '→ Stable';
+        
+        if (index === 0) {
+            if (riskLevel === 'High') {
+                trendClass = 'trend-down';
+                trendText = '🚨 High Risk';
+            } else if (riskLevel === 'Medium') {
+                trendClass = 'trend-warning';
+                trendText = '⚠️ Medium Risk';
+            } else {
+                trendClass = 'trend-up';
+                trendText = '✔️ Low Risk';
+            }
+        } else {
+            const prevRecord = filteredData[index - 1];
+            const prevRisk = (prevRecord.risk_level || 'Low').charAt(0).toUpperCase() + (prevRecord.risk_level || 'Low').slice(1).toLowerCase();
+            
+            const riskValues = { 'Low': 1, 'Medium': 2, 'High': 3 };
+            const currentVal = riskValues[riskLevel] || 1;
+            const prevVal = riskValues[prevRisk] || 1;
+            
+            if (currentVal > prevVal) {
+                trendClass = 'trend-down';
+                trendText = '↗️ Risk Increased';
+            } else if (currentVal < prevVal) {
+                trendClass = 'trend-up';
+                trendText = '↘️ Risk Decreased';
+            } else {
+                if (riskLevel === 'High') {
+                    trendClass = 'trend-down';
+                    trendText = '🚨 High Risk Ongoing';
+                } else if (riskLevel === 'Medium') {
+                    trendClass = 'trend-warning';
+                    trendText = '⚠️ Medium Risk Ongoing';
+                } else {
+                    trendClass = 'trend-up';
+                    trendText = '✔️ Low Risk Stable';
+                }
+            }
+        }
+        
+        const badgeClass = `status-badge status-${riskLevel.toLowerCase()}`;
+        const displayText = hasPrediction ? riskLevel : `${riskLevel}*`;
+        
+        rows += `
+            <tr class="table-row-${riskLevel.toLowerCase()}">
+                <td>${dateStr}</td>
+                <td>${this.formatNumber(traffic)}</td>
+                <td>${this.formatCurrency(revenue)}</td>
+                <td>${this.formatNumber(transactions)}</td>
+                <td><span class="${badgeClass}">${displayText}</span></td>
+                <td class="${trendClass}">${trendText}</td>
+            </tr>
+        `;
+    });
+    
+    tableBody.innerHTML = rows;
+    this.addAccurateStyles();
+}
+
+applyCustomDateRange() {
+    const startDateInput = document.getElementById('customStartDate');
+    const endDateInput = document.getElementById('customEndDate');
+    
+    if (!startDateInput.value || !endDateInput.value) {
+        alert('Please select both start and end dates');
+        return;
+    }
+    
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+    
+    if (startDate > endDate) {
+        alert('Start date must be before end date');
+        return;
+    }
+    
+    const filteredData = this.historicalData.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+    });
+    
+    this.updateFilteredTable(filteredData);
+    
+    const rangeDisplay = document.getElementById('currentAnalysisDataRange');
+    if (rangeDisplay) {
+        rangeDisplay.textContent = `${startDate.toLocaleDateString('en-PH')} - ${endDate.toLocaleDateString('en-PH')}`;
+    }
+    
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.range === 'custom') {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Hide custom picker
+    document.getElementById('customDateRangeSelector').style.display = 'none';
+    
+    console.log(`Custom range applied: ${filteredData.length} records`);
+}
+  </script>
    
+<script>
+  // Global functions for button onclick handlers
+function filterHistoricalData(range) {
+    if (dashboard) {
+        dashboard.filterHistoricalData(range);
+    }
+}
 
+function showCustomDatePicker() {
+    const picker = document.getElementById('customDateRangeSelector');
+    if (picker) {
+        picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function applyCustomDateRange() {
+    if (dashboard) {
+        dashboard.applyCustomDateRange();
+    }
+}
+
+function cancelCustomDatePicker() {
+    const picker = document.getElementById('customDateRangeSelector');
+    if (picker) {
+        picker.style.display = 'none';
+    }
+}
+  </script>
    
    
    
