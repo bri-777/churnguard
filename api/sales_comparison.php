@@ -4,29 +4,49 @@ declare(strict_types=1);
 // ==================== CONFIGURATION ====================
 date_default_timezone_set('Asia/Manila');
 error_reporting(E_ALL);
-ini_set('display_errors', '0'); // Disable in production
+ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
+// Security headers
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+
+// CORS Configuration
+$allowedOrigins = ['https://yourdomain.com']; // Update with your domain
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header('Access-Control-Allow-Origin: *'); // Change in production
+}
+
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// Database Configuration
-const DB_CONFIG = [
-    'host' => 'localhost',
-    'name' => 'u393812660_churnguard',
-    'user' => 'u393812660_churnguard',
-    'pass' => '102202Brian_'
-];
+// ==================== DATABASE CONFIGURATION ====================
+// IMPORTANT: Move these to a config file outside web root in production
+// For Hostinger: Use environment variables or separate config.php
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'u393812660_churnguard');
+define('DB_USER', getenv('DB_USER') ?: 'u393812660_churnguard');
+define('DB_PASS', getenv('DB_PASS') ?: '102202Brian_');
 
-// ==================== AUTHENTICATION ====================
+// ==================== SESSION CONFIGURATION ====================
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_secure', '1'); // Ensure HTTPS
+ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.use_strict_mode', '1');
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -44,23 +64,24 @@ $userId = (int)$_SESSION['user_id'];
 // ==================== DATABASE CONNECTION ====================
 try {
     $pdo = new PDO(
-        "mysql:host={$DB_CONFIG['host']};dbname={$DB_CONFIG['name']};charset=utf8mb4",
-        $DB_CONFIG['user'],
-        $DB_CONFIG['pass'],
+        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+        DB_USER,
+        DB_PASS,
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+            PDO::ATTR_PERSISTENT => false // Change to true for connection pooling
         ]
     );
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
-    http_response_code(500);
+    http_response_code(503);
     echo json_encode([
         'status' => 'error',
-        'error' => 'database_error',
-        'message' => 'Database connection failed'
+        'error' => 'service_unavailable',
+        'message' => 'Service temporarily unavailable'
     ]);
     exit;
 }
@@ -68,7 +89,7 @@ try {
 // ==================== HELPER FUNCTIONS ====================
 function jsonResponse(array $data, int $statusCode = 200): void {
     http_response_code($statusCode);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
     exit;
 }
 
@@ -76,11 +97,15 @@ function jsonSuccess(array $data = []): void {
     jsonResponse(array_merge(['status' => 'success'], $data));
 }
 
-function jsonError(string $message, int $code = 400): void {
-    jsonResponse([
+function jsonError(string $message, int $code = 400, string $error = null): void {
+    $response = [
         'status' => 'error',
         'message' => $message
-    ], $code);
+    ];
+    if ($error) {
+        $response['error'] = $error;
+    }
+    jsonResponse($response, $code);
 }
 
 function safeDivide(float $numerator, float $denominator): float {
@@ -88,7 +113,10 @@ function safeDivide(float $numerator, float $denominator): float {
 }
 
 function percentageChange(float $current, float $previous): float {
-    return $previous > 0 ? round((($current - $previous) / $previous) * 100, 2) : 0.00;
+    if ($previous == 0) {
+        return $current > 0 ? 100.00 : 0.00;
+    }
+    return round((($current - $previous) / $previous) * 100, 2);
 }
 
 function validateDate(string $date): bool {
@@ -99,7 +127,8 @@ function validateDate(string $date): bool {
     return $d && $d->format('Y-m-d') === $date;
 }
 
-function sanitizeString(string $input, int $maxLength = 255): string {
+function sanitizeString(?string $input, int $maxLength = 255): string {
+    if ($input === null) return '';
     $cleaned = trim(strip_tags($input));
     return mb_substr($cleaned, 0, $maxLength, 'UTF-8');
 }
@@ -139,7 +168,9 @@ function calculateTargetProgress(float $current, float $target): array {
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ==================== KPI SUMMARY ====================
+// ==================== ROUTES ====================
+
+// KPI Summary
 if ($action === 'kpi_summary') {
     try {
         $today = date('Y-m-d');
@@ -243,14 +274,14 @@ if ($action === 'kpi_summary') {
     }
 }
 
-// ==================== DATA COMPARISON ====================
-if ($action === 'compare') {
+// Data Comparison
+elseif ($action === 'compare') {
     try {
         $currentDate = $_GET['currentDate'] ?? date('Y-m-d');
         $compareDate = $_GET['compareDate'] ?? date('Y-m-d', strtotime('-1 day'));
         
         if (!validateDate($currentDate) || !validateDate($compareDate)) {
-            jsonError('Invalid date format. Use YYYY-MM-DD', 422);
+            jsonError('Invalid date format. Use YYYY-MM-DD', 422, 'invalid_date');
         }
         
         // Get current period data
@@ -301,7 +332,7 @@ if ($action === 'compare') {
                 'metric' => 'Sales Revenue',
                 'current' => $currentSales,
                 'compare' => $compareSales,
-                'difference' => $currentSales - $compareSales,
+                'difference' => round($currentSales - $compareSales, 2),
                 'percentage' => percentageChange($currentSales, $compareSales),
                 'trend' => $currentSales >= $compareSales ? 'up' : 'down'
             ],
@@ -325,7 +356,7 @@ if ($action === 'compare') {
                 'metric' => 'Avg Transaction Value',
                 'current' => $currentAvgTrans,
                 'compare' => $compareAvgTrans,
-                'difference' => $currentAvgTrans - $compareAvgTrans,
+                'difference' => round($currentAvgTrans - $compareAvgTrans, 2),
                 'percentage' => percentageChange($currentAvgTrans, $compareAvgTrans),
                 'trend' => $currentAvgTrans >= $compareAvgTrans ? 'up' : 'down'
             ]
@@ -343,14 +374,14 @@ if ($action === 'compare') {
     }
 }
 
-// ==================== GET TARGETS ====================
-if ($action === 'get_targets') {
+// Get Targets
+elseif ($action === 'get_targets') {
     try {
         $filter = $_GET['filter'] ?? 'all';
         $validFilters = ['all', 'active', 'achieved', 'near', 'below'];
         
         if (!in_array($filter, $validFilters, true)) {
-            jsonError('Invalid filter parameter', 422);
+            jsonError('Invalid filter parameter', 422, 'invalid_filter');
         }
         
         $query = "
@@ -412,40 +443,44 @@ if ($action === 'get_targets') {
     }
 }
 
-// ==================== SAVE TARGET ====================
-if ($action === 'save_target' && $method === 'POST') {
+// Save Target
+elseif ($action === 'save_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
-        $data = json_decode($rawInput, true) ?? $_POST;
+        $data = json_decode($rawInput, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            jsonError('Invalid JSON data', 422, 'invalid_json');
+        }
         
         // Validate and sanitize inputs
         $name = sanitizeString($data['name'] ?? '', 100);
         $type = trim($data['type'] ?? '');
-        $value = (float)($data['value'] ?? 0);
+        $value = filter_var($data['value'] ?? 0, FILTER_VALIDATE_FLOAT);
         $startDate = trim($data['start_date'] ?? '');
         $endDate = trim($data['end_date'] ?? '');
         $store = sanitizeString($data['store'] ?? '', 100);
         
         // Validation
         if (empty($name)) {
-            jsonError('Target name is required', 422);
+            jsonError('Target name is required', 422, 'missing_name');
         }
         
         $validTypes = ['sales', 'customers', 'transactions', 'avg_transaction'];
         if (!in_array($type, $validTypes, true)) {
-            jsonError('Invalid target type', 422);
+            jsonError('Invalid target type', 422, 'invalid_type');
         }
         
-        if ($value <= 0 || $value > 999999999) {
-            jsonError('Invalid target value', 422);
+        if ($value === false || $value <= 0 || $value > 999999999) {
+            jsonError('Invalid target value', 422, 'invalid_value');
         }
         
         if (!validateDate($startDate) || !validateDate($endDate)) {
-            jsonError('Invalid date format', 422);
+            jsonError('Invalid date format', 422, 'invalid_date');
         }
         
         if (strtotime($endDate) < strtotime($startDate)) {
-            jsonError('End date must be after start date', 422);
+            jsonError('End date must be after start date', 422, 'invalid_date_range');
         }
         
         // Insert target
@@ -476,22 +511,26 @@ if ($action === 'save_target' && $method === 'POST') {
     }
 }
 
-// ==================== UPDATE TARGET ====================
-if ($action === 'update_target' && $method === 'POST') {
+// Update Target
+elseif ($action === 'update_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
-        $data = json_decode($rawInput, true) ?? $_POST;
+        $data = json_decode($rawInput, true);
         
-        $id = (int)($data['id'] ?? 0);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            jsonError('Invalid JSON data', 422, 'invalid_json');
+        }
+        
+        $id = filter_var($data['id'] ?? 0, FILTER_VALIDATE_INT);
         $name = sanitizeString($data['name'] ?? '', 100);
         $type = trim($data['type'] ?? '');
-        $value = (float)($data['value'] ?? 0);
+        $value = filter_var($data['value'] ?? 0, FILTER_VALIDATE_FLOAT);
         $startDate = trim($data['start_date'] ?? '');
         $endDate = trim($data['end_date'] ?? '');
         $store = sanitizeString($data['store'] ?? '', 100);
         
-        if ($id <= 0) {
-            jsonError('Invalid target ID', 422);
+        if ($id === false || $id <= 0) {
+            jsonError('Invalid target ID', 422, 'invalid_id');
         }
         
         // Check ownership
@@ -499,29 +538,29 @@ if ($action === 'update_target' && $method === 'POST') {
         $checkStmt->execute([$id, $userId]);
         
         if (!$checkStmt->fetch()) {
-            jsonError('Target not found or access denied', 404);
+            jsonError('Target not found or access denied', 404, 'not_found');
         }
         
         // Validation (same as save)
         if (empty($name)) {
-            jsonError('Target name is required', 422);
+            jsonError('Target name is required', 422, 'missing_name');
         }
         
         $validTypes = ['sales', 'customers', 'transactions', 'avg_transaction'];
         if (!in_array($type, $validTypes, true)) {
-            jsonError('Invalid target type', 422);
+            jsonError('Invalid target type', 422, 'invalid_type');
         }
         
-        if ($value <= 0 || $value > 999999999) {
-            jsonError('Invalid target value', 422);
+        if ($value === false || $value <= 0 || $value > 999999999) {
+            jsonError('Invalid target value', 422, 'invalid_value');
         }
         
         if (!validateDate($startDate) || !validateDate($endDate)) {
-            jsonError('Invalid date format', 422);
+            jsonError('Invalid date format', 422, 'invalid_date');
         }
         
         if (strtotime($endDate) < strtotime($startDate)) {
-            jsonError('End date must be after start date', 422);
+            jsonError('End date must be after start date', 422, 'invalid_date_range');
         }
         
         // Update target
@@ -559,13 +598,13 @@ if ($action === 'update_target' && $method === 'POST') {
     }
 }
 
-// ==================== DELETE TARGET ====================
-if ($action === 'delete_target') {
+// Delete Target
+elseif ($action === 'delete_target') {
     try {
-        $id = (int)($_GET['id'] ?? 0);
+        $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
         
-        if ($id <= 0) {
-            jsonError('Invalid target ID', 422);
+        if ($id === false || $id <= 0) {
+            jsonError('Invalid target ID', 422, 'invalid_id');
         }
         
         // Check ownership
@@ -573,7 +612,7 @@ if ($action === 'delete_target') {
         $checkStmt->execute([$id, $userId]);
         
         if (!$checkStmt->fetch()) {
-            jsonError('Target not found or access denied', 404);
+            jsonError('Target not found or access denied', 404, 'not_found');
         }
         
         // Delete target
@@ -588,10 +627,11 @@ if ($action === 'delete_target') {
     }
 }
 
-// ==================== TREND DATA ====================
-if ($action === 'trend_data') {
+// Trend Data
+elseif ($action === 'trend_data') {
     try {
-        $days = max(7, min(90, (int)($_GET['days'] ?? 30)));
+        $days = filter_var($_GET['days'] ?? 30, FILTER_VALIDATE_INT);
+        $days = max(7, min(90, $days ?: 30));
         
         $stmt = $pdo->prepare("
             SELECT 
@@ -617,5 +657,7 @@ if ($action === 'trend_data') {
     }
 }
 
-// ==================== INVALID ACTION ====================
-jsonError('Invalid action parameter', 400);
+// Invalid action
+else {
+    jsonError('Invalid action parameter', 400, 'invalid_action');
+}

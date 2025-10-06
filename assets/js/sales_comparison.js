@@ -4,6 +4,9 @@
 // ==================== CONFIGURATION ====================
 const CONFIG = {
     API_BASE: 'api/sales_comparison.php',
+    REQUEST_TIMEOUT: 30000,
+    MAX_RETRIES: 3,
+    RETRY_DELAY: 1000,
     CHART_COLORS: {
         primary: '#6366f1',
         success: '#10b981',
@@ -35,6 +38,7 @@ const AppState = {
     activeRequests: new Map(),
     loadingCounter: 0,
     editingTargetId: null,
+    lastDataUpdate: null,
     
     incrementLoading() {
         this.loadingCounter++;
@@ -46,6 +50,11 @@ const AppState = {
         if (this.loadingCounter === 0) {
             UIManager.hideLoader();
         }
+    },
+
+    cancelPendingRequests() {
+        this.activeRequests.forEach(controller => controller.abort());
+        this.activeRequests.clear();
     }
 };
 
@@ -53,7 +62,8 @@ const AppState = {
 const Utils = {
     formatCurrency(value) {
         if (value == null || isNaN(value)) return '₱0.00';
-        return '₱' + parseFloat(value).toLocaleString('en-PH', { 
+        const num = parseFloat(value);
+        return '₱' + num.toLocaleString('en-PH', { 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         });
@@ -72,33 +82,49 @@ const Utils = {
 
     formatDate(dateString) {
         if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-PH', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
-        });
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Invalid Date';
+            return date.toLocaleDateString('en-PH', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        } catch {
+            return 'Invalid Date';
+        }
     },
 
     getISODate(date) {
-        if (!(date instanceof Date)) date = new Date(date);
-        return date.toISOString().split('T')[0];
+        try {
+            if (!(date instanceof Date)) date = new Date(date);
+            if (isNaN(date.getTime())) return new Date().toISOString().split('T')[0];
+            return date.toISOString().split('T')[0];
+        } catch {
+            return new Date().toISOString().split('T')[0];
+        }
     },
 
     formatDateTime() {
-        const now = new Date();
-        return now.toLocaleDateString('en-PH', { 
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        try {
+            const now = new Date();
+            return now.toLocaleDateString('en-PH', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch {
+            return 'N/A';
+        }
     },
 
     calculateChange(current, previous) {
-        if (!previous || previous === 0) return 0;
+        if (!previous || previous === 0) {
+            return current > 0 ? 100 : 0;
+        }
         return ((current - previous) / previous) * 100;
     },
 
@@ -106,6 +132,18 @@ const Utils = {
         const div = document.createElement('div');
         div.textContent = text || '';
         return div.innerHTML;
+    },
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     },
 
     $(selector) {
@@ -125,6 +163,13 @@ const UIManager = {
             error: '#ef4444',
             warning: '#f59e0b',
             info: '#6366f1'
+        };
+
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
         };
 
         const notification = document.createElement('div');
@@ -149,7 +194,7 @@ const UIManager = {
         `;
         
         notification.innerHTML = `
-            <span style="font-size: 20px;">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
+            <span style="font-size: 20px;">${icons[type] || icons.info}</span>
             <span>${Utils.escapeHtml(message)}</span>
         `;
         
@@ -200,15 +245,19 @@ const UIManager = {
         const trendBadge = Utils.$(`#${id.replace('today', '')}TrendBadge`);
         
         if (valueEl) {
-            valueEl.textContent = id.includes('Sales') || id.includes('target') ? 
+            const formattedValue = id.includes('Sales') || id.includes('target') ? 
                 (id.includes('target') ? Utils.formatPercentage(value) : Utils.formatCurrency(value)) : 
                 Utils.formatNumber(value);
+            valueEl.textContent = formattedValue;
         }
         
         if (trendBadge && change !== undefined) {
             const isPositive = change >= 0;
             trendBadge.className = `kpi-trend-badge ${isPositive ? '' : 'down'}`;
-            trendBadge.querySelector('span').textContent = Utils.formatPercentage(Math.abs(change));
+            const span = trendBadge.querySelector('span');
+            if (span) {
+                span.textContent = Utils.formatPercentage(Math.abs(change));
+            }
         }
     },
 
@@ -222,7 +271,7 @@ const UIManager = {
 
 // ==================== API SERVICE ====================
 const APIService = {
-    async fetch(action, params = {}) {
+    async fetch(action, params = {}, retryCount = 0) {
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
         
@@ -232,14 +281,30 @@ const APIService = {
             }
         });
 
+        const controller = new AbortController();
+        const requestId = `${action}-${Date.now()}`;
+        AppState.activeRequests.set(requestId, controller);
+
         try {
             const response = await fetch(url.toString(), {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                signal: controller.signal,
+                credentials: 'same-origin'
             });
 
+            AppState.activeRequests.delete(requestId);
+
+            if (response.status === 401) {
+                window.location.href = '/login.php';
+                throw new Error('Unauthorized');
+            }
+
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -250,24 +315,52 @@ const APIService = {
 
             return data;
         } catch (error) {
+            AppState.activeRequests.delete(requestId);
+
+            if (error.name === 'AbortError') {
+                console.log('Request cancelled:', action);
+                return null;
+            }
+
+            if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
+                return this.fetch(action, params, retryCount + 1);
+            }
+
             console.error('API Error:', error);
             throw error;
         }
     },
 
-    async post(action, body) {
+    async post(action, body, retryCount = 0) {
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
+
+        const controller = new AbortController();
+        const requestId = `${action}-${Date.now()}`;
+        AppState.activeRequests.set(requestId, controller);
 
         try {
             const response = await fetch(url.toString(), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal,
+                credentials: 'same-origin'
             });
 
+            AppState.activeRequests.delete(requestId);
+
+            if (response.status === 401) {
+                window.location.href = '/login.php';
+                throw new Error('Unauthorized');
+            }
+
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -278,6 +371,18 @@ const APIService = {
 
             return data;
         } catch (error) {
+            AppState.activeRequests.delete(requestId);
+
+            if (error.name === 'AbortError') {
+                console.log('Request cancelled:', action);
+                return null;
+            }
+
+            if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
+                return this.post(action, body, retryCount + 1);
+            }
+
             console.error('API Error:', error);
             throw error;
         }
@@ -286,13 +391,26 @@ const APIService = {
 
 // ==================== CHART MANAGER ====================
 const ChartManager = {
+    destroyChart(chartName) {
+        if (AppState.charts[chartName]) {
+            AppState.charts[chartName].destroy();
+            delete AppState.charts[chartName];
+        }
+    },
+
     createSalesTrendChart(data) {
         const ctx = Utils.$('#salesTrendChart');
-        if (!ctx) return;
-
-        if (AppState.charts.salesTrend) {
-            AppState.charts.salesTrend.destroy();
+        if (!ctx) {
+            console.error('Chart canvas not found: salesTrendChart');
+            return;
         }
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No trend data available</p>';
+            return;
+        }
+
+        this.destroyChart('salesTrend');
 
         const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
         
@@ -337,11 +455,17 @@ const ChartManager = {
 
     createComparisonChart(comparisonData) {
         const ctx = Utils.$('#comparisonChart');
-        if (!ctx) return;
-
-        if (AppState.charts.comparison) {
-            AppState.charts.comparison.destroy();
+        if (!ctx) {
+            console.error('Chart canvas not found: comparisonChart');
+            return;
         }
+
+        if (!comparisonData || comparisonData.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No comparison data available</p>';
+            return;
+        }
+
+        this.destroyChart('comparison');
 
         const metrics = comparisonData.map(d => d.metric);
         const currentValues = comparisonData.map(d => parseFloat(d.current || 0));
@@ -370,7 +494,10 @@ const ChartManager = {
                 ...CONFIG.CHART_OPTIONS,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => Utils.formatNumber(value)
+                        }
                     }
                 }
             }
@@ -378,12 +505,8 @@ const ChartManager = {
     },
 
     updateTrendChart() {
-        const period = Utils.$('#trendPeriod')?.value || 30;
+        const period = parseInt(Utils.$('#trendPeriod')?.value) || 30;
         DataManager.loadTrendData(period);
-    },
-
-    updateComparisonChart() {
-        // Will be implemented with comparison data
     }
 };
 
@@ -394,6 +517,8 @@ const DataManager = {
         try {
             const data = await APIService.fetch('kpi_summary');
             
+            if (!data) return;
+
             UIManager.updateKPICard('todaySales', data.today_sales, data.sales_change);
             UIManager.updateKPICard('todayCustomers', data.today_customers, data.customers_change);
             UIManager.updateKPICard('todayTransactions', data.today_transactions, data.transactions_change);
@@ -401,15 +526,19 @@ const DataManager = {
             
             const targetStatus = Utils.$('#targetStatus');
             if (targetStatus) {
-                targetStatus.textContent = data.target_status;
+                targetStatus.textContent = data.target_status || 'No active target';
             }
             
             const miniProgress = Utils.$('#targetMiniProgress');
             if (miniProgress) {
-                miniProgress.style.width = Math.min(data.target_achievement, 100) + '%';
+                const progress = Math.min(parseFloat(data.target_achievement) || 0, 100);
+                miniProgress.style.width = progress + '%';
             }
 
+            AppState.lastDataUpdate = new Date();
+
         } catch (error) {
+            console.error('KPI Summary Error:', error);
             UIManager.showNotification('Failed to load KPI data', 'error');
         } finally {
             AppState.decrementLoading();
@@ -421,11 +550,22 @@ const DataManager = {
         try {
             const data = await APIService.fetch('trend_data', { days });
             
-            if (data.trend_data && data.trend_data.length > 0) {
+            if (!data || !data.trend_data) {
+                console.warn('No trend data received');
+                return;
+            }
+
+            if (data.trend_data.length > 0) {
                 ChartManager.createSalesTrendChart(data.trend_data);
                 this.populateTrendTable(data.trend_data);
+            } else {
+                const chart = Utils.$('#salesTrendChart');
+                if (chart) {
+                    chart.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No data available for selected period</p>';
+                }
             }
         } catch (error) {
+            console.error('Trend Data Error:', error);
             UIManager.showNotification('Failed to load trend data', 'error');
         } finally {
             AppState.decrementLoading();
@@ -435,6 +575,11 @@ const DataManager = {
     populateTrendTable(trendData) {
         const tbody = Utils.$('#salesTrendTableBody');
         if (!tbody) return;
+
+        if (!trendData || trendData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">No trend data available</td></tr>';
+            return;
+        }
 
         const sorted = [...trendData].sort((a, b) => new Date(b.date) - new Date(a.date));
         
@@ -482,12 +627,17 @@ const DataManager = {
         try {
             const data = await APIService.fetch('compare', { currentDate, compareDate });
             
-            if (data.comparison) {
+            if (!data) return;
+
+            if (data.comparison && data.comparison.length > 0) {
                 this.displayComparisonResults(data.comparison);
                 ChartManager.createComparisonChart(data.comparison);
                 UIManager.showNotification('Comparison loaded successfully', 'success');
+            } else {
+                UIManager.showNotification('No comparison data available', 'info');
             }
         } catch (error) {
+            console.error('Comparison Error:', error);
             UIManager.showNotification('Failed to load comparison', 'error');
         } finally {
             AppState.decrementLoading();
@@ -501,16 +651,17 @@ const DataManager = {
         container.innerHTML = comparison.map(item => {
             const change = parseFloat(item.percentage || 0);
             const isPositive = change >= 0;
+            const isCurrency = item.metric.includes('Sales') || item.metric.includes('Value');
             
             return `
                 <div class="comparison-metric-card">
                     <div class="metric-name">${Utils.escapeHtml(item.metric)}</div>
                     <div class="metric-values">
-                        <span class="metric-current">${item.metric.includes('Sales') || item.metric.includes('Value') ? 
+                        <span class="metric-current">${isCurrency ? 
                             Utils.formatCurrency(item.current) : 
                             Utils.formatNumber(item.current)
                         }</span>
-                        <span class="metric-previous">vs ${item.metric.includes('Sales') || item.metric.includes('Value') ? 
+                        <span class="metric-previous">vs ${isCurrency ? 
                             Utils.formatCurrency(item.compare) : 
                             Utils.formatNumber(item.compare)
                         }</span>
@@ -524,6 +675,7 @@ const DataManager = {
         }).join('');
     }
 };
+
 // ==================== TARGET MANAGER ====================
 const TargetManager = {
     async loadTargets(filter = 'all') {
@@ -531,11 +683,14 @@ const TargetManager = {
         try {
             const data = await APIService.fetch('get_targets', { filter });
             
+            if (!data) return;
+
             if (data.targets) {
                 this.displayTargetsGrid(data.targets);
                 this.displayTargetsTable(data.targets);
             }
         } catch (error) {
+            console.error('Load Targets Error:', error);
             UIManager.showNotification('Failed to load targets', 'error');
         } finally {
             AppState.decrementLoading();
@@ -634,13 +789,13 @@ const TargetManager = {
                     </td>
                     <td><span class="status-badge-pro ${statusClass}">${statusText}</span></td>
                     <td>
-                        <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})">
+                        <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})" title="Edit">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                             </svg>
                         </button>
-                        <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})">
+                        <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})" title="Delete">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="3 6 5 6 21 6"/>
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -666,6 +821,9 @@ const TargetManager = {
         AppState.incrementLoading();
         try {
             const data = await APIService.fetch('get_targets', { filter: 'all' });
+            
+            if (!data) return;
+
             const target = data.targets?.find(t => t.id === id);
             
             if (!target) {
@@ -683,8 +841,9 @@ const TargetManager = {
             Utils.$('#targetEndDate').value = target.end_date || '';
             Utils.$('#targetStore').value = target.store || '';
             
-            openTargetModal();
+            ModalManager.open();
         } catch (error) {
+            console.error('Edit Target Error:', error);
             UIManager.showNotification('Failed to load target', 'error');
         } finally {
             AppState.decrementLoading();
@@ -696,14 +855,18 @@ const TargetManager = {
 
         AppState.incrementLoading();
         try {
-            await APIService.fetch('delete_target', { id });
+            const result = await APIService.fetch('delete_target', { id });
             
+            if (!result) return;
+
             UIManager.showNotification('Target deleted successfully', 'success');
+            
             await Promise.all([
                 this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
             ]);
         } catch (error) {
+            console.error('Delete Target Error:', error);
             UIManager.showNotification('Failed to delete target', 'error');
         } finally {
             AppState.decrementLoading();
@@ -729,30 +892,28 @@ const DateManager = {
         const today = new Date();
         
         const dateMap = {
-            'today_vs_yesterday': today - 86400000,
-            'week_vs_week': today - 604800000,
-            'month_vs_month': today - 2592000000,
-            'custom': today - 86400000
+            'today_vs_yesterday': 86400000,
+            'week_vs_week': 604800000,
+            'month_vs_month': 2592000000,
+            'custom': 86400000
         };
 
         const currentDate = Utils.$('#currentDate');
         const compareDate = Utils.$('#compareDate');
 
         if (currentDate) currentDate.value = Utils.getISODate(today);
-        if (compareDate) compareDate.value = Utils.getISODate(new Date(dateMap[type] || dateMap.custom));
+        if (compareDate) {
+            const offset = dateMap[type] || dateMap.custom;
+            compareDate.value = Utils.getISODate(new Date(today - offset));
+        }
     }
 };
 
 // ==================== TAB MANAGER ====================
 const TabManager = {
     switchTab(tabName) {
-        Utils.$$('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        Utils.$$('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
+        Utils.$$('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        Utils.$$('.tab-content').forEach(content => content.classList.remove('active'));
 
         const activeBtn = Utils.$(`[data-tab="${tabName}"]`);
         const activeContent = Utils.$(`#${tabName}-tab`);
@@ -770,20 +931,22 @@ const ModalManager = {
         const modal = Utils.$('#targetModal');
         const form = Utils.$('#targetForm');
         
-        if (modal) {
-            modal.classList.add('active');
-        }
-        
+        if (modal) modal.classList.add('active');
         if (form) form.reset();
         
-        Utils.$('#modalTitle').textContent = 'Create New Target';
+        const modalTitle = Utils.$('#modalTitle');
+        if (modalTitle) modalTitle.textContent = 'Create New Target';
+        
         AppState.editingTargetId = null;
 
         const today = new Date();
         const nextMonth = new Date(today.getTime() + 2592000000);
 
-        Utils.$('#targetStartDate').value = Utils.getISODate(today);
-        Utils.$('#targetEndDate').value = Utils.getISODate(nextMonth);
+        const startDate = Utils.$('#targetStartDate');
+        const endDate = Utils.$('#targetEndDate');
+
+        if (startDate) startDate.value = Utils.getISODate(today);
+        if (endDate) endDate.value = Utils.getISODate(nextMonth);
     },
 
     close(event) {
@@ -792,9 +955,7 @@ const ModalManager = {
         }
         
         const modal = Utils.$('#targetModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
+        if (modal) modal.classList.remove('active');
         
         AppState.editingTargetId = null;
     },
@@ -816,7 +977,7 @@ const ModalManager = {
             return;
         }
 
-        if (formData.value <= 0) {
+        if (isNaN(formData.value) || formData.value <= 0) {
             UIManager.showNotification('Target value must be greater than 0', 'warning');
             return;
         }
@@ -834,17 +995,20 @@ const ModalManager = {
                 formData.id = AppState.editingTargetId;
             }
 
-            await APIService.post(action, formData);
+            const result = await APIService.post(action, formData);
             
+            if (!result) return;
+
             UIManager.showNotification('Target saved successfully', 'success');
-            ModalManager.close();
+            this.close();
             
             await Promise.all([
                 TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
             ]);
         } catch (error) {
-            UIManager.showNotification('Failed to save target', 'error');
+            console.error('Save Target Error:', error);
+            UIManager.showNotification(error.message || 'Failed to save target', 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -860,16 +1024,11 @@ window.loadComparison = () => DataManager.loadComparison();
 window.updateComparisonDates = () => DateManager.updateComparisonDates();
 window.switchTab = (tabName) => TabManager.switchTab(tabName);
 window.updateTrendChart = () => ChartManager.updateTrendChart();
-window.updateComparisonChart = () => ChartManager.updateComparisonChart();
 window.resetComparison = () => {
     DateManager.setDefaultDates();
-    Utils.$('.comparison-grid').innerHTML = '';
-};
-window.exportTargets = () => {
-    UIManager.showNotification('Export feature coming soon', 'info');
-};
-window.toggleNotifications = () => {
-    UIManager.showNotification('Notifications feature coming soon', 'info');
+    const grid = Utils.$('.comparison-grid');
+    if (grid) grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">Select dates and click "Load Comparison"</p>';
+    ChartManager.destroyChart('comparison');
 };
 window.refreshAllData = async () => {
     await App.loadAllData();
@@ -882,6 +1041,13 @@ const App = {
         console.log('🚀 Initializing Professional Sales Dashboard...');
 
         try {
+            // Check Chart.js
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded!');
+                UIManager.showNotification('Chart library not loaded. Please refresh.', 'error');
+                return;
+            }
+
             // Update date/time
             UIManager.updateDateTime();
             setInterval(() => UIManager.updateDateTime(), 60000);
@@ -903,11 +1069,19 @@ const App = {
     },
 
     async loadAllData() {
-        await Promise.allSettled([
+        const promises = [
             DataManager.loadKPISummary(),
             DataManager.loadTrendData(30),
             TargetManager.loadTargets('all')
-        ]);
+        ];
+
+        const results = await Promise.allSettled(promises);
+        
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to load data [${index}]:`, result.reason);
+            }
+        });
     },
 
     setupEventListeners() {
@@ -930,9 +1104,22 @@ const App = {
 
         // Refresh on visibility change
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                this.loadAllData();
+            if (!document.hidden && AppState.lastDataUpdate) {
+                const timeSinceUpdate = Date.now() - AppState.lastDataUpdate;
+                if (timeSinceUpdate > 300000) { // 5 minutes
+                    this.loadAllData();
+                }
             }
+        });
+
+        // Handle network errors
+        window.addEventListener('online', () => {
+            UIManager.showNotification('Connection restored', 'success');
+            this.loadAllData();
+        });
+
+        window.addEventListener('offline', () => {
+            UIManager.showNotification('No internet connection', 'warning');
         });
     }
 };
@@ -981,5 +1168,7 @@ window.addEventListener('error', (event) => {
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    UIManager.showNotification('A network error occurred.', 'error');
+    if (event.reason?.message !== 'Unauthorized') {
+        UIManager.showNotification('A network error occurred.', 'error');
+    }
 });
