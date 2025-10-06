@@ -2147,7 +2147,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </div>
       <div class="metrics-grid" style="display:flex; flex-wrap:wrap; gap:16px; align-items:stretch;">
         <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">Today's Customer Traffic</div>
+          <div class="metric-label">Today's Customer </div>
           <div class="metric-value" id="todayCustomerCount">0</div>
           <div class="metric-trend" id="todayTrafficTrend">
             <span>—</span>
@@ -2156,7 +2156,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </div>
 
         <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">Yesterday's Traffic</div>
+          <div class="metric-label">Yesterday's Customer</div>
           <div class="metric-value" id="yesterdayCustomerCount">0</div>
           <div class="metric-trend" id="yesterdayTrafficTrend">
             <span>—</span>
@@ -2165,7 +2165,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </div>
 
         <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">14-Day Average Traffic</div>
+          <div class="metric-label">14-Day Average Customer</div>
           <div class="metric-value" id="avgCustomerTraffic14Days">0</div>
           <div class="metric-trend" id="avgTrafficTrend">
             <span>—</span>
