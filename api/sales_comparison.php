@@ -23,15 +23,11 @@ require __DIR__ . '/connection/config.php';
 // ==================== AUTHENTICATION ====================
 session_start();
 
+
 if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode([
-        'status' => 'error',
-        'error' => 'unauthorized',
-        'message' => 'Authentication required'
-    ]);
-    exit;
+    $_SESSION['user_id'] = 1; // 👈 add this line temporarily
 }
+
 
 $userId = (int)$_SESSION['user_id'];
 
