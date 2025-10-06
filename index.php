@@ -1401,7 +1401,7 @@ function doLogout() {
       
         <button class="tab-btn" onclick="switchTab('trends')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Historical Trends</button>
+        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Risk Level Trends</button>
       </div>
 
       <!-- Retention -->
