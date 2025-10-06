@@ -1,5 +1,5 @@
 /**
- * Fixed Customer Monitoring Dashboard
+ * Fixed Customer Monitoring Dashboard with Date Filtering
  * Works with actual database data
  */
 
@@ -13,6 +13,7 @@ class CustomerMonitoringDashboard {
         this.dateRange = '14days';
         this.refreshInterval = 30000; // 30 seconds
         this.historicalData = [];
+        this.currentFilterRange = '14days'; // Track current filter
         
         console.log('Dashboard initialized');
     }
@@ -63,7 +64,8 @@ class CustomerMonitoringDashboard {
 
             this.historicalData = data.historicalData || [];
             this.updateMetrics(data);
-            this.updateTable(data);
+            // Apply current filter instead of showing all data
+            this.filterHistoricalData(this.currentFilterRange);
             this.updateChart(data);
             
             this.lastUpdate = new Date();
@@ -145,7 +147,6 @@ class CustomerMonitoringDashboard {
         }
     }
 
-    // Add new method for simple trend updates
     updateSimpleTrend(elementId, currentValue, compareValue, type) {
         const element = document.getElementById(elementId);
         if (!element) {
@@ -161,7 +162,6 @@ class CustomerMonitoringDashboard {
             return;
         }
 
-        // Handle different trend types
         if (type === 'baseline') {
             iconSpan.textContent = '—';
             textSpan.textContent = 'Baseline average';
@@ -214,154 +214,268 @@ class CustomerMonitoringDashboard {
         }
     }
 
- // Fixed updateTable method with dynamic risk-based trends
-// SIMPLIFIED ACCURATE UPDATE TABLE - Guaranteed Medium Risk Display
-updateTable(data) {
-    const tableBody = document.getElementById('historicalAnalysisTableBody');
-    if (!tableBody) return;
-
-    if (!this.historicalData || this.historicalData.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="7" class="no-data">No data available</td></tr>';
-        return;
-    }
-
-    let rows = '';
-    
-    // CRITICAL DEBUG: Log what we actually receive
-    console.log('=== FINAL ACCURATE DEBUG ===');
-    console.log('Records received:', this.historicalData.length);
-    
-   
-    
-    this.historicalData.forEach((record, index) => {
-        const date = new Date(record.date);
-        const dateStr = date.toLocaleDateString('en-PH');
+    // DATE FILTERING METHODS
+    filterHistoricalData(dateRange) {
+        this.currentFilterRange = dateRange; // Save current filter
         
-        const traffic = parseInt(record.customer_traffic) || 0;
-        const revenue = parseFloat(record.sales_volume) || 0;
-        const transactions = parseInt(record.receipt_count) || 0;
-        
-        // DIRECT risk level reading - no processing needed
-        let riskLevel = record.risk_level || 'Low';
-        let riskPercentage = parseFloat(record.risk_percentage) || 0;
-        let hasPrediction = record.has_real_prediction === true;
-        
-        // Ensure proper case
-        riskLevel = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase();
-        
-       
-        console.log(`Row ${index + 1}: ${dateStr} - ${riskLevel} (${riskPercentage}%) - ${hasPrediction ? 'REAL' : 'EST'}`);
-        
-      
-        
-        // SIMPLE trend logic
-        let trendClass = 'trend-neutral';
-        let trendText = '→ Stable';
-        
-        if (index === 0) {
-            // First row - show current status
-            if (riskLevel === 'High') {
-                trendClass = 'trend-down';
-                trendText = '🚨 High Risk';
-            } else if (riskLevel === 'Medium') {
-                trendClass = 'trend-warning';
-                trendText = '⚠️ Medium Risk';
-            } else {
-                trendClass = 'trend-up';
-                trendText = '✔️ Low Risk';
+        if (!this.historicalData || this.historicalData.length === 0) {
+            console.warn('No historical data to filter');
+            const tableBody = document.getElementById('historicalAnalysisTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="no-data">No data available</td></tr>';
             }
-        } else {
-            // Compare with previous record
-            const prevRecord = this.historicalData[index - 1];
-            const prevRisk = (prevRecord.risk_level || 'Low').charAt(0).toUpperCase() + (prevRecord.risk_level || 'Low').slice(1).toLowerCase();
-            
-            const riskValues = { 'Low': 1, 'Medium': 2, 'High': 3 };
-            const currentVal = riskValues[riskLevel] || 1;
-            const prevVal = riskValues[prevRisk] || 1;
-            
-            if (currentVal > prevVal) {
-                trendClass = 'trend-down';
-                trendText = '↗️ Risk Increased';
-            } else if (currentVal < prevVal) {
-                trendClass = 'trend-up';
-                trendText = '↘️ Risk Decreased';
-            } else {
-                // Same risk level
-                if (riskLevel === 'High') {
-                    trendClass = 'trend-down';
-                    trendText = '🚨 High Risk Ongoing';
-                } else if (riskLevel === 'Medium') {
-                    trendClass = 'trend-warning';
-                    trendText = '⚠️ Medium Risk Ongoing';
-                } else {
-                    trendClass = 'trend-up';
-                    trendText = '✔️ Low Risk Stable';
-                }
-            }
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        let filteredData = [];
+        let rangeText = '';
+
+        switch(dateRange) {
+            case 'today':
+                const todayStr = today.toISOString().split('T')[0];
+                filteredData = this.historicalData.filter(record => record.date === todayStr);
+                rangeText = 'Today';
+                break;
+                
+            case '7days':
+                const sevenDaysAgo = new Date(today);
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+                filteredData = this.historicalData.filter(record => {
+                    const recordDate = new Date(record.date);
+                    return recordDate >= sevenDaysAgo && recordDate <= today;
+                });
+                rangeText = 'Last 7 days';
+                break;
+                
+            case '14days':
+                const fourteenDaysAgo = new Date(today);
+                fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
+                filteredData = this.historicalData.filter(record => {
+                    const recordDate = new Date(record.date);
+                    return recordDate >= fourteenDaysAgo && recordDate <= today;
+                });
+                rangeText = 'Last 14 days';
+                break;
+                
+            case '30days':
+                const thirtyDaysAgo = new Date(today);
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+                filteredData = this.historicalData.filter(record => {
+                    const recordDate = new Date(record.date);
+                    return recordDate >= thirtyDaysAgo && recordDate <= today;
+                });
+                rangeText = 'Last 30 days';
+                break;
+                
+            default:
+                filteredData = this.historicalData;
+                rangeText = 'All data';
+        }
+
+        // Sort by date descending (newest first)
+        filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Update the display
+        this.updateFilteredTable(filteredData);
+        
+        // Update range text
+        const rangeDisplay = document.getElementById('currentAnalysisDataRange');
+        if (rangeDisplay) {
+            rangeDisplay.textContent = rangeText;
         }
         
-        // Risk badge
-        const badgeClass = `status-badge status-${riskLevel.toLowerCase()}`;
-        const displayText = hasPrediction ? riskLevel : `${riskLevel}*`;
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.range === dateRange) {
+                btn.classList.add('active');
+            }
+        });
         
-        rows += `
-            <tr class="table-row-${riskLevel.toLowerCase()}">
-                <td>${dateStr}</td>
-                <td>${this.formatNumber(traffic)}</td>
-                <td>${this.formatCurrency(revenue)}</td>
-                <td>${this.formatNumber(transactions)}</td>
-                <td><span class="${badgeClass}">${displayText}</span></td>
-             
-                <td class="${trendClass}">${trendText}</td>
-            </tr>
-        `;
-    });
-    
-    tableBody.innerHTML = rows;
-    this.addAccurateStyles();
-    
-   
-}
-
-// Add the necessary CSS
-addAccurateStyles() {
-    if (!document.getElementById('accurateRiskStyles')) {
-        const style = document.createElement('style');
-        style.id = 'accurateRiskStyles';
-        style.textContent = `
-            .status-badge {
-                padding: 4px 8px;
-                border-radius: 8px;
-                font-size: 11px;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-            .status-high {
-                background: #fee2e2;
-                color: #dc2626;
-                border: 1px solid #fca5a5;
-            }
-            .status-medium {
-                background: #fef3c7;
-                color: #d97706;
-                border: 1px solid #fcd34d;
-            }
-            .status-low {
-                background: #dcfce7;
-                color: #16a34a;
-                border: 1px solid #86efac;
-            }
-            .trend-warning { color: #d97706; font-weight: bold; }
-            .trend-down { color: #dc2626; font-weight: bold; }
-            .trend-up { color: #16a34a; font-weight: bold; }
-            .trend-neutral { color: #6b7280; }
-            .table-row-high { background: rgba(239, 68, 68, 0.05); }
-            .table-row-medium { background: rgba(245, 158, 11, 0.05); }
-            .table-row-low { background: rgba(34, 197, 94, 0.03); }
-        `;
-        document.head.appendChild(style);
+        console.log(`Filtered to ${dateRange}: ${filteredData.length} records`);
     }
-}
+
+    updateFilteredTable(filteredData) {
+        const tableBody = document.getElementById('historicalAnalysisTableBody');
+        if (!tableBody) return;
+
+        if (!filteredData || filteredData.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="no-data">No data available for selected date range</td></tr>';
+            return;
+        }
+
+        let rows = '';
+        
+        filteredData.forEach((record, index) => {
+            const date = new Date(record.date);
+            const dateStr = date.toLocaleDateString('en-PH');
+            
+            const traffic = parseInt(record.customer_traffic) || 0;
+            const revenue = parseFloat(record.sales_volume) || 0;
+            const transactions = parseInt(record.receipt_count) || 0;
+            
+            let riskLevel = record.risk_level || 'Low';
+            let riskPercentage = parseFloat(record.risk_percentage) || 0;
+            let hasPrediction = record.has_real_prediction === true;
+            
+            riskLevel = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase();
+            
+            // Calculate trend
+            let trendClass = 'trend-neutral';
+            let trendText = '→ Stable';
+            
+            if (index === 0) {
+                if (riskLevel === 'High') {
+                    trendClass = 'trend-down';
+                    trendText = '🚨 High Risk';
+                } else if (riskLevel === 'Medium') {
+                    trendClass = 'trend-warning';
+                    trendText = '⚠️ Medium Risk';
+                } else {
+                    trendClass = 'trend-up';
+                    trendText = '✔️ Low Risk';
+                }
+            } else {
+                const prevRecord = filteredData[index - 1];
+                const prevRisk = (prevRecord.risk_level || 'Low').charAt(0).toUpperCase() + (prevRecord.risk_level || 'Low').slice(1).toLowerCase();
+                
+                const riskValues = { 'Low': 1, 'Medium': 2, 'High': 3 };
+                const currentVal = riskValues[riskLevel] || 1;
+                const prevVal = riskValues[prevRisk] || 1;
+                
+                if (currentVal > prevVal) {
+                    trendClass = 'trend-down';
+                    trendText = '↗️ Risk Increased';
+                } else if (currentVal < prevVal) {
+                    trendClass = 'trend-up';
+                    trendText = '↘️ Risk Decreased';
+                } else {
+                    if (riskLevel === 'High') {
+                        trendClass = 'trend-down';
+                        trendText = '🚨 High Risk Ongoing';
+                    } else if (riskLevel === 'Medium') {
+                        trendClass = 'trend-warning';
+                        trendText = '⚠️ Medium Risk Ongoing';
+                    } else {
+                        trendClass = 'trend-up';
+                        trendText = '✔️ Low Risk Stable';
+                    }
+                }
+            }
+            
+            const badgeClass = `status-badge status-${riskLevel.toLowerCase()}`;
+            const displayText = hasPrediction ? riskLevel : `${riskLevel}*`;
+            
+            rows += `
+                <tr class="table-row-${riskLevel.toLowerCase()}">
+                    <td>${dateStr}</td>
+                    <td>${this.formatNumber(traffic)}</td>
+                    <td>${this.formatCurrency(revenue)}</td>
+                    <td>${this.formatNumber(transactions)}</td>
+                    <td><span class="${badgeClass}">${displayText}</span></td>
+                    <td class="${trendClass}">${trendText}</td>
+                </tr>
+            `;
+        });
+        
+        tableBody.innerHTML = rows;
+        this.addAccurateStyles();
+    }
+
+    applyCustomDateRange() {
+        const startDateInput = document.getElementById('customStartDate');
+        const endDateInput = document.getElementById('customEndDate');
+        
+        if (!startDateInput.value || !endDateInput.value) {
+            alert('Please select both start and end dates');
+            return;
+        }
+        
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        
+        if (startDate > endDate) {
+            alert('Start date must be before end date');
+            return;
+        }
+        
+        const filteredData = this.historicalData.filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= startDate && recordDate <= endDate;
+        });
+        
+        // Sort by date descending
+        filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        this.updateFilteredTable(filteredData);
+        
+        const rangeDisplay = document.getElementById('currentAnalysisDataRange');
+        if (rangeDisplay) {
+            rangeDisplay.textContent = `${startDate.toLocaleDateString('en-PH')} - ${endDate.toLocaleDateString('en-PH')}`;
+        }
+        
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.range === 'custom') {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Save current filter
+        this.currentFilterRange = 'custom';
+        
+        // Hide custom picker
+        const picker = document.getElementById('customDateRangeSelector');
+        if (picker) picker.style.display = 'none';
+        
+        console.log(`Custom range applied: ${filteredData.length} records`);
+    }
+
+    addAccurateStyles() {
+        if (!document.getElementById('accurateRiskStyles')) {
+            const style = document.createElement('style');
+            style.id = 'accurateRiskStyles';
+            style.textContent = `
+                .status-badge {
+                    padding: 4px 8px;
+                    border-radius: 8px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .status-high {
+                    background: #fee2e2;
+                    color: #dc2626;
+                    border: 1px solid #fca5a5;
+                }
+                .status-medium {
+                    background: #fef3c7;
+                    color: #d97706;
+                    border: 1px solid #fcd34d;
+                }
+                .status-low {
+                    background: #dcfce7;
+                    color: #16a34a;
+                    border: 1px solid #86efac;
+                }
+                .trend-warning { color: #d97706; font-weight: bold; }
+                .trend-down { color: #dc2626; font-weight: bold; }
+                .trend-up { color: #16a34a; font-weight: bold; }
+                .trend-neutral { color: #6b7280; }
+                .table-row-high { background: rgba(239, 68, 68, 0.05); }
+                .table-row-medium { background: rgba(245, 158, 11, 0.05); }
+                .table-row-low { background: rgba(34, 197, 94, 0.03); }
+            `;
+            document.head.appendChild(style);
+        }
+    }
 
     initChart() {
         const canvas = document.getElementById('trafficChurnChart');
@@ -442,122 +556,82 @@ addAccurateStyles() {
         });
     }
 
- getChartLabels() {
-    if (this.dateRange === 'today') {
-        // For today, show shifts instead of dates
-        return ['Morning', 'Swing', 'Graveyard'];
-    }
-    
-    if (!this.historicalData || this.historicalData.length === 0) return [];
-    
-    let days;
-    if (this.dateRange === '7days') {
-        days = 7;
-    } else {
-        days = 14;
-    }
-    
-    const dataToUse = this.historicalData.slice(-days);
-    
-    return dataToUse.map(item => {
-        const date = new Date(item.date);
-        return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
-    });
-}
-
-getTrafficData() {
-    if (this.dateRange === 'today') {
-        if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
-        
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Find today's record - try exact match first, then most recent
-        let todayRecord = this.historicalData.find(record => record.date === today);
-        
-        // If no exact match, use the most recent record (first in DESC order)
-        if (!todayRecord) {
-            todayRecord = this.historicalData[0];
-            console.warn(`No exact match for ${today}, using most recent record:`, todayRecord.date);
+    getChartLabels() {
+        if (this.dateRange === 'today') {
+            return ['Morning', 'Swing', 'Graveyard'];
         }
         
-        if (!todayRecord) return [0, 0, 0];
+        if (!this.historicalData || this.historicalData.length === 0) return [];
         
-        // Get real shift traffic data from database
-        const morningTraffic = parseInt(todayRecord.morning_receipt_count) || 0;
-        const swingTraffic = parseInt(todayRecord.swing_receipt_count) || 0;
-        const graveyardTraffic = parseInt(todayRecord.graveyard_receipt_count) || 0;
-        
-        console.log('Today shift traffic data:', {
-            searchDate: today,
-            foundDate: todayRecord.date,
-            morning: morningTraffic,
-            swing: swingTraffic,
-            graveyard: graveyardTraffic
-        });
-        
-        return [morningTraffic, swingTraffic, graveyardTraffic];
-    }
-    
-    if (!this.historicalData || this.historicalData.length === 0) return [];
-    
-    let days;
-    if (this.dateRange === '7days') {
-        days = 7;
-    } else {
-        days = 14;
-    }
-    
-    const dataToUse = this.historicalData.slice(-days);
-    return dataToUse.map(item => parseInt(item.customer_traffic) || 0);
-}
-
-getRevenueData() {
-    if (this.dateRange === 'today') {
-        if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
-        
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Find today's record - try exact match first, then most recent
-        let todayRecord = this.historicalData.find(record => record.date === today);
-        
-        // If no exact match, use the most recent record (first in DESC order)
-        if (!todayRecord) {
-            todayRecord = this.historicalData[0];
-            console.warn(`No exact match for ${today}, using most recent record:`, todayRecord.date);
+        let days;
+        if (this.dateRange === '7days') {
+            days = 7;
+        } else {
+            days = 14;
         }
         
-        if (!todayRecord) return [0, 0, 0];
+        const dataToUse = this.historicalData.slice(-days);
         
-        // Get real shift revenue data from database
-        const morningRevenue = parseFloat(todayRecord.morning_sales_volume) || 0;
-        const swingRevenue = parseFloat(todayRecord.swing_sales_volume) || 0;
-        const graveyardRevenue = parseFloat(todayRecord.graveyard_sales_volume) || 0;
-        
-        console.log('Today shift revenue data:', {
-            searchDate: today,
-            foundDate: todayRecord.date,
-            morning: morningRevenue,
-            swing: swingRevenue,
-            graveyard: graveyardRevenue
+        return dataToUse.map(item => {
+            const date = new Date(item.date);
+            return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
         });
+    }
+
+    getTrafficData() {
+        if (this.dateRange === 'today') {
+            if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
+            
+            const today = new Date().toISOString().split('T')[0];
+            let todayRecord = this.historicalData.find(record => record.date === today);
+            
+            if (!todayRecord) {
+                todayRecord = this.historicalData[0];
+            }
+            
+            if (!todayRecord) return [0, 0, 0];
+            
+            const morningTraffic = parseInt(todayRecord.morning_receipt_count) || 0;
+            const swingTraffic = parseInt(todayRecord.swing_receipt_count) || 0;
+            const graveyardTraffic = parseInt(todayRecord.graveyard_receipt_count) || 0;
+            
+            return [morningTraffic, swingTraffic, graveyardTraffic];
+        }
         
-        return [morningRevenue, swingRevenue, graveyardRevenue];
+        if (!this.historicalData || this.historicalData.length === 0) return [];
+        
+        let days = this.dateRange === '7days' ? 7 : 14;
+        const dataToUse = this.historicalData.slice(-days);
+        return dataToUse.map(item => parseInt(item.customer_traffic) || 0);
     }
-    
-    if (!this.historicalData || this.historicalData.length === 0) return [];
-    
-    let days;
-    if (this.dateRange === '7days') {
-        days = 7;
-    } else {
-        days = 14;
+
+    getRevenueData() {
+        if (this.dateRange === 'today') {
+            if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
+            
+            const today = new Date().toISOString().split('T')[0];
+            let todayRecord = this.historicalData.find(record => record.date === today);
+            
+            if (!todayRecord) {
+                todayRecord = this.historicalData[0];
+            }
+            
+            if (!todayRecord) return [0, 0, 0];
+            
+            const morningRevenue = parseFloat(todayRecord.morning_sales_volume) || 0;
+            const swingRevenue = parseFloat(todayRecord.swing_sales_volume) || 0;
+            const graveyardRevenue = parseFloat(todayRecord.graveyard_sales_volume) || 0;
+            
+            return [morningRevenue, swingRevenue, graveyardRevenue];
+        }
+        
+        if (!this.historicalData || this.historicalData.length === 0) return [];
+        
+        let days = this.dateRange === '7days' ? 7 : 14;
+        const dataToUse = this.historicalData.slice(-days);
+        return dataToUse.map(item => parseFloat(item.sales_volume) || 0);
     }
-    
-    const dataToUse = this.historicalData.slice(-days);
-    return dataToUse.map(item => parseFloat(item.sales_volume) || 0);
-}
+
     updateChart(data) {
         if (!this.chartInstance) return;
 
@@ -604,17 +678,15 @@ getRevenueData() {
     showError(message) {
         console.error('Dashboard error:', message);
         
-        // Update elements to show error
         ['todayCustomerCount', 'todayRevenueAmount', 'avgCustomerTraffic14Days'].forEach(id => {
             this.setElement(id, 'Error');
         });
 
-        // Update table
         const tableBody = document.getElementById('historicalAnalysisTableBody');
         if (tableBody) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="no-data" style="color: #e74c3c;">
+                    <td colspan="6" class="no-data" style="color: #e74c3c;">
                         Error: ${message}<br>
                         <small>Check console for details</small>
                     </td>
@@ -733,6 +805,43 @@ function dismissRiskAlert() {
     }
 }
 
+// NEW: Date filtering global functions
+function filterHistoricalData(range) {
+    if (dashboard) {
+        dashboard.filterHistoricalData(range);
+    }
+}
+
+function showCustomDatePicker() {
+    const picker = document.getElementById('customDateRangeSelector');
+    if (picker) {
+        picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        
+        // Set default dates
+        if (picker.style.display !== 'none') {
+            const today = new Date().toISOString().split('T')[0];
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            
+            document.getElementById('customStartDate').value = sevenDaysAgo.toISOString().split('T')[0];
+            document.getElementById('customEndDate').value = today;
+        }
+    }
+}
+
+function applyCustomDateRange() {
+    if (dashboard) {
+        dashboard.applyCustomDateRange();
+    }
+}
+
+function cancelCustomDatePicker() {
+    const picker = document.getElementById('customDateRangeSelector');
+    if (picker) {
+        picker.style.display = 'none';
+    }
+}
+
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Page loaded, starting dashboard...');
@@ -760,12 +869,12 @@ window.debugDashboard = function() {
     console.log('Historical data:', dashboard?.historicalData?.length || 0);
     console.log('Last update:', dashboard?.lastUpdate);
     console.log('Chart:', !!dashboard?.chartInstance);
+    console.log('Current filter:', dashboard?.currentFilterRange);
     
     if (dashboard?.historicalData?.length > 0) {
         console.log('Sample data:', dashboard.historicalData[0]);
     }
     
-    // Test API directly
     fetch('api/customer_monitoring.php?t=' + Date.now())
         .then(r => r.json())
         .then(d => console.log('Direct API test:', d))
