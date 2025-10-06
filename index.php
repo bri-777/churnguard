@@ -141,15 +141,23 @@ if (!$me) {
 
 
 <style>
-/* Date Range Filter Styles */
+/* History Header Layout */
+.history-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .history-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  width: 100%;
+  flex-wrap: wrap;
 }
 
+/* Date Range Filter */
 .date-range-filter {
   display: flex;
   gap: 8px;
@@ -166,6 +174,7 @@ if (!$me) {
   color: #6b7280;
   cursor: pointer;
   transition: all 0.2s;
+  outline: none;
 }
 
 .filter-btn:hover {
@@ -178,6 +187,10 @@ if (!$me) {
   background: #3b82f6;
   color: white;
   border-color: #3b82f6;
+}
+
+.filter-btn:active {
+  transform: scale(0.98);
 }
 
 /* Custom Date Picker */
@@ -213,6 +226,12 @@ if (!$me) {
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
+  outline: none;
+}
+
+.date-input-group input[type="date"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .apply-custom-btn, .cancel-custom-btn {
@@ -222,6 +241,7 @@ if (!$me) {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  outline: none;
 }
 
 .apply-custom-btn {
@@ -234,6 +254,10 @@ if (!$me) {
   background: #2563eb;
 }
 
+.apply-custom-btn:active {
+  transform: scale(0.98);
+}
+
 .cancel-custom-btn {
   background: white;
   color: #6b7280;
@@ -242,6 +266,15 @@ if (!$me) {
 
 .cancel-custom-btn:hover {
   background: #f3f4f6;
+}
+
+.cancel-custom-btn:active {
+  transform: scale(0.98);
+}
+
+.last-updated {
+  font-size: 14px;
+  color: #6b7280;
 }
 
 
@@ -2280,6 +2313,40 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
   </div>
   
+<div class="history-section">
+  <div class="history-header">
+    <div class="history-title">📋 Historical Analysis</div>
+    <div class="history-controls">
+      <!-- Date Range Filter Buttons -->
+      <div class="date-range-filter">
+        <button type="button" class="filter-btn active" data-range="14days" onclick="filterHistoricalData('14days')">14 Days</button>
+        <button type="button" class="filter-btn" data-range="7days" onclick="filterHistoricalData('7days')">7 Days</button>
+        <button type="button" class="filter-btn" data-range="today" onclick="filterHistoricalData('today')">Today</button>
+        <button type="button" class="filter-btn" data-range="30days" onclick="filterHistoricalData('30days')">30 Days</button>
+        <button type="button" class="filter-btn" data-range="custom" onclick="showCustomDatePicker()">Custom</button>
+      </div>
+      <div class="last-updated">
+        Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Custom Date Picker -->
+  <div id="customDateRangeSelector" class="custom-date-picker" style="display: none;">
+    <div class="custom-date-inputs">
+      <div class="date-input-group">
+        <label>From:</label>
+        <input type="date" id="customStartDate" />
+      </div>
+      <div class="date-input-group">
+        <label>To:</label>
+        <input type="date" id="customEndDate" />
+      </div>
+      <button type="button" class="apply-custom-btn" onclick="applyCustomDateRange()">Apply</button>
+      <button type="button" class="cancel-custom-btn" onclick="cancelCustomDatePicker()">Cancel</button>
+    </div>
+  </div>
+  
   <div class="history-table-container">
     <table class="history-table">
       <thead>
@@ -2294,7 +2361,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </thead>
       <tbody id="historicalAnalysisTableBody">
         <tr>
-          <td colspan="6" class="no-data">Loading 14-day historical analysis...</td>
+          <td colspan="6" class="no-data">Loading historical analysis...</td>
         </tr>
       </tbody>
     </table>
