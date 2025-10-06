@@ -1256,1344 +1256,389 @@ function doLogout() {
   
   
   
-  
-  
-  
-  
-  
-  
-   <div id="dashboard-container" class="page">
-        <div class="sales-comparison-container">
-            
-            <!-- Enhanced Header -->
-            <div class="page-header">
-                <div class="header-left">
-                    <h1 class="page-title">
-                        <svg class="title-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                        </svg>
-                        Sales Analytics Dashboard
-                    </h1>
-                    <p class="page-subtitle" id="currentDateTime">Loading...</p>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="refreshAllData()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                        </svg>
-                        Refresh
-                    </button>
-                    <button class="btn btn-export" onclick="exportTargets()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                        </svg>
-                        Export
-                    </button>
-                    <button class="btn btn-primary" onclick="openTargetModal()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
-                        </svg>
-                        New Target
-                    </button>
-                </div>
+  <div class="sales-comparison-container">
+    <!-- Top KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
+            <div class="kpi-content">
+                <h3>Today's Sales</h3>
+                <p class="kpi-value" id="todaySales">₱0.00</p>
+                <span class="kpi-change" id="salesChange">0%</span>
             </div>
-
-            <!-- Enhanced KPI Cards with Mini Trends -->
-            <div class="kpi-cards-grid">
-                <div class="kpi-card">
-                    <div class="kpi-icon sales-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Today's Sales</span>
-                        <h3 class="kpi-value" id="todaySales">₱0.00</h3>
-                        <div class="kpi-footer">
-                            <span class="kpi-trend-badge" id="salesTrendBadge"><span>0%</span></span>
-                            <span class="kpi-sublabel">vs yesterday</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-icon customers-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Customer Traffic</span>
-                        <h3 class="kpi-value" id="todayCustomers">0</h3>
-                        <div class="kpi-footer">
-                            <span class="kpi-trend-badge" id="customersTrendBadge"><span>0%</span></span>
-                            <span class="kpi-sublabel">vs yesterday</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-icon transactions-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Transactions</span>
-                        <h3 class="kpi-value" id="todayTransactions">0</h3>
-                        <div class="kpi-footer">
-                            <span class="kpi-trend-badge" id="transactionsTrendBadge"><span>0%</span></span>
-                            <span class="kpi-sublabel">vs yesterday</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-icon target-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-                        </svg>
-                    </div>
-                    <div class="kpi-content">
-                        <span class="kpi-label">Target Achievement</span>
-                        <h3 class="kpi-value" id="targetAchievement">0%</h3>
-                        <div class="kpi-progress-mini">
-                            <div class="kpi-progress-bar" id="targetMiniProgress" style="width:0%"></div>
-                        </div>
-                        <span class="kpi-sublabel" id="targetStatus">No active target</span>
-                    </div>
-                </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-content">
+                <h3>Customer Traffic</h3>
+                <p class="kpi-value" id="todayTraffic">0</p>
+                <span class="kpi-change" id="trafficChange">0%</span>
             </div>
-
-            <!-- Tab Navigation -->
-            <div class="tab-navigation">
-                <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                    Overview
-                </button>
-                <button class="tab-btn" data-tab="trend" onclick="switchTab('trend')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                    </svg>
-                    Trend Analysis
-                </button>
-                <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/>
-                        <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
-                    Compare
-                </button>
-                <button class="tab-btn" data-tab="targets" onclick="switchTab('targets')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-                    </svg>
-                    Targets
-                </button>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-receipt"></i></div>
+            <div class="kpi-content">
+                <h3>Transactions</h3>
+                <p class="kpi-value" id="todayTransactions">0</p>
+                <span class="kpi-change" id="transactionsChange">0%</span>
             </div>
-
-            <!-- Overview Tab -->
-            <div class="tab-content active" id="overview-tab">
-                <div class="dashboard-grid">
-                    <!-- Sales Trend Chart -->
-                    <div class="chart-card full-width">
-                        <div class="chart-header">
-                            <div>
-                                <h3 class="chart-title">Sales Trend</h3>
-                                <p class="chart-subtitle">Last 30 days performance</p>
-                            </div>
-                            <select id="salesChartPeriod" class="form-input-sm" onchange="updateSalesTrendChart()">
-                                <option value="7">Last 7 days</option>
-                                <option value="30" selected>Last 30 days</option>
-                                <option value="60">Last 60 days</option>
-                                <option value="90">Last 90 days</option>
-                            </select>
-                        </div>
-                        <div class="chart-wrapper">
-                            <canvas id="salesTrendChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Shift Performance Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Shift Performance</h3>
-                            <input type="date" id="shiftDate" class="form-input-sm" onchange="loadShiftPerformance()" value="">
-                        </div>
-                        <div class="chart-wrapper">
-                            <canvas id="shiftPerformanceChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Performance Distribution -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Performance Distribution</h3>
-                            <p class="chart-subtitle">Today's metrics breakdown</p>
-                        </div>
-                        <div class="chart-wrapper">
-                            <canvas id="distributionChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="kpi-content">
+                <h3>Target Progress</h3>
+                <p class="kpi-value" id="targetProgress">0%</p>
+                <span class="kpi-change" id="targetStatus">-</span>
             </div>
+        </div>
+    </div>
 
-            <!-- Trend Analysis Tab -->
-            <div class="tab-content" id="trend-tab">
-                <div class="data-table-card">
-                    <div class="section-header">
-                        <h3 class="section-title">Sales Trend Analysis</h3>
-                        <select id="trendPeriod" class="form-input" onchange="updateTrendChart()">
-                            <option value="7">Last 7 days</option>
-                            <option value="30" selected>Last 30 days</option>
-                            <option value="60">Last 60 days</option>
-                            <option value="90">Last 90 days</option>
-                        </select>
-                    </div>
-                    <div class="table-container">
-                        <table class="data-table trend-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Sales Revenue</th>
-                                    <th>Transactions</th>
-                                    <th>Customers</th>
-                                    <th>Avg Value</th>
-                                    <th>Change</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salesTrendTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Comparison Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2>Sales Comparison</h2>
+            <button class="btn-primary" onclick="openComparisonModal()">
+                <i class="fas fa-calendar-alt"></i> Select Dates
+            </button>
+        </div>
 
-            <!-- Compare Tab -->
-            <div class="tab-content" id="compare-tab">
-                <div class="comparison-filters-section">
-                    <div class="filters-row">
-                        <div class="filter-group">
-                            <label>Comparison Type</label>
-                            <select id="comparisonType" class="form-input" onchange="updateComparisonDates()">
-                                <option value="today_vs_yesterday">Today vs Yesterday</option>
-                                <option value="week_vs_week">This Week vs Last Week</option>
-                                <option value="month_vs_month">This Month vs Last Month</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label>Current Period</label>
-                            <input type="date" id="currentDate" class="form-input">
-                        </div>
-                        <div class="filter-group">
-                            <label>Compare With</label>
-                            <input type="date" id="compareDate" class="form-input">
-                        </div>
-                        <div class="filter-group">
-                            <button class="btn btn-primary" onclick="loadComparison()" style="margin-top:24px;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                                </svg>
-                                Compare
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Quick Filters -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="today">Today vs Yesterday</button>
+            <button class="filter-btn" data-filter="week">This Week vs Last Week</button>
+            <button class="filter-btn" data-filter="month">This Month vs Last Month</button>
+            <button class="filter-btn" data-filter="custom">Custom Range</button>
+        </div>
 
-                <div class="comparison-grid" id="comparisonGrid">
-                    <div class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                        </svg>
-                        <p>Select dates and click Compare to view data</p>
-                    </div>
-                </div>
-            </div>
+        <!-- Comparison Table -->
+        <div class="table-container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Value</th>
+                        <th>Comparison Value</th>
+                        <th>Difference</th>
+                        <th>Change %</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                    <tr><td colspan="6" class="text-center">Select dates to compare</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <!-- Targets Tab -->
-            <div class="tab-content" id="targets-tab">
-                <div class="target-management-section">
-                    <div class="section-header">
-                        <h3 class="section-title">Target Management</h3>
-                        <select id="targetFilter" class="form-input" onchange="filterTargets()">
-                            <option value="all">All Targets</option>
-                            <option value="active">Active</option>
-                            <option value="achieved">Achieved</option>
-                            <option value="near">Near Target</option>
-                            <option value="below">Below Target</option>
-                        </select>
-                    </div>
+    <!-- Target Management Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2>Target Management</h2>
+            <button class="btn-primary" onclick="openTargetModal()">
+                <i class="fas fa-plus"></i> Set New Target
+            </button>
+        </div>
 
-                    <div id="targetsGrid" class="targets-grid-pro">
-                        <div class="loading-state">Loading targets...</div>
-                    </div>
+        <!-- Targets Table -->
+        <div class="table-container">
+            <table class="targets-table">
+                <thead>
+                    <tr>
+                        <th>Target Name</th>
+                        <th>Type</th>
+                        <th>Period</th>
+                        <th>Target Value</th>
+                        <th>Current</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="targetsTableBody">
+                    <tr><td colspan="8" class="text-center">No targets set</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-                    <div class="table-container" style="margin-top:24px;">
-                        <table class="targets-table">
-                            <thead>
-                                <tr>
-                                    <th>Target Name</th>
-                                    <th>Type</th>
-                                    <th>Current / Target</th>
-                                    <th>Progress</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="activeTargetsTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Target Modal -->
-            <div class="modal" id="targetModal" onclick="closeTargetModal(event)">
-                <div class="modal-content" onclick="event.stopPropagation()">
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="modalTitle">Create New Target</h3>
-                        <button class="modal-close modal-close-btn" onclick="closeTargetModal(event)">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 6L6 18M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="targetForm" onsubmit="saveTarget(event)">
-                            <div class="form-group">
-                                <label>Target Name</label>
-                                <input type="text" id="targetName" class="form-input" required placeholder="e.g., Q4 Sales Goal">
-                            </div>
-                            <div class="form-group">
-                                <label>Target Type</label>
-                                <select id="targetType" class="form-input" required>
-                                    <option value="">Select type...</option>
-                                    <option value="sales">Sales Revenue</option>
-                                    <option value="customers">Customer Traffic</option>
-                                    <option value="transactions">Transactions</option>
-                                    <option value="avg_transaction">Avg Transaction Value</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Target Value</label>
-                                <input type="number" id="targetValue" class="form-input" required min="0.01" step="0.01">
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Start Date</label>
-                                    <input type="date" id="targetStartDate" class="form-input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>End Date</label>
-                                    <input type="date" id="targetEndDate" class="form-input" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Store/Branch (Optional)</label>
-                                <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all">
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="closeTargetModal(event)">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save Target</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Sales Trend</h3>
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Target Achievement</h3>
+            <canvas id="targetAchievementChart"></canvas>
         </div>
     </div>
 </div>
 
-    <script src = "assets/js/sales_comparison.js"></script>
-    <style>
-
-/* ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD CSS ==================== */
-
-/* CSS Variables */
-:root {
-    /* Primary Colors - Professional Blue/Indigo Palette */
-    --primary-50: #eef2ff;
-    --primary-100: #e0e7ff;
-    --primary-200: #c7d2fe;
-    --primary-300: #a5b4fc;
-    --primary-400: #818cf8;
-    --primary-500: #6366f1;
-    --primary-600: #4f46e5;
-    --primary-700: #4338ca;
-    --primary-800: #3730a3;
-    --primary-900: #312e81;
-    
-    /* Success Colors */
-    --success-50: #ecfdf5;
-    --success-100: #d1fae5;
-    --success-500: #10b981;
-    --success-600: #059669;
-    --success-700: #047857;
-    
-    /* Warning Colors */
-    --warning-50: #fffbeb;
-    --warning-100: #fef3c7;
-    --warning-500: #f59e0b;
-    --warning-600: #d97706;
-    
-    /* Danger Colors */
-    --danger-50: #fef2f2;
-    --danger-100: #fee2e2;
-    --danger-500: #ef4444;
-    --danger-600: #dc2626;
-    
-    /* Neutral Colors */
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    
-    /* Background */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    
-    /* Shadows */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    
-    /* Border Radius */
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-2xl: 24px;
-    
-    /* Transitions */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Reset & Base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    background: var(--bg-secondary);
-    color: var(--gray-900);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Dashboard Wrapper */
-.dashboard-wrapper {
-    min-height: 100vh;
-    background: var(--bg-secondary);
-}
-
-/* Top Navigation Bar */
-.top-navbar {
-    background: var(--bg-primary);
-    border-bottom: 1px solid var(--gray-200);
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow-sm);
-}
-
-.navbar-left .brand-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-}
-
-.navbar-left .brand-title svg {
-    color: var(--primary-600);
-}
-
-.navbar-center .date-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: var(--gray-50);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    color: var(--gray-700);
-}
-
-.navbar-center .date-display svg {
-    color: var(--primary-600);
-}
-
-.navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.icon-btn {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
-    background: var(--bg-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.icon-btn:hover {
-    background: var(--gray-50);
-    border-color: var(--primary-300);
-}
-
-.notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--danger-500);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-primary-small {
-    padding: 8px 16px;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all var(--transition-base);
-}
-
-.btn-primary-small:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-/* Main Content */
-.dashboard-content {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 32px;
-}
-
-/* Section Titles */
-.section-title-main {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: 20px;
-}
-
-/* KPI Section */
-.kpi-section {
-    margin-bottom: 32px;
-}
-
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-.kpi-card-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    transition: all var(--transition-slow);
-    cursor: pointer;
-}
-
-.kpi-card-pro:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary-200);
-}
-
-.kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-}
-
-.kpi-icon-pro {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.sales-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.customers-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.transactions-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.target-gradient { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-
-.kpi-trend-badge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-trend-badge.down {
-    background: var(--danger-50);
-    color: var(--danger-700);
-}
-
-.kpi-trend-badge.down svg {
-    transform: rotate(180deg);
-}
-
-.kpi-trend-badge.success {
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-body {
-    margin-top: 16px;
-}
-
-.kpi-label-pro {
-    display: block;
-    font-size: 13px;
-    color: var(--gray-500);
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.kpi-value-pro {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-    line-height: 1;
-}
-
-.kpi-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-}
-
-.kpi-comparison {
-    font-size: 12px;
-    color: var(--gray-500);
-}
-
-.kpi-sparkline {
-    font-size: 8px;
-    color: var(--primary-400);
-    letter-spacing: 2px;
-}
-
-.mini-progress {
-    width: 100%;
-    height: 4px;
-    background: var(--gray-200);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 8px;
-}
-
-.mini-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-    transition: width var(--transition-slow);
-}
-
-/* Charts Section */
-.charts-section {
-    margin-bottom: 32px;
-}
-
-.chart-container-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 24px;
-}
-
-.chart-card {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-sm);
-}
-
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-}
-
-.chart-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-}
-
-.chart-subtitle {
-    font-size: 13px;
-    color: var(--gray-500);
-    margin: 0;
-}
-
-.chart-select {
-    padding: 6px 12px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    background: white;
-    color: var(--gray-700);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.chart-select:hover {
-    border-color: var(--primary-400);
-}
-
-.chart-select:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.chart-body {
-    position: relative;
-}
-
-/* Comparison Section */
-.comparison-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    margin-bottom: 32px;
-}
-
-.section-header-pro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.btn-outline-small {
-    padding: 6px 12px;
-    border: 1px solid var(--gray-300);
-    background: transparent;
-    color: var(--gray-700);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-outline-small:hover {
-    background: var(--gray-50);
-    border-color: var(--gray-400);
-}
-
-.comparison-controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.control-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-}
-
-.form-select-pro,
-.form-input-pro {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    background: white;
-    color: var(--gray-900);
-    transition: all var(--transition-base);
-}
-
-.form-select-pro:focus,
-.form-input-pro:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.btn-primary-pro {
-    width: 100%;
-    padding: 10px 20px;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all var(--transition-base);
-    margin-top: 24px;
-}
-
-.btn-primary-pro:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.comparison-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-}
-
-.comparison-metric-card {
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-}
-
-.metric-name {
-    font-size: 13px;
-    color: var(--gray-600);
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.metric-values {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-}
-
-.metric-current {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-}
-
-.metric-previous {
-    font-size: 14px;
-    color: var(--gray-500);
-}
-
-.metric-change {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.metric-change.positive {
-    color: var(--success-600);
-}
-
-.metric-change.negative {
-    color: var(--danger-600);
-}
-
-/* Targets Section */
-.targets-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    margin-bottom: 32px;
-}
-
-.filter-controls {
-    display: flex;
-    gap: 12px;
-}
-
-.targets-grid {
-    display: grid;
-    gap: 16px;
-}
-
-.target-card-pro {
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    transition: all var(--transition-base);
-}
-
-.target-card-pro:hover {
-    border-color: var(--primary-300);
-    box-shadow: var(--shadow-md);
-}
-
-.target-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-}
-
-.target-name-pro {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-}
-
-.target-type-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    background: var(--primary-100);
-    color: var(--primary-700);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.target-progress-section {
-    margin-bottom: 16px;
-}
-
-.progress-bar-container {
-    height: 8px;
-    background: var(--gray-200);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    transition: width var(--transition-slow);
-}
-
-.progress-bar-fill.achieved {
-    background: linear-gradient(90deg, var(--success-500), var(--success-600));
-}
-
-.progress-bar-fill.near {
-    background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
-}
-
-.progress-bar-fill.below {
-    background: linear-gradient(90deg, var(--danger-400), var(--danger-500));
-}
-
-.progress-stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-}
-
-.progress-percentage {
-    font-weight: 700;
-    color: var(--gray-900);
-}
-
-.progress-values {
-    color: var(--gray-600);
-}
-
-.target-footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.target-dates {
-    font-size: 12px;
-    color: var(--gray-500);
-}
-
-.target-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-icon-small {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-300);
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.btn-icon-small:hover {
-    background: var(--gray-50);
-    border-color: var(--primary-400);
-}
-
-.btn-icon-small.delete:hover {
-    background: var(--danger-50);
-    border-color: var(--danger-400);
-    color: var(--danger-600);
-}
-
-/* Tables Section */
-.tables-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--gray-200);
-    overflow: hidden;
-}
-
-.table-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--gray-200);
-    background: var(--gray-50);
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 16px;
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-600);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition-base);
-}
-
-.tab-btn:hover {
-    background: var(--gray-100);
-}
-
-.tab-btn.active {
-    color: var(--primary-600);
-    border-bottom-color: var(--primary-600);
-    background: white;
-}
-
-.tab-content {
-    display: none;
-    padding: 24px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.table-wrapper-pro {
-    overflow-x: auto;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
-}
-
-.data-table-pro {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-}
-
-.data-table-pro thead {
-    background: var(--gray-50);
-}
-
-.data-table-pro th {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gray-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--gray-200);
-}
-
-.data-table-pro td {
-    padding: 14px 16px;
-    border-top: 1px solid var(--gray-200);
-    font-size: 14px;
-    color: var(--gray-700);
-}
-
-.data-table-pro tbody tr:hover {
-    background: var(--gray-50);
-}
-
-.loading-cell {
-    text-align: center;
-    padding: 40px;
-    color: var(--gray-400);
-    font-style: italic;
-}
-
-.status-badge-pro {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.status-badge-pro.achieved {
-    background: var(--success-100);
-    color: var(--success-700);
-}
-
-.status-badge-pro.near {
-    background: var(--warning-100);
-    color: var(--warning-700);
-}
-
-.status-badge-pro.below {
-    background: var(--danger-100);
-    color: var(--danger-600);
-}
-
-/* Modal */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity var(--transition-base);
-}
-
-.modal-overlay.active {
-    display: flex;
-    opacity: 1;
-}
-
-.modal-container {
-    background: white;
-    border-radius: var(--radius-2xl);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-2xl);
-    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.modal-header-pro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 32px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.modal-header-pro h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-}
-
-.modal-close-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    border: none;
-    background: var(--gray-100);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.modal-close-btn:hover {
-    background: var(--gray-200);
-    transform: rotate(90deg);
-}
-
-.modal-body-pro {
-    padding: 24px 32px;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-group-pro {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group-pro.full-width {
-    grid-column: 1 / -1;
-}
-
-.form-group-pro label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-700);
-}
-
-.modal-footer-pro {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 24px 32px;
-    border-top: 1px solid var(--gray-200);
-}
-
-.btn-secondary-pro {
-    padding: 10px 20px;
-    border: 1px solid var(--gray-300);
-    background: white;
-    color: var(--gray-700);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-secondary-pro:hover {
-    background: var(--gray-50);
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .chart-container-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-content {
-        padding: 20px;
-    }
-    
-    .top-navbar {
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 16px;
-    }
-    
-    .navbar-center {
-        order: 3;
-        width: 100%;
-    }
-    
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .comparison-controls {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .table-tabs {
-        overflow-x: auto;
-    }
-}
-
-      </style>
+<!-- Comparison Modal -->
+<div id="comparisonModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Select Comparison Dates</h3>
+            <span class="close" onclick="closeComparisonModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Current Date:</label>
+                <input type="date" id="currentDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Compare With:</label>
+                <input type="date" id="compareDate" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeComparisonModal()">Cancel</button>
+            <button class="btn-primary" onclick="runComparison()">Compare</button>
+        </div>
+    </div>
+</div>
+
+<!-- Target Modal -->
+<div id="targetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="targetModalTitle">Set New Target</h3>
+            <span class="close" onclick="closeTargetModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="targetId">
+            <div class="form-group">
+                <label>Target Name:</label>
+                <input type="text" id="targetName" class="form-control" placeholder="e.g., Monthly Sales Goal">
+            </div>
+            <div class="form-group">
+                <label>Target Type:</label>
+                <select id="targetType" class="form-control">
+                    <option value="sales">Sales</option>
+                    <option value="customers">Customers</option>
+                    <option value="transactions">Transactions</option>
+                    <option value="avg_transaction">Average Transaction Value</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Target Value:</label>
+                <input type="number" id="targetValue" class="form-control" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>End Date:</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Store/Branch (Optional):</label>
+                <input type="text" id="targetStore" class="form-control" placeholder="e.g., Main Branch">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTargetModal()">Cancel</button>
+            <button class="btn-primary" onclick="saveTarget()">Save Target</button>
+        </div>
+    </div>
+</div>
+  dashboard-container
+  
+ <div id= dashboard-container" class="page">
+  <div class="sales-comparison-container">
+    <!-- Top KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
+            <div class="kpi-content">
+                <h3>Today's Sales</h3>
+                <p class="kpi-value" id="todaySales">₱0.00</p>
+                <span class="kpi-change" id="salesChange">0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-content">
+                <h3>Customer Traffic</h3>
+                <p class="kpi-value" id="todayTraffic">0</p>
+                <span class="kpi-change" id="trafficChange">0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-receipt"></i></div>
+            <div class="kpi-content">
+                <h3>Transactions</h3>
+                <p class="kpi-value" id="todayTransactions">0</p>
+                <span class="kpi-change" id="transactionsChange">0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="kpi-content">
+                <h3>Target Progress</h3>
+                <p class="kpi-value" id="targetProgress">0%</p>
+                <span class="kpi-change" id="targetStatus">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2>Sales Comparison</h2>
+            <button class="btn-primary" onclick="openComparisonModal()">
+                <i class="fas fa-calendar-alt"></i> Select Dates
+            </button>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="today">Today vs Yesterday</button>
+            <button class="filter-btn" data-filter="week">This Week vs Last Week</button>
+            <button class="filter-btn" data-filter="month">This Month vs Last Month</button>
+            <button class="filter-btn" data-filter="custom">Custom Range</button>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="table-container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Value</th>
+                        <th>Comparison Value</th>
+                        <th>Difference</th>
+                        <th>Change %</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                    <tr><td colspan="6" class="text-center">Select dates to compare</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Target Management Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2>Target Management</h2>
+            <button class="btn-primary" onclick="openTargetModal()">
+                <i class="fas fa-plus"></i> Set New Target
+            </button>
+        </div>
+
+        <!-- Targets Table -->
+        <div class="table-container">
+            <table class="targets-table">
+                <thead>
+                    <tr>
+                        <th>Target Name</th>
+                        <th>Type</th>
+                        <th>Period</th>
+                        <th>Target Value</th>
+                        <th>Current</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="targetsTableBody">
+                    <tr><td colspan="8" class="text-center">No targets set</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Sales Trend</h3>
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Target Achievement</h3>
+            <canvas id="targetAchievementChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Modal -->
+<div id="comparisonModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Select Comparison Dates</h3>
+            <span class="close" onclick="closeComparisonModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Current Date:</label>
+                <input type="date" id="currentDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Compare With:</label>
+                <input type="date" id="compareDate" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeComparisonModal()">Cancel</button>
+            <button class="btn-primary" onclick="runComparison()">Compare</button>
+        </div>
+    </div>
+</div>
+
+<!-- Target Modal -->
+<div id="targetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="targetModalTitle">Set New Target</h3>
+            <span class="close" onclick="closeTargetModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="targetId">
+            <div class="form-group">
+                <label>Target Name:</label>
+                <input type="text" id="targetName" class="form-control" placeholder="e.g., Monthly Sales Goal">
+            </div>
+            <div class="form-group">
+                <label>Target Type:</label>
+                <select id="targetType" class="form-control">
+                    <option value="sales">Sales</option>
+                    <option value="customers">Customers</option>
+                    <option value="transactions">Transactions</option>
+                    <option value="avg_transaction">Average Transaction Value</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Target Value:</label>
+                <input type="number" id="targetValue" class="form-control" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>End Date:</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Store/Branch (Optional):</label>
+                <input type="text" id="targetStore" class="form-control" placeholder="e.g., Main Branch">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTargetModal()">Cancel</button>
+            <button class="btn-primary" onclick="saveTarget()">Save Target</button>
+        </div>
+    </div>
+</div>
+  <link rel ="stylesheet" href = "sales_comparison.css">
+  
   
   
   
