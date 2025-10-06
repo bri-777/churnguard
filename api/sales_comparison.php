@@ -19,15 +19,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Database Configuration
-require __DIR__ . '/connection/config.php';
+const DB_CONFIG = [
+    'host' => 'localhost',
+    'name' => 'u393812660_churnguard',
+    'user' => 'u393812660_churnguard',
+    'pass' => '102202Brian_'
+];
+
 // ==================== AUTHENTICATION ====================
 session_start();
 
-
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // 👈 add this line temporarily
+    http_response_code(401);
+    echo json_encode([
+        'status' => 'error',
+        'error' => 'unauthorized',
+        'message' => 'Authentication required'
+    ]);
+    exit;
 }
-
 
 $userId = (int)$_SESSION['user_id'];
 
@@ -609,4 +619,3 @@ if ($action === 'trend_data') {
 
 // ==================== INVALID ACTION ====================
 jsonError('Invalid action parameter', 400);
-?>
