@@ -82,7 +82,7 @@ if (!$me) {
           <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
         </a>
      <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
-          <i class="fas fa-eye"></i> <span>Performance Monitoring</span>
+          <i class="fas fa-eye"></i> <span>Target Sales</span>
         </a>
       </div>
 
@@ -99,7 +99,7 @@ if (!$me) {
       
 
         <a href="#" class="menu-item" onclick="showPage('recommendations')">
-          <i class="fas fa-lightbulb"></i> <span>Stratigic Recommendations</span>
+          <i class="fas fa-lightbulb"></i> <span>AI Recommendations</span>
         </a>
       </div>
 
