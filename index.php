@@ -31,6 +31,7 @@ if (!$me) {
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <meta name="csrf-token" content="<?=htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES)?>">
 <!-- NEW: help the JS persist prediction state per user -->
 <meta name="user-id" content="<?= (int)($me['user_id'] ?? 0) ?>">
@@ -2060,6 +2061,210 @@ window.onclick = function(ev){
 
 cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: cgx_debugMode});
 </script>
+
+
+
+
+
+<div id = "dashboard-container" class = "page">
+<div class="sales-comparison-container">
+    <!-- Top KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
+            <div class="kpi-content">
+                <h3>Today's Sales</h3>
+                <p class="kpi-value" id="todaySales">₱0.00</p>
+                <span class="kpi-change" id="salesChange">0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-content">
+                <h3>Customer Traffic</h3>
+                <p class="kpi-value" id="todayTraffic">0</p>
+                <span class="kpi-change" id="trafficChange">0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-receipt"></i></div>
+            <div class="kpi-content">
+                <h3>Transactions</h3>
+                <p class="kpi-value" id="todayTransactions">0</p>
+                <span class="kpi-change" id="transactionsChange">0%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="kpi-content">
+                <h3>Target Progress</h3>
+                <p class="kpi-value" id="targetProgress">0%</p>
+                <span class="kpi-change" id="targetStatus">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2>Sales Comparison</h2>
+            <button class="btn-primary" onclick="openComparisonModal()">
+                <i class="fas fa-calendar-alt"></i> Select Dates
+            </button>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="today">Today vs Yesterday</button>
+            <button class="filter-btn" data-filter="week">This Week vs Last Week</button>
+            <button class="filter-btn" data-filter="month">This Month vs Last Month</button>
+            <button class="filter-btn" data-filter="custom">Custom Range</button>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="table-container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Value</th>
+                        <th>Comparison Value</th>
+                        <th>Difference</th>
+                        <th>Change %</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                    <tr><td colspan="6" class="text-center">Select dates to compare</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Target Management Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2>Target Management</h2>
+            <button class="btn-primary" onclick="openTargetModal()">
+                <i class="fas fa-plus"></i> Set New Target
+            </button>
+        </div>
+
+        <!-- Targets Table -->
+        <div class="table-container">
+            <table class="targets-table">
+                <thead>
+                    <tr>
+                        <th>Target Name</th>
+                        <th>Type</th>
+                        <th>Period</th>
+                        <th>Target Value</th>
+                        <th>Current</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="targetsTableBody">
+                    <tr><td colspan="8" class="text-center">No targets set</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Sales Trend</h3>
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Target Achievement</h3>
+            <canvas id="targetAchievementChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Modal -->
+<div id="comparisonModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Select Comparison Dates</h3>
+            <span class="close" onclick="closeComparisonModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Current Date:</label>
+                <input type="date" id="currentDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Compare With:</label>
+                <input type="date" id="compareDate" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeComparisonModal()">Cancel</button>
+            <button class="btn-primary" onclick="runComparison()">Compare</button>
+        </div>
+    </div>
+</div>
+
+<!-- Target Modal -->
+<div id="targetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="targetModalTitle">Set New Target</h3>
+            <span class="close" onclick="closeTargetModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="targetId">
+            <div class="form-group">
+                <label>Target Name:</label>
+                <input type="text" id="targetName" class="form-control" placeholder="e.g., Monthly Sales Goal">
+            </div>
+            <div class="form-group">
+                <label>Target Type:</label>
+                <select id="targetType" class="form-control">
+                    <option value="sales">Sales</option>
+                    <option value="customers">Customers</option>
+                    <option value="transactions">Transactions</option>
+                    <option value="avg_transaction">Average Transaction Value</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Target Value:</label>
+                <input type="number" id="targetValue" class="form-control" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>End Date:</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Store/Branch (Optional):</label>
+                <input type="text" id="targetStore" class="form-control" placeholder="e.g., Main Branch">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTargetModal()">Cancel</button>
+            <button class="btn-primary" onclick="saveTarget()">Save Target</button>
+        </div>
+    </div>
+</div>
+</div>
+<link rel = "stylesheet" href = "sales_comparison.css">
+<script src="sales_comparison.js"></script>
+
+
+
+
+
+
 
 
 
