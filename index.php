@@ -2121,71 +2121,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             <!-- KPI Summary Cards -->
             <section class="kpi-section">
                 <h2 class="section-title-main">Performance Overview</h2>
-                <div class="kpi-grid">
-                    <div class="kpi-card-pro" data-metric="sales">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro sales-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                </svg>
-                            </div>
-                          
-
-                    
-
-                    <div class="kpi-card-pro" data-metric="transactions">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro transactions-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                                    <path d="M2 10h20"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge" id="transactionsTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Transactions</span>
-                            <h3 class="kpi-value-pro" id="todayTransactions">0</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="transactionsComparison">vs yesterday</span>
-                                <span class="kpi-sparkline" id="transactionsSparkline">●●●●●●●</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="kpi-card-pro" data-metric="target">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro target-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <circle cx="12" cy="12" r="6"/>
-                                    <circle cx="12" cy="12" r="2"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge success" id="targetTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>Active</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Target Progress</span>
-                            <h3 class="kpi-value-pro" id="targetAchievement">0%</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="targetStatus">No active target</span>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" id="targetMiniProgress" style="width:0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+             
             </section>
 
             <!-- Charts Section -->
