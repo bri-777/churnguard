@@ -863,6 +863,166 @@ html, body {
   #customer-insights .mini-metrics { grid-template-columns: 1fr 1fr; }
   #customer-insights .page-tools { justify-content: flex-start; }
 }
+
+/* History Header */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.history-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Filter Container */
+.history-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-filter-container label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Dropdown Styles */
+.date-range-dropdown {
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  min-width: 160px;
+}
+
+.date-range-dropdown:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-range-dropdown:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Filter Info */
+.filter-info {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.filter-info span {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Custom Date Picker */
+.custom-date-picker {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-date-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-input-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.date-input-group input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  min-width: 150px;
+}
+
+.date-input-group input[type="date"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.apply-custom-btn,
+.cancel-custom-btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+  border: none;
+}
+
+.apply-custom-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+.apply-custom-btn:hover {
+  background: #2563eb;
+}
+
+.cancel-custom-btn {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.cancel-custom-btn:hover {
+  background: #f3f4f6;
+}
+
 </style>
 
 
@@ -2143,32 +2303,58 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     
 
   <div class="history-section">
-    <div class="history-header">
-      <div class="history-title">📋Historical Analysis</div>
-      <div class="last-updated">
-        Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
+  <div class="history-header">
+    <div class="history-title">📋 Historical Analysis</div>
+    <div class="history-filter-container">
+      <label for="dateRangeFilter">Filter by:</label>
+      <select id="dateRangeFilter" class="date-range-dropdown" onchange="filterHistoricalData(this.value)">
+        <option value="14days">Last 14 Days</option>
+        <option value="7days">Last 7 Days</option>
+        <option value="today">Today</option>
+        <option value="30days">Last 30 Days</option>
+        <option value="custom">Custom Range</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Custom Date Range Picker (hidden by default) -->
+  <div id="customDateRangeSelector" class="custom-date-picker" style="display: none;">
+    <div class="custom-date-inputs">
+      <div class="date-input-group">
+        <label>From:</label>
+        <input type="date" id="customStartDate" />
       </div>
+      <div class="date-input-group">
+        <label>To:</label>
+        <input type="date" id="customEndDate" />
+      </div>
+      <button type="button" class="apply-custom-btn" onclick="applyCustomDateRange()">Apply</button>
+      <button type="button" class="cancel-custom-btn" onclick="cancelCustomDatePicker()">Cancel</button>
     </div>
-    <div class="history-table-container">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Customer Traffic</th>
-            <th>Revenue</th>
-            <th>Transactions</th>
-            <th>Risk Level</th>
-          
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="historicalAnalysisTableBody">
-          <tr>
-            <td colspan="7" class="no-data">Loading 14-day historical analysis...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  </div>
+  
+  <div class="filter-info">
+    Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
+  </div>
+  
+  <div class="history-table-container">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer Traffic</th>
+          <th>Revenue</th>
+          <th>Transactions</th>
+          <th>Risk Level</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="historicalAnalysisTableBody">
+        <tr>
+          <td colspan="6" class="no-data">Loading historical analysis...</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
