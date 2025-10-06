@@ -2121,7 +2121,110 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             <!-- KPI Summary Cards -->
             <section class="kpi-section">
                 <h2 class="section-title-main">Performance Overview</h2>
-             
+                <div class="kpi-grid">
+                    <div class="kpi-card-pro" data-metric="sales">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro sales-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge" id="salesTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Today's Revenue</span>
+                            <h3 class="kpi-value-pro" id="todaySales">₱0.00</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="salesComparison">vs yesterday</span>
+                                <span class="kpi-sparkline" id="salesSparkline">●●●●●●●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-pro" data-metric="customers">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro customers-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge" id="customersTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Customer Traffic</span>
+                            <h3 class="kpi-value-pro" id="todayCustomers">0</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="customersComparison">vs yesterday</span>
+                                <span class="kpi-sparkline" id="customersSparkline">●●●●●●●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-pro" data-metric="transactions">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro transactions-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                    <path d="M2 10h20"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge" id="transactionsTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Transactions</span>
+                            <h3 class="kpi-value-pro" id="todayTransactions">0</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="transactionsComparison">vs yesterday</span>
+                                <span class="kpi-sparkline" id="transactionsSparkline">●●●●●●●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-pro" data-metric="target">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-pro target-gradient">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="6"/>
+                                    <circle cx="12" cy="12" r="2"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-trend-badge success" id="targetTrendBadge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5H7z"/>
+                                </svg>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label-pro">Target Progress</span>
+                            <h3 class="kpi-value-pro" id="targetAchievement">0%</h3>
+                            <div class="kpi-footer">
+                                <span class="kpi-comparison" id="targetStatus">No active target</span>
+                                <div class="mini-progress">
+                                    <div class="mini-progress-bar" id="targetMiniProgress" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Charts Section -->
@@ -2241,12 +2344,30 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             <!-- Data Tables -->
             <section class="tables-section-pro">
                 <div class="table-tabs">
-                   
+                    <button class="tab-btn active" onclick="switchTab('trend')" data-tab="trend">Sales Trend</button>
                     <button class="tab-btn" onclick="switchTab('active-targets')" data-tab="active-targets">Active Targets</button>
-               
+                    <button class="tab-btn" onclick="switchTab('performance')" data-tab="performance">Performance Log</button>
                 </div>
 
-                
+                <div class="tab-content active" id="trend-tab">
+                    <div class="table-wrapper-pro">
+                        <table class="data-table-pro">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Revenue</th>
+                                    <th>Transactions</th>
+                                    <th>Customers</th>
+                                    <th>Avg. Value</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTrendTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div class="tab-content" id="active-targets-tab">
                     <div class="table-wrapper-pro">
@@ -2268,6 +2389,25 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                     </div>
                 </div>
 
+                <div class="tab-content" id="performance-tab">
+                    <div class="table-wrapper-pro">
+                        <table class="data-table-pro">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Today</th>
+                                    <th>Yesterday</th>
+                                    <th>Last Week</th>
+                                    <th>Last Month</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performanceTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
         </main>
