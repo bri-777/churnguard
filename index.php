@@ -2144,7 +2144,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
   <div class="history-section">
     <div class="history-header">
-      <div class="history-title">Historical Data</div>
+      <div class="history-title">📋Historical Analysis</div>
       <div class="last-updated">
         Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
       </div>
