@@ -2246,25 +2246,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                
                 </div>
 
-                <div class="tab-content active" id="trend-tab">
-                    <div class="table-wrapper-pro">
-                        <table class="data-table-pro">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Revenue</th>
-                                    <th>Transactions</th>
-                                    <th>Customers</th>
-                                    <th>Avg. Value</th>
-                                    <th>Change</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salesTrendTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                
 
                 <div class="tab-content" id="active-targets-tab">
                     <div class="table-wrapper-pro">
