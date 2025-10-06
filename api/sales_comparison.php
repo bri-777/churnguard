@@ -4,57 +4,59 @@ declare(strict_types=1);
 // ==================== CONFIGURATION ====================
 date_default_timezone_set('Asia/Manila');
 error_reporting(E_ALL);
-
-// DEBUG MODE - Set to false in production
-define('DEBUG_MODE', true);
-
-ini_set('display_errors', DEBUG_MODE ? '1' : '0');
+ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
-// Headers
+// Security headers
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+
+// CORS Configuration
+$allowedOrigins = ['https://yourdomain.com']; // Update with your domain
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header('Access-Control-Allow-Origin: *'); // Change in production
+}
+
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// Database Configuration
-const DB_CONFIG = [
-    'host' => 'localhost',
-    'name' => 'u393812660_churnguard',
-    'user' => 'u393812660_churnguard',
-    'pass' => '102202Brian_'
-];
+// ==================== DATABASE CONFIGURATION ====================
+// IMPORTANT: Move these to a config file outside web root in production
+// For Hostinger: Use environment variables or separate config.php
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'u393812660_churnguard');
+define('DB_USER', getenv('DB_USER') ?: 'u393812660_churnguard');
+define('DB_PASS', getenv('DB_PASS') ?: '102202Brian_');
 
-// ==================== AUTHENTICATION ====================
+// ==================== SESSION CONFIGURATION ====================
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_secure', '1'); // Ensure HTTPS
+ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.use_strict_mode', '1');
+
 session_start();
 
-// DEBUG: Log session info
-if (DEBUG_MODE) {
-    error_log("Session ID: " . session_id());
-    error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'NOT SET'));
-}
-
 if (!isset($_SESSION['user_id'])) {
-    // For testing only - remove in production
-    if (DEBUG_MODE && isset($_GET['debug_user_id'])) {
-        $_SESSION['user_id'] = (int)$_GET['debug_user_id'];
-        error_log("DEBUG: Using debug_user_id: " . $_SESSION['user_id']);
-    } else {
-        http_response_code(401);
-        echo json_encode([
-            'status' => 'error',
-            'error' => 'unauthorized',
-            'message' => 'Authentication required',
-            'debug' => DEBUG_MODE ? ['session_id' => session_id()] : null
-        ]);
-        exit;
-    }
+    http_response_code(401);
+    echo json_encode([
+        'status' => 'error',
+        'error' => 'unauthorized',
+        'message' => 'Authentication required'
+    ]);
+    exit;
 }
 
 $userId = (int)$_SESSION['user_id'];
@@ -62,27 +64,24 @@ $userId = (int)$_SESSION['user_id'];
 // ==================== DATABASE CONNECTION ====================
 try {
     $pdo = new PDO(
-        "mysql:host={$DB_CONFIG['host']};dbname={$DB_CONFIG['name']};charset=utf8mb4",
-        $DB_CONFIG['user'],
-        $DB_CONFIG['pass'],
+        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+        DB_USER,
+        DB_PASS,
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+            PDO::ATTR_PERSISTENT => false // Change to true for connection pooling
         ]
     );
-    
-    if (DEBUG_MODE) {
-        error_log("Database connected successfully for user_id: $userId");
-    }
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
-    http_response_code(500);
+    http_response_code(503);
     echo json_encode([
         'status' => 'error',
-        'error' => 'database_error',
-        'message' => 'Database connection failed',
-        'debug' => DEBUG_MODE ? ['error' => $e->getMessage()] : null
+        'error' => 'service_unavailable',
+        'message' => 'Service temporarily unavailable'
     ]);
     exit;
 }
@@ -90,25 +89,21 @@ try {
 // ==================== HELPER FUNCTIONS ====================
 function jsonResponse(array $data, int $statusCode = 200): void {
     http_response_code($statusCode);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
     exit;
 }
 
 function jsonSuccess(array $data = []): void {
-    $response = array_merge(['status' => 'success'], $data);
-    if (DEBUG_MODE) {
-        $response['debug'] = ['timestamp' => date('Y-m-d H:i:s')];
-    }
-    jsonResponse($response);
+    jsonResponse(array_merge(['status' => 'success'], $data));
 }
 
-function jsonError(string $message, int $code = 400, array $debug = []): void {
+function jsonError(string $message, int $code = 400, string $error = null): void {
     $response = [
         'status' => 'error',
         'message' => $message
     ];
-    if (DEBUG_MODE && !empty($debug)) {
-        $response['debug'] = $debug;
+    if ($error) {
+        $response['error'] = $error;
     }
     jsonResponse($response, $code);
 }
@@ -173,11 +168,9 @@ function calculateTargetProgress(float $current, float $target): array {
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
-if (DEBUG_MODE) {
-    error_log("Action: $action, Method: $method, User: $userId");
-}
+// ==================== ROUTES ====================
 
-// ==================== KPI SUMMARY ====================
+// KPI Summary
 if ($action === 'kpi_summary') {
     try {
         $today = date('Y-m-d');
@@ -193,11 +186,11 @@ if ($action === 'kpi_summary') {
             WHERE user_id = ? AND date = ?
         ");
         $stmtToday->execute([$userId, $today]);
-        $todayData = $stmtToday->fetch();
-        
-        if (DEBUG_MODE) {
-            error_log("Today's data for $today: " . json_encode($todayData));
-        }
+        $todayData = $stmtToday->fetch() ?: [
+            'sales_volume' => 0,
+            'receipt_count' => 0,
+            'customer_traffic' => 0
+        ];
         
         // Get yesterday's data
         $stmtYesterday = $pdo->prepare("
@@ -209,17 +202,13 @@ if ($action === 'kpi_summary') {
             WHERE user_id = ? AND date = ?
         ");
         $stmtYesterday->execute([$userId, $yesterday]);
-        $yesterdayData = $stmtYesterday->fetch();
+        $yesterdayData = $stmtYesterday->fetch() ?: [
+            'sales_volume' => 0,
+            'receipt_count' => 0,
+            'customer_traffic' => 0
+        ];
         
-        if (DEBUG_MODE) {
-            error_log("Yesterday's data for $yesterday: " . json_encode($yesterdayData));
-        }
-        
-        // Ensure we have data
-        $todayData = $todayData ?: ['sales_volume' => 0, 'receipt_count' => 0, 'customer_traffic' => 0];
-        $yesterdayData = $yesterdayData ?: ['sales_volume' => 0, 'receipt_count' => 0, 'customer_traffic' => 0];
-        
-        // Calculate metrics
+        // Calculate changes
         $todaySales = (float)$todayData['sales_volume'];
         $yesterdaySales = (float)$yesterdayData['sales_volume'];
         $salesChange = percentageChange($todaySales, $yesterdaySales);
@@ -257,10 +246,6 @@ if ($action === 'kpi_summary') {
         $stmtTarget->execute([$userId]);
         $targetData = $stmtTarget->fetch();
         
-        if (DEBUG_MODE) {
-            error_log("Target data: " . json_encode($targetData));
-        }
-        
         $targetAchievement = 0;
         $targetStatus = 'No active target';
         
@@ -272,7 +257,7 @@ if ($action === 'kpi_summary') {
             $targetStatus = $targetData['target_name'];
         }
         
-        $response = [
+        jsonSuccess([
             'today_sales' => $todaySales,
             'sales_change' => $salesChange,
             'today_customers' => $todayCustomers,
@@ -281,37 +266,22 @@ if ($action === 'kpi_summary') {
             'transactions_change' => $transactionsChange,
             'target_achievement' => $targetAchievement,
             'target_status' => $targetStatus
-        ];
-        
-        if (DEBUG_MODE) {
-            $response['debug_info'] = [
-                'today_date' => $today,
-                'yesterday_date' => $yesterday,
-                'user_id' => $userId,
-                'today_raw' => $todayData,
-                'yesterday_raw' => $yesterdayData
-            ];
-        }
-        
-        jsonSuccess($response);
+        ]);
         
     } catch (Throwable $e) {
         error_log("KPI Summary Error: " . $e->getMessage());
-        jsonError('Failed to load KPI summary', 500, [
-            'error' => $e->getMessage(),
-            'line' => $e->getLine()
-        ]);
+        jsonError('Failed to load KPI summary', 500);
     }
 }
 
-// ==================== DATA COMPARISON ====================
+// Data Comparison
 elseif ($action === 'compare') {
     try {
         $currentDate = $_GET['currentDate'] ?? date('Y-m-d');
         $compareDate = $_GET['compareDate'] ?? date('Y-m-d', strtotime('-1 day'));
         
         if (!validateDate($currentDate) || !validateDate($compareDate)) {
-            jsonError('Invalid date format. Use YYYY-MM-DD', 422);
+            jsonError('Invalid date format. Use YYYY-MM-DD', 422, 'invalid_date');
         }
         
         // Get current period data
@@ -400,18 +370,18 @@ elseif ($action === 'compare') {
         
     } catch (Throwable $e) {
         error_log("Comparison Error: " . $e->getMessage());
-        jsonError('Comparison failed', 500, ['error' => $e->getMessage()]);
+        jsonError('Comparison failed', 500);
     }
 }
 
-// ==================== GET TARGETS ====================
+// Get Targets
 elseif ($action === 'get_targets') {
     try {
         $filter = $_GET['filter'] ?? 'all';
         $validFilters = ['all', 'active', 'achieved', 'near', 'below'];
         
         if (!in_array($filter, $validFilters, true)) {
-            jsonError('Invalid filter parameter', 422);
+            jsonError('Invalid filter parameter', 422, 'invalid_filter');
         }
         
         $query = "
@@ -451,6 +421,7 @@ elseif ($action === 'get_targets') {
             $target['progress'] = $progressData['progress'];
             $target['status'] = $progressData['status'];
             
+            // Remove temporary fields
             unset(
                 $target['current_sales'],
                 $target['current_receipts'],
@@ -459,7 +430,7 @@ elseif ($action === 'get_targets') {
             );
         }
         
-        // Apply status filter
+        // Apply status filter if needed
         if (in_array($filter, ['achieved', 'near', 'below'], true)) {
             $targets = array_values(array_filter($targets, fn($t) => $t['status'] === $filter));
         }
@@ -468,20 +439,21 @@ elseif ($action === 'get_targets') {
         
     } catch (Throwable $e) {
         error_log("Get Targets Error: " . $e->getMessage());
-        jsonError('Failed to load targets', 500, ['error' => $e->getMessage()]);
+        jsonError('Failed to load targets', 500);
     }
 }
 
-// ==================== SAVE TARGET ====================
+// Save Target
 elseif ($action === 'save_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
         $data = json_decode($rawInput, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
-            jsonError('Invalid JSON data', 422);
+            jsonError('Invalid JSON data', 422, 'invalid_json');
         }
         
+        // Validate and sanitize inputs
         $name = sanitizeString($data['name'] ?? '', 100);
         $type = trim($data['type'] ?? '');
         $value = filter_var($data['value'] ?? 0, FILTER_VALIDATE_FLOAT);
@@ -489,32 +461,44 @@ elseif ($action === 'save_target' && $method === 'POST') {
         $endDate = trim($data['end_date'] ?? '');
         $store = sanitizeString($data['store'] ?? '', 100);
         
-        if (empty($name)) jsonError('Target name is required', 422);
+        // Validation
+        if (empty($name)) {
+            jsonError('Target name is required', 422, 'missing_name');
+        }
         
         $validTypes = ['sales', 'customers', 'transactions', 'avg_transaction'];
         if (!in_array($type, $validTypes, true)) {
-            jsonError('Invalid target type', 422);
+            jsonError('Invalid target type', 422, 'invalid_type');
         }
         
         if ($value === false || $value <= 0 || $value > 999999999) {
-            jsonError('Invalid target value', 422);
+            jsonError('Invalid target value', 422, 'invalid_value');
         }
         
         if (!validateDate($startDate) || !validateDate($endDate)) {
-            jsonError('Invalid date format', 422);
+            jsonError('Invalid date format', 422, 'invalid_date');
         }
         
         if (strtotime($endDate) < strtotime($startDate)) {
-            jsonError('End date must be after start date', 422);
+            jsonError('End date must be after start date', 422, 'invalid_date_range');
         }
         
+        // Insert target
         $stmt = $pdo->prepare("
             INSERT INTO targets 
             (user_id, target_name, target_type, target_value, start_date, end_date, store, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         
-        $stmt->execute([$userId, $name, $type, $value, $startDate, $endDate, $store]);
+        $stmt->execute([
+            $userId,
+            $name,
+            $type,
+            $value,
+            $startDate,
+            $endDate,
+            $store
+        ]);
         
         jsonSuccess([
             'id' => (int)$pdo->lastInsertId(),
@@ -523,15 +507,19 @@ elseif ($action === 'save_target' && $method === 'POST') {
         
     } catch (Throwable $e) {
         error_log("Save Target Error: " . $e->getMessage());
-        jsonError('Failed to save target', 500, ['error' => $e->getMessage()]);
+        jsonError('Failed to save target', 500);
     }
 }
 
-// ==================== UPDATE TARGET ====================
+// Update Target
 elseif ($action === 'update_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
         $data = json_decode($rawInput, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            jsonError('Invalid JSON data', 422, 'invalid_json');
+        }
         
         $id = filter_var($data['id'] ?? 0, FILTER_VALIDATE_INT);
         $name = sanitizeString($data['name'] ?? '', 100);
@@ -541,49 +529,93 @@ elseif ($action === 'update_target' && $method === 'POST') {
         $endDate = trim($data['end_date'] ?? '');
         $store = sanitizeString($data['store'] ?? '', 100);
         
-        if ($id === false || $id <= 0) jsonError('Invalid target ID', 422);
+        if ($id === false || $id <= 0) {
+            jsonError('Invalid target ID', 422, 'invalid_id');
+        }
         
+        // Check ownership
         $checkStmt = $pdo->prepare("SELECT id FROM targets WHERE id = ? AND user_id = ?");
         $checkStmt->execute([$id, $userId]);
-        if (!$checkStmt->fetch()) jsonError('Target not found', 404);
         
-        if (empty($name)) jsonError('Target name is required', 422);
+        if (!$checkStmt->fetch()) {
+            jsonError('Target not found or access denied', 404, 'not_found');
+        }
+        
+        // Validation (same as save)
+        if (empty($name)) {
+            jsonError('Target name is required', 422, 'missing_name');
+        }
         
         $validTypes = ['sales', 'customers', 'transactions', 'avg_transaction'];
-        if (!in_array($type, $validTypes, true)) jsonError('Invalid target type', 422);
+        if (!in_array($type, $validTypes, true)) {
+            jsonError('Invalid target type', 422, 'invalid_type');
+        }
         
-        if ($value === false || $value <= 0) jsonError('Invalid target value', 422);
-        if (!validateDate($startDate) || !validateDate($endDate)) jsonError('Invalid date format', 422);
-        if (strtotime($endDate) < strtotime($startDate)) jsonError('Invalid date range', 422);
+        if ($value === false || $value <= 0 || $value > 999999999) {
+            jsonError('Invalid target value', 422, 'invalid_value');
+        }
         
+        if (!validateDate($startDate) || !validateDate($endDate)) {
+            jsonError('Invalid date format', 422, 'invalid_date');
+        }
+        
+        if (strtotime($endDate) < strtotime($startDate)) {
+            jsonError('End date must be after start date', 422, 'invalid_date_range');
+        }
+        
+        // Update target
         $stmt = $pdo->prepare("
             UPDATE targets 
-            SET target_name = ?, target_type = ?, target_value = ?, 
-                start_date = ?, end_date = ?, store = ?, updated_at = NOW()
+            SET target_name = ?, 
+                target_type = ?, 
+                target_value = ?, 
+                start_date = ?, 
+                end_date = ?, 
+                store = ?,
+                updated_at = NOW()
             WHERE id = ? AND user_id = ?
         ");
         
-        $stmt->execute([$name, $type, $value, $startDate, $endDate, $store, $id, $userId]);
+        $stmt->execute([
+            $name,
+            $type,
+            $value,
+            $startDate,
+            $endDate,
+            $store,
+            $id,
+            $userId
+        ]);
         
-        jsonSuccess(['id' => $id, 'message' => 'Target updated successfully']);
+        jsonSuccess([
+            'id' => $id,
+            'message' => 'Target updated successfully'
+        ]);
         
     } catch (Throwable $e) {
         error_log("Update Target Error: " . $e->getMessage());
-        jsonError('Failed to update target', 500, ['error' => $e->getMessage()]);
+        jsonError('Failed to update target', 500);
     }
 }
 
-// ==================== DELETE TARGET ====================
+// Delete Target
 elseif ($action === 'delete_target') {
     try {
         $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
         
-        if ($id === false || $id <= 0) jsonError('Invalid target ID', 422);
+        if ($id === false || $id <= 0) {
+            jsonError('Invalid target ID', 422, 'invalid_id');
+        }
         
+        // Check ownership
         $checkStmt = $pdo->prepare("SELECT id FROM targets WHERE id = ? AND user_id = ?");
         $checkStmt->execute([$id, $userId]);
-        if (!$checkStmt->fetch()) jsonError('Target not found', 404);
         
+        if (!$checkStmt->fetch()) {
+            jsonError('Target not found or access denied', 404, 'not_found');
+        }
+        
+        // Delete target
         $deleteStmt = $pdo->prepare("DELETE FROM targets WHERE id = ? AND user_id = ?");
         $deleteStmt->execute([$id, $userId]);
         
@@ -591,11 +623,11 @@ elseif ($action === 'delete_target') {
         
     } catch (Throwable $e) {
         error_log("Delete Target Error: " . $e->getMessage());
-        jsonError('Failed to delete target', 500, ['error' => $e->getMessage()]);
+        jsonError('Failed to delete target', 500);
     }
 }
 
-// ==================== TREND DATA ====================
+// Trend Data
 elseif ($action === 'trend_data') {
     try {
         $days = filter_var($_GET['days'] ?? 30, FILTER_VALIDATE_INT);
@@ -617,22 +649,15 @@ elseif ($action === 'trend_data') {
         $stmt->execute([$userId, $days]);
         $trendData = $stmt->fetchAll();
         
-        if (DEBUG_MODE) {
-            error_log("Trend data count for $days days: " . count($trendData));
-        }
-        
         jsonSuccess(['trend_data' => $trendData]);
         
     } catch (Throwable $e) {
         error_log("Trend Data Error: " . $e->getMessage());
-        jsonError('Failed to load trend data', 500, ['error' => $e->getMessage()]);
+        jsonError('Failed to load trend data', 500);
     }
 }
 
-// ==================== INVALID ACTION ====================
+// Invalid action
 else {
-    jsonError('Invalid action parameter', 400, [
-        'received_action' => $action,
-        'valid_actions' => ['kpi_summary', 'compare', 'get_targets', 'save_target', 'update_target', 'delete_target', 'trend_data']
-    ]);
+    jsonError('Invalid action parameter', 400, 'invalid_action');
 }
