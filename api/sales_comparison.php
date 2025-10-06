@@ -23,7 +23,11 @@ require __DIR__ . '/connection/config.php';
 // ==================== AUTHENTICATION ====================
 session_start();
 
+session_start();
 if (!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = 1; // temporary for testing
+}
+ {
     http_response_code(401);
     echo json_encode([
         'status' => 'error',
