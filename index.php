@@ -2241,9 +2241,9 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             <!-- Data Tables -->
             <section class="tables-section-pro">
                 <div class="table-tabs">
-                    <button class="tab-btn active" onclick="switchTab('trend')" data-tab="trend">Sales Trend</button>
+                   
                     <button class="tab-btn" onclick="switchTab('active-targets')" data-tab="active-targets">Active Targets</button>
-                    <button class="tab-btn" onclick="switchTab('performance')" data-tab="performance">Performance Log</button>
+               
                 </div>
 
                 <div class="tab-content active" id="trend-tab">
