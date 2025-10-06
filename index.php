@@ -2140,13 +2140,26 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </div>
     </div>
 
-    
+   
+
+        <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
+          <div class="metric-label">Current Churn Risk</div>
+          <div class="metric-value" id="currentChurnRiskLevel">Low</div>
+          <div class="metric-trend">
+            <span class="status-badge status-low" id="churnRiskBadge">Low Risk</span>
+          </div>
+        </div>
+
+       
+      </div>
+    </div>
+  </div>
 
   <div class="history-section">
     <div class="history-header">
-      <div class="history-title">📋Historical Data</div>
+      <div class="history-title">📋Historical Analysis</div>
       <div class="last-updated">
-      <span id="currentAnalysisDataRange"></span>
+        Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
       </div>
     </div>
     <div class="history-table-container">
