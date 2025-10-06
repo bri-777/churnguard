@@ -1,7 +1,7 @@
-// ==================== ULTRA-ENHANCED SALES ANALYTICS DASHBOARD v3.0 ====================
+// ==================== ULTRA-ACCURATE SALES ANALYTICS DASHBOARD v2.0 ====================
 'use strict';
 
-// ==================== ADVANCED CONFIGURATION ====================
+// ==================== ENHANCED CONFIGURATION ====================
 const CONFIG = {
     API_BASE: 'api/sales_comparison.php',
     REQUEST_TIMEOUT: 30000,
@@ -9,12 +9,6 @@ const CONFIG = {
     RETRY_DELAY: 1000,
     DECIMAL_PRECISION: 2,
     PERCENTAGE_PRECISION: 1,
-    CACHE_TTL: 300000, // 5 minutes
-    DEBOUNCE_DELAY: 300,
-    THROTTLE_DELAY: 1000,
-    MAX_CONCURRENT_REQUESTS: 5,
-    AUTO_REFRESH_INTERVAL: 120000, // 2 minutes
-    
     CHART_COLORS: {
         primary: '#6366f1',
         success: '#10b981',
@@ -24,16 +18,21 @@ const CONFIG = {
         purple: '#8b5cf6',
         gradient: ['#6366f1', '#8b5cf6', '#06b6d4']
     },
-    
     CHART_OPTIONS: {
         responsive: true,
         maintainAspectRatio: true,
-        interaction: { mode: 'index', intersect: false },
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
         plugins: {
             legend: { 
                 display: true, 
                 position: 'bottom',
-                labels: { usePointStyle: true, padding: 15 }
+                labels: {
+                    usePointStyle: true,
+                    padding: 15
+                }
             },
             tooltip: { 
                 backgroundColor: 'rgba(0,0,0,0.9)',
@@ -46,61 +45,18 @@ const CONFIG = {
                 borderWidth: 1
             }
         }
-    },
-    
-    VALIDATION: {
-        MIN_NAME_LENGTH: 3,
-        MAX_NAME_LENGTH: 100,
-        MIN_VALUE: 0.01,
-        MAX_VALUE: 999999999.99,
-        DATE_PATTERN: /^\d{4}-\d{2}-\d{2}$/
-    }
-};
-
-// ==================== CSRF TOKEN MANAGER ====================
-const CSRFManager = {
-    token: null,
-    
-    async fetchToken() {
-        try {
-            const response = await fetch('api/get_csrf_token.php', {
-                credentials: 'same-origin'
-            });
-            const data = await response.json();
-            this.token = data.token;
-            return this.token;
-        } catch (error) {
-            console.error('CSRF token fetch failed:', error);
-            return null;
-        }
-    },
-    
-    getToken() {
-        return this.token;
-    },
-    
-    async ensureToken() {
-        if (!this.token) {
-            await this.fetchToken();
-        }
-        return this.token;
     }
 };
 
 // ==================== ENHANCED STATE MANAGEMENT ====================
 const AppState = {
-    charts: new Map(),
+    charts: {},
     currentTab: 'trend',
     activeRequests: new Map(),
     loadingCounter: 0,
     editingTargetId: null,
     lastDataUpdate: null,
     cache: new Map(),
-    requestQueue: [],
-    concurrentRequests: 0,
-    isOnline: navigator.onLine,
-    errorCount: 0,
-    performanceMetrics: new Map(),
     
     incrementLoading() {
         this.loadingCounter++;
@@ -121,16 +77,13 @@ const AppState = {
             try { controller.abort(); } catch(e) {}
         });
         this.activeRequests.clear();
-        this.concurrentRequests = 0;
     },
 
-    setCache(key, value, ttl = CONFIG.CACHE_TTL) {
+    setCache(key, value, ttl = 300000) { // 5 min default TTL
         this.cache.set(key, {
             value,
-            expires: Date.now() + ttl,
-            size: JSON.stringify(value).length
+            expires: Date.now() + ttl
         });
-        this.pruneCache();
     },
 
     getCache(key) {
@@ -143,125 +96,53 @@ const AppState = {
         return item.value;
     },
 
-    clearCache(pattern = null) {
-        if (!pattern) {
-            this.cache.clear();
-            return;
-        }
-        for (const key of this.cache.keys()) {
-            if (key.includes(pattern)) {
-                this.cache.delete(key);
-            }
-        }
-    },
-    
-    pruneCache() {
-        const MAX_CACHE_SIZE = 5 * 1024 * 1024; // 5MB
-        let totalSize = 0;
-        const entries = Array.from(this.cache.entries());
-        
-        entries.sort((a, b) => a[1].expires - b[1].expires);
-        
-        for (const [key, item] of entries) {
-            totalSize += item.size;
-            if (totalSize > MAX_CACHE_SIZE) {
-                this.cache.delete(key);
-            }
-        }
-    },
-    
-    recordPerformance(operation, duration) {
-        if (!this.performanceMetrics.has(operation)) {
-            this.performanceMetrics.set(operation, []);
-        }
-        const metrics = this.performanceMetrics.get(operation);
-        metrics.push(duration);
-        if (metrics.length > 100) metrics.shift();
-    },
-    
-    getAveragePerformance(operation) {
-        const metrics = this.performanceMetrics.get(operation);
-        if (!metrics || metrics.length === 0) return 0;
-        return metrics.reduce((a, b) => a + b, 0) / metrics.length;
+    clearCache() {
+        this.cache.clear();
     }
 };
 
-// ==================== ADVANCED UTILITY FUNCTIONS ====================
+// ==================== ENHANCED UTILITY FUNCTIONS ====================
 const Utils = {
-    // Enhanced currency formatting with error boundaries
+    // Precise currency formatting with validation
     formatCurrency(value) {
-        try {
-            const num = parseFloat(value);
-            if (!isFinite(num) || isNaN(num)) return '₱0.00';
-            
-            return new Intl.NumberFormat('en-PH', {
-                style: 'currency',
-                currency: 'PHP',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(num);
-        } catch (error) {
-            console.error('Currency format error:', error);
-            return '₱0.00';
-        }
+        const num = parseFloat(value);
+        if (!isFinite(num) || isNaN(num)) return '₱0.00';
+        
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(num);
     },
 
-    // Enhanced number formatting with abbreviation support
-    formatNumber(value, abbreviate = false) {
-        try {
-            const num = parseFloat(value);
-            if (!isFinite(num) || isNaN(num)) return '0';
-            
-            if (abbreviate && Math.abs(num) >= 1000) {
-                const units = ['', 'K', 'M', 'B', 'T'];
-                const order = Math.floor(Math.log10(Math.abs(num)) / 3);
-                const unitIndex = Math.min(order, units.length - 1);
-                const scaledNum = num / Math.pow(1000, unitIndex);
-                return scaledNum.toFixed(1) + units[unitIndex];
-            }
-            
-            return new Intl.NumberFormat('en-PH', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(Math.round(num));
-        } catch (error) {
-            console.error('Number format error:', error);
-            return '0';
-        }
+    // Precise number formatting
+    formatNumber(value) {
+        const num = parseFloat(value);
+        if (!isFinite(num) || isNaN(num)) return '0';
+        
+        return new Intl.NumberFormat('en-PH', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(Math.round(num));
     },
 
-    // Enhanced percentage with color coding
-    formatPercentage(value, precision = CONFIG.PERCENTAGE_PRECISION, includeSign = false) {
-        try {
-            const num = parseFloat(value);
-            if (!isFinite(num) || isNaN(num)) return '0.0%';
-            
-            const bounded = Math.max(-999.9, Math.min(999.9, num));
-            const sign = includeSign && bounded > 0 ? '+' : '';
-            return sign + bounded.toFixed(precision) + '%';
-        } catch (error) {
-            console.error('Percentage format error:', error);
-            return '0.0%';
-        }
+    // Enhanced percentage formatting with bounds
+    formatPercentage(value, precision = CONFIG.PERCENTAGE_PRECISION) {
+        const num = parseFloat(value);
+        if (!isFinite(num) || isNaN(num)) return '0.0%';
+        
+        const bounded = Math.max(-999.9, Math.min(999.9, num));
+        return bounded.toFixed(precision) + '%';
     },
 
-    // Enhanced date formatting with relative time
-    formatDate(dateString, relative = false) {
+    // Enhanced date formatting with timezone awareness
+    formatDate(dateString) {
         if (!dateString) return 'N/A';
         
         try {
-            const date = new Date(dateString + 'T00:00:00');
+            const date = new Date(dateString + 'T00:00:00'); // Force local timezone
             if (isNaN(date.getTime())) return 'Invalid Date';
-            
-            if (relative) {
-                const now = new Date();
-                const diffTime = now - date;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (diffDays === 0) return 'Today';
-                if (diffDays === 1) return 'Yesterday';
-                if (diffDays < 7) return `${diffDays} days ago`;
-            }
             
             return new Intl.DateTimeFormat('en-PH', {
                 month: 'short',
@@ -275,7 +156,7 @@ const Utils = {
         }
     },
 
-    // ISO date with validation
+    // ISO date with timezone handling
     getISODate(date) {
         try {
             const d = date instanceof Date ? date : new Date(date);
@@ -288,10 +169,10 @@ const Utils = {
         }
     },
 
-    // Enhanced datetime with timezone
-    formatDateTime(includeSeconds = false) {
+    // Enhanced datetime formatting
+    formatDateTime() {
         try {
-            const options = {
+            return new Intl.DateTimeFormat('en-PH', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -299,19 +180,13 @@ const Utils = {
                 hour: '2-digit',
                 minute: '2-digit',
                 timeZone: 'Asia/Manila'
-            };
-            
-            if (includeSeconds) {
-                options.second = '2-digit';
-            }
-            
-            return new Intl.DateTimeFormat('en-PH', options).format(new Date());
+            }).format(new Date());
         } catch {
             return 'N/A';
         }
     },
 
-    // Precise percentage change with edge cases
+    // Precise percentage change calculation
     calculateChange(current, previous) {
         const curr = parseFloat(current);
         const prev = parseFloat(previous);
@@ -323,71 +198,50 @@ const Utils = {
         return ((curr - prev) / Math.abs(prev)) * 100;
     },
 
-    // XSS protection
+    // Enhanced HTML escaping
     escapeHtml(text) {
         const map = {
             '&': '&amp;',
             '<': '&lt;',
             '>': '&gt;',
             '"': '&quot;',
-            "'": '&#039;',
-            '/': '&#x2F;'
+            "'": '&#039;'
         };
-        return String(text || '').replace(/[&<>"'/]/g, m => map[m]);
+        return String(text || '').replace(/[&<>"']/g, m => map[m]);
     },
 
-    // Advanced debounce with leading/trailing options
-    debounce(func, wait, options = {}) {
+    // Debounce with immediate option
+    debounce(func, wait, immediate = false) {
         let timeout;
-        const { leading = false, trailing = true } = options;
-        
         return function executedFunction(...args) {
             const context = this;
             const later = () => {
                 timeout = null;
-                if (trailing) func.apply(context, args);
+                if (!immediate) func.apply(context, args);
             };
-            const callNow = leading && !timeout;
+            const callNow = immediate && !timeout;
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
             if (callNow) func.apply(context, args);
         };
     },
 
-    // Throttle with accurate timing
+    // Throttle function for performance
     throttle(func, limit) {
         let inThrottle;
-        let lastRan;
         return function(...args) {
             if (!inThrottle) {
                 func.apply(this, args);
-                lastRan = Date.now();
                 inThrottle = true;
-                setTimeout(() => {
-                    if (Date.now() - lastRan >= limit) {
-                        func.apply(this, args);
-                        lastRan = Date.now();
-                    }
-                    inThrottle = false;
-                }, limit - (Date.now() - lastRan));
+                setTimeout(() => inThrottle = false, limit);
             }
         };
     },
 
-    // Safe DOM selector with caching
-    $(selector, useCache = true) {
-        if (useCache && this._selectorCache) {
-            const cached = this._selectorCache.get(selector);
-            if (cached && document.contains(cached)) return cached;
-        }
-        
+    // Safe DOM selectors
+    $(selector) {
         try {
-            const element = document.querySelector(selector);
-            if (useCache) {
-                if (!this._selectorCache) this._selectorCache = new Map();
-                this._selectorCache.set(selector, element);
-            }
-            return element;
+            return document.querySelector(selector);
         } catch (e) {
             console.error('Selector error:', selector, e);
             return null;
@@ -396,71 +250,23 @@ const Utils = {
 
     $$(selector) {
         try {
-            return Array.from(document.querySelectorAll(selector));
+            return document.querySelectorAll(selector);
         } catch (e) {
             console.error('Selector error:', selector, e);
             return [];
         }
     },
 
-    // Comprehensive validation
+    // Validate number
     isValidNumber(value) {
         const num = parseFloat(value);
         return isFinite(num) && !isNaN(num);
-    },
-    
-    isValidDate(dateString) {
-        if (!CONFIG.VALIDATION.DATE_PATTERN.test(dateString)) return false;
-        const date = new Date(dateString + 'T00:00:00');
-        return !isNaN(date.getTime());
-    },
-    
-    isValidString(str, minLength = 1, maxLength = 255) {
-        if (typeof str !== 'string') return false;
-        const trimmed = str.trim();
-        return trimmed.length >= minLength && trimmed.length <= maxLength;
-    },
-    
-    // Generate unique ID
-    generateId(prefix = 'id') {
-        return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    },
-    
-    // Deep clone object
-    deepClone(obj) {
-        try {
-            return JSON.parse(JSON.stringify(obj));
-        } catch {
-            return obj;
-        }
-    },
-    
-    // Retry with exponential backoff
-    async retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000) {
-        for (let i = 0; i < maxRetries; i++) {
-            try {
-                return await fn();
-            } catch (error) {
-                if (i === maxRetries - 1) throw error;
-                const delay = baseDelay * Math.pow(2, i);
-                await new Promise(resolve => setTimeout(resolve, delay));
-            }
-        }
     }
 };
 
 // ==================== ENHANCED UI MANAGER ====================
 const UIManager = {
-    notificationQueue: [],
-    maxNotifications: 3,
-    
     showNotification(message, type = 'info', duration = 4000) {
-        // Limit concurrent notifications
-        if (this.notificationQueue.length >= this.maxNotifications) {
-            const oldest = this.notificationQueue.shift();
-            if (oldest) oldest.remove();
-        }
-        
         const colors = {
             success: '#10b981',
             error: '#ef4444',
@@ -478,10 +284,9 @@ const UIManager = {
         const notification = document.createElement('div');
         notification.setAttribute('role', 'alert');
         notification.setAttribute('aria-live', 'polite');
-        notification.className = 'notification-toast';
         notification.style.cssText = `
             position: fixed;
-            top: ${24 + (this.notificationQueue.length * 80)}px;
+            top: 24px;
             right: 24px;
             min-width: 320px;
             max-width: 500px;
@@ -497,31 +302,19 @@ const UIManager = {
             align-items: center;
             gap: 12px;
             animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            transition: top 0.3s ease;
         `;
         
         notification.innerHTML = `
             <span style="font-size: 20px;" aria-hidden="true">${icons[type] || icons.info}</span>
-            <span style="flex: 1;">${Utils.escapeHtml(message)}</span>
-            <button style="background: transparent; border: none; color: white; cursor: pointer; padding: 4px; font-size: 18px;" 
-                    onclick="this.parentElement.remove()" aria-label="Close notification">×</button>
+            <span>${Utils.escapeHtml(message)}</span>
         `;
         
         document.body.appendChild(notification);
-        this.notificationQueue.push(notification);
         
-        // Auto-dismiss
         setTimeout(() => {
             notification.style.animation = 'slideOutRight 0.4s ease';
-            setTimeout(() => {
-                notification.remove();
-                const index = this.notificationQueue.indexOf(notification);
-                if (index > -1) this.notificationQueue.splice(index, 1);
-            }, 400);
+            setTimeout(() => notification.remove(), 400);
         }, duration);
-        
-        // Screen reader announcement
-        this.announceToScreenReader(message);
     },
 
     showLoader() {
@@ -557,7 +350,9 @@ const UIManager = {
 
     hideLoader() {
         const loader = Utils.$('#globalLoader');
-        if (loader) loader.style.display = 'none';
+        if (loader) {
+            loader.style.display = 'none';
+        }
     },
 
     updateKPICard(id, value, change) {
@@ -574,8 +369,7 @@ const UIManager = {
                 formattedValue = Utils.formatNumber(value);
             }
             
-            // Smooth value transition
-            valueEl.style.transition = 'opacity 0.2s ease';
+            // Animate value change
             valueEl.style.opacity = '0';
             setTimeout(() => {
                 valueEl.textContent = formattedValue;
@@ -585,7 +379,7 @@ const UIManager = {
         
         if (trendBadge && Utils.isValidNumber(change)) {
             const isPositive = change >= 0;
-            const isZero = Math.abs(change) < 0.01;
+            const isZero = change === 0;
             
             trendBadge.className = `kpi-trend-badge ${isZero ? 'neutral' : (isPositive ? '' : 'down')}`;
             const span = trendBadge.querySelector('span');
@@ -600,98 +394,20 @@ const UIManager = {
         if (dateEl) {
             dateEl.textContent = Utils.formatDateTime();
         }
-    }, 1000),
-    
-    announceToScreenReader(message) {
-        const announcement = document.createElement('div');
-        announcement.setAttribute('role', 'status');
-        announcement.setAttribute('aria-live', 'polite');
-        announcement.setAttribute('aria-atomic', 'true');
-        announcement.className = 'sr-only';
-        announcement.style.cssText = 'position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;';
-        announcement.textContent = message;
-        document.body.appendChild(announcement);
-        setTimeout(() => announcement.remove(), 1000);
-    },
-    
-    showConfirmDialog(message, onConfirm, onCancel) {
-        const dialog = document.createElement('div');
-        dialog.className = 'custom-dialog';
-        dialog.setAttribute('role', 'dialog');
-        dialog.setAttribute('aria-modal', 'true');
-        dialog.innerHTML = `
-            <div class="dialog-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10002;">
-                <div class="dialog-content" style="background:white;padding:32px;border-radius:16px;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-                    <h3 style="margin:0 0 16px;font-size:18px;font-weight:600;">Confirm Action</h3>
-                    <p style="margin:0 0 24px;color:#6b7280;">${Utils.escapeHtml(message)}</p>
-                    <div style="display:flex;gap:12px;justify-content:flex-end;">
-                        <button class="btn-cancel" style="padding:10px 20px;border:1px solid #e5e7eb;background:white;border-radius:8px;cursor:pointer;font-weight:500;">Cancel</button>
-                        <button class="btn-confirm" style="padding:10px 20px;border:none;background:#ef4444;color:white;border-radius:8px;cursor:pointer;font-weight:500;">Confirm</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(dialog);
-        
-        const confirmBtn = dialog.querySelector('.btn-confirm');
-        const cancelBtn = dialog.querySelector('.btn-cancel');
-        
-        const cleanup = () => dialog.remove();
-        
-        confirmBtn.addEventListener('click', () => {
-            cleanup();
-            if (onConfirm) onConfirm();
-        });
-        
-        cancelBtn.addEventListener('click', () => {
-            cleanup();
-            if (onCancel) onCancel();
-        });
-        
-        dialog.querySelector('.dialog-overlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                cleanup();
-                if (onCancel) onCancel();
-            }
-        });
-    }
+    }, 1000)
 };
 
-// ==================== ADVANCED API SERVICE WITH REQUEST QUEUE ====================
+// ==================== ENHANCED API SERVICE ====================
 const APIService = {
-    requestQueue: [],
-    processingQueue: false,
-    
-    async fetch(action, params = {}, options = {}) {
-        const {
-            skipCache = false,
-            priority = 'normal',
-            retryCount = 0
-        } = options;
-        
-        // Check cache
-        if (!skipCache) {
-            const cacheKey = this.getCacheKey(action, params);
-            const cached = AppState.getCache(cacheKey);
-            if (cached) {
-                console.log('✓ Using cached data:', action);
-                return cached;
-            }
+    async fetch(action, params = {}, retryCount = 0) {
+        // Check cache first
+        const cacheKey = `${action}_${JSON.stringify(params)}`;
+        const cached = AppState.getCache(cacheKey);
+        if (cached) {
+            console.log('Using cached data for:', action);
+            return cached;
         }
-        
-        // Queue management for concurrent requests
-        if (AppState.concurrentRequests >= CONFIG.MAX_CONCURRENT_REQUESTS) {
-            return new Promise((resolve, reject) => {
-                this.requestQueue.push({ action, params, options, resolve, reject });
-                this.processQueue();
-            });
-        }
-        
-        return this.executeRequest(action, params, retryCount);
-    },
-    
-    async executeRequest(action, params, retryCount) {
+
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
         
@@ -703,45 +419,28 @@ const APIService = {
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
-        const requestId = Utils.generateId('req');
+        const requestId = `${action}-${Date.now()}`;
         
         AppState.activeRequests.set(requestId, controller);
-        AppState.concurrentRequests++;
-        
-        const startTime = performance.now();
 
         try {
-            const csrfToken = await CSRFManager.ensureToken();
-            
-            const headers = { 
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Cache-Control': 'no-cache'
-            };
-            
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
-            }
-            
             const response = await fetch(url.toString(), {
                 method: 'GET',
-                headers,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Cache-Control': 'no-cache'
+                },
                 signal: controller.signal,
                 credentials: 'same-origin'
             });
 
             clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
-            AppState.concurrentRequests--;
-            this.processQueue();
 
-            // Performance tracking
-            const duration = performance.now() - startTime;
-            AppState.recordPerformance(action, duration);
-
-            // Auth check
+            // Handle authentication errors
             if (response.status === 401) {
-                UIManager.showNotification('Session expired. Please log in again.', 'warning');
+                UIManager.showNotification('Session expired. Redirecting to login...', 'warning');
                 setTimeout(() => window.location.href = '/login.php', 2000);
                 throw new Error('Unauthorized');
             }
@@ -756,68 +455,49 @@ const APIService = {
                 throw new Error(data.message || 'API error occurred');
             }
 
-            // Cache successful response
-            const cacheKey = this.getCacheKey(action, params);
+            // Cache successful responses
             AppState.setCache(cacheKey, data);
-            
-            // Reset error counter on success
-            AppState.errorCount = 0;
             
             return data;
 
         } catch (error) {
             clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
-            AppState.concurrentRequests--;
-            this.processQueue();
 
             if (error.name === 'AbortError') {
                 console.log('Request cancelled:', action);
                 return null;
             }
 
-            // Retry logic with exponential backoff
+            // Retry logic
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
-                console.log(`Retrying ${action} (${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
-                await new Promise(resolve => 
-                    setTimeout(resolve, CONFIG.RETRY_DELAY * Math.pow(2, retryCount))
-                );
-                return this.executeRequest(action, params, retryCount + 1);
+                console.log(`Retrying ${action} (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
+                return this.fetch(action, params, retryCount + 1);
             }
 
-            AppState.errorCount++;
             console.error('API Error:', error);
             throw error;
         }
     },
 
-    async post(action, body, options = {}) {
-        const { retryCount = 0 } = options;
-        
+    async post(action, body, retryCount = 0) {
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
-        const requestId = Utils.generateId('post');
+        const requestId = `${action}-post-${Date.now()}`;
         
         AppState.activeRequests.set(requestId, controller);
 
         try {
-            const csrfToken = await CSRFManager.ensureToken();
-            
-            const headers = { 
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            };
-            
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
-            }
-            
             const response = await fetch(url.toString(), {
                 method: 'POST',
-                headers,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: JSON.stringify(body),
                 signal: controller.signal,
                 credentials: 'same-origin'
@@ -827,7 +507,7 @@ const APIService = {
             AppState.activeRequests.delete(requestId);
 
             if (response.status === 401) {
-                UIManager.showNotification('Session expired', 'warning');
+                UIManager.showNotification('Session expired. Redirecting...', 'warning');
                 setTimeout(() => window.location.href = '/login.php', 2000);
                 throw new Error('Unauthorized');
             }
@@ -842,8 +522,8 @@ const APIService = {
                 throw new Error(data.message || 'API error occurred');
             }
 
-            // Clear relevant cache on mutations
-            AppState.clearCache(action.includes('target') ? 'target' : null);
+            // Clear cache on mutations
+            AppState.clearCache();
             
             return data;
 
@@ -857,43 +537,173 @@ const APIService = {
             }
 
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
-                await new Promise(resolve => 
-                    setTimeout(resolve, CONFIG.RETRY_DELAY * Math.pow(2, retryCount))
-                );
-                return this.post(action, body, { retryCount: retryCount + 1 });
+                await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
+                return this.post(action, body, retryCount + 1);
             }
 
             console.error('API Error:', error);
             throw error;
         }
-    },
-    
-    processQueue() {
-        if (this.processingQueue || this.requestQueue.length === 0) return;
-        if (AppState.concurrentRequests >= CONFIG.MAX_CONCURRENT_REQUESTS) return;
-        
-        this.processingQueue = true;
-        
-        const request = this.requestQueue.shift();
-        if (request) {
-            this.executeRequest(request.action, request.params, 0)
-                .then(request.resolve)
-                .catch(request.reject)
-                .finally(() => {
-                    this.processingQueue = false;
-                    this.processQueue();
-                });
-        } else {
-            this.processingQueue = false;
-        }
-    },
-    
-    getCacheKey(action, params) {
-        return `${action}_${JSON.stringify(params)}`;
     }
 };
 
-// ==================== ENHANCED DATA MANAGER ====================
+// ==================== ENHANCED CHART MANAGER ====================
+const ChartManager = {
+    destroyChart(chartName) {
+        if (AppState.charts[chartName]) {
+            try {
+                AppState.charts[chartName].destroy();
+                delete AppState.charts[chartName];
+            } catch (e) {
+                console.error('Chart destroy error:', e);
+            }
+        }
+    },
+
+    createSalesTrendChart(data) {
+        const ctx = Utils.$('#salesTrendChart');
+        if (!ctx) {
+            console.error('Chart canvas not found: salesTrendChart');
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No trend data available</p>';
+            return;
+        }
+
+        this.destroyChart('salesTrend');
+
+        const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        AppState.charts.salesTrend = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedData.map(d => Utils.formatDate(d.date)),
+                datasets: [{
+                    label: 'Sales Revenue',
+                    data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
+                    borderColor: CONFIG.CHART_COLORS.primary,
+                    backgroundColor: `${CONFIG.CHART_COLORS.primary}30`,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: CONFIG.CHART_COLORS.primary,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                ...CONFIG.CHART_OPTIONS,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => Utils.formatCurrency(value)
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    ...CONFIG.CHART_OPTIONS.plugins,
+                    tooltip: {
+                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => {
+                                return 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    },
+
+    createComparisonChart(comparisonData) {
+        const ctx = Utils.$('#comparisonChart');
+        if (!ctx) {
+            console.error('Chart canvas not found: comparisonChart');
+            return;
+        }
+
+        if (!comparisonData || comparisonData.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No comparison data available</p>';
+            return;
+        }
+
+        this.destroyChart('comparison');
+
+        const metrics = comparisonData.map(d => d.metric);
+        const currentValues = comparisonData.map(d => parseFloat(d.current || 0));
+        const compareValues = comparisonData.map(d => parseFloat(d.compare || 0));
+
+        AppState.charts.comparison = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: metrics,
+                datasets: [
+                    {
+                        label: 'Current Period',
+                        data: currentValues,
+                        backgroundColor: CONFIG.CHART_COLORS.primary,
+                        borderRadius: 8,
+                        borderWidth: 0
+                    },
+                    {
+                        label: 'Previous Period',
+                        data: compareValues,
+                        backgroundColor: CONFIG.CHART_COLORS.info,
+                        borderRadius: 8,
+                        borderWidth: 0
+                    }
+                ]
+            },
+            options: {
+                ...CONFIG.CHART_OPTIONS,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => Utils.formatNumber(value)
+                        }
+                    }
+                },
+                plugins: {
+                    ...CONFIG.CHART_OPTIONS.plugins,
+                    tooltip: {
+                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => {
+                                const label = ctx.dataset.label || '';
+                                const value = ctx.parsed.y;
+                                const metric = ctx.label;
+                                const formatted = metric.includes('Sales') || metric.includes('Value') ? 
+                                    Utils.formatCurrency(value) : Utils.formatNumber(value);
+                                return `${label}: ${formatted}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    },
+
+    updateTrendChart() {
+        const period = parseInt(Utils.$('#trendPeriod')?.value) || 30;
+        DataManager.loadTrendData(period);
+    }
+};
+
+// ==================== DATA MANAGER (Continued in next message due to length) ====================
 const DataManager = {
     async loadKPISummary() {
         AppState.incrementLoading();
@@ -902,7 +712,7 @@ const DataManager = {
             
             if (!data) return;
 
-            // Optimistic UI update
+            // Update KPI cards with precise values
             UIManager.updateKPICard('todaySales', data.today_sales, data.sales_change);
             UIManager.updateKPICard('todayCustomers', data.today_customers, data.customers_change);
             UIManager.updateKPICard('todayTransactions', data.today_transactions, data.transactions_change);
@@ -917,7 +727,6 @@ const DataManager = {
             if (miniProgress) {
                 const progress = Math.min(parseFloat(data.target_achievement) || 0, 100);
                 miniProgress.style.width = progress.toFixed(1) + '%';
-                miniProgress.setAttribute('aria-valuenow', progress.toFixed(1));
             }
 
             AppState.lastDataUpdate = new Date();
@@ -972,7 +781,7 @@ const DataManager = {
 
         const sorted = [...trendData].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        const rows = sorted.map((item, index) => {
+        tbody.innerHTML = sorted.map((item, index) => {
             const sales = parseFloat(item.sales_volume || 0);
             const receipts = parseInt(item.receipt_count || 0);
             const customers = parseInt(item.customer_traffic || 0);
@@ -1000,9 +809,7 @@ const DataManager = {
                     </td>
                 </tr>
             `;
-        });
-        
-        tbody.innerHTML = rows.join('');
+        }).join('');
     },
 
     async loadComparison() {
@@ -1011,11 +818,6 @@ const DataManager = {
 
         if (!currentDate || !compareDate) {
             UIManager.showNotification('Please select both dates', 'warning');
-            return;
-        }
-        
-        if (!Utils.isValidDate(currentDate) || !Utils.isValidDate(compareDate)) {
-            UIManager.showNotification('Invalid date format', 'error');
             return;
         }
 
@@ -1049,7 +851,7 @@ const DataManager = {
         const container = Utils.$('.comparison-grid');
         if (!container) return;
 
-        const cards = comparison.map(item => {
+        container.innerHTML = comparison.map(item => {
             const change = parseFloat(item.percentage || 0);
             const isPositive = change >= 0;
             const isCurrency = item.metric.includes('Sales') || item.metric.includes('Value');
@@ -1073,225 +875,12 @@ const DataManager = {
                     </div>
                 </div>
             `;
-        });
-        
-        container.innerHTML = cards.join('');
-    },
-    
-    // Export data to CSV
-    exportToCSV(data, filename) {
-        try {
-            const csv = this.convertToCSV(data);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            UIManager.showNotification('Data exported successfully', 'success');
-        } catch (error) {
-            console.error('Export error:', error);
-            UIManager.showNotification('Failed to export data', 'error');
-        }
-    },
-    
-    convertToCSV(data) {
-        if (!data || data.length === 0) return '';
-        
-        const headers = Object.keys(data[0]);
-        const rows = data.map(row => 
-            headers.map(header => {
-                const value = row[header];
-                return typeof value === 'string' && value.includes(',') 
-                    ? `"${value}"` 
-                    : value;
-            }).join(',')
-        );
-        
-        return [headers.join(','), ...rows].join('\n');
-    }
-};
-
-// ==================== ENHANCED CHART MANAGER ====================
-const ChartManager = {
-    destroyChart(chartName) {
-        const chart = AppState.charts.get(chartName);
-        if (chart) {
-            try {
-                chart.destroy();
-                AppState.charts.delete(chartName);
-            } catch (e) {
-                console.error('Chart destroy error:', e);
-            }
-        }
-    },
-
-    createSalesTrendChart(data) {
-        const ctx = Utils.$('#salesTrendChart');
-        if (!ctx) {
-            console.error('Chart canvas not found: salesTrendChart');
-            return;
-        }
-
-        if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No trend data available</p>';
-            return;
-        }
-
-        this.destroyChart('salesTrend');
-
-        const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
-        
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: sortedData.map(d => Utils.formatDate(d.date)),
-                datasets: [{
-                    label: 'Sales Revenue',
-                    data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
-                    borderColor: CONFIG.CHART_COLORS.primary,
-                    backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: CONFIG.CHART_COLORS.primary,
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverBorderWidth: 3
-                }]
-            },
-            options: {
-                ...CONFIG.CHART_OPTIONS,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => Utils.formatCurrency(value),
-                            font: { size: 12 }
-                        },
-                        grid: { color: 'rgba(0,0,0,0.05)' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 12 } }
-                    }
-                },
-                plugins: {
-                    ...CONFIG.CHART_OPTIONS.plugins,
-                    tooltip: {
-                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
-                        callbacks: {
-                            label: (ctx) => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y),
-                            title: (ctx) => Utils.formatDate(sortedData[ctx[0].dataIndex].date, true)
-                        }
-                    }
-                }
-            }
-        });
-        
-        AppState.charts.set('salesTrend', chart);
-    },
-
-    createComparisonChart(comparisonData) {
-        const ctx = Utils.$('#comparisonChart');
-        if (!ctx) {
-            console.error('Chart canvas not found: comparisonChart');
-            return;
-        }
-
-        if (!comparisonData || comparisonData.length === 0) {
-            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No comparison data available</p>';
-            return;
-        }
-
-        this.destroyChart('comparison');
-
-        const metrics = comparisonData.map(d => d.metric);
-        const currentValues = comparisonData.map(d => parseFloat(d.current || 0));
-        const compareValues = comparisonData.map(d => parseFloat(d.compare || 0));
-
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: metrics,
-                datasets: [
-                    {
-                        label: 'Current Period',
-                        data: currentValues,
-                        backgroundColor: CONFIG.CHART_COLORS.primary,
-                        borderRadius: 8,
-                        borderWidth: 0
-                    },
-                    {
-                        label: 'Previous Period',
-                        data: compareValues,
-                        backgroundColor: CONFIG.CHART_COLORS.info,
-                        borderRadius: 8,
-                        borderWidth: 0
-                    }
-                ]
-            },
-            options: {
-                ...CONFIG.CHART_OPTIONS,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => Utils.formatNumber(value),
-                            font: { size: 12 }
-                        }
-                    },
-                    x: {
-                        ticks: { font: { size: 11 } }
-                    }
-                },
-                plugins: {
-                    ...CONFIG.CHART_OPTIONS.plugins,
-                    tooltip: {
-                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
-                        callbacks: {
-                            label: (ctx) => {
-                                const label = ctx.dataset.label || '';
-                                const value = ctx.parsed.y;
-                                const metric = ctx.label;
-                                const formatted = metric.includes('Sales') || metric.includes('Value') ? 
-                                    Utils.formatCurrency(value) : Utils.formatNumber(value);
-                                return `${label}: ${formatted}`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        
-        AppState.charts.set('comparison', chart);
-    },
-
-    updateTrendChart() {
-        const period = parseInt(Utils.$('#trendPeriod')?.value) || 30;
-        DataManager.loadTrendData(period);
-    },
-    
-    destroyAllCharts() {
-        AppState.charts.forEach((chart, name) => this.destroyChart(name));
+        }).join('');
     }
 };
 
 // ==================== ENHANCED TARGET MANAGER ====================
 const TargetManager = {
-    validationRules: {
-        name: {
-            min: CONFIG.VALIDATION.MIN_NAME_LENGTH,
-            max: CONFIG.VALIDATION.MAX_NAME_LENGTH,
-            pattern: /^[a-zA-Z0-9\s\-_]+$/
-        },
-        value: {
-            min: CONFIG.VALIDATION.MIN_VALUE,
-            max: CONFIG.VALIDATION.MAX_VALUE
-        }
-    },
-    
     async loadTargets(filter = 'all') {
         AppState.incrementLoading();
         try {
@@ -1322,7 +911,7 @@ const TargetManager = {
             return;
         }
 
-        const cards = targets.map(target => {
+        grid.innerHTML = targets.map(target => {
             const progress = parseFloat(target.progress || 0);
             const cappedProgress = Math.min(progress, 100);
             const statusClass = target.status === 'achieved' ? 'achieved' : 
@@ -1339,12 +928,7 @@ const TargetManager = {
                     </div>
                     <div class="target-progress-section">
                         <div class="progress-bar-container">
-                            <div class="progress-bar-fill ${statusClass}" 
-                                 style="width:${cappedProgress.toFixed(1)}%"
-                                 role="progressbar"
-                                 aria-valuenow="${progress.toFixed(1)}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
+                            <div class="progress-bar-fill ${statusClass}" style="width:${cappedProgress.toFixed(1)}%"></div>
                         </div>
                         <div class="progress-stats">
                             <span class="progress-percentage">${progress.toFixed(1)}%</span>
@@ -1357,19 +941,13 @@ const TargetManager = {
                     <div class="target-footer-row">
                         <span class="target-dates">${Utils.formatDate(target.start_date)} - ${Utils.formatDate(target.end_date)}</span>
                         <div class="target-actions">
-                            <button class="btn-icon-small" 
-                                    onclick="TargetManager.editTarget(${target.id})" 
-                                    title="Edit Target" 
-                                    aria-label="Edit ${Utils.escapeHtml(target.target_name)}">
+                            <button class="btn-icon-small" onclick="TargetManager.editTarget(${target.id})" title="Edit Target" aria-label="Edit ${Utils.escapeHtml(target.target_name)}">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
-                            <button class="btn-icon-small delete" 
-                                    onclick="TargetManager.deleteTarget(${target.id})" 
-                                    title="Delete Target" 
-                                    aria-label="Delete ${Utils.escapeHtml(target.target_name)}">
+                            <button class="btn-icon-small delete" onclick="TargetManager.deleteTarget(${target.id})" title="Delete Target" aria-label="Delete ${Utils.escapeHtml(target.target_name)}">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"/>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -1379,9 +957,7 @@ const TargetManager = {
                     </div>
                 </div>
             `;
-        });
-        
-        grid.innerHTML = cards.join('');
+        }).join('');
     },
 
     displayTargetsTable(targets) {
@@ -1393,7 +969,7 @@ const TargetManager = {
             return;
         }
 
-        const rows = targets.map(target => {
+        tbody.innerHTML = targets.map(target => {
             const progress = parseFloat(target.progress || 0);
             const cappedProgress = Math.min(progress, 100);
             const statusClass = target.status === 'achieved' ? 'achieved' : 
@@ -1413,10 +989,7 @@ const TargetManager = {
                     <td>
                         <div style="display:flex;align-items:center;gap:8px;">
                             <div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;">
-                                <div class="progress-bar-fill ${statusClass}" 
-                                     style="width:${cappedProgress.toFixed(1)}%"
-                                     role="progressbar"
-                                     aria-valuenow="${progress.toFixed(1)}"></div>
+                                <div class="progress-bar-fill ${statusClass}" style="width:${cappedProgress.toFixed(1)}%"></div>
                             </div>
                             <span style="font-weight:600;min-width:55px;font-size:13px;">${progress.toFixed(1)}%</span>
                         </div>
@@ -1438,9 +1011,7 @@ const TargetManager = {
                     </td>
                 </tr>
             `;
-        });
-        
-        tbody.innerHTML = rows.join('');
+        }).join('');
     },
 
     formatTargetType(type) {
@@ -1496,65 +1067,33 @@ const TargetManager = {
     },
 
     async deleteTarget(id) {
-        UIManager.showConfirmDialog(
-            'Are you sure you want to delete this target? This action cannot be undone.',
-            async () => {
-                AppState.incrementLoading();
-                try {
-                    const result = await APIService.fetch('delete_target', { id });
-                    
-                    if (!result) return;
+        if (!confirm('Are you sure you want to delete this target? This action cannot be undone.')) {
+            return;
+        }
 
-                    UIManager.showNotification('Target deleted successfully', 'success');
-                    
-                    await Promise.all([
-                        this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
-                        DataManager.loadKPISummary()
-                    ]);
-                } catch (error) {
-                    console.error('Delete Target Error:', error);
-                    UIManager.showNotification('Failed to delete target: ' + error.message, 'error');
-                } finally {
-                    AppState.decrementLoading();
-                }
-            }
-        );
-    },
-    
-    validateTargetForm(formData) {
-        const errors = [];
-        
-        if (!Utils.isValidString(formData.name, this.validationRules.name.min, this.validationRules.name.max)) {
-            errors.push(`Target name must be between ${this.validationRules.name.min}-${this.validationRules.name.max} characters`);
+        AppState.incrementLoading();
+        try {
+            const result = await APIService.fetch('delete_target', { id });
+            
+            if (!result) return;
+
+            UIManager.showNotification('Target deleted successfully', 'success');
+            
+            // Reload data
+            await Promise.all([
+                this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                DataManager.loadKPISummary()
+            ]);
+        } catch (error) {
+            console.error('Delete Target Error:', error);
+            UIManager.showNotification('Failed to delete target: ' + error.message, 'error');
+        } finally {
+            AppState.decrementLoading();
         }
-        
-        if (!this.validationRules.name.pattern.test(formData.name)) {
-            errors.push('Target name contains invalid characters');
-        }
-        
-        if (!['sales', 'customers', 'transactions', 'avg_transaction'].includes(formData.type)) {
-            errors.push('Invalid target type');
-        }
-        
-        if (!Utils.isValidNumber(formData.value) || 
-            formData.value < this.validationRules.value.min || 
-            formData.value > this.validationRules.value.max) {
-            errors.push(`Target value must be between ${this.validationRules.value.min} and ${Utils.formatNumber(this.validationRules.value.max)}`);
-        }
-        
-        if (!Utils.isValidDate(formData.start_date) || !Utils.isValidDate(formData.end_date)) {
-            errors.push('Invalid date format');
-        }
-        
-        if (new Date(formData.end_date) < new Date(formData.start_date)) {
-            errors.push('End date must be after start date');
-        }
-        
-        return errors;
     }
 };
 
-// ==================== DATE MANAGER ====================
+// ==================== ENHANCED DATE MANAGER ====================
 const DateManager = {
     setDefaultDates() {
         const today = new Date();
@@ -1593,14 +1132,16 @@ const DateManager = {
     }
 };
 
-// ==================== TAB MANAGER ====================
+// ==================== ENHANCED TAB MANAGER ====================
 const TabManager = {
     switchTab(tabName) {
+        // Update tab buttons
         Utils.$$('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
             btn.setAttribute('aria-selected', 'false');
         });
         
+        // Update tab content
         Utils.$$('.tab-content').forEach(content => {
             content.classList.remove('active');
             content.setAttribute('aria-hidden', 'true');
@@ -1620,18 +1161,10 @@ const TabManager = {
         }
 
         AppState.currentTab = tabName;
-        
-        // Track tab views
-        this.trackTabView(tabName);
-    },
-    
-    trackTabView(tabName) {
-        if (!this.tabViews) this.tabViews = {};
-        this.tabViews[tabName] = (this.tabViews[tabName] || 0) + 1;
     }
 };
 
-// ==================== MODAL MANAGER ====================
+// ==================== ENHANCED MODAL MANAGER ====================
 const ModalManager = {
     open() {
         const modal = Utils.$('#targetModal');
@@ -1640,9 +1173,6 @@ const ModalManager = {
         if (modal) {
             modal.classList.add('active');
             modal.setAttribute('aria-hidden', 'false');
-            
-            // Trap focus
-            this.trapFocus(modal);
             
             // Focus first input
             setTimeout(() => {
@@ -1667,6 +1197,7 @@ const ModalManager = {
         if (startDate) startDate.value = Utils.getISODate(today);
         if (endDate) endDate.value = Utils.getISODate(nextMonth);
 
+        // Prevent body scroll
         document.body.style.overflow = 'hidden';
     },
 
@@ -1682,6 +1213,8 @@ const ModalManager = {
         }
         
         AppState.editingTargetId = null;
+        
+        // Restore body scroll
         document.body.style.overflow = '';
     },
 
@@ -1697,11 +1230,29 @@ const ModalManager = {
             store: Utils.$('#targetStore')?.value.trim() || ''
         };
 
-        // Client-side validation
-        const errors = TargetManager.validateTargetForm(formData);
-        
-        if (errors.length > 0) {
-            UIManager.showNotification(errors[0], 'warning');
+        // Validate
+        if (!formData.name || formData.name.length < 3) {
+            UIManager.showNotification('Target name must be at least 3 characters', 'warning');
+            return;
+        }
+
+        if (!formData.type) {
+            UIManager.showNotification('Please select a target type', 'warning');
+            return;
+        }
+
+        if (!Utils.isValidNumber(formData.value) || formData.value <= 0) {
+            UIManager.showNotification('Target value must be greater than 0', 'warning');
+            return;
+        }
+
+        if (!formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please select both start and end dates', 'warning');
+            return;
+        }
+
+        if (new Date(formData.end_date) < new Date(formData.start_date)) {
+            UIManager.showNotification('End date must be after or equal to start date', 'warning');
             return;
         }
 
@@ -1724,6 +1275,7 @@ const ModalManager = {
             
             this.close();
             
+            // Reload data
             await Promise.all([
                 TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
@@ -1734,36 +1286,10 @@ const ModalManager = {
         } finally {
             AppState.decrementLoading();
         }
-    },
-    
-    trapFocus(modal) {
-        const focusableElements = modal.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
-        const handleTabKey = (e) => {
-            if (e.key !== 'Tab') return;
-            
-            if (e.shiftKey) {
-                if (document.activeElement === firstElement) {
-                    lastElement.focus();
-                    e.preventDefault();
-                }
-            } else {
-                if (document.activeElement === lastElement) {
-                    firstElement.focus();
-                    e.preventDefault();
-                }
-            }
-        };
-        
-        modal.addEventListener('keydown', handleTabKey);
     }
 };
 
-// ==================== GLOBAL FUNCTION EXPORTS ====================
+// ==================== GLOBAL FUNCTIONS ====================
 window.openTargetModal = () => ModalManager.open();
 window.closeTargetModal = (event) => ModalManager.close(event);
 window.saveTarget = (event) => ModalManager.saveTarget(event);
@@ -1785,30 +1311,19 @@ window.refreshAllData = async () => {
     await App.loadAllData();
     UIManager.showNotification('Data refreshed successfully', 'success');
 };
-window.exportTrendData = () => {
-    const period = parseInt(Utils.$('#trendPeriod')?.value) || 30;
-    APIService.fetch('trend_data', { days: period }).then(data => {
-        if (data && data.trend_data) {
-            DataManager.exportToCSV(data.trend_data, 'sales_trend');
-        }
-    });
-};
 
-// ==================== APP INITIALIZATION ====================
+// ==================== ENHANCED APP INITIALIZATION ====================
 const App = {
     async init() {
-        console.log('🚀 Initializing Ultra-Enhanced Dashboard v3.0...');
+        console.log('🚀 Initializing Ultra-Accurate Sales Dashboard v2.0...');
 
         try {
-            // Dependency checks
+            // Check dependencies
             if (typeof Chart === 'undefined') {
                 console.error('Chart.js not loaded!');
-                UIManager.showNotification('Chart library not loaded. Please refresh.', 'error');
+                UIManager.showNotification('Chart library not loaded. Please refresh the page.', 'error');
                 return;
             }
-
-            // Initialize CSRF token
-            await CSRFManager.fetchToken();
 
             // Update date/time
             UIManager.updateDateTime();
@@ -1825,9 +1340,6 @@ const App = {
 
             // Setup auto-refresh
             this.setupAutoRefresh();
-            
-            // Setup keyboard shortcuts
-            this.setupKeyboardShortcuts();
 
             console.log('✅ Dashboard initialized successfully');
             
@@ -1847,6 +1359,7 @@ const App = {
         ];
 
         await Promise.allSettled(promises);
+        
         console.log('Data loading complete');
     },
 
@@ -1855,21 +1368,25 @@ const App = {
         const modal = Utils.$('#targetModal');
         if (modal) {
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) ModalManager.close();
+                if (e.target === modal) {
+                    ModalManager.close();
+                }
             });
         }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') ModalManager.close();
+            if (e.key === 'Escape') {
+                ModalManager.close();
+            }
         });
 
-        // Visibility change
+        // Visibility change - refresh data when tab becomes visible
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && AppState.lastDataUpdate) {
                 const timeSinceUpdate = Date.now() - AppState.lastDataUpdate.getTime();
-                if (timeSinceUpdate > 300000) {
-                    console.log('Auto-refresh after visibility change');
+                if (timeSinceUpdate > 300000) { // 5 minutes
+                    console.log('Auto-refreshing data after visibility change');
                     this.loadAllData();
                 }
             }
@@ -1877,17 +1394,15 @@ const App = {
 
         // Online/offline events
         window.addEventListener('online', () => {
-            AppState.isOnline = true;
             UIManager.showNotification('Connection restored', 'success');
             this.loadAllData();
         });
 
         window.addEventListener('offline', () => {
-            AppState.isOnline = false;
             UIManager.showNotification('No internet connection', 'warning', 6000);
         });
 
-        // Prevent form submission on Enter
+        // Prevent form submission on Enter key
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
@@ -1895,99 +1410,59 @@ const App = {
                 }
             });
         });
-        
-        // Beforeunload warning for unsaved changes
-        window.addEventListener('beforeunload', (e) => {
-            if (AppState.editingTargetId && Utils.$('#targetModal')?.classList.contains('active')) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
     },
 
     setupAutoRefresh() {
+        // Auto-refresh KPI every 2 minutes
         setInterval(() => {
-            if (!document.hidden && AppState.isOnline) {
-                console.log('Auto-refresh KPI...');
+            if (!document.hidden) {
+                console.log('Auto-refreshing KPI...');
                 DataManager.loadKPISummary();
             }
-        }, CONFIG.AUTO_REFRESH_INTERVAL);
-    },
-    
-    setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+R or Cmd+R: Refresh data
-            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-                e.preventDefault();
-                this.loadAllData();
-            }
-            
-            // Ctrl+N or Cmd+N: New target
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                ModalManager.open();
-            }
-            
-            // Ctrl+1/2/3/4: Switch tabs
-            if ((e.ctrlKey || e.metaKey) && ['1','2','3','4'].includes(e.key)) {
-                e.preventDefault();
-                const tabs = ['trend', 'comparison', 'targets', 'settings'];
-                TabManager.switchTab(tabs[parseInt(e.key) - 1]);
-            }
-        });
+        }, 120000);
     }
 };
 
-// ==================== STYLES ====================
+// ==================== ENHANCED ANIMATIONS ====================
 const style = document.createElement('style');
 style.textContent = `
     @keyframes spin {
         to { transform: rotate(360deg); }
     }
     @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
     @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
     }
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
     }
     
+    /* Smooth transitions */
     .kpi-value-display, .progress-bar-fill {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s ease;
     }
     
+    /* Accessibility improvements */
     *:focus-visible {
         outline: 2px solid #6366f1;
         outline-offset: 2px;
-    }
-    
-    .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border-width: 0;
-    }
-    
-    .notification-toast {
-        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-    
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-        }
     }
 `;
 document.head.appendChild(style);
@@ -1999,7 +1474,7 @@ if (document.readyState === 'loading') {
     App.init();
 }
 
-// ==================== ERROR HANDLERS ====================
+// ==================== ENHANCED ERROR HANDLERS ====================
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
     if (event.error?.message !== 'ResizeObserver loop limit exceeded') {
@@ -2020,21 +1495,14 @@ if ('PerformanceObserver' in window) {
         const perfObserver = new PerformanceObserver((entryList) => {
             for (const entry of entryList.getEntries()) {
                 if (entry.duration > 1000) {
-                    console.warn(`⚠️ Slow operation: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+                    console.warn(`Slow operation detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
                 }
             }
         });
         perfObserver.observe({ entryTypes: ['measure'] });
     } catch (e) {
-        console.log('Performance monitoring unavailable');
+        console.log('Performance monitoring not available');
     }
 }
 
-// ==================== SERVICE WORKER (OPTIONAL) ====================
-if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-    navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.log('SW registration failed:', err));
-}
-
-console.log('📊 Ultra-Enhanced Sales Dashboard v3.0 loaded successfully');
+console.log('📊 Sales Analytics Dashboard v2.0 loaded successfully');
