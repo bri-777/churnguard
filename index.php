@@ -31,7 +31,6 @@ if (!$me) {
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <meta name="csrf-token" content="<?=htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES)?>">
 <!-- NEW: help the JS persist prediction state per user -->
 <meta name="user-id" content="<?= (int)($me['user_id'] ?? 0) ?>">
@@ -1610,1404 +1609,457 @@ function doLogout() {
 
 
 
+<script>
+// ChurnGuard Dashboard — accurate Executive Summary, PH currency, hardened UI
 
+let cgx_charts = {};
+let cgx_currentView = '14days';
+let cgx_data = null;
+let cgx_debugMode = localStorage.getItem('cgx_debug') === '1';
 
+document.addEventListener('DOMContentLoaded', () => {
+  cgx_log('Booting...');
+  cgx_initializeReports();
+  cgx_setupEventListeners();
+  cgx_loadData('14days');
+  cgx_setupDiagnostics();
+});
 
-<div id = "dashboard-container" class = "page">
- <!-- Main Dashboard Container -->
-    <div class="dashboard-wrapper">
-        
-        <!-- Top Navigation Bar -->
-        <nav class="top-navbar">
-            <div class="navbar-left">
-                <h1 class="brand-title">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                    </svg>
-                    Sales Analytics Pro
-                </h1>
-            </div>
-            <div class="navbar-center">
-                <div class="date-display">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                    <span id="currentDateTime">Loading...</span>
-                </div>
-            </div>
-            <div class="navbar-right">
-                <button class="icon-btn" onclick="toggleNotifications()" title="Notifications">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                    <span class="notification-badge">3</span>
-                </button>
-                <button class="icon-btn" onclick="refreshAllData()" title="Refresh Data">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                    </svg>
-                </button>
-                <button class="btn-primary-small" onclick="openTargetModal()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 8v8M8 12h8"/>
-                    </svg>
-                    New Target
-                </button>
-            </div>
-        </nav>
+function cgx_log(msg, data=null){ if (cgx_debugMode) console.log(`[CGX ${new Date().toISOString()}] ${msg}`, data ?? ''); }
 
-        <!-- Main Content -->
-        <main class="dashboard-content">
-            
-            <!-- KPI Summary Cards -->
-            <section class="kpi-section">
-                <h2 class="section-title-main">Performance Overview</h2>
-                <div class="kpi-grid">
-                    <div class="kpi-card-pro" data-metric="sales">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro sales-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge" id="salesTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Today's Revenue</span>
-                            <h3 class="kpi-value-pro" id="todaySales">₱0.00</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="salesComparison">vs yesterday</span>
-                                <span class="kpi-sparkline" id="salesSparkline">●●●●●●●</span>
-                            </div>
-                        </div>
-                    </div>
+function cgx_initializeReports(){
+  if (typeof Chart !== 'undefined'){
+    Chart.defaults.font.family = 'Inter, -apple-system, BlinkMacSystemFont, sans-serif';
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    cgx_log('Chart.js ready');
+  }
+}
 
-                    <div class="kpi-card-pro" data-metric="customers">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro customers-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge" id="customersTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Customer Traffic</span>
-                            <h3 class="kpi-value-pro" id="todayCustomers">0</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="customersComparison">vs yesterday</span>
-                                <span class="kpi-sparkline" id="customersSparkline">●●●●●●●</span>
-                            </div>
-                        </div>
-                    </div>
+function cgx_setupEventListeners(){
+  document.querySelectorAll('.date-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.date-btn').forEach(b=>{
+        b.classList.remove('active'); b.style.background='#fff'; b.style.color='#2f3640';
+      });
+      btn.classList.add('active');
+      btn.style.background='linear-gradient(135deg,#667EEA 0%,#5E72E4 100%)';
+      btn.style.color='#fff';
 
-                    <div class="kpi-card-pro" data-metric="transactions">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro transactions-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                                    <path d="M2 10h20"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge" id="transactionsTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Transactions</span>
-                            <h3 class="kpi-value-pro" id="todayTransactions">0</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="transactionsComparison">vs yesterday</span>
-                                <span class="kpi-sparkline" id="transactionsSparkline">●●●●●●●</span>
-                            </div>
-                        </div>
-                    </div>
+      const customInputs = document.querySelector('.custom-date-inputs');
+      if (btn.dataset.range === 'custom'){
+        if (customInputs) customInputs.style.display='flex';
+      } else {
+        if (customInputs) customInputs.style.display='none';
+        cgx_loadData(btn.dataset.range);
+      }
+    });
+  });
+}
 
-                    <div class="kpi-card-pro" data-metric="target">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro target-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <circle cx="12" cy="12" r="6"/>
-                                    <circle cx="12" cy="12" r="2"/>
-                                </svg>
-                            </div>
-                            <div class="kpi-trend-badge success" id="targetTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>Active</span>
-                            </div>
-                        </div>
-                        <div class="kpi-body">
-                            <span class="kpi-label-pro">Target Progress</span>
-                            <h3 class="kpi-value-pro" id="targetAchievement">0%</h3>
-                            <div class="kpi-footer">
-                                <span class="kpi-comparison" id="targetStatus">No active target</span>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" id="targetMiniProgress" style="width:0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+async function cgx_loadData(view){
+  try{
+    cgx_currentView = view;
+    cgx_showLoading();
+    const res = await fetch(`data_endpoint.php?view=${encodeURIComponent(view)}`, {
+      headers: { 'Accept': 'application/json' },
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    cgx_data = data;
 
-            <!-- Charts Section -->
-            <section class="charts-section">
-                <div class="chart-container-wrapper">
-                    <!-- Sales Trend Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <h3 class="chart-title">Sales Trend Analysis</h3>
-                                <p class="chart-subtitle">Last 30 days revenue performance</p>
-                            </div>
-                            <div class="chart-controls">
-                                <select id="trendPeriod" class="chart-select" onchange="updateTrendChart()">
-                                    <option value="7">Last 7 Days</option>
-                                    <option value="30" selected>Last 30 Days</option>
-                                    <option value="90">Last 90 Days</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="salesTrendChart" style="max-height: 300px;"></canvas>
-                        </div>
-                    </div>
+    if (!data?.data_availability?.has_data){
+      cgx_showNoDataMessage(data?.data_availability ?? {days_with_data:0,total_days:0,coverage_percent:0});
+      cgx_updateHealthStatus('success', data.timestamp);
+      return;
+    }
 
-                    <!-- Performance Comparison Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <h3 class="chart-title">Performance Metrics</h3>
-                                <p class="chart-subtitle">Current vs Previous Period</p>
-                            </div>
-                            <div class="chart-controls">
-                                <select id="comparisonMetric" class="chart-select" onchange="updateComparisonChart()">
-                                    <option value="all" selected>All Metrics</option>
-                                    <option value="sales">Sales Only</option>
-                                    <option value="traffic">Traffic Only</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="comparisonChart" style="max-height: 300px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    cgx_populateExecutiveSummary(data.executive_summary);
+    cgx_populateRetentionMetrics(data.retention_metrics);
+    cgx_populateBehaviorMetrics(data.behavior_metrics);
+    cgx_populateRevenueImpact(data.revenue_impact);
+    cgx_populateSegments(data.segments);
+    cgx_updateCharts(data.trends);
+    cgx_updateComparisonTable(data.period_comparison);
 
-            <!-- Advanced Comparison Section -->
-            <section class="comparison-section-pro">
-                <div class="section-header-pro">
-                    <h2 class="section-title-main">Data Comparison Analysis</h2>
-                    <button class="btn-outline-small" onclick="resetComparison()">Reset</button>
-                </div>
-                
-                <div class="comparison-controls">
-                    <div class="control-group">
-                        <label>Comparison Type</label>
-                        <select id="comparisonType" class="form-select-pro" onchange="updateComparisonDates()">
-                            <option value="today_vs_yesterday">Today vs Yesterday</option>
-                            <option value="week_vs_week">This Week vs Last Week</option>
-                            <option value="month_vs_month">This Month vs Last Month</option>
-                            <option value="custom">Custom Comparison</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label>Current Period</label>
-                        <input type="date" id="currentDate" class="form-input-pro">
-                    </div>
-                    <div class="control-group">
-                        <label>Compare With</label>
-                        <input type="date" id="compareDate" class="form-input-pro">
-                    </div>
-                    <div class="control-group">
-                        <button class="btn-primary-pro" onclick="loadComparison()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="m21 21-4.35-4.35"/>
-                            </svg>
-                            Analyze
-                        </button>
-                    </div>
-                </div>
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    if (lastUpdatedEl) lastUpdatedEl.textContent = data.last_updated;
 
-                <div class="comparison-results" id="comparisonResults">
-                    <div class="comparison-grid">
-                        <!-- Results will be populated here -->
-                    </div>
-                </div>
-            </section>
+    // Clear any leftover "Loading..." opacity
+    ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'].forEach(id=>{
+      const el = document.getElementById(id);
+      if (el) el.style.opacity = '1';
+    });
 
-            <!-- Targets Management -->
-            <section class="targets-section-pro">
-                <div class="section-header-pro">
-                    <h2 class="section-title-main">Target Management</h2>
-                    <div class="filter-controls">
-                        <select id="targetFilter" class="form-select-pro" onchange="filterTargets()">
-                            <option value="all">All Targets</option>
-                            <option value="active">Active</option>
-                            <option value="achieved">Achieved</option>
-                            <option value="near">Near Target</option>
-                            <option value="below">Below Target</option>
-                        </select>
-                        <button class="btn-outline-small" onclick="exportTargets()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                            </svg>
-                            Export
-                        </button>
-                    </div>
-                </div>
+    cgx_updateHealthStatus('success', data.timestamp);
+  } catch (err){
+    cgx_log('Load error', err);
+    cgx_showError(err.message);
+    cgx_updateHealthStatus('error');
+  }
+}
 
-                <div class="targets-grid" id="targetsGrid">
-                    <!-- Targets will be populated here -->
-                </div>
-            </section>
+function cgx_showLoading(){
+  ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate','currentRetention','churnRate','highRiskCount'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = 'Loading...';
+    el.style.opacity = '0.6';
+  });
+}
 
-            <!-- Data Tables -->
-            <section class="tables-section-pro">
-                <div class="table-tabs">
-                    <button class="tab-btn active" onclick="switchTab('trend')" data-tab="trend">Sales Trend</button>
-                    <button class="tab-btn" onclick="switchTab('active-targets')" data-tab="active-targets">Active Targets</button>
-                    <button class="tab-btn" onclick="switchTab('performance')" data-tab="performance">Performance Log</button>
-                </div>
+function cgx_showError(message='Failed to load data'){
+  const ids = ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = 'Error';
+    el.style.color = '#F5365C';
+    el.style.opacity = '1';
+  });
+  const desc = document.getElementById('riskDescription');
+  if (desc){ desc.textContent = `Error: ${message}`; desc.style.color = '#F5365C'; }
+}
 
-                <div class="tab-content active" id="trend-tab">
-                    <div class="table-wrapper-pro">
-                        <table class="data-table-pro">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Revenue</th>
-                                    <th>Transactions</th>
-                                    <th>Customers</th>
-                                    <th>Avg. Value</th>
-                                    <th>Change</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salesTrendTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+function cgx_showNoDataMessage(availability){
+  const msg = `No data found for selected period. ${availability.days_with_data} of ${availability.total_days} days have data (${availability.coverage_percent}% coverage)`;
+  const rl = document.getElementById('riskLevel');
+  if (rl){ rl.textContent='No Data'; rl.style.color='#6b7280'; }
+  const rd = document.getElementById('riskDescription');
+  if (rd){ rd.textContent=msg; rd.style.color='#6b7280'; }
 
-                <div class="tab-content" id="active-targets-tab">
-                    <div class="table-wrapper-pro">
-                        <table class="data-table-pro">
-                            <thead>
-                                <tr>
-                                    <th>Target Name</th>
-                                    <th>Type</th>
-                                    <th>Current / Target</th>
-                                    <th>Progress</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="activeTargetsTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+  const zeros = {
+    atRiskCount:'0', atRiskChange:'0.0%', revenueAtRisk:'₱0', revenueChange:'0.0%',
+    // neutral when no data
+    retentionRate:'100%', retentionChange:'0.0%',
+    currentRetention:'0%', churnRate:'0%',
+    wowChange:'0.0%', highRiskCount:'0', mediumRiskCount:'0'
+  };
+  Object.entries(zeros).forEach(([id,val])=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val; el.style.opacity='0.5';
+  });
+}
 
-                <div class="tab-content" id="performance-tab">
-                    <div class="table-wrapper-pro">
-                        <table class="data-table-pro">
-                            <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Today</th>
-                                    <th>Yesterday</th>
-                                    <th>Last Week</th>
-                                    <th>Last Month</th>
-                                    <th>Trend</th>
-                                </tr>
-                            </thead>
-                            <tbody id="performanceTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+function cgx_populateExecutiveSummary(d){
+  const riskEl = document.getElementById('riskLevel');
+  if (riskEl){
+    const lvl = d?.risk_level || 'Low';
+    riskEl.textContent = lvl;
+    riskEl.style.color = cgx_getRiskColor(lvl);
+    riskEl.style.opacity = '1';
+  }
+  const riskDescEl = document.getElementById('riskDescription');
+  if (riskDescEl){
+    riskDescEl.textContent = d?.risk_description || 'Stable customer base with low churn risk';
+    riskDescEl.style.color = '#6b7280';
+    riskDescEl.style.opacity = '1';
+  }
 
-        </main>
+  const num = (v, def=0) => (Number.isFinite(+v) ? +v : def);
+  const ar  = Math.max(0, num(d?.at_risk_customers, 0));
+  const arc = num(d?.at_risk_change, 0);
+  const rar = Math.max(0, num(d?.revenue_at_risk, 0));
+  const rc  = num(d?.revenue_change, 0);
+  let rr    = num(d?.retention_rate, 0);
+  let rrc   = num(d?.retention_change, 0);
 
-        <!-- Target Modal -->
-        <div class="modal-overlay" id="targetModal" onclick="closeTargetModal(event)">
-            <div class="modal-container" onclick="event.stopPropagation()">
-                <div class="modal-header-pro">
-                    <h3 id="modalTitle">Create New Target</h3>
-                    <button class="modal-close-btn" onclick="closeTargetModal()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                <form id="targetForm" onsubmit="saveTarget(event)">
-                    <div class="modal-body-pro">
-                        <div class="form-grid">
-                            <div class="form-group-pro">
-                                <label>Target Name</label>
-                                <input type="text" id="targetName" class="form-input-pro" required maxlength="100" placeholder="e.g., Q4 Sales Goal">
-                            </div>
-                            <div class="form-group-pro">
-                                <label>Target Type</label>
-                                <select id="targetType" class="form-select-pro" required>
-                                    <option value="">Select type...</option>
-                                    <option value="sales">Sales Revenue</option>
-                                    <option value="customers">Customer Traffic</option>
-                                    <option value="transactions">Transactions</option>
-                                    <option value="avg_transaction">Avg Transaction Value</option>
-                                </select>
-                            </div>
-                            <div class="form-group-pro full-width">
-                                <label>Target Value</label>
-                                <input type="number" id="targetValue" class="form-input-pro" required min="0.01" step="0.01" placeholder="Enter target amount">
-                            </div>
-                            <div class="form-group-pro">
-                                <label>Start Date</label>
-                                <input type="date" id="targetStartDate" class="form-input-pro" required>
-                            </div>
-                            <div class="form-group-pro">
-                                <label>End Date</label>
-                                <input type="date" id="targetEndDate" class="form-input-pro" required>
-                            </div>
-                            <div class="form-group-pro full-width">
-                                <label>Store/Branch (Optional)</label>
-                                <input type="text" id="targetStore" class="form-input-pro" maxlength="100" placeholder="Leave empty for all stores">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer-pro">
-                        <button type="button" class="btn-secondary-pro" onclick="closeTargetModal()">Cancel</button>
-                        <button type="submit" class="btn-primary-pro">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                <polyline points="17 21 17 13 7 13 7 21"/>
-                                <polyline points="7 3 7 8 15 8"/>
-                            </svg>
-                            Save Target
-                        </button>
-                    </div>
-                </form>
-            </div>
+  rr = Math.min(100, Math.max(0, rr));
+
+  cgx_setElementValue('atRiskCount', cgx_formatNumber(ar));
+  cgx_setChangeValue('atRiskChange', arc, true);
+
+  cgx_setElementValue('revenueAtRisk', cgx_formatCurrencyPH(rar));
+  cgx_setChangeValue('revenueChange', rc, false);
+
+  cgx_setElementValue('retentionRate', `${cgx_formatDecimal(rr)}%`);
+  cgx_setChangeValue('retentionChange', rrc, false);
+
+  // ensure no opacity leftovers
+  ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.style.opacity = '1';
+  });
+}
+
+function cgx_populateRetentionMetrics(data){
+  cgx_setElementValue('currentRetention', `${cgx_formatDecimal(data.current_retention || 0)}%`);
+  cgx_setElementValue('churnRate', `${cgx_formatDecimal(data.churn_rate || 0)}%`);
+  cgx_setChangeValue('wowChange', data.wow_change || 0);
+  cgx_setElementValue('highRiskCount', cgx_formatNumber(data.high_risk_count || 0));
+  cgx_setElementValue('mediumRiskCount', cgx_formatNumber(data.medium_risk_count || 0));
+}
+
+function cgx_populateBehaviorMetrics(data){
+  cgx_setElementValue('avgFrequency', `${cgx_formatNumber(data.avg_frequency || 0)} per day`);
+  cgx_setElementValue('avgValue', cgx_formatCurrencyPH(data.avg_value || 0));
+  cgx_setElementValue('loyaltyRate', `${cgx_formatDecimal(data.loyalty_rate || 0)}%`);
+  cgx_setElementValue('engagementScore', `${cgx_formatNumber(data.engagement_score || 0)}/100`);
+}
+
+function cgx_populateRevenueImpact(data){
+  cgx_setElementValue('potentialLoss', cgx_formatCurrencyPH(data.potential_loss || 0));
+  cgx_setElementValue('revenueSaved', cgx_formatCurrencyPH(data.revenue_saved || 0));
+}
+
+function cgx_populateSegments(segments){
+  cgx_setElementValue('highRiskSegCount', cgx_formatNumber(segments.High?.count || 0));
+  cgx_setElementValue('highRiskRevenue', cgx_formatCurrencyPH(segments.High?.revenue || 0));
+  cgx_setElementValue('highRiskScore', `${Math.round(segments.High?.score || 0)}%`);
+
+  cgx_setElementValue('mediumRiskSegCount', cgx_formatNumber(segments.Medium?.count || 0));
+  cgx_setElementValue('mediumRiskRevenue', cgx_formatCurrencyPH(segments.Medium?.revenue || 0));
+  cgx_setElementValue('mediumRiskScore', `${Math.round(segments.Medium?.score || 0)}%`);
+
+  cgx_setElementValue('lowRiskSegCount', cgx_formatNumber(segments.Low?.count || 0));
+  cgx_setElementValue('lowRiskRevenue', cgx_formatCurrencyPH(segments.Low?.revenue || 0));
+  cgx_setElementValue('lowRiskScore', `${Math.round(segments.Low?.score || 0)}%`);
+}
+
+function cgx_updateCharts(trends){
+  if (!Array.isArray(trends) || trends.length === 0){ cgx_log('No trend data'); return; }
+
+  const labels = trends.map(t=>{
+    const d = new Date(t.date);
+    const lbl = d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    return (parseInt(t.is_gap) === 1) ? `${lbl} (No data)` : lbl;
+  });
+  const riskData    = trends.map(t => +t.risk_percentage || 0);
+  const revenueData = trends.map(t => +t.sales_volume || 0);
+  const receiptData = trends.map(t => parseInt(t.receipt_count) || 0);
+
+  const bgA = trends.map(t => (parseInt(t.is_gap)===1)?'rgba(107,114,128,0.1)':'rgba(94,114,228,0.1)');
+  const bdA = trends.map(t => (parseInt(t.is_gap)===1)?'rgba(107,114,128,0.5)':'#5E72E4');
+
+  cgx_createChart('retentionChart', {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Retention Rate %',
+        data: riskData.map(r=>100-r),
+        borderColor: bdA,
+        backgroundColor: bgA,
+        tension:0.3,
+        pointBackgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#5E72E4'),
+        pointRadius: trends.map(t=>(parseInt(t.is_gap)===1)?4:3),
+        segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
+      }]
+    }
+  });
+
+  cgx_createChart('behaviorChart', {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Transactions',
+        data: receiptData,
+        backgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'rgba(107,114,128,0.3)':'#5E72E4'),
+        borderColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#5E72E4'),
+        borderWidth:1
+      }]
+    }
+  });
+
+  cgx_createChart('revenueChart', {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Revenue',
+        data: revenueData,
+        borderColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#2DCE89'),
+        backgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'rgba(107,114,128,0.1)':'rgba(45,206,137,0.1)'),
+        tension:0.3,
+        pointBackgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#2DCE89'),
+        segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
+      }]
+    }
+  });
+
+  cgx_createChart('trendsChart', {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Risk Score %',
+        data: riskData,
+        borderColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#F5365C'),
+        backgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'rgba(107,114,128,0.1)':'rgba(245,54,92,0.1)'),
+        tension:0.3,
+        pointBackgroundColor: trends.map(t=>(parseInt(t.is_gap)===1)?'#6b7280':'#F5365C'),
+        segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
+      }]
+    },
+    options:{
+      plugins:{
+        tooltip:{ callbacks:{ afterLabel: (ctx)=>(parseInt(trends[ctx.dataIndex]?.is_gap)===1?'No data available for this date':'') } }
+      }
+    }
+  });
+
+  cgx_log('Charts updated', {points: trends.length});
+}
+
+function cgx_createChart(canvasId, config){
+  const canvas = document.getElementById(canvasId);
+  if (!canvas){ cgx_log(`Canvas not found: ${canvasId}`); return; }
+  const ctx = canvas.getContext('2d');
+  if (cgx_charts[canvasId]) cgx_charts[canvasId].destroy();
+
+  const defaults = {
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{ intersect:false, mode:'index' },
+    plugins:{
+      legend:{ display:true, position:'top', labels:{ usePointStyle:true, padding:15, font:{ size:12, weight:'600' } } },
+      tooltip:{ backgroundColor:'rgba(0,0,0,0.8)', titleFont:{ size:13, weight:'600' }, bodyFont:{ size:12 }, padding:10, cornerRadius:6 }
+    },
+    scales:{
+      y:{ beginAtZero:true, grid:{ color:'rgba(0,0,0,0.05)', drawBorder:false }, ticks:{ font:{ size:11 } } },
+      x:{ grid:{ display:false, drawBorder:false }, ticks:{ font:{ size:11 } } }
+    }
+  };
+  config.options = { ...defaults, ...(config.options || {}) };
+  cgx_charts[canvasId] = new Chart(ctx, config);
+}
+
+function cgx_updateComparisonTable(d){
+  const tbody = document.querySelector('#comparisonTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = `
+    <tr>
+      <td style="padding:.75rem;font-weight:600;">Revenue</td>
+      <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.today.revenue)}</td>
+      <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.yesterday.revenue)}</td>
+      <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.avg_7day.revenue)}</td>
+      <td style="padding:.75rem;">${cgx_formatCurrencyPH(d.avg_30day.revenue)}</td>
+    </tr>
+    <tr style="background:#F6F9FC;">
+      <td style="padding:.75rem;font-weight:600;">Customers</td>
+      <td style="padding:.75rem;">${cgx_formatNumber(d.today.customers)}</td>
+      <td style="padding:.75rem;">${cgx_formatNumber(d.yesterday.customers)}</td>
+      <td style="padding:.75rem;">${cgx_formatNumber(d.avg_7day.customers)}</td>
+      <td style="padding:.75rem;">${cgx_formatNumber(d.avg_30day.customers)}</td>
+    </tr>
+    <tr>
+      <td style="padding:.75rem;font-weight:600;">Risk Score</td>
+      <td style="padding:.75rem;">${cgx_formatDecimal(d.today.risk_score)}%</td>
+      <td style="padding:.75rem;">${cgx_formatDecimal(d.yesterday.risk_score)}%</td>
+      <td style="padding:.75rem;">${cgx_formatDecimal(d.avg_7day.risk_score)}%</td>
+      <td style="padding:.75rem;">${cgx_formatDecimal(d.avg_30day.risk_score)}%</td>
+    </tr>
+  `;
+}
+
+// --- Utilities ---
+function cgx_setElementValue(id, v){ const el=document.getElementById(id); if(el){ el.textContent=v; el.style.opacity='1'; } }
+function cgx_setChangeValue(id, value, inverse=false){
+  const el = document.getElementById(id); if (!el) return;
+  const num = parseFloat(value) || 0;
+  const sign = num > 0 ? '+' : '';
+  el.textContent = `${sign}${cgx_formatDecimal(num)}%`;
+  el.style.color = inverse ? (num > 0 ? '#F5365C' : '#2DCE89') : (num < 0 ? '#F5365C' : '#2DCE89');
+}
+function cgx_formatNumber(n){ const v=+n || 0; return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(v)); }
+function cgx_formatDecimal(n, d=1){ const v=+n || 0; return v.toFixed(d); }
+function cgx_formatCurrencyPH(amount){
+  const v = parseFloat(amount) || 0;
+  if (v === 0) return '₱0';
+  return new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP',minimumFractionDigits:0,maximumFractionDigits:0}).format(Math.round(v));
+}
+function cgx_getRiskColor(level){
+  switch(level){
+    case 'High': return '#F5365C';
+    case 'Medium': return '#FB6340';
+    case 'Low': return '#2DCE89';
+    default: return '#5E72E4';
+  }
+}
+
+// --- Global actions ---
+function refreshReports(){ cgx_loadData(cgx_currentView); }
+function exportReport(fmt){ alert(`Export to ${fmt.toUpperCase()} — coming soon`); }
+
+function switchTab(tabName){
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
+  const sel = document.getElementById(`${tabName}-tab`); if (sel) sel.style.display='block';
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.classList.remove('active'); btn.style.color='#6b7280'; btn.style.borderBottom='none'; btn.style.marginBottom='0';
+  });
+  const match = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.trim().toLowerCase().includes(tabName.toLowerCase()));
+  if (match){ match.classList.add('active'); match.style.color='#5E72E4'; match.style.borderBottom='3px solid #5E72E4'; match.style.marginBottom='-2px'; }
+}
+
+function drillDown(riskLevel){
+  const modal=document.getElementById('drillDownModal');
+  const title=document.getElementById('modalTitle');
+  const content=document.getElementById('modalContent');
+  if (!cgx_data?.segments) return;
+
+  const key = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1);
+  const seg = cgx_data.segments[key] || {count:0,revenue:0,score:0};
+
+  if (title) title.textContent = `${key} Risk Customers`;
+  if (content){
+    content.innerHTML = `
+      <div style="padding:1rem;">
+        <p style="font-size:1.2rem;margin-bottom:1rem;"><strong>Total Customers:</strong> ${cgx_formatNumber(seg.count)}</p>
+        <p style="font-size:1.2rem;margin-bottom:1rem;"><strong>Revenue Impact:</strong> ${cgx_formatCurrencyPH(seg.revenue)}</p>
+        <p style="font-size:1.2rem;margin-bottom:1rem;"><strong>Average Risk Score:</strong> ${Math.round(seg.score || 0)}%</p>
+        <div style="margin-top:2rem;padding:1rem;background:#F6F9FC;border-radius:.5rem;">
+          <p style="color:#6b7280;font-size:.9rem;margin:0;"><strong>Note:</strong>
+          ${cgx_data.data_availability?.has_data ? `Data coverage: ${cgx_data.data_availability.coverage_percent}% of selected period` : 'No data available for this period'}</p>
         </div>
-
-    </div>
-</div>
-<script src="assets/js/sales_comparison.js"></script>
-<style>
-  /* ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD CSS ==================== */
-
-/* CSS Variables */
-:root {
-    /* Primary Colors - Professional Blue/Indigo Palette */
-    --primary-50: #eef2ff;
-    --primary-100: #e0e7ff;
-    --primary-200: #c7d2fe;
-    --primary-300: #a5b4fc;
-    --primary-400: #818cf8;
-    --primary-500: #6366f1;
-    --primary-600: #4f46e5;
-    --primary-700: #4338ca;
-    --primary-800: #3730a3;
-    --primary-900: #312e81;
-    
-    /* Success Colors */
-    --success-50: #ecfdf5;
-    --success-100: #d1fae5;
-    --success-500: #10b981;
-    --success-600: #059669;
-    --success-700: #047857;
-    
-    /* Warning Colors */
-    --warning-50: #fffbeb;
-    --warning-100: #fef3c7;
-    --warning-500: #f59e0b;
-    --warning-600: #d97706;
-    
-    /* Danger Colors */
-    --danger-50: #fef2f2;
-    --danger-100: #fee2e2;
-    --danger-500: #ef4444;
-    --danger-600: #dc2626;
-    
-    /* Neutral Colors */
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    
-    /* Background */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    
-    /* Shadows */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    
-    /* Border Radius */
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-2xl: 24px;
-    
-    /* Transitions */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Reset & Base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    background: var(--bg-secondary);
-    color: var(--gray-900);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Dashboard Wrapper */
-.dashboard-wrapper {
-    min-height: 100vh;
-    background: var(--bg-secondary);
-}
-
-/* Top Navigation Bar */
-.top-navbar {
-    background: var(--bg-primary);
-    border-bottom: 1px solid var(--gray-200);
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow-sm);
-}
-
-.navbar-left .brand-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-}
-
-.navbar-left .brand-title svg {
-    color: var(--primary-600);
-}
-
-.navbar-center .date-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: var(--gray-50);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    color: var(--gray-700);
-}
-
-.navbar-center .date-display svg {
-    color: var(--primary-600);
-}
-
-.navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.icon-btn {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
-    background: var(--bg-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.icon-btn:hover {
-    background: var(--gray-50);
-    border-color: var(--primary-300);
-}
-
-.notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--danger-500);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-primary-small {
-    padding: 8px 16px;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all var(--transition-base);
-}
-
-.btn-primary-small:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-/* Main Content */
-.dashboard-content {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 32px;
-}
-
-/* Section Titles */
-.section-title-main {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: 20px;
-}
-
-/* KPI Section */
-.kpi-section {
-    margin-bottom: 32px;
-}
-
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-.kpi-card-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    transition: all var(--transition-slow);
-    cursor: pointer;
-}
-
-.kpi-card-pro:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary-200);
-}
-
-.kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-}
-
-.kpi-icon-pro {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.sales-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.customers-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.transactions-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.target-gradient { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-
-.kpi-trend-badge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-trend-badge.down {
-    background: var(--danger-50);
-    color: var(--danger-700);
-}
-
-.kpi-trend-badge.down svg {
-    transform: rotate(180deg);
-}
-
-.kpi-trend-badge.success {
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-body {
-    margin-top: 16px;
-}
-
-.kpi-label-pro {
-    display: block;
-    font-size: 13px;
-    color: var(--gray-500);
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.kpi-value-pro {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-    line-height: 1;
-}
-
-.kpi-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-}
-
-.kpi-comparison {
-    font-size: 12px;
-    color: var(--gray-500);
-}
-
-.kpi-sparkline {
-    font-size: 8px;
-    color: var(--primary-400);
-    letter-spacing: 2px;
-}
-
-.mini-progress {
-    width: 100%;
-    height: 4px;
-    background: var(--gray-200);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 8px;
-}
-
-.mini-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-    transition: width var(--transition-slow);
-}
-
-/* Charts Section */
-.charts-section {
-    margin-bottom: 32px;
-}
-
-.chart-container-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 24px;
-}
-
-.chart-card {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-sm);
-}
-
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-}
-
-.chart-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-}
-
-.chart-subtitle {
-    font-size: 13px;
-    color: var(--gray-500);
-    margin: 0;
-}
-
-.chart-select {
-    padding: 6px 12px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    background: white;
-    color: var(--gray-700);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.chart-select:hover {
-    border-color: var(--primary-400);
-}
-
-.chart-select:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.chart-body {
-    position: relative;
-}
-
-/* Comparison Section */
-.comparison-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    margin-bottom: 32px;
-}
-
-.section-header-pro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.btn-outline-small {
-    padding: 6px 12px;
-    border: 1px solid var(--gray-300);
-    background: transparent;
-    color: var(--gray-700);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-outline-small:hover {
-    background: var(--gray-50);
-    border-color: var(--gray-400);
-}
-
-.comparison-controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.control-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-}
-
-.form-select-pro,
-.form-input-pro {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    background: white;
-    color: var(--gray-900);
-    transition: all var(--transition-base);
-}
-
-.form-select-pro:focus,
-.form-input-pro:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.btn-primary-pro {
-    width: 100%;
-    padding: 10px 20px;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all var(--transition-base);
-    margin-top: 24px;
-}
-
-.btn-primary-pro:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.comparison-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-}
-
-.comparison-metric-card {
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-}
-
-.metric-name {
-    font-size: 13px;
-    color: var(--gray-600);
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.metric-values {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-}
-
-.metric-current {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-}
-
-.metric-previous {
-    font-size: 14px;
-    color: var(--gray-500);
-}
-
-.metric-change {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.metric-change.positive {
-    color: var(--success-600);
-}
-
-.metric-change.negative {
-    color: var(--danger-600);
-}
-
-/* Targets Section */
-.targets-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    margin-bottom: 32px;
-}
-
-.filter-controls {
-    display: flex;
-    gap: 12px;
-}
-
-.targets-grid {
-    display: grid;
-    gap: 16px;
-}
-
-.target-card-pro {
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    transition: all var(--transition-base);
-}
-
-.target-card-pro:hover {
-    border-color: var(--primary-300);
-    box-shadow: var(--shadow-md);
-}
-
-.target-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-}
-
-.target-name-pro {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-}
-
-.target-type-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    background: var(--primary-100);
-    color: var(--primary-700);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.target-progress-section {
-    margin-bottom: 16px;
-}
-
-.progress-bar-container {
-    height: 8px;
-    background: var(--gray-200);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    transition: width var(--transition-slow);
-}
-
-.progress-bar-fill.achieved {
-    background: linear-gradient(90deg, var(--success-500), var(--success-600));
-}
-
-.progress-bar-fill.near {
-    background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
-}
-
-.progress-bar-fill.below {
-    background: linear-gradient(90deg, var(--danger-400), var(--danger-500));
-}
-
-.progress-stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-}
-
-.progress-percentage {
-    font-weight: 700;
-    color: var(--gray-900);
-}
-
-.progress-values {
-    color: var(--gray-600);
-}
-
-.target-footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.target-dates {
-    font-size: 12px;
-    color: var(--gray-500);
-}
-
-.target-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-icon-small {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-300);
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.btn-icon-small:hover {
-    background: var(--gray-50);
-    border-color: var(--primary-400);
-}
-
-.btn-icon-small.delete:hover {
-    background: var(--danger-50);
-    border-color: var(--danger-400);
-    color: var(--danger-600);
-}
-
-/* Tables Section */
-.tables-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--gray-200);
-    overflow: hidden;
-}
-
-.table-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--gray-200);
-    background: var(--gray-50);
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 16px;
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-600);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition-base);
-}
-
-.tab-btn:hover {
-    background: var(--gray-100);
-}
-
-.tab-btn.active {
-    color: var(--primary-600);
-    border-bottom-color: var(--primary-600);
-    background: white;
-}
-
-.tab-content {
-    display: none;
-    padding: 24px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.table-wrapper-pro {
-    overflow-x: auto;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
-}
-
-.data-table-pro {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-}
-
-.data-table-pro thead {
-    background: var(--gray-50);
-}
-
-.data-table-pro th {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gray-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--gray-200);
-}
-
-.data-table-pro td {
-    padding: 14px 16px;
-    border-top: 1px solid var(--gray-200);
-    font-size: 14px;
-    color: var(--gray-700);
-}
-
-.data-table-pro tbody tr:hover {
-    background: var(--gray-50);
-}
-
-.loading-cell {
-    text-align: center;
-    padding: 40px;
-    color: var(--gray-400);
-    font-style: italic;
-}
-
-.status-badge-pro {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.status-badge-pro.achieved {
-    background: var(--success-100);
-    color: var(--success-700);
-}
-
-.status-badge-pro.near {
-    background: var(--warning-100);
-    color: var(--warning-700);
-}
-
-.status-badge-pro.below {
-    background: var(--danger-100);
-    color: var(--danger-600);
-}
-
-/* Modal */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity var(--transition-base);
-}
-
-.modal-overlay.active {
-    display: flex;
-    opacity: 1;
-}
-
-.modal-container {
-    background: white;
-    border-radius: var(--radius-2xl);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-2xl);
-    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.modal-header-pro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 32px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.modal-header-pro h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-}
-
-.modal-close-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    border: none;
-    background: var(--gray-100);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.modal-close-btn:hover {
-    background: var(--gray-200);
-    transform: rotate(90deg);
-}
-
-.modal-body-pro {
-    padding: 24px 32px;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-group-pro {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group-pro.full-width {
-    grid-column: 1 / -1;
-}
-
-.form-group-pro label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-700);
-}
-
-.modal-footer-pro {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 24px 32px;
-    border-top: 1px solid var(--gray-200);
-}
-
-.btn-secondary-pro {
-    padding: 10px 20px;
-    border: 1px solid var(--gray-300);
-    background: white;
-    color: var(--gray-700);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-secondary-pro:hover {
-    background: var(--gray-50);
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .chart-container-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-content {
-        padding: 20px;
-    }
-    
-    .top-navbar {
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 16px;
-    }
-    
-    .navbar-center {
-        order: 3;
-        width: 100%;
-    }
-    
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .comparison-controls {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .table-tabs {
-        overflow-x: auto;
-    }
-}
-  </style>
-
-
-
-
-
-
+      </div>`;
+  }
+  if (modal) modal.style.display='block';
+}
+function closeDrillDown(){ const m=document.getElementById('drillDownModal'); if (m) m.style.display='none'; }
+
+function applyCustomRange(){
+  const s = document.getElementById('startDate')?.value;
+  const e = document.getElementById('endDate')?.value;
+  if (!s || !e){ alert('Please select both start and end dates'); return; }
+  // backend custom range not yet implemented
+  cgx_loadData('30days');
+}
+
+// --- Diagnostics ---
+function cgx_setupDiagnostics(){
+  const health=document.createElement('div');
+  health.id='cgx_health';
+  health.style.cssText = `
+    position:fixed; bottom:10px; right:10px; padding:5px 10px;
+    background:rgba(0,0,0,0.7); color:#fff; font-size:11px; border-radius:4px;
+    display:${cgx_debugMode ? 'block' : 'none'}; z-index:10000;
+  `;
+  document.body.appendChild(health);
+  window.cgx_toggleDebug=function(){
+    cgx_debugMode=!cgx_debugMode;
+    localStorage.setItem('cgx_debug', cgx_debugMode ? '1' : '0');
+    document.getElementById('cgx_health').style.display = cgx_debugMode ? 'block' : 'none';
+    console.log(`ChurnGuard debug mode: ${cgx_debugMode ? 'ON' : 'OFF'}`);
+  };
+}
+
+function cgx_updateHealthStatus(status, ts=null){
+  const el=document.getElementById('cgx_health'); if (!el) return;
+  const time = ts || new Date().toLocaleString('en-US',{timeZone:'Asia/Manila'});
+  const colors = { success:'#2DCE89', error:'#F5365C', loading:'#FB6340' };
+  el.style.backgroundColor = colors[status] || 'rgba(0,0,0,0.7)';
+  el.textContent = `CGX: ${status} | ${time}`;
+}
+
+window.onclick = function(ev){
+  const m = document.getElementById('drillDownModal');
+  if (ev.target === m) m.style.display='none';
+};
+
+cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: cgx_debugMode});
+</script>
 
 
 
