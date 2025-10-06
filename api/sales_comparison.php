@@ -609,3 +609,4 @@ if ($action === 'trend_data') {
 
 // ==================== INVALID ACTION ====================
 jsonError('Invalid action parameter', 400);
+?>
