@@ -2140,66 +2140,13 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </div>
     </div>
 
-    <!-- Metrics panel now directly below chart; horizontal cards via inline flex -->
-    <div class="metrics-panel" style="margin-top:16px;">
-      <div class="metrics-header">
-        <div class="metrics-title">📊 Key Performance Metrics</div>
-      </div>
-      <div class="metrics-grid" style="display:flex; flex-wrap:wrap; gap:16px; align-items:stretch;">
-        <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">Today's Customer Traffic</div>
-          <div class="metric-value" id="todayCustomerCount">0</div>
-          <div class="metric-trend" id="todayTrafficTrend">
-            <span>—</span>
-            <span>Loading...</span>
-          </div>
-        </div>
-
-        <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">Yesterday's Traffic</div>
-          <div class="metric-value" id="yesterdayCustomerCount">0</div>
-          <div class="metric-trend" id="yesterdayTrafficTrend">
-            <span>—</span>
-            <span>No data</span>
-          </div>
-        </div>
-
-        <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">14-Day Average Traffic</div>
-          <div class="metric-value" id="avgCustomerTraffic14Days">0</div>
-          <div class="metric-trend" id="avgTrafficTrend">
-            <span>—</span>
-            <span>Calculating...</span>
-          </div>
-        </div>
-
-        <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">Today's Revenue</div>
-          <div class="metric-value" id="todayRevenueAmount">₱0</div>
-          <div class="metric-trend" id="todayRevenueTrend">
-            <span>—</span>
-            <span>Loading...</span>
-          </div>
-        </div>
-
-        <div class="metric-card" style="flex:1 1 calc(16.66% - 16px); min-width:200px;">
-          <div class="metric-label">Current Churn Risk</div>
-          <div class="metric-value" id="currentChurnRiskLevel">Low</div>
-          <div class="metric-trend">
-            <span class="status-badge status-low" id="churnRiskBadge">Low Risk</span>
-          </div>
-        </div>
-
-       
-      </div>
-    </div>
-  </div>
+    
 
   <div class="history-section">
     <div class="history-header">
-      <div class="history-title">📋Historical Analysis</div>
+      <div class="history-title">📋Historical Data</div>
       <div class="last-updated">
-        Data Range: <span id="currentAnalysisDataRange">Last 14 days</span>
+      <span id="currentAnalysisDataRange"></span>
       </div>
     </div>
     <div class="history-table-container">
