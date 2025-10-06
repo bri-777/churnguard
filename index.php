@@ -2145,7 +2145,9 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   <div class="history-section">
     <div class="history-header">
       <div class="history-title">Historical Data</div>
-      
+      <div class="last-updated">
+        <span id="currentAnalysisDataRange"></span>
+      </div>
     </div>
     <div class="history-table-container">
       <table class="history-table">
@@ -2168,7 +2170,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </table>
     </div>
   </div>
-
+</div>
 
 		 <!-- Include the monitoring JavaScript -->
     <script src="customer-monitoring-dashboard.js"></script>
