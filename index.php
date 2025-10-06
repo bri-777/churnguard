@@ -1262,7 +1262,356 @@ function doLogout() {
   
   
   
-  
+   <div id="dashboard-container" class="page">
+        <div class="sales-comparison-container">
+            
+            <!-- Enhanced Header -->
+            <div class="page-header">
+                <div class="header-left">
+                    <h1 class="page-title">
+                        <svg class="title-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                        </svg>
+                        Sales Analytics Dashboard
+                    </h1>
+                    <p class="page-subtitle" id="currentDateTime">Loading...</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="refreshAllData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button class="btn btn-export" onclick="exportTargets()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        </svg>
+                        Export
+                    </button>
+                    <button class="btn btn-primary" onclick="openTargetModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+                        </svg>
+                        New Target
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhanced KPI Cards with Mini Trends -->
+            <div class="kpi-cards-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon sales-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Today's Sales</span>
+                        <h3 class="kpi-value" id="todaySales">₱0.00</h3>
+                        <div class="kpi-footer">
+                            <span class="kpi-trend-badge" id="salesTrendBadge"><span>0%</span></span>
+                            <span class="kpi-sublabel">vs yesterday</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon customers-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Customer Traffic</span>
+                        <h3 class="kpi-value" id="todayCustomers">0</h3>
+                        <div class="kpi-footer">
+                            <span class="kpi-trend-badge" id="customersTrendBadge"><span>0%</span></span>
+                            <span class="kpi-sublabel">vs yesterday</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon transactions-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Transactions</span>
+                        <h3 class="kpi-value" id="todayTransactions">0</h3>
+                        <div class="kpi-footer">
+                            <span class="kpi-trend-badge" id="transactionsTrendBadge"><span>0%</span></span>
+                            <span class="kpi-sublabel">vs yesterday</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon target-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Target Achievement</span>
+                        <h3 class="kpi-value" id="targetAchievement">0%</h3>
+                        <div class="kpi-progress-mini">
+                            <div class="kpi-progress-bar" id="targetMiniProgress" style="width:0%"></div>
+                        </div>
+                        <span class="kpi-sublabel" id="targetStatus">No active target</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    Overview
+                </button>
+                <button class="tab-btn" data-tab="trend" onclick="switchTab('trend')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                    </svg>
+                    Trend Analysis
+                </button>
+                <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    Compare
+                </button>
+                <button class="tab-btn" data-tab="targets" onclick="switchTab('targets')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                    </svg>
+                    Targets
+                </button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div class="tab-content active" id="overview-tab">
+                <div class="dashboard-grid">
+                    <!-- Sales Trend Chart -->
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Sales Trend</h3>
+                                <p class="chart-subtitle">Last 30 days performance</p>
+                            </div>
+                            <select id="salesChartPeriod" class="form-input-sm" onchange="updateSalesTrendChart()">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="60">Last 60 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="salesTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Shift Performance Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Shift Performance</h3>
+                            <input type="date" id="shiftDate" class="form-input-sm" onchange="loadShiftPerformance()" value="">
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="shiftPerformanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Performance Distribution -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Performance Distribution</h3>
+                            <p class="chart-subtitle">Today's metrics breakdown</p>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Analysis Tab -->
+            <div class="tab-content" id="trend-tab">
+                <div class="data-table-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Sales Trend Analysis</h3>
+                        <select id="trendPeriod" class="form-input" onchange="updateTrendChart()">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="60">Last 60 days</option>
+                            <option value="90">Last 90 days</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table trend-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Sales Revenue</th>
+                                    <th>Transactions</th>
+                                    <th>Customers</th>
+                                    <th>Avg Value</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTrendTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compare Tab -->
+            <div class="tab-content" id="compare-tab">
+                <div class="comparison-filters-section">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label>Comparison Type</label>
+                            <select id="comparisonType" class="form-input" onchange="updateComparisonDates()">
+                                <option value="today_vs_yesterday">Today vs Yesterday</option>
+                                <option value="week_vs_week">This Week vs Last Week</option>
+                                <option value="month_vs_month">This Month vs Last Month</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Current Period</label>
+                            <input type="date" id="currentDate" class="form-input">
+                        </div>
+                        <div class="filter-group">
+                            <label>Compare With</label>
+                            <input type="date" id="compareDate" class="form-input">
+                        </div>
+                        <div class="filter-group">
+                            <button class="btn btn-primary" onclick="loadComparison()" style="margin-top:24px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                                </svg>
+                                Compare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-grid" id="comparisonGrid">
+                    <div class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <p>Select dates and click Compare to view data</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Targets Tab -->
+            <div class="tab-content" id="targets-tab">
+                <div class="target-management-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Target Management</h3>
+                        <select id="targetFilter" class="form-input" onchange="filterTargets()">
+                            <option value="all">All Targets</option>
+                            <option value="active">Active</option>
+                            <option value="achieved">Achieved</option>
+                            <option value="near">Near Target</option>
+                            <option value="below">Below Target</option>
+                        </select>
+                    </div>
+
+                    <div id="targetsGrid" class="targets-grid-pro">
+                        <div class="loading-state">Loading targets...</div>
+                    </div>
+
+                    <div class="table-container" style="margin-top:24px;">
+                        <table class="targets-table">
+                            <thead>
+                                <tr>
+                                    <th>Target Name</th>
+                                    <th>Type</th>
+                                    <th>Current / Target</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activeTargetsTableBody">
+                                <tr><td colspan="6" class="loading-cell">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Modal -->
+            <div class="modal" id="targetModal" onclick="closeTargetModal(event)">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalTitle">Create New Target</h3>
+                        <button class="modal-close modal-close-btn" onclick="closeTargetModal(event)">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="targetForm" onsubmit="saveTarget(event)">
+                            <div class="form-group">
+                                <label>Target Name</label>
+                                <input type="text" id="targetName" class="form-input" required placeholder="e.g., Q4 Sales Goal">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Type</label>
+                                <select id="targetType" class="form-input" required>
+                                    <option value="">Select type...</option>
+                                    <option value="sales">Sales Revenue</option>
+                                    <option value="customers">Customer Traffic</option>
+                                    <option value="transactions">Transactions</option>
+                                    <option value="avg_transaction">Avg Transaction Value</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Value</label>
+                                <input type="number" id="targetValue" class="form-input" required min="0.01" step="0.01">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="targetStartDate" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="targetEndDate" class="form-input" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Store/Branch (Optional)</label>
+                                <input type="text" id="targetStore" class="form-input" placeholder="Leave empty for all">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeTargetModal(event)">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Target</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <link rel = "stylesheet" href = "sales_comparison.css">
+    <script src = "assets/js/sales_comparison.js"
   
   
   

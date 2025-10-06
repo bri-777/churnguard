@@ -1289,6 +1289,11 @@ const ModalManager = {
     }
 };
 
+
+
+
+
+
 // ==================== GLOBAL FUNCTIONS ====================
 window.openTargetModal = () => ModalManager.open();
 window.closeTargetModal = (event) => ModalManager.close(event);
@@ -1506,3 +1511,372 @@ if ('PerformanceObserver' in window) {
 }
 
 console.log('📊 Sales Analytics Dashboard v2.0 loaded successfully');
+
+// ==================== EXPORT & REPORTING FEATURES ====================
+
+// Add these functions to your sales_comparison.js file
+
+// ==================== EXPORT MANAGER ====================
+const ExportManager = {
+    // Export targets to CSV
+    async exportTargetsCSV() {
+        UIManager.showLoader();
+        try {
+            const data = await APIService.fetch('get_targets', { filter: 'all' });
+            
+            if (!data.targets || data.targets.length === 0) {
+                UIManager.showNotification('No targets to export', 'warning');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Target Name', 'Type', 'Target Value', 'Current Value', 'Progress %', 'Status', 'Start Date', 'End Date', 'Store'];
+            const rows = data.targets.map(target => [
+                target.target_name || '',
+                this.formatTargetType(target.target_type),
+                target.target_value || 0,
+                target.current_value || 0,
+                (target.progress || 0).toFixed(2),
+                target.status || '',
+                target.start_date || '',
+                target.end_date || '',
+                target.store || 'All Stores'
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+
+            // Download file
+            this.downloadFile(csvContent, `targets_${this.getDateString()}.csv`, 'text/csv');
+            UIManager.showNotification('Targets exported successfully', 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            UIManager.showNotification('Failed to export targets', 'error');
+        } finally {
+            UIManager.hideLoader();
+        }
+    },
+
+    // Export sales data to CSV
+    async exportSalesDataCSV(days = 30) {
+        UIManager.showLoader();
+        try {
+            const data = await APIService.fetch('trend_data', { days });
+            
+            if (!data.trend_data || data.trend_data.length === 0) {
+                UIManager.showNotification('No sales data to export', 'warning');
+                return;
+            }
+
+            const headers = ['Date', 'Sales Revenue', 'Transactions', 'Customer Traffic', 'Avg Transaction Value'];
+            const rows = data.trend_data.map(item => {
+                const sales = parseFloat(item.sales_volume || 0);
+                const receipts = parseInt(item.receipt_count || 0);
+                const avgValue = receipts > 0 ? (sales / receipts).toFixed(2) : 0;
+                
+                return [
+                    item.date || '',
+                    sales.toFixed(2),
+                    receipts,
+                    item.customer_traffic || 0,
+                    avgValue
+                ];
+            });
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            this.downloadFile(csvContent, `sales_data_${this.getDateString()}.csv`, 'text/csv');
+            UIManager.showNotification('Sales data exported successfully', 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            UIManager.showNotification('Failed to export sales data', 'error');
+        } finally {
+            UIManager.hideLoader();
+        }
+    },
+
+    // Export dashboard as PDF (using browser print)
+    exportDashboardPDF() {
+        // Hide non-essential elements
+        const elementsToHide = ['.header-actions', '.btn', '.modal', '.tab-navigation'];
+        elementsToHide.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => el.style.display = 'none');
+        });
+
+        // Trigger print dialog
+        window.print();
+
+        // Restore elements after print
+        setTimeout(() => {
+            elementsToHide.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => el.style.display = '');
+            });
+        }, 1000);
+
+        UIManager.showNotification('Prepare to save as PDF from print dialog', 'info');
+    },
+
+    // Generate comprehensive report
+    async generateReport(period = 'month') {
+        UIManager.showLoader();
+        try {
+            const days = period === 'week' ? 7 : period === 'month' ? 30 : 90;
+            
+            const [kpiData, trendData, targetsData] = await Promise.all([
+                APIService.fetch('kpi_summary'),
+                APIService.fetch('trend_data', { days }),
+                APIService.fetch('get_targets', { filter: 'all' })
+            ]);
+
+            const report = {
+                generated_at: new Date().toISOString(),
+                period: period,
+                summary: {
+                    total_sales: kpiData.today_sales || 0,
+                    total_customers: kpiData.today_customers || 0,
+                    total_transactions: kpiData.today_transactions || 0,
+                    avg_transaction: kpiData.today_avg_transaction || 0
+                },
+                trends: trendData.trend_data || [],
+                targets: targetsData.targets || []
+            };
+
+            // Create formatted report
+            const reportText = this.formatReportText(report);
+            this.downloadFile(reportText, `sales_report_${this.getDateString()}.txt`, 'text/plain');
+            
+            UIManager.showNotification('Report generated successfully', 'success');
+        } catch (error) {
+            console.error('Report generation error:', error);
+            UIManager.showNotification('Failed to generate report', 'error');
+        } finally {
+            UIManager.hideLoader();
+        }
+    },
+
+    // Format report as text
+    formatReportText(report) {
+        let text = `SALES ANALYTICS REPORT\n`;
+        text += `Generated: ${new Date(report.generated_at).toLocaleString()}\n`;
+        text += `Period: ${report.period}\n`;
+        text += `${'='.repeat(60)}\n\n`;
+
+        text += `SUMMARY\n`;
+        text += `${'-'.repeat(60)}\n`;
+        text += `Total Sales: ${Utils.formatCurrency(report.summary.total_sales)}\n`;
+        text += `Total Customers: ${Utils.formatNumber(report.summary.total_customers)}\n`;
+        text += `Total Transactions: ${Utils.formatNumber(report.summary.total_transactions)}\n`;
+        text += `Avg Transaction Value: ${Utils.formatCurrency(report.summary.avg_transaction)}\n\n`;
+
+        if (report.targets && report.targets.length > 0) {
+            text += `TARGETS\n`;
+            text += `${'-'.repeat(60)}\n`;
+            report.targets.forEach(target => {
+                text += `${target.target_name}: ${target.progress?.toFixed(1)}% (${target.status})\n`;
+            });
+            text += `\n`;
+        }
+
+        if (report.trends && report.trends.length > 0) {
+            text += `SALES TREND (Last ${report.trends.length} days)\n`;
+            text += `${'-'.repeat(60)}\n`;
+            report.trends.forEach(day => {
+                text += `${day.date}: ${Utils.formatCurrency(day.sales_volume)} (${day.receipt_count} transactions)\n`;
+            });
+        }
+
+        text += `\n${'='.repeat(60)}\n`;
+        text += `End of Report`;
+
+        return text;
+    },
+
+    // Helper: Download file
+    downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    },
+
+    // Helper: Get date string for filename
+    getDateString() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    },
+
+    // Helper: Format target type
+    formatTargetType(type) {
+        const types = {
+            'sales': 'Sales Revenue',
+            'customers': 'Customer Traffic',
+            'transactions': 'Transactions',
+            'avg_transaction': 'Avg Transaction Value'
+        };
+        return types[type] || type;
+    }
+};
+
+// ==================== PRINT MANAGER ====================
+const PrintManager = {
+    // Print current view
+    printCurrentView() {
+        window.print();
+    },
+
+    // Print specific section
+    printSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (!section) {
+            UIManager.showNotification('Section not found', 'error');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print - ${sectionId}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                    th { background: #f3f4f6; font-weight: 600; }
+                    h1, h2, h3 { color: #374151; }
+                    @media print {
+                        body { margin: 0; }
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Sales Analytics Report</h1>
+                <p>Generated: ${new Date().toLocaleString()}</p>
+                <hr>
+                ${section.innerHTML}
+                <script>window.print(); window.close();</script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+};
+
+// ==================== UPDATE GLOBAL FUNCTIONS ====================
+
+// Replace the existing exportTargets function
+window.exportTargets = () => {
+    const menu = document.createElement('div');
+    menu.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        z-index: 10000;
+        min-width: 300px;
+    `;
+    
+    menu.innerHTML = `
+        <h3 style="margin: 0 0 20px 0; color: #374151;">Export Options</h3>
+        <button onclick="ExportManager.exportTargetsCSV(); this.closest('div').remove();" 
+                style="width: 100%; padding: 12px; margin-bottom: 10px; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            📊 Export Targets (CSV)
+        </button>
+        <button onclick="ExportManager.exportSalesDataCSV(30); this.closest('div').remove();" 
+                style="width: 100%; padding: 12px; margin-bottom: 10px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            📈 Export Sales Data (CSV)
+        </button>
+        <button onclick="ExportManager.generateReport('month'); this.closest('div').remove();" 
+                style="width: 100%; padding: 12px; margin-bottom: 10px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            📄 Generate Report (TXT)
+        </button>
+        <button onclick="ExportManager.exportDashboardPDF(); this.closest('div').remove();" 
+                style="width: 100%; padding: 12px; margin-bottom: 10px; background: #8b5cf6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            🖨️ Print/Save as PDF
+        </button>
+        <button onclick="this.closest('div').remove();" 
+                style="width: 100%; padding: 12px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Cancel
+        </button>
+    `;
+    
+    document.body.appendChild(menu);
+};
+
+// ==================== EMAIL REPORT FEATURE ====================
+const EmailManager = {
+    async sendEmailReport(recipientEmail) {
+        UIManager.showLoader();
+        try {
+            const report = await ExportManager.generateReport('month');
+            
+            // This would need a backend endpoint to send emails
+            const response = await APIService.post('send_email_report', {
+                recipient: recipientEmail,
+                report: report
+            });
+
+            UIManager.showNotification('Report sent successfully', 'success');
+        } catch (error) {
+            console.error('Email send error:', error);
+            UIManager.showNotification('Failed to send email report', 'error');
+        } finally {
+            UIManager.hideLoader();
+        }
+    },
+
+    showEmailDialog() {
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 10000;
+            min-width: 400px;
+        `;
+        
+        dialog.innerHTML = `
+            <h3 style="margin: 0 0 20px 0; color: #374151;">Email Report</h3>
+            <input type="email" id="emailRecipient" placeholder="recipient@example.com" 
+                   style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
+            <div style="display: flex; gap: 12px;">
+                <button onclick="EmailManager.sendEmailReport(document.getElementById('emailRecipient').value); this.closest('div').closest('div').remove();" 
+                        style="flex: 1; padding: 12px; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Send Report
+                </button>
+                <button onclick="this.closest('div').closest('div').remove();" 
+                        style="flex: 1; padding: 12px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Cancel
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+    }
+};
+
+// Add email button to export menu
+window.showEmailDialog = () => EmailManager.showEmailDialog();
+
+console.log('✅ Export & Reporting features loaded successfully');
