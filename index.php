@@ -27,14 +27,177 @@ if (!$me) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChurnGuard Pro - XGBoost-Powered Customer Retention Analytics</title>
 <link rel="stylesheet" href="styles.css"><!-- use YOUR provided CSS file -->
-<link rel="stylesheet" href="mobile.css">
+
+
+
+
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ========== MOBILE FIX - SIMPLE ========== */
+
+/* Hide sidebar on mobile, show menu button */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 999;
+    transition: left 0.3s;
+    overflow-y: auto;
+  }
+  
+  .sidebar.mobile-open {
+    left: 0;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    padding: 70px 10px 20px 10px !important;
+  }
+  
+  /* Mobile menu button */
+  body::before {
+    content: '☰';
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    width: 50px;
+    height: 50px;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border-radius: 8px;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  /* Overlay */
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+  }
+  
+  .mobile-overlay.show {
+    display: block;
+  }
+}
+
+/* Stack cards on mobile */
+@media (max-width: 768px) {
+  .kpi-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .charts-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .chart-card {
+    width: 100% !important;
+  }
+  
+  .chart-container {
+    height: 250px !important;
+  }
+  
+  .form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .profile-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .data-card {
+    width: 100% !important;
+  }
+  
+  .action-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  .btn-primary, .btn-secondary {
+    width: 100% !important;
+  }
+  
+  table {
+    font-size: 12px !important;
+  }
+  
+  th, td {
+    padding: 8px 4px !important;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .kpi-value {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* 2 columns on tablets */
+@media (min-width: 769px) and (max-width: 991px) {
+  .kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .charts-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 4 columns on desktop */
+@media (min-width: 992px) {
+  .kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* Make tables scrollable */
+.table-wrapper-pro,
+.history-table-container {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Touch friendly inputs */
+input, select, textarea, button {
+  font-size: 16px !important;
+  min-height: 44px !important;
+}
+</style>
+
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-
-<!-- Bootstrap 5 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Chart.js Library -->
@@ -8206,84 +8369,66 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateSalesTotal();
 });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/loginhistory.js"></script>
 
-<!-- Bootstrap JS (Add this if not already added) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Mobile Menu Script -->
 <script>
-// ============================================
-// SIMPLE MOBILE MENU - JUST WORKS
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-  setupMobileMenu();
-});
-
-function setupMobileMenu() {
-  // Create mobile menu button
-  const menuBtn = document.createElement('button');
-  menuBtn.className = 'mobile-menu-btn';
-  menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-  menuBtn.onclick = toggleMobileMenu;
-  document.body.appendChild(menuBtn);
-  
-  // Create overlay
-  const overlay = document.createElement('div');
-  overlay.className = 'sidebar-overlay';
-  overlay.onclick = closeMobileMenu;
-  document.body.appendChild(overlay);
-  
-  // Close menu when clicking menu items
-  const menuItems = document.querySelectorAll('.menu-item');
-  menuItems.forEach(item => {
-    item.addEventListener('click', closeMobileMenu);
-  });
-  
-  // Close menu on window resize if desktop
-  window.addEventListener('resize', function() {
-    if (window.innerWidth >= 992) {
-      closeMobileMenu();
-    }
-  });
-}
-
-function toggleMobileMenu() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.querySelector('.sidebar-overlay');
-  const btn = document.querySelector('.mobile-menu-btn');
-  
-  if (sidebar.classList.contains('active')) {
-    closeMobileMenu();
-  } else {
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-    btn.innerHTML = '<i class="fas fa-times"></i>';
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeMobileMenu() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.querySelector('.sidebar-overlay');
-  const btn = document.querySelector('.mobile-menu-btn');
-  
-  sidebar.classList.remove('active');
-  overlay.classList.remove('active');
-  btn.innerHTML = '<i class="fas fa-bars"></i>';
-  document.body.style.overflow = '';
-}
-
-// Resize charts on window resize
-window.addEventListener('resize', function() {
-  if (window.Chart) {
-    Object.values(Chart.instances || {}).forEach(chart => {
-      if (chart && chart.resize) chart.resize();
+// Simple mobile menu
+(function() {
+  if (window.innerWidth <= 768) {
+    // Create overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'mobile-overlay';
+    document.body.appendChild(overlay);
+    
+    // Toggle menu when clicking top-left area
+    document.addEventListener('click', function(e) {
+      var x = e.clientX;
+      var y = e.clientY;
+      
+      // If clicked top-left corner (menu button area)
+      if (x <= 65 && y <= 65) {
+        var sidebar = document.querySelector('.sidebar');
+        var isOpen = sidebar.classList.contains('mobile-open');
+        
+        if (isOpen) {
+          sidebar.classList.remove('mobile-open');
+          overlay.classList.remove('show');
+          document.body.style.overflow = '';
+        } else {
+          sidebar.classList.add('mobile-open');
+          overlay.classList.add('show');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+    });
+    
+    // Close menu when clicking overlay
+    overlay.addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.remove('mobile-open');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+    
+    // Close menu when clicking menu items
+    var menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(function(item) {
+      item.addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.remove('mobile-open');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+      });
     });
   }
-});
+  
+  // Resize charts on window resize
+  window.addEventListener('resize', function() {
+    if (window.Chart && Chart.instances) {
+      Object.values(Chart.instances).forEach(function(chart) {
+        if (chart && chart.resize) chart.resize();
+      });
+    }
+  });
+})();
 </script>
 
 </body>
