@@ -335,7 +335,6 @@ final class XGBPredictor {
   private ?array $feature_names = null;
 
   public static function loadFrom(string $path): self {
-    // ===== FIX: Don't use static cache to ensure fresh predictions =====
     if (!is_file($path)) {
       throw new RuntimeException("XGBoost model not found at {$path}");
     }
@@ -541,7 +540,7 @@ if ($action === 'run') {
     $manilaDate = get_manila_date();
     $manilaDateTime = get_manila_datetime();
 
-    // ===== FIX: Get today's churn_data for Manila date, not just latest =====
+    // ===== FIX: Get today's churn_data for Manila date =====
     $q = $pdo->prepare("
       SELECT * FROM churn_data 
       WHERE user_id = ? AND date = ?
@@ -551,7 +550,7 @@ if ($action === 'run') {
     $q->execute([$uid, $manilaDate]);
     $cd = $q->fetch(PDO::FETCH_ASSOC);
 
-    // If no data for today, create default entry
+    // If no data for today, create default entry using UPSERT
     if (!$cd) {
       $defaultInsert = $pdo->prepare("
         INSERT INTO churn_data 
@@ -563,6 +562,8 @@ if ($action === 'run') {
            transaction_drop_percentage, sales_drop_percentage, created_at)
         VALUES 
           (?, ?, 0, 0.00, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0, 0.00, 0.00, 0.00, 0.00, 0.00, ?)
+        ON DUPLICATE KEY UPDATE
+          updated_at = CURRENT_TIMESTAMP
       ");
       $defaultInsert->execute([$uid, $manilaDate, $manilaDateTime]);
 
@@ -732,19 +733,23 @@ if ($action === 'run') {
       $desc .= ' (Using heuristic analysis - model optimization recommended)';
     }
 
-    // ===== FIX: Delete previous predictions for TODAY only (Manila timezone) =====
-    $deletePrev = $pdo->prepare("DELETE FROM churn_predictions WHERE user_id = ? AND for_date = ?");
-    $deletePrev->execute([$uid, $manilaDate]);
-
-    // ===== FIX: Insert with Manila datetime =====
-    $insert = $pdo->prepare("
+    // ===== FIX: Use UPSERT (INSERT ... ON DUPLICATE KEY UPDATE) =====
+    $upsert = $pdo->prepare("
       INSERT INTO churn_predictions
         (user_id, date, risk_score, risk_level, factors, description, created_at, level, risk_percentage, for_date)
       VALUES
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        risk_score = VALUES(risk_score),
+        risk_level = VALUES(risk_level),
+        factors = VALUES(factors),
+        description = VALUES(description),
+        created_at = VALUES(created_at),
+        level = VALUES(level),
+        risk_percentage = VALUES(risk_percentage)
     ");
 
-    $insert->execute([
+    $upsert->execute([
       $uid,
       $manilaDate,
       round($riskPct / 100.0, 4),
