@@ -733,23 +733,23 @@ if ($action === 'run') {
       $desc .= ' (Using heuristic analysis - model optimization recommended)';
     }
 
-    // ===== FIX: Use UPSERT to prevent duplicates =====
-    $upsert = $pdo->prepare("
+    // ===== FIX: DELETE today's previous predictions, then INSERT fresh one =====
+    // Step 1: Delete ALL previous predictions for TODAY (for_date = today's Manila date)
+    $deletePrev = $pdo->prepare("
+      DELETE FROM churn_predictions 
+      WHERE user_id = ? AND for_date = ?
+    ");
+    $deletePrev->execute([$uid, $manilaDate]);
+
+    // Step 2: Insert fresh prediction for TODAY
+    $insert = $pdo->prepare("
       INSERT INTO churn_predictions
         (user_id, date, risk_score, risk_level, factors, description, created_at, level, risk_percentage, for_date)
       VALUES
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        risk_score = VALUES(risk_score),
-        risk_level = VALUES(risk_level),
-        factors = VALUES(factors),
-        description = VALUES(description),
-        created_at = VALUES(created_at),
-        level = VALUES(level),
-        risk_percentage = VALUES(risk_percentage)
     ");
 
-    $upsert->execute([
+    $insert->execute([
       $uid,
       $manilaDate,
       round($riskPct / 100.0, 4),
