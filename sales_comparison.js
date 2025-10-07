@@ -3,7 +3,7 @@
 
 // ==================== CONFIGURATION ====================
 const CONFIG = {
- API_BASE: 'sales_comparison.php',
+    API_BASE: 'sales_comparison.php',
     REQUEST_TIMEOUT: 30000,
     MAX_RETRIES: 3,
     RETRY_DELAY: 1000,
@@ -19,14 +19,26 @@ const CONFIG = {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
-            legend: { display: true, position: 'bottom' },
+            legend: { 
+                display: true, 
+                position: 'bottom',
+                labels: {
+                    padding: 15,
+                    font: { size: 12 }
+                }
+            },
             tooltip: { 
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 padding: 12,
                 titleFont: { size: 14, weight: 'bold' },
                 bodyFont: { size: 13 },
-                cornerRadius: 8
+                cornerRadius: 8,
+                displayColors: true
             }
+        },
+        interaction: {
+            mode: 'index',
+            intersect: false
         }
     }
 };
@@ -42,7 +54,9 @@ const AppState = {
     
     incrementLoading() {
         this.loadingCounter++;
-        UIManager.showLoader();
+        if (this.loadingCounter === 1) {
+            UIManager.showLoader();
+        }
     },
     
     decrementLoading() {
@@ -53,7 +67,13 @@ const AppState = {
     },
 
     cancelPendingRequests() {
-        this.activeRequests.forEach(controller => controller.abort());
+        this.activeRequests.forEach(controller => {
+            try {
+                controller.abort();
+            } catch (e) {
+                console.warn('Error aborting request:', e);
+            }
+        });
         this.activeRequests.clear();
     }
 };
@@ -76,7 +96,8 @@ const Utils = {
 
     formatPercentage(value) {
         if (value == null || isNaN(value)) return '0.0%';
-        const capped = Math.min(Math.max(parseFloat(value), -999.9), 999.9);
+        const num = parseFloat(value);
+        const capped = Math.min(Math.max(num, -999.9), 999.9);
         return capped.toFixed(1) + '%';
     },
 
@@ -97,8 +118,12 @@ const Utils = {
 
     getISODate(date) {
         try {
-            if (!(date instanceof Date)) date = new Date(date);
-            if (isNaN(date.getTime())) return new Date().toISOString().split('T')[0];
+            if (!(date instanceof Date)) {
+                date = new Date(date);
+            }
+            if (isNaN(date.getTime())) {
+                return new Date().toISOString().split('T')[0];
+            }
             return date.toISOString().split('T')[0];
         } catch {
             return new Date().toISOString().split('T')[0];
@@ -172,7 +197,12 @@ const UIManager = {
             info: 'ℹ'
         };
 
+        // Remove existing notifications
+        const existing = Utils.$$('.notification-toast');
+        existing.forEach(n => n.remove());
+
         const notification = document.createElement('div');
+        notification.className = 'notification-toast';
         notification.style.cssText = `
             position: fixed;
             top: 24px;
@@ -227,7 +257,7 @@ const UIManager = {
             loader.innerHTML = `
                 <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
                     <div class="spinner" style="border: 5px solid #f3f4f6; border-top: 5px solid #6366f1; border-radius: 50%; width: 60px; height: 60px; animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
-                    <div style="color: #6b7280; font-size: 14px; font-weight: 500;">Loading...</div>
+                    <div style="color: #6b7280; font-size: 14px; font-weight: 500;">Loading data...</div>
                 </div>
             `;
             document.body.appendChild(loader);
@@ -237,27 +267,45 @@ const UIManager = {
 
     hideLoader() {
         const loader = Utils.$('#globalLoader');
-        if (loader) loader.style.display = 'none';
+        if (loader) {
+            loader.style.display = 'none';
+        }
     },
 
     updateKPICard(id, value, change) {
         const valueEl = Utils.$(`#${id}`);
-        const trendBadge = Utils.$(`#${id.replace('today', '')}TrendBadge`);
+        const baseId = id.replace('today', '').replace('target', '');
+        const trendBadge = Utils.$(`#${baseId}TrendBadge`);
+        const comparison = Utils.$(`#${baseId}Comparison`);
         
         if (valueEl) {
-            const formattedValue = id.includes('Sales') || id.includes('target') ? 
-                (id.includes('target') ? Utils.formatPercentage(value) : Utils.formatCurrency(value)) : 
-                Utils.formatNumber(value);
+            let formattedValue;
+            if (id.includes('Sales') || id.includes('target')) {
+                formattedValue = id.includes('target') && !id.includes('Sales') ? 
+                    Utils.formatPercentage(value) : 
+                    Utils.formatCurrency(value);
+            } else {
+                formattedValue = Utils.formatNumber(value);
+            }
             valueEl.textContent = formattedValue;
         }
         
-        if (trendBadge && change !== undefined) {
+        if (trendBadge && change !== undefined && !isNaN(change)) {
             const isPositive = change >= 0;
             trendBadge.className = `kpi-trend-badge ${isPositive ? '' : 'down'}`;
             const span = trendBadge.querySelector('span');
             if (span) {
                 span.textContent = Utils.formatPercentage(Math.abs(change));
             }
+            
+            const svg = trendBadge.querySelector('svg path');
+            if (svg) {
+                svg.setAttribute('d', isPositive ? 'M7 14l5-5 5 5H7z' : 'M7 10l5 5 5-5H7z');
+            }
+        }
+        
+        if (comparison && change !== undefined && !isNaN(change)) {
+            comparison.textContent = `${change >= 0 ? '+' : ''}${Utils.formatPercentage(change)} vs yesterday`;
         }
     },
 
@@ -269,24 +317,27 @@ const UIManager = {
     }
 };
 
-// ==================== API SERVICE (FIXED) ====================
+// ==================== API SERVICE ====================
 const APIService = {
     async fetch(action, params = {}, retryCount = 0) {
-        // FIXED: Better URL construction
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
         
         Object.entries(params).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-                url.searchParams.append(key, value);
+            if (value !== null && value !== undefined && value !== '') {
+                url.searchParams.append(key, String(value));
             }
         });
 
-        console.log('API Request:', action, url.toString()); // DEBUG
+        console.log(`[API] ${action}:`, url.toString());
 
         const controller = new AbortController();
-        const requestId = `${action}-${Date.now()}`;
+        const requestId = `${action}-${Date.now()}-${Math.random()}`;
         AppState.activeRequests.set(requestId, controller);
+
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, CONFIG.REQUEST_TIMEOUT);
 
         try {
             const response = await fetch(url.toString(), {
@@ -296,68 +347,78 @@ const APIService = {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 signal: controller.signal,
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                cache: 'no-cache'
             });
 
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
-            console.log('API Response Status:', response.status); // DEBUG
+            console.log(`[API] ${action} Response:`, response.status);
 
             if (response.status === 401) {
-                window.location.href = '/login.php';
+                UIManager.showNotification('Session expired. Redirecting to login...', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.php';
+                }, 2000);
                 throw new Error('Unauthorized');
             }
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('API Error Response:', errorText); // DEBUG
+                console.error(`[API] ${action} Error:`, errorText);
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Invalid response format. Expected JSON.');
             }
 
             const data = await response.json();
             
             if (data.status === 'error') {
-                throw new Error(data.message || 'API error');
+                throw new Error(data.message || 'API error occurred');
             }
 
+            console.log(`[API] ${action} Success:`, data);
             return data;
+
         } catch (error) {
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
             if (error.name === 'AbortError') {
-                console.log('Request cancelled:', action);
+                console.log(`[API] ${action} Cancelled`);
                 return null;
             }
 
-            // FIXED: Enhanced error logging
-            console.error('API Error Details:', {
-                action,
-                message: error.message,
-                url: url.toString(),
-                retry: retryCount
-            });
+            console.error(`[API] ${action} Error:`, error);
 
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
-                console.log(`Retrying request (${retryCount + 1}/${CONFIG.MAX_RETRIES})...`);
-                await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
+                const delay = CONFIG.RETRY_DELAY * (retryCount + 1);
+                console.log(`[API] Retrying ${action} in ${delay}ms (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
                 return this.fetch(action, params, retryCount + 1);
             }
 
-            console.error('API Error:', error);
             throw error;
         }
     },
 
     async post(action, body, retryCount = 0) {
-        // FIXED: Better URL construction
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
 
-        console.log('API POST Request:', action, url.toString()); // DEBUG
+        console.log(`[API] POST ${action}:`, body);
 
         const controller = new AbortController();
-        const requestId = `${action}-${Date.now()}`;
+        const requestId = `${action}-${Date.now()}-${Math.random()}`;
         AppState.activeRequests.set(requestId, controller);
+
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, CONFIG.REQUEST_TIMEOUT);
 
         try {
             const response = await fetch(url.toString(), {
@@ -368,54 +429,61 @@ const APIService = {
                 },
                 body: JSON.stringify(body),
                 signal: controller.signal,
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                cache: 'no-cache'
             });
 
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
-            console.log('API POST Response Status:', response.status); // DEBUG
+            console.log(`[API] POST ${action} Response:`, response.status);
 
             if (response.status === 401) {
-                window.location.href = '/login.php';
+                UIManager.showNotification('Session expired. Redirecting to login...', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.php';
+                }, 2000);
                 throw new Error('Unauthorized');
             }
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('API POST Error Response:', errorText); // DEBUG
+                console.error(`[API] POST ${action} Error:`, errorText);
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Invalid response format. Expected JSON.');
             }
 
             const data = await response.json();
             
             if (data.status === 'error') {
-                throw new Error(data.message || 'API error');
+                throw new Error(data.message || 'API error occurred');
             }
 
+            console.log(`[API] POST ${action} Success:`, data);
             return data;
+
         } catch (error) {
+            clearTimeout(timeoutId);
             AppState.activeRequests.delete(requestId);
 
             if (error.name === 'AbortError') {
-                console.log('Request cancelled:', action);
+                console.log(`[API] POST ${action} Cancelled`);
                 return null;
             }
 
-            // FIXED: Enhanced error logging
-            console.error('API POST Error Details:', {
-                action,
-                message: error.message,
-                url: url.toString(),
-                retry: retryCount
-            });
+            console.error(`[API] POST ${action} Error:`, error);
 
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
-                console.log(`Retrying POST request (${retryCount + 1}/${CONFIG.MAX_RETRIES})...`);
-                await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
+                const delay = CONFIG.RETRY_DELAY * (retryCount + 1);
+                console.log(`[API] Retrying POST ${action} in ${delay}ms (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
                 return this.post(action, body, retryCount + 1);
             }
 
-            console.error('API Error:', error);
             throw error;
         }
     }
@@ -425,7 +493,11 @@ const APIService = {
 const ChartManager = {
     destroyChart(chartName) {
         if (AppState.charts[chartName]) {
-            AppState.charts[chartName].destroy();
+            try {
+                AppState.charts[chartName].destroy();
+            } catch (e) {
+                console.warn('Error destroying chart:', e);
+            }
             delete AppState.charts[chartName];
         }
     },
@@ -438,7 +510,7 @@ const ChartManager = {
         }
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No trend data available</p>';
+            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No trend data available for the selected period</p>';
             return;
         }
 
@@ -446,49 +518,66 @@ const ChartManager = {
 
         const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        AppState.charts.salesTrend = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: sortedData.map(d => Utils.formatDate(d.date)),
-                datasets: [{
-                    label: 'Sales Revenue',
-                    data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
-                    borderColor: CONFIG.CHART_COLORS.primary,
-                    backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                ...CONFIG.CHART_OPTIONS,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => '₱' + value.toLocaleString()
-                        }
-                    }
+        try {
+            AppState.charts.salesTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedData.map(d => Utils.formatDate(d.date)),
+                    datasets: [{
+                        label: 'Sales Revenue',
+                        data: sortedData.map(d => parseFloat(d.sales_volume || 0)),
+                        borderColor: CONFIG.CHART_COLORS.primary,
+                        backgroundColor: `${CONFIG.CHART_COLORS.primary}20`,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: CONFIG.CHART_COLORS.primary,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
                 },
-                plugins: {
-                    ...CONFIG.CHART_OPTIONS.plugins,
-                    tooltip: {
-                        ...CONFIG.CHART_OPTIONS.plugins.tooltip,
-                        callbacks: {
-                            label: ctx => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y)
+                options: {
+                    ...CONFIG.CHART_OPTIONS,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '₱' + value.toLocaleString('en-PH')
+                            },
+                            grid: {
+                                color: '#f3f4f6'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...CONFIG.CHART_OPTIONS.plugins,
+                        tooltip: {
+                            ...CONFIG.CHART_OPTIONS.plugins.tooltip,
+                            callbacks: {
+                                label: ctx => 'Revenue: ' + Utils.formatCurrency(ctx.parsed.y)
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log('[CHART] Sales trend chart created successfully');
+        } catch (error) {
+            console.error('[CHART] Error creating sales trend chart:', error);
+            ctx.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#ef4444;">Error loading chart</p>';
+        }
     },
 
     createComparisonChart(comparisonData) {
         const ctx = Utils.$('#comparisonChart');
         if (!ctx) {
-            console.error('Chart canvas not found: comparisonChart');
+            console.warn('[CHART] Comparison chart canvas not found');
             return;
         }
 
@@ -503,37 +592,52 @@ const ChartManager = {
         const currentValues = comparisonData.map(d => parseFloat(d.current || 0));
         const compareValues = comparisonData.map(d => parseFloat(d.compare || 0));
 
-        AppState.charts.comparison = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: metrics,
-                datasets: [
-                    {
-                        label: 'Current Period',
-                        data: currentValues,
-                        backgroundColor: CONFIG.CHART_COLORS.primary,
-                        borderRadius: 8
-                    },
-                    {
-                        label: 'Previous Period',
-                        data: compareValues,
-                        backgroundColor: CONFIG.CHART_COLORS.info,
-                        borderRadius: 8
-                    }
-                ]
-            },
-            options: {
-                ...CONFIG.CHART_OPTIONS,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => Utils.formatNumber(value)
+        try {
+            AppState.charts.comparison = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: metrics,
+                    datasets: [
+                        {
+                            label: 'Current Period',
+                            data: currentValues,
+                            backgroundColor: CONFIG.CHART_COLORS.primary,
+                            borderRadius: 8,
+                            borderWidth: 0
+                        },
+                        {
+                            label: 'Previous Period',
+                            data: compareValues,
+                            backgroundColor: CONFIG.CHART_COLORS.info,
+                            borderRadius: 8,
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    ...CONFIG.CHART_OPTIONS,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => Utils.formatNumber(value)
+                            },
+                            grid: {
+                                color: '#f3f4f6'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log('[CHART] Comparison chart created successfully');
+        } catch (error) {
+            console.error('[CHART] Error creating comparison chart:', error);
+        }
     },
 
     updateTrendChart() {
@@ -547,20 +651,27 @@ const DataManager = {
     async loadKPISummary() {
         AppState.incrementLoading();
         try {
+            console.log('[DATA] Loading KPI Summary...');
             const data = await APIService.fetch('kpi_summary');
             
-            if (!data) return;
+            if (!data) {
+                console.warn('[DATA] No KPI data received');
+                return;
+            }
 
-            UIManager.updateKPICard('todaySales', data.today_sales, data.sales_change);
-            UIManager.updateKPICard('todayCustomers', data.today_customers, data.customers_change);
-            UIManager.updateKPICard('todayTransactions', data.today_transactions, data.transactions_change);
-            UIManager.updateKPICard('targetAchievement', data.target_achievement);
+            // Update KPI cards
+            UIManager.updateKPICard('todaySales', data.today_sales || 0, data.sales_change || 0);
+            UIManager.updateKPICard('todayCustomers', data.today_customers || 0, data.customers_change || 0);
+            UIManager.updateKPICard('todayTransactions', data.today_transactions || 0, data.transactions_change || 0);
+            UIManager.updateKPICard('targetAchievement', data.target_achievement || 0);
             
+            // Update target status
             const targetStatus = Utils.$('#targetStatus');
             if (targetStatus) {
                 targetStatus.textContent = data.target_status || 'No active target';
             }
             
+            // Update mini progress bar
             const miniProgress = Utils.$('#targetMiniProgress');
             if (miniProgress) {
                 const progress = Math.min(parseFloat(data.target_achievement) || 0, 100);
@@ -568,9 +679,10 @@ const DataManager = {
             }
 
             AppState.lastDataUpdate = new Date();
+            console.log('[DATA] KPI Summary loaded successfully');
 
         } catch (error) {
-            console.error('KPI Summary Error:', error);
+            console.error('[DATA] KPI Summary Error:', error);
             UIManager.showNotification('Failed to load KPI data: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
@@ -580,24 +692,32 @@ const DataManager = {
     async loadTrendData(days = 30) {
         AppState.incrementLoading();
         try {
+            console.log(`[DATA] Loading Trend Data (${days} days)...`);
             const data = await APIService.fetch('trend_data', { days });
             
-            if (!data || !data.trend_data) {
-                console.warn('No trend data received');
+            if (!data) {
+                console.warn('[DATA] No trend data received');
                 return;
             }
 
-            if (data.trend_data.length > 0) {
+            if (data.trend_data && data.trend_data.length > 0) {
                 ChartManager.createSalesTrendChart(data.trend_data);
                 this.populateTrendTable(data.trend_data);
+                console.log('[DATA] Trend data loaded successfully');
             } else {
                 const chart = Utils.$('#salesTrendChart');
                 if (chart) {
                     chart.parentElement.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">No data available for selected period</p>';
                 }
+                
+                const tbody = Utils.$('#salesTrendTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">No trend data available</td></tr>';
+                }
+                console.warn('[DATA] No trend data available');
             }
         } catch (error) {
-            console.error('Trend Data Error:', error);
+            console.error('[DATA] Trend Data Error:', error);
             UIManager.showNotification('Failed to load trend data: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
@@ -622,9 +742,17 @@ const DataManager = {
             const avgValue = receipts > 0 ? sales / receipts : 0;
             
             let change = 0;
+            let changeHtml = '—';
+            
             if (index < sorted.length - 1) {
                 const prevSales = parseFloat(sorted[index + 1].sales_volume || 0);
                 change = Utils.calculateChange(sales, prevSales);
+                const isPositive = change >= 0;
+                changeHtml = `
+                    <span class="metric-change ${isPositive ? 'positive' : 'negative'}">
+                        ${isPositive ? '▲' : '▼'} ${Utils.formatPercentage(Math.abs(change))}
+                    </span>
+                `;
             }
 
             return `
@@ -634,13 +762,7 @@ const DataManager = {
                     <td>${Utils.formatNumber(receipts)}</td>
                     <td>${Utils.formatNumber(customers)}</td>
                     <td>${Utils.formatCurrency(avgValue)}</td>
-                    <td>
-                        ${index < sorted.length - 1 ? `
-                            <span class="metric-change ${change >= 0 ? 'positive' : 'negative'}">
-                                ${change >= 0 ? '▲' : '▼'} ${Utils.formatPercentage(Math.abs(change))}
-                            </span>
-                        ` : '—'}
-                    </td>
+                    <td>${changeHtml}</td>
                 </tr>
             `;
         }).join('');
@@ -655,8 +777,14 @@ const DataManager = {
             return;
         }
 
+        if (currentDate === compareDate) {
+            UIManager.showNotification('Please select different dates for comparison', 'warning');
+            return;
+        }
+
         AppState.incrementLoading();
         try {
+            console.log('[DATA] Loading Comparison...');
             const data = await APIService.fetch('compare', { currentDate, compareDate });
             
             if (!data) return;
@@ -665,11 +793,12 @@ const DataManager = {
                 this.displayComparisonResults(data.comparison);
                 ChartManager.createComparisonChart(data.comparison);
                 UIManager.showNotification('Comparison loaded successfully', 'success');
+                console.log('[DATA] Comparison loaded successfully');
             } else {
                 UIManager.showNotification('No comparison data available', 'info');
             }
         } catch (error) {
-            console.error('Comparison Error:', error);
+            console.error('[DATA] Comparison Error:', error);
             UIManager.showNotification('Failed to load comparison: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
@@ -683,7 +812,8 @@ const DataManager = {
         container.innerHTML = comparison.map(item => {
             const change = parseFloat(item.percentage || 0);
             const isPositive = change >= 0;
-            const isCurrency = item.metric.includes('Sales') || item.metric.includes('Value');
+            const isCurrency = item.metric.toLowerCase().includes('sales') || 
+                             item.metric.toLowerCase().includes('value');
             
             return `
                 <div class="comparison-metric-card">
@@ -713,6 +843,7 @@ const TargetManager = {
     async loadTargets(filter = 'all') {
         AppState.incrementLoading();
         try {
+            console.log(`[TARGET] Loading targets with filter: ${filter}`);
             const data = await APIService.fetch('get_targets', { filter });
             
             if (!data) return;
@@ -720,9 +851,10 @@ const TargetManager = {
             if (data.targets) {
                 this.displayTargetsGrid(data.targets);
                 this.displayTargetsTable(data.targets);
+                console.log(`[TARGET] Loaded ${data.targets.length} targets`);
             }
         } catch (error) {
-            console.error('Load Targets Error:', error);
+            console.error('[TARGET] Load Targets Error:', error);
             UIManager.showNotification('Failed to load targets: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
@@ -814,7 +946,7 @@ const TargetManager = {
                     <td>
                         <div style="display:flex;align-items:center;gap:8px;">
                             <div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;">
-                                <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(progress, 100)}%"></div>
+                                <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(progress, 100)}%;height:100%;border-radius:3px;transition:width 0.3s ease;"></div>
                             </div>
                             <span style="font-weight:600;min-width:50px;font-size:13px;">${progress.toFixed(1)}%</span>
                         </div>
@@ -852,11 +984,15 @@ const TargetManager = {
     async editTarget(id) {
         AppState.incrementLoading();
         try {
+            console.log(`[TARGET] Editing target ID: ${id}`);
             const data = await APIService.fetch('get_targets', { filter: 'all' });
             
-            if (!data) return;
+            if (!data || !data.targets) {
+                UIManager.showNotification('Failed to load target data', 'error');
+                return;
+            }
 
-            const target = data.targets?.find(t => t.id === id);
+            const target = data.targets.find(t => t.id === id);
             
             if (!target) {
                 UIManager.showNotification('Target not found', 'error');
@@ -865,6 +1001,7 @@ const TargetManager = {
 
             AppState.editingTargetId = id;
             
+            // Populate form
             Utils.$('#modalTitle').textContent = 'Edit Target';
             Utils.$('#targetName').value = target.target_name || '';
             Utils.$('#targetType').value = target.target_type || '';
@@ -874,8 +1011,9 @@ const TargetManager = {
             Utils.$('#targetStore').value = target.store || '';
             
             ModalManager.open();
+            console.log('[TARGET] Edit form populated successfully');
         } catch (error) {
-            console.error('Edit Target Error:', error);
+            console.error('[TARGET] Edit Target Error:', error);
             UIManager.showNotification('Failed to load target: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
@@ -883,22 +1021,27 @@ const TargetManager = {
     },
 
     async deleteTarget(id) {
-        if (!confirm('Are you sure you want to delete this target?')) return;
+        if (!confirm('Are you sure you want to delete this target? This action cannot be undone.')) {
+            return;
+        }
 
         AppState.incrementLoading();
         try {
+            console.log(`[TARGET] Deleting target ID: ${id}`);
             const result = await APIService.fetch('delete_target', { id });
             
             if (!result) return;
 
             UIManager.showNotification('Target deleted successfully', 'success');
+            console.log('[TARGET] Target deleted successfully');
             
+            // Reload data
             await Promise.all([
                 this.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
             ]);
         } catch (error) {
-            console.error('Delete Target Error:', error);
+            console.error('[TARGET] Delete Target Error:', error);
             UIManager.showNotification('Failed to delete target: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
@@ -910,13 +1053,15 @@ const TargetManager = {
 const DateManager = {
     setDefaultDates() {
         const today = new Date();
-        const yesterday = new Date(today - 86400000);
+        const yesterday = new Date(today.getTime() - 86400000);
 
         const currentDate = Utils.$('#currentDate');
         const compareDate = Utils.$('#compareDate');
 
         if (currentDate) currentDate.value = Utils.getISODate(today);
         if (compareDate) compareDate.value = Utils.getISODate(yesterday);
+        
+        console.log('[DATE] Default dates set');
     },
 
     updateComparisonDates() {
@@ -924,9 +1069,9 @@ const DateManager = {
         const today = new Date();
         
         const dateMap = {
-            'today_vs_yesterday': 86400000,
-            'week_vs_week': 604800000,
-            'month_vs_month': 2592000000,
+            'today_vs_yesterday': 86400000, // 1 day
+            'week_vs_week': 604800000, // 7 days
+            'month_vs_month': 2592000000, // 30 days
             'custom': 86400000
         };
 
@@ -936,17 +1081,21 @@ const DateManager = {
         if (currentDate) currentDate.value = Utils.getISODate(today);
         if (compareDate) {
             const offset = dateMap[type] || dateMap.custom;
-            compareDate.value = Utils.getISODate(new Date(today - offset));
+            compareDate.value = Utils.getISODate(new Date(today.getTime() - offset));
         }
+        
+        console.log(`[DATE] Comparison dates updated for type: ${type}`);
     }
 };
 
 // ==================== TAB MANAGER ====================
 const TabManager = {
     switchTab(tabName) {
-        Utils.$$('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        Utils.$$('.tab-content').forEach(content => content.classList.remove('active'));
+        // Remove active class from all tabs
+        Utils.$('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        Utils.$('.tab-content').forEach(content => content.classList.remove('active'));
 
+        // Add active class to selected tab
         const activeBtn = Utils.$(`[data-tab="${tabName}"]`);
         const activeContent = Utils.$(`#${tabName}-tab`);
 
@@ -954,6 +1103,7 @@ const TabManager = {
         if (activeContent) activeContent.classList.add('active');
 
         AppState.currentTab = tabName;
+        console.log(`[TAB] Switched to: ${tabName}`);
     }
 };
 
@@ -967,18 +1117,23 @@ const ModalManager = {
         if (form) form.reset();
         
         const modalTitle = Utils.$('#modalTitle');
-        if (modalTitle) modalTitle.textContent = 'Create New Target';
+        if (modalTitle && !AppState.editingTargetId) {
+            modalTitle.textContent = 'Create New Target';
+        }
+
+        // Set default dates if creating new target
+        if (!AppState.editingTargetId) {
+            const today = new Date();
+            const nextMonth = new Date(today.getTime() + 2592000000); // 30 days
+
+            const startDate = Utils.$('#targetStartDate');
+            const endDate = Utils.$('#targetEndDate');
+
+            if (startDate) startDate.value = Utils.getISODate(today);
+            if (endDate) endDate.value = Utils.getISODate(nextMonth);
+        }
         
-        AppState.editingTargetId = null;
-
-        const today = new Date();
-        const nextMonth = new Date(today.getTime() + 2592000000);
-
-        const startDate = Utils.$('#targetStartDate');
-        const endDate = Utils.$('#targetEndDate');
-
-        if (startDate) startDate.value = Utils.getISODate(today);
-        if (endDate) endDate.value = Utils.getISODate(nextMonth);
+        console.log('[MODAL] Target modal opened');
     },
 
     close(event) {
@@ -990,11 +1145,13 @@ const ModalManager = {
         if (modal) modal.classList.remove('active');
         
         AppState.editingTargetId = null;
+        console.log('[MODAL] Target modal closed');
     },
 
     async saveTarget(event) {
         event.preventDefault();
 
+        // Collect form data
         const formData = {
             name: Utils.$('#targetName')?.value.trim(),
             type: Utils.$('#targetType')?.value,
@@ -1004,18 +1161,39 @@ const ModalManager = {
             store: Utils.$('#targetStore')?.value.trim() || ''
         };
 
-        if (!formData.name || !formData.type || !formData.value || !formData.start_date || !formData.end_date) {
-            UIManager.showNotification('Please fill in all required fields', 'warning');
+        // Validation
+        if (!formData.name) {
+            UIManager.showNotification('Please enter a target name', 'warning');
+            Utils.$('#targetName')?.focus();
+            return;
+        }
+
+        if (!formData.type) {
+            UIManager.showNotification('Please select a target type', 'warning');
+            Utils.$('#targetType')?.focus();
             return;
         }
 
         if (isNaN(formData.value) || formData.value <= 0) {
-            UIManager.showNotification('Target value must be greater than 0', 'warning');
+            UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
+            Utils.$('#targetValue')?.focus();
+            return;
+        }
+
+        if (formData.value > 999999999) {
+            UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
+            Utils.$('#targetValue')?.focus();
+            return;
+        }
+
+        if (!formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please select both start and end dates', 'warning');
             return;
         }
 
         if (new Date(formData.end_date) < new Date(formData.start_date)) {
             UIManager.showNotification('End date must be after start date', 'warning');
+            Utils.$('#targetEndDate')?.focus();
             return;
         }
 
@@ -1027,19 +1205,28 @@ const ModalManager = {
                 formData.id = AppState.editingTargetId;
             }
 
+            console.log(`[MODAL] Saving target with action: ${action}`, formData);
+            
             const result = await APIService.post(action, formData);
             
             if (!result) return;
 
-            UIManager.showNotification('Target saved successfully', 'success');
+            UIManager.showNotification(
+                AppState.editingTargetId ? 'Target updated successfully' : 'Target created successfully', 
+                'success'
+            );
+            
             this.close();
             
+            // Reload data
             await Promise.all([
                 TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
                 DataManager.loadKPISummary()
             ]);
+            
+            console.log('[MODAL] Target saved successfully');
         } catch (error) {
-            console.error('Save Target Error:', error);
+            console.error('[MODAL] Save Target Error:', error);
             UIManager.showNotification(error.message || 'Failed to save target', 'error');
         } finally {
             AppState.decrementLoading();
@@ -1059,12 +1246,22 @@ window.updateTrendChart = () => ChartManager.updateTrendChart();
 window.resetComparison = () => {
     DateManager.setDefaultDates();
     const grid = Utils.$('.comparison-grid');
-    if (grid) grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">Select dates and click "Load Comparison"</p>';
+    if (grid) {
+        grid.innerHTML = '<p style="text-align:center;padding:40px;color:#9ca3af;">Select dates and click "Analyze" to compare data</p>';
+    }
     ChartManager.destroyChart('comparison');
+    console.log('[COMPARISON] Reset completed');
 };
 window.refreshAllData = async () => {
+    console.log('[APP] Refreshing all data...');
     await App.loadAllData();
     UIManager.showNotification('Data refreshed successfully', 'success');
+};
+window.toggleNotifications = () => {
+    UIManager.showNotification('Notifications feature coming soon!', 'info');
+};
+window.exportTargets = () => {
+    UIManager.showNotification('Export feature coming soon!', 'info');
 };
 
 // ==================== APP INITIALIZATION ====================
@@ -1075,10 +1272,12 @@ const App = {
         try {
             // Check Chart.js
             if (typeof Chart === 'undefined') {
-                console.error('Chart.js not loaded!');
-                UIManager.showNotification('Chart library not loaded. Please refresh.', 'error');
+                console.error('❌ Chart.js not loaded!');
+                UIManager.showNotification('Chart library not loaded. Please refresh the page.', 'error');
                 return;
             }
+
+            console.log('✓ Chart.js loaded');
 
             // Update date/time
             UIManager.updateDateTime();
@@ -1094,6 +1293,7 @@ const App = {
             this.setupEventListeners();
 
             console.log('✅ Dashboard initialized successfully');
+            UIManager.showNotification('Dashboard loaded successfully', 'success');
         } catch (error) {
             console.error('❌ Initialization error:', error);
             UIManager.showNotification('Failed to initialize dashboard: ' + error.message, 'error');
@@ -1101,6 +1301,8 @@ const App = {
     },
 
     async loadAllData() {
+        console.log('[APP] Loading all data...');
+        
         const promises = [
             DataManager.loadKPISummary(),
             DataManager.loadTrendData(30),
@@ -1111,12 +1313,16 @@ const App = {
         
         results.forEach((result, index) => {
             if (result.status === 'rejected') {
-                console.error(`Failed to load data [${index}]:`, result.reason);
+                console.error(`[APP] Failed to load data [${index}]:`, result.reason);
             }
         });
+        
+        console.log('[APP] All data loaded');
     },
 
     setupEventListeners() {
+        console.log('[APP] Setting up event listeners...');
+        
         // Modal backdrop click
         const modal = Utils.$('#targetModal');
         if (modal) {
@@ -1124,6 +1330,15 @@ const App = {
                 if (e.target === modal) {
                     ModalManager.close();
                 }
+            });
+        }
+
+        // Form submission
+        const targetForm = Utils.$('#targetForm');
+        if (targetForm) {
+            targetForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                ModalManager.saveTarget(e);
             });
         }
 
@@ -1139,6 +1354,7 @@ const App = {
             if (!document.hidden && AppState.lastDataUpdate) {
                 const timeSinceUpdate = Date.now() - AppState.lastDataUpdate;
                 if (timeSinceUpdate > 300000) { // 5 minutes
+                    console.log('[APP] Auto-refreshing data after visibility change');
                     this.loadAllData();
                 }
             }
@@ -1146,17 +1362,115 @@ const App = {
 
         // Handle network errors
         window.addEventListener('online', () => {
+            console.log('[APP] Connection restored');
             UIManager.showNotification('Connection restored', 'success');
             this.loadAllData();
         });
 
         window.addEventListener('offline', () => {
-            UIManager.showNotification('No internet connection', 'warning');
+            console.log('[APP] Connection lost');
+            UIManager.showNotification('No internet connection. Some features may not work.', 'warning');
         });
+
+        // Handle unload
+        window.addEventListener('beforeunload', () => {
+            AppState.cancelPendingRequests();
+        });
+        
+        console.log('[APP] Event listeners setup complete');
     }
 };
 
-// ==================== ANIMATIONS ====================
+// ==================== PERFORMANCE TABLE LOADER ====================
+async function loadPerformanceTable() {
+    const tbody = Utils.$('#performanceTableBody');
+    if (!tbody) return;
+
+    try {
+        const today = new Date();
+        const yesterday = new Date(today.getTime() - 86400000);
+        const lastWeek = new Date(today.getTime() - 604800000);
+        const lastMonth = new Date(today.getTime() - 2592000000);
+
+        const [todayData, yesterdayData, weekData, monthData] = await Promise.all([
+            APIService.fetch('kpi_summary'),
+            APIService.fetch('compare', { 
+                currentDate: Utils.getISODate(today), 
+                compareDate: Utils.getISODate(yesterday) 
+            }),
+            APIService.fetch('compare', { 
+                currentDate: Utils.getISODate(today), 
+                compareDate: Utils.getISODate(lastWeek) 
+            }),
+            APIService.fetch('compare', { 
+                currentDate: Utils.getISODate(today), 
+                compareDate: Utils.getISODate(lastMonth) 
+            })
+        ]);
+
+        const metrics = [
+            {
+                name: 'Sales Revenue',
+                today: todayData?.today_sales || 0,
+                yesterday: yesterdayData?.comparison?.[0]?.compare || 0,
+                lastWeek: weekData?.comparison?.[0]?.compare || 0,
+                lastMonth: monthData?.comparison?.[0]?.compare || 0,
+                isCurrency: true
+            },
+            {
+                name: 'Transactions',
+                today: todayData?.today_transactions || 0,
+                yesterday: yesterdayData?.comparison?.[1]?.compare || 0,
+                lastWeek: weekData?.comparison?.[1]?.compare || 0,
+                lastMonth: monthData?.comparison?.[1]?.compare || 0,
+                isCurrency: false
+            },
+            {
+                name: 'Customer Traffic',
+                today: todayData?.today_customers || 0,
+                yesterday: yesterdayData?.comparison?.[2]?.compare || 0,
+                lastWeek: weekData?.comparison?.[2]?.compare || 0,
+                lastMonth: monthData?.comparison?.[2]?.compare || 0,
+                isCurrency: false
+            }
+        ];
+
+        tbody.innerHTML = metrics.map(metric => {
+            const weekChange = Utils.calculateChange(metric.today, metric.lastWeek);
+            const isPositive = weekChange >= 0;
+            
+            return `
+                <tr>
+                    <td><strong>${metric.name}</strong></td>
+                    <td>${metric.isCurrency ? Utils.formatCurrency(metric.today) : Utils.formatNumber(metric.today)}</td>
+                    <td>${metric.isCurrency ? Utils.formatCurrency(metric.yesterday) : Utils.formatNumber(metric.yesterday)}</td>
+                    <td>${metric.isCurrency ? Utils.formatCurrency(metric.lastWeek) : Utils.formatNumber(metric.lastWeek)}</td>
+                    <td>${metric.isCurrency ? Utils.formatCurrency(metric.lastMonth) : Utils.formatNumber(metric.lastMonth)}</td>
+                    <td>
+                        <span class="metric-change ${isPositive ? 'positive' : 'negative'}">
+                            ${isPositive ? '▲' : '▼'} ${Utils.formatPercentage(Math.abs(weekChange))}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('[PERFORMANCE] Error loading performance table:', error);
+        tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">Error loading performance data</td></tr>';
+    }
+}
+
+// Load performance table when switching to that tab
+const originalSwitchTab = TabManager.switchTab;
+TabManager.switchTab = function(tabName) {
+    originalSwitchTab.call(this, tabName);
+    if (tabName === 'performance') {
+        loadPerformanceTable();
+    }
+};
+
+// ==================== ANIMATIONS & STYLES ====================
 const style = document.createElement('style');
 style.textContent = `
     @keyframes spin {
@@ -1182,13 +1496,27 @@ style.textContent = `
             opacity: 0;
         }
     }
+    .notification-toast {
+        pointer-events: all;
+    }
 `;
 document.head.appendChild(style);
 
-// ==================== INITIALIZE ====================
+// ==================== INITIALIZE APPLICATION ====================
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => App.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('[APP] DOM Content Loaded');
+        App.init();
+    });
 } else {
+    console.log('[APP] DOM Already Loaded');
     App.init();
 }
 
+// Export for debugging
+window.AppState = AppState;
+window.App = App;
+window.DataManager = DataManager;
+window.TargetManager = TargetManager;
+
+console.log('[APP] Sales Analytics Dashboard Script Loaded')

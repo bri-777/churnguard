@@ -8,43 +8,43 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
-// Security headers
-header('Content-Type: application/json; charset=utf-8');
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('X-XSS-Protection: 1; mode=block');
-
-// ==================== CORS CONFIGURATION (FIXED) ====================
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$host = $_SERVER['HTTP_HOST'] ?? '';
-
-// Allow requests from same domain and localhost
-$allowedOrigins = [
-    'http://localhost',
-    'http://127.0.0.1',
-    'https://' . $host,
-    'http://' . $host
-];
-
-// Check if origin is allowed
-if (!empty($origin) && (in_array($origin, $allowedOrigins) || 
-    strpos($origin, 'localhost') !== false || 
-    strpos($origin, '127.0.0.1') !== false ||
-    strpos($origin, $host) !== false)) {
-    header("Access-Control-Allow-Origin: $origin");
-} else {
-    // Allow same-origin requests
-    header("Access-Control-Allow-Origin: *");
+// ==================== CORS & HEADERS ====================
+// Handle CORS first, before any other output
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    $origin = $_SERVER['HTTP_ORIGIN'];
+    $allowedOrigins = [
+        'http://localhost',
+        'http://127.0.0.1',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+    ];
+    
+    // Check if origin matches allowed patterns
+    $isAllowed = false;
+    foreach ($allowedOrigins as $allowed) {
+        if (strpos($origin, $allowed) === 0) {
+            $isAllowed = true;
+            break;
+        }
+    }
+    
+    if ($isAllowed) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
 }
 
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('X-XSS-Protection: 1; mode=block');
 
-// Handle preflight requests
+// Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit;
+    exit(0);
 }
 
 // ==================== DATABASE CONFIGURATION ====================
@@ -53,24 +53,34 @@ define('DB_NAME', 'u393812660_churnguard');
 define('DB_USER', 'u393812660_churnguard');
 define('DB_PASS', '102202Brian_');
 
-// ==================== SESSION CONFIGURATION ====================
+// ==================== SESSION MANAGEMENT ====================
 ini_set('session.cookie_httponly', '1');
 ini_set('session.use_strict_mode', '1');
+ini_set('session.cookie_samesite', 'Lax');
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Debug logging
-error_log("=== API Request Started ===");
-error_log("Action: " . ($_GET['action'] ?? 'none'));
-error_log("Method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Session ID: " . session_id());
-error_log("User ID in session: " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'NOT SET'));
+// ==================== LOGGING FUNCTION ====================
+function logDebug(string $message, array $context = []): void {
+    $logMessage = date('[Y-m-d H:i:s] ') . $message;
+    if (!empty($context)) {
+        $logMessage .= ' | Context: ' . json_encode($context);
+    }
+    error_log($logMessage);
+}
 
-// Check authentication
+// ==================== AUTHENTICATION CHECK ====================
+logDebug("=== API Request Started ===", [
+    'action' => $_GET['action'] ?? 'none',
+    'method' => $_SERVER['REQUEST_METHOD'],
+    'session_id' => session_id(),
+    'has_user_id' => isset($_SESSION['user_id'])
+]);
+
 if (!isset($_SESSION['user_id'])) {
-    error_log("Authentication failed - no user_id in session");
+    logDebug("Authentication failed - no user_id in session");
     http_response_code(401);
     echo json_encode([
         'status' => 'error',
@@ -81,7 +91,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = (int)$_SESSION['user_id'];
-error_log("Authenticated user ID: " . $userId);
+logDebug("Authenticated user ID: $userId");
 
 // ==================== DATABASE CONNECTION ====================
 try {
@@ -94,12 +104,13 @@ try {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-            PDO::ATTR_PERSISTENT => false
+            PDO::ATTR_PERSISTENT => false,
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
         ]
     );
-    error_log("Database connected successfully");
+    logDebug("Database connected successfully");
 } catch (PDOException $e) {
-    error_log("Database connection failed: " . $e->getMessage());
+    logDebug("Database connection failed", ['error' => $e->getMessage()]);
     http_response_code(503);
     echo json_encode([
         'status' => 'error',
@@ -110,27 +121,25 @@ try {
 }
 
 // ==================== HELPER FUNCTIONS ====================
+
 function jsonResponse(array $data, int $statusCode = 200): void {
     http_response_code($statusCode);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
     exit;
 }
 
 function jsonSuccess(array $data = []): void {
-    error_log("Success response: " . json_encode($data));
+    logDebug("Success response", $data);
     jsonResponse(array_merge(['status' => 'success'], $data));
 }
 
-function jsonError(string $message, int $code = 400, string $error = null): void {
-    error_log("Error response: $message (code: $code)");
-    $response = [
+function jsonError(string $message, int $code = 400, string $error = 'error'): void {
+    logDebug("Error response: $message (code: $code)");
+    jsonResponse([
         'status' => 'error',
+        'error' => $error,
         'message' => $message
-    ];
-    if ($error) {
-        $response['error'] = $error;
-    }
-    jsonResponse($response, $code);
+    ], $code);
 }
 
 function safeDivide(float $numerator, float $denominator): float {
@@ -141,7 +150,8 @@ function percentageChange(float $current, float $previous): float {
     if ($previous == 0) {
         return $current > 0 ? 100.00 : 0.00;
     }
-    return round((($current - $previous) / $previous) * 100, 2);
+    $change = (($current - $previous) / $previous) * 100;
+    return round(max(-999.9, min(999.9, $change)), 2);
 }
 
 function validateDate(string $date): bool {
@@ -153,7 +163,7 @@ function validateDate(string $date): bool {
 }
 
 function sanitizeString(?string $input, int $maxLength = 255): string {
-    if ($input === null) return '';
+    if ($input === null || $input === '') return '';
     $cleaned = trim(strip_tags($input));
     return mb_substr($cleaned, 0, $maxLength, 'UTF-8');
 }
@@ -189,18 +199,16 @@ function calculateTargetProgress(float $current, float $target): array {
     ];
 }
 
-// ==================== REQUEST HANDLING ====================
+// ==================== ROUTE HANDLING ====================
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
-error_log("Processing action: $action with method: $method");
+logDebug("Processing action: $action with method: $method");
 
-// ==================== ROUTES ====================
-
-// KPI Summary
+// ==================== KPI SUMMARY ====================
 if ($action === 'kpi_summary') {
     try {
-        error_log("Loading KPI summary for user: $userId");
+        logDebug("Loading KPI summary for user: $userId");
         
         $today = date('Y-m-d');
         $yesterday = date('Y-m-d', strtotime('-1 day'));
@@ -215,11 +223,7 @@ if ($action === 'kpi_summary') {
             WHERE user_id = ? AND date = ?
         ");
         $stmtToday->execute([$userId, $today]);
-        $todayData = $stmtToday->fetch() ?: [
-            'sales_volume' => 0,
-            'receipt_count' => 0,
-            'customer_traffic' => 0
-        ];
+        $todayData = $stmtToday->fetch();
         
         // Get yesterday's data
         $stmtYesterday = $pdo->prepare("
@@ -231,23 +235,19 @@ if ($action === 'kpi_summary') {
             WHERE user_id = ? AND date = ?
         ");
         $stmtYesterday->execute([$userId, $yesterday]);
-        $yesterdayData = $stmtYesterday->fetch() ?: [
-            'sales_volume' => 0,
-            'receipt_count' => 0,
-            'customer_traffic' => 0
-        ];
+        $yesterdayData = $stmtYesterday->fetch();
         
-        // Calculate changes
-        $todaySales = (float)$todayData['sales_volume'];
-        $yesterdaySales = (float)$yesterdayData['sales_volume'];
+        // Calculate metrics
+        $todaySales = (float)($todayData['sales_volume'] ?? 0);
+        $yesterdaySales = (float)($yesterdayData['sales_volume'] ?? 0);
         $salesChange = percentageChange($todaySales, $yesterdaySales);
         
-        $todayCustomers = (int)$todayData['customer_traffic'];
-        $yesterdayCustomers = (int)$yesterdayData['customer_traffic'];
+        $todayCustomers = (int)($todayData['customer_traffic'] ?? 0);
+        $yesterdayCustomers = (int)($yesterdayData['customer_traffic'] ?? 0);
         $customersChange = percentageChange((float)$todayCustomers, (float)$yesterdayCustomers);
         
-        $todayTransactions = (int)$todayData['receipt_count'];
-        $yesterdayTransactions = (int)$yesterdayData['receipt_count'];
+        $todayTransactions = (int)($todayData['receipt_count'] ?? 0);
+        $yesterdayTransactions = (int)($yesterdayData['receipt_count'] ?? 0);
         $transactionsChange = percentageChange((float)$todayTransactions, (float)$yesterdayTransactions);
         
         // Get active target
@@ -298,24 +298,59 @@ if ($action === 'kpi_summary') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("KPI Summary Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        logDebug("KPI Summary Error", ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         jsonError('Failed to load KPI summary', 500);
     }
 }
 
-// Data Comparison
+// ==================== TREND DATA ====================
+elseif ($action === 'trend_data') {
+    try {
+        $days = filter_var($_GET['days'] ?? 30, FILTER_VALIDATE_INT);
+        $days = max(7, min(90, $days ?: 30));
+        
+        logDebug("Loading trend data", ['days' => $days, 'user_id' => $userId]);
+        
+        $stmt = $pdo->prepare("
+            SELECT 
+                date,
+                COALESCE(SUM(sales_volume), 0) as sales_volume,
+                COALESCE(SUM(receipt_count), 0) as receipt_count,
+                COALESCE(SUM(customer_traffic), 0) as customer_traffic
+            FROM churn_data
+            WHERE user_id = ? 
+                AND date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+                AND date <= CURDATE()
+            GROUP BY date
+            ORDER BY date ASC
+        ");
+        
+        $stmt->execute([$userId, $days]);
+        $trendData = $stmt->fetchAll();
+        
+        logDebug("Trend data loaded", ['record_count' => count($trendData)]);
+        
+        jsonSuccess(['trend_data' => $trendData]);
+        
+    } catch (Throwable $e) {
+        logDebug("Trend Data Error", ['error' => $e->getMessage()]);
+        jsonError('Failed to load trend data', 500);
+    }
+}
+
+// ==================== COMPARISON ====================
 elseif ($action === 'compare') {
     try {
         $currentDate = $_GET['currentDate'] ?? date('Y-m-d');
         $compareDate = $_GET['compareDate'] ?? date('Y-m-d', strtotime('-1 day'));
         
-        error_log("Comparing dates: $currentDate vs $compareDate");
-        
         if (!validateDate($currentDate) || !validateDate($compareDate)) {
             jsonError('Invalid date format. Use YYYY-MM-DD', 422, 'invalid_date');
         }
         
-        // Get current period data
+        logDebug("Comparing dates", ['current' => $currentDate, 'compare' => $compareDate]);
+        
+        // Current period data
         $stmtCurrent = $pdo->prepare("
             SELECT 
                 COALESCE(SUM(sales_volume), 0) as sales_volume,
@@ -325,13 +360,9 @@ elseif ($action === 'compare') {
             WHERE user_id = ? AND date = ?
         ");
         $stmtCurrent->execute([$userId, $currentDate]);
-        $currentData = $stmtCurrent->fetch() ?: [
-            'sales_volume' => 0,
-            'receipt_count' => 0,
-            'customer_traffic' => 0
-        ];
+        $currentData = $stmtCurrent->fetch();
         
-        // Get comparison period data
+        // Comparison period data
         $stmtCompare = $pdo->prepare("
             SELECT 
                 COALESCE(SUM(sales_volume), 0) as sales_volume,
@@ -341,19 +372,15 @@ elseif ($action === 'compare') {
             WHERE user_id = ? AND date = ?
         ");
         $stmtCompare->execute([$userId, $compareDate]);
-        $compareData = $stmtCompare->fetch() ?: [
-            'sales_volume' => 0,
-            'receipt_count' => 0,
-            'customer_traffic' => 0
-        ];
+        $compareData = $stmtCompare->fetch();
         
         // Calculate metrics
-        $currentSales = (float)$currentData['sales_volume'];
-        $compareSales = (float)$compareData['sales_volume'];
-        $currentReceipts = (int)$currentData['receipt_count'];
-        $compareReceipts = (int)$compareData['receipt_count'];
-        $currentCustomers = (int)$currentData['customer_traffic'];
-        $compareCustomers = (int)$compareData['customer_traffic'];
+        $currentSales = (float)($currentData['sales_volume'] ?? 0);
+        $compareSales = (float)($compareData['sales_volume'] ?? 0);
+        $currentReceipts = (int)($currentData['receipt_count'] ?? 0);
+        $compareReceipts = (int)($compareData['receipt_count'] ?? 0);
+        $currentCustomers = (int)($currentData['customer_traffic'] ?? 0);
+        $compareCustomers = (int)($compareData['customer_traffic'] ?? 0);
         
         $currentAvgTrans = safeDivide($currentSales, (float)$currentReceipts);
         $compareAvgTrans = safeDivide($compareSales, (float)$compareReceipts);
@@ -400,26 +427,33 @@ elseif ($action === 'compare') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("Comparison Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        logDebug("Comparison Error", ['error' => $e->getMessage()]);
         jsonError('Comparison failed', 500);
     }
 }
 
-// Get Targets
+// ==================== GET TARGETS ====================
 elseif ($action === 'get_targets') {
     try {
         $filter = $_GET['filter'] ?? 'all';
         $validFilters = ['all', 'active', 'achieved', 'near', 'below'];
         
-        error_log("Getting targets with filter: $filter for user: $userId");
-        
         if (!in_array($filter, $validFilters, true)) {
             jsonError('Invalid filter parameter', 422, 'invalid_filter');
         }
         
+        logDebug("Getting targets", ['filter' => $filter]);
+        
         $query = "
             SELECT 
-                t.*,
+                t.id,
+                t.target_name,
+                t.target_type,
+                t.target_value,
+                t.start_date,
+                t.end_date,
+                t.store,
+                t.created_at,
                 COALESCE(SUM(cd.sales_volume), 0) as current_sales,
                 COALESCE(SUM(cd.receipt_count), 0) as current_receipts,
                 COALESCE(SUM(cd.customer_traffic), 0) as current_customers,
@@ -445,52 +479,55 @@ elseif ($action === 'get_targets') {
         $targets = $stmt->fetchAll();
         
         // Process targets
-        foreach ($targets as &$target) {
+        $processedTargets = [];
+        foreach ($targets as $target) {
             $currentValue = getTargetCurrentValue($target);
             $targetValue = (float)$target['target_value'];
             $progressData = calculateTargetProgress($currentValue, $targetValue);
             
-            $target['current_value'] = $currentValue;
-            $target['progress'] = $progressData['progress'];
-            $target['status'] = $progressData['status'];
-            
-            // Remove temporary fields
-            unset(
-                $target['current_sales'],
-                $target['current_receipts'],
-                $target['current_customers'],
-                $target['current_avg_transaction']
-            );
+            $processedTargets[] = [
+                'id' => (int)$target['id'],
+                'target_name' => $target['target_name'],
+                'target_type' => $target['target_type'],
+                'target_value' => $targetValue,
+                'start_date' => $target['start_date'],
+                'end_date' => $target['end_date'],
+                'store' => $target['store'] ?? '',
+                'current_value' => $currentValue,
+                'progress' => $progressData['progress'],
+                'status' => $progressData['status']
+            ];
         }
         
-        // Apply status filter if needed
+        // Apply status filter
         if (in_array($filter, ['achieved', 'near', 'below'], true)) {
-            $targets = array_values(array_filter($targets, fn($t) => $t['status'] === $filter));
+            $processedTargets = array_values(array_filter(
+                $processedTargets, 
+                fn($t) => $t['status'] === $filter
+            ));
         }
         
-        error_log("Found " . count($targets) . " targets");
+        logDebug("Targets loaded", ['count' => count($processedTargets)]);
         
-        jsonSuccess(['targets' => $targets]);
+        jsonSuccess(['targets' => $processedTargets]);
         
     } catch (Throwable $e) {
-        error_log("Get Targets Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        logDebug("Get Targets Error", ['error' => $e->getMessage()]);
         jsonError('Failed to load targets', 500);
     }
 }
 
-// Save Target
+// ==================== SAVE TARGET ====================
 elseif ($action === 'save_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
-        error_log("Save target raw input: " . $rawInput);
-        
         $data = json_decode($rawInput, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
             jsonError('Invalid JSON data', 422, 'invalid_json');
         }
         
-        // Validate and sanitize inputs
+        // Validate inputs
         $name = sanitizeString($data['name'] ?? '', 100);
         $type = trim($data['type'] ?? '');
         $value = filter_var($data['value'] ?? 0, FILTER_VALIDATE_FLOAT);
@@ -498,7 +535,6 @@ elseif ($action === 'save_target' && $method === 'POST') {
         $endDate = trim($data['end_date'] ?? '');
         $store = sanitizeString($data['store'] ?? '', 100);
         
-        // Validation
         if (empty($name)) {
             jsonError('Target name is required', 422, 'missing_name');
         }
@@ -509,11 +545,11 @@ elseif ($action === 'save_target' && $method === 'POST') {
         }
         
         if ($value === false || $value <= 0 || $value > 999999999) {
-            jsonError('Invalid target value', 422, 'invalid_value');
+            jsonError('Invalid target value. Must be between 0.01 and 999,999,999', 422, 'invalid_value');
         }
         
         if (!validateDate($startDate) || !validateDate($endDate)) {
-            jsonError('Invalid date format', 422, 'invalid_date');
+            jsonError('Invalid date format. Use YYYY-MM-DD', 422, 'invalid_date');
         }
         
         if (strtotime($endDate) < strtotime($startDate)) {
@@ -527,18 +563,10 @@ elseif ($action === 'save_target' && $method === 'POST') {
             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         
-        $stmt->execute([
-            $userId,
-            $name,
-            $type,
-            $value,
-            $startDate,
-            $endDate,
-            $store
-        ]);
+        $stmt->execute([$userId, $name, $type, $value, $startDate, $endDate, $store]);
         
         $newId = (int)$pdo->lastInsertId();
-        error_log("Target created successfully with ID: $newId");
+        logDebug("Target created", ['id' => $newId]);
         
         jsonSuccess([
             'id' => $newId,
@@ -546,17 +574,15 @@ elseif ($action === 'save_target' && $method === 'POST') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("Save Target Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        logDebug("Save Target Error", ['error' => $e->getMessage()]);
         jsonError('Failed to save target', 500);
     }
 }
 
-// Update Target
+// ==================== UPDATE TARGET ====================
 elseif ($action === 'update_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
-        error_log("Update target raw input: " . $rawInput);
-        
         $data = json_decode($rawInput, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -583,7 +609,7 @@ elseif ($action === 'update_target' && $method === 'POST') {
             jsonError('Target not found or access denied', 404, 'not_found');
         }
         
-        // Validation (same as save)
+        // Validate (same as save)
         if (empty($name)) {
             jsonError('Target name is required', 422, 'missing_name');
         }
@@ -618,18 +644,9 @@ elseif ($action === 'update_target' && $method === 'POST') {
             WHERE id = ? AND user_id = ?
         ");
         
-        $stmt->execute([
-            $name,
-            $type,
-            $value,
-            $startDate,
-            $endDate,
-            $store,
-            $id,
-            $userId
-        ]);
+        $stmt->execute([$name, $type, $value, $startDate, $endDate, $store, $id, $userId]);
         
-        error_log("Target updated successfully: $id");
+        logDebug("Target updated", ['id' => $id]);
         
         jsonSuccess([
             'id' => $id,
@@ -637,17 +654,15 @@ elseif ($action === 'update_target' && $method === 'POST') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("Update Target Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        logDebug("Update Target Error", ['error' => $e->getMessage()]);
         jsonError('Failed to update target', 500);
     }
 }
 
-// Delete Target
+// ==================== DELETE TARGET ====================
 elseif ($action === 'delete_target') {
     try {
         $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
-        
-        error_log("Deleting target ID: $id for user: $userId");
         
         if ($id === false || $id <= 0) {
             jsonError('Invalid target ID', 422, 'invalid_id');
@@ -665,52 +680,18 @@ elseif ($action === 'delete_target') {
         $deleteStmt = $pdo->prepare("DELETE FROM targets WHERE id = ? AND user_id = ?");
         $deleteStmt->execute([$id, $userId]);
         
-        error_log("Target deleted successfully: $id");
+        logDebug("Target deleted", ['id' => $id]);
         
         jsonSuccess(['message' => 'Target deleted successfully']);
         
     } catch (Throwable $e) {
-        error_log("Delete Target Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        logDebug("Delete Target Error", ['error' => $e->getMessage()]);
         jsonError('Failed to delete target', 500);
     }
 }
 
-// Trend Data
-elseif ($action === 'trend_data') {
-    try {
-        $days = filter_var($_GET['days'] ?? 30, FILTER_VALIDATE_INT);
-        $days = max(7, min(90, $days ?: 30));
-        
-        error_log("Loading trend data for $days days, user: $userId");
-        
-        $stmt = $pdo->prepare("
-            SELECT 
-                date,
-                COALESCE(sales_volume, 0) as sales_volume,
-                COALESCE(receipt_count, 0) as receipt_count,
-                COALESCE(customer_traffic, 0) as customer_traffic
-            FROM churn_data
-            WHERE user_id = ? 
-                AND date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-                AND date <= CURDATE()
-            ORDER BY date ASC
-        ");
-        
-        $stmt->execute([$userId, $days]);
-        $trendData = $stmt->fetchAll();
-        
-        error_log("Found " . count($trendData) . " trend data records");
-        
-        jsonSuccess(['trend_data' => $trendData]);
-        
-    } catch (Throwable $e) {
-        error_log("Trend Data Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-        jsonError('Failed to load trend data', 500);
-    }
-}
-
-// Invalid action
+// ==================== INVALID ACTION ====================
 else {
-    error_log("Invalid action requested: $action");
+    logDebug("Invalid action", ['action' => $action]);
     jsonError('Invalid action parameter', 400, 'invalid_action');
 }
