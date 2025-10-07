@@ -81,7 +81,7 @@ if (!$me) {
 		 <a href="#" class="menu-item" onclick="showPage('customer-monitoring')">
           <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
         </a>
-   
+ 
       </div>
 
       <div class="menu-section">
