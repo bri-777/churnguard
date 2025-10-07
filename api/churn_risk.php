@@ -1,6 +1,8 @@
 <?php
 // api/churn_risk.php
 declare(strict_types=1);
+ini_set('precision', '14');
+ini_set('serialize_precision', '14');
 
 require __DIR__ . '/_bootstrap.php';
 $uid = require_login();
@@ -329,7 +331,7 @@ final class XGBPredictor {
     if ($raw === false) {
       throw new RuntimeException("Failed to read model file {$path}");
     }
-    $json = json_decode($raw, true);
+   $json = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
     if (!is_array($json)) {
       throw new RuntimeException("Invalid JSON in model file {$path}");
     }
@@ -634,9 +636,14 @@ if ($action === 'run') {
       $modelConfidence = 0.1;
     } else {
       try {
-        $modelPath = __DIR__ . '/models/churn_xgb.json';
-        $pred = XGBPredictor::loadFrom($modelPath);
-        $prob = $pred->predict_proba($feat);
+       $modelPath = realpath(__DIR__ . '/models/churn_xgb.json');
+if (!$modelPath || !is_readable($modelPath)) {
+    throw new RuntimeException("Model file missing or unreadable at {$modelPath}");
+}
+
+$pred = XGBPredictor::loadFrom($modelPath);
+$prob = round($pred->predict_proba($feat), 6); // normalize float precision
+
         $modelConfidence = 0.95;
       } catch (Throwable $mx) {
         // Enhanced fallback heuristic

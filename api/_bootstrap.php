@@ -2,16 +2,9 @@
 /* api/_bootstrap.php */
 declare(strict_types=1);
 
-/*
-  Shared bootstrap for all API endpoints.
-  - Starts session (same-site defaults)
-  - Loads PDO from connection/config.php
-  - Normalizes PDO attributes
-  - Provides JSON helpers: respond(), ok(), error()
-  - Auth helpers: require_login(), current_user_id(), current_user()
-  - Input helpers: get_json_body()
-  - Soft CSRF support (header respected if present)
-*/
+// Ensure consistent timezone regardless of server default
+date_default_timezone_set('Asia/Manila');
+ini_set('date.timezone', 'Asia/Manila');
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
   // Harden session a bit (safe defaults; ignores on old PHP)
