@@ -516,10 +516,6 @@ html, body {
     border: 1px solid #86efac;
     font-weight: 600;
 }
-.header-text {
-  text-align: left;
-}
-
 
 .risk-factor-tag.neutral {
     background: #f1f5f9;
@@ -915,8 +911,11 @@ function doLogout() {
     <!-- Analytics Dashboard Page -->
     <div id="dashboard" class="page active">
       <div class="page-header">
-        <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
-        <p>Real-time customer retention analytics powered by XGBoost machine learning</p>
+        <div style="text-align: center;">
+  <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
+  <p>Real-time customer retention analytics powered by XGBoost machine learning</p>
+</div>
+
       </div>
 
       <!-- KPIs -->
@@ -5038,26 +5037,24 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   </div>
 
   <div class="dashboard-header">
-  <div class="header-content">
-    <div>
-      <div class="header-title">
-        <div class="header-icon">📊</div>
-        <div class="header-text">
-          <h1>Customer Monitoring Dashboard</h1>
-          <div class="header-subtitle">
-            Real-time churn prediction and customer retention analytics
+    <div class="header-content">
+      <div>
+        <div class="header-title">
+          <div class="header-icon">📊</div>
+          <div>
+            <h1>Customer Monitoring Dashboard</h1>
+            <div class="header-subtitle">Real-time churn prediction and customer retention analytics</div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="header-controls">
-      <div class="status-indicator">
-        <div class="status-dot"></div>
+      <div class="header-controls">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+
+        </div>
       </div>
     </div>
   </div>
-</div>
-
 
   <!-- Make content flow vertically so metrics sit BELOW the chart -->
   <div class="main-content" style="display:block; max-width:1400px; margin:0 auto; padding:0 1.25rem 1.25rem;">
