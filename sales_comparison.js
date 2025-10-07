@@ -1192,13 +1192,3 @@ if (document.readyState === 'loading') {
     App.init();
 }
 
-// ==================== ERROR HANDLERS ====================
-window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
-    // Error notification disabled - check console for details
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
-    // Error notification disabled - check console for details
-});
