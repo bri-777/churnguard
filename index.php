@@ -142,6 +142,15 @@ if (!$me) {
 </div>
 
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(window.location.search);
+  const page = params.get('page');
+  if (page) {
+    showPage(page);
+  }
+});
+</script>
 
 <style>
   .date-wrap {

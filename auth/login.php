@@ -103,7 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             extendSessionCookie(7 * 24 * 60 * 60);
                         }
 
-                        $redirect = '../index.php';
+                        $redirect = '../index.php?page=data-input';
+
 
                         // AJAX?
                         if (isAjax()) {
