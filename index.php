@@ -1657,7 +1657,7 @@ function doLogout() {
 
     </div>
 </div>
-<script src="assets/js/sales_comparison.js"></script>
+<script src="sales_comparison.js"></script>
 <style>
   /* ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD CSS ==================== */
 
