@@ -3432,7 +3432,7 @@ body {
 .kpi-card-pro {
     background: var(--bg-primary);
     border-radius: var(--radius-xl);
-    padding: 24px;
+    padding: 20px;
     border: 1px solid var(--gray-200);
     transition: all var(--transition-slow);
     cursor: pointer;
