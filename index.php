@@ -3396,46 +3396,79 @@ body {
 
 /* KPI Section */
 .kpi-section {
-    margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
+/* Grid Layout */
 .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
 }
 
+/* KPI Card */
 .kpi-card-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    transition: all var(--transition-slow);
-    cursor: pointer;
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  border: 1px solid #f1f1f1;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .kpi-card-pro:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary-200);
+  transform: translateY(-6px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  border-color: #f59e0b; /* matches your orange theme */
 }
 
+/* KPI Header */
 .kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
+/* KPI Icon */
 .kpi-icon-pro {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 22px;
+  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);
 }
+
+/* KPI Title & Value */
+.kpi-title {
+  font-size: 15px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Optional subtle growth text */
+.kpi-change {
+  font-size: 13px;
+  color: #10b981; /* green for positive change */
+  margin-top: 4px;
+}
+
+.kpi-change.negative {
+  color: #ef4444; /* red for negative change */
+}
+
 
 .sales-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 .customers-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
