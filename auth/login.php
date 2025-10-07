@@ -106,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $redirect = '../index.php?page=data-input';
 
 
+
                         // AJAX?
                         if (isAjax()) {
                             if (function_exists('ob_get_length') && ob_get_length()) ob_clean();

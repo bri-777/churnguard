@@ -8064,6 +8064,20 @@ window.uploadAvatar = function () {
 
 
 
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const page = params.get('page');
+
+  // If login redirected with ?page=data-input → open that section
+  if (page === 'data-input') {
+    showPage('data-input');
+  } else {
+    // Default fallback
+    showPage('dashboard');
+  }
+});
+</script>
 
 
 
