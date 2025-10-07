@@ -5,6 +5,13 @@ declare(strict_types=1);
 require __DIR__ . '/_bootstrap.php';
 $uid = require_login();
 
+// ===== CRITICAL: Set MySQL timezone to Manila =====
+try {
+    $pdo->exec("SET time_zone = '+08:00'");
+} catch (Exception $e) {
+    // Continue if timezone setting fails
+}
+
 function j_ok(array $d = []) { json_ok($d); }
 function j_err(string $m, int $c = 400, array $extra = []) { json_error($m, $c, $extra); }
 
@@ -70,6 +77,15 @@ function get_manila_date(): string {
   $tz = new DateTimeZone('Asia/Manila');
   $now = new DateTime('now', $tz);
   return $now->format('Y-m-d');
+}
+
+/**
+ * Get current Manila datetime for database operations.
+ */
+function get_manila_datetime(): string {
+  $tz = new DateTimeZone('Asia/Manila');
+  $now = new DateTime('now', $tz);
+  return $now->format('Y-m-d H:i:s');
 }
 
 /**
@@ -319,9 +335,6 @@ final class XGBPredictor {
   private ?array $feature_names = null;
 
   public static function loadFrom(string $path): self {
-    static $cache = [];
-    if (isset($cache[$path])) return $cache[$path];
-
     if (!is_file($path)) {
       throw new RuntimeException("XGBoost model not found at {$path}");
     }
@@ -344,7 +357,6 @@ final class XGBPredictor {
       $p->trees = $trees;
       $p->objective   = (string)($json['objective']['name'] ?? 'binary:logistic');
       $p->base_score  = self::toFloat($json['learner_model_param']['base_score'] ?? 0.5);
-      $cache[$path] = $p;
       return $p;
     }
 
@@ -372,7 +384,6 @@ final class XGBPredictor {
       $p->feature_names = null;
     }
 
-    $cache[$path] = $p;
     return $p;
   }
 
@@ -525,12 +536,21 @@ if ($action === 'latest') {
 
 if ($action === 'run') {
   try {
+    // ===== FIX: Use Manila date consistently =====
     $manilaDate = get_manila_date();
+    $manilaDateTime = get_manila_datetime();
 
-    $q = $pdo->prepare("SELECT * FROM churn_data WHERE user_id = ? ORDER BY date DESC LIMIT 1");
-    $q->execute([$uid]);
+    // ===== FIX: Query specifically for TODAY's data, not just latest =====
+    $q = $pdo->prepare("
+      SELECT * FROM churn_data 
+      WHERE user_id = ? AND date = ?
+      ORDER BY created_at DESC 
+      LIMIT 1
+    ");
+    $q->execute([$uid, $manilaDate]);
     $cd = $q->fetch(PDO::FETCH_ASSOC);
 
+    // If no data for today, create default entry with UPSERT
     if (!$cd) {
       $defaultInsert = $pdo->prepare("
         INSERT INTO churn_data 
@@ -541,15 +561,18 @@ if ($action === 'run') {
            weekly_average_receipts, weekly_average_sales,
            transaction_drop_percentage, sales_drop_percentage, created_at)
         VALUES 
-          (?, ?, 0, 0.00, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0, 0.00, 0.00, 0.00, 0.00, 0.00, NOW())
+          (?, ?, 0, 0.00, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0, 0.00, 0.00, 0.00, 0.00, 0.00, ?)
+        ON DUPLICATE KEY UPDATE
+          updated_at = CURRENT_TIMESTAMP
       ");
-      $defaultInsert->execute([$uid, $manilaDate]);
+      $defaultInsert->execute([$uid, $manilaDate, $manilaDateTime]);
 
-      $q->execute([$uid]);
+      $q->execute([$uid, $manilaDate]);
       $cd = $q->fetch(PDO::FETCH_ASSOC);
     }
 
-    $forDate = $cd['date'];
+    // ===== FIX: Always use today's Manila date for prediction =====
+    $forDate = $manilaDate;
 
     // Extract and validate inputs
     $rc    = max(0,   (int)($cd['receipt_count'] ?? 0));
@@ -710,15 +733,20 @@ if ($action === 'run') {
       $desc .= ' (Using heuristic analysis - model optimization recommended)';
     }
 
-    // Database operations
-    $deletePrev = $pdo->prepare("DELETE FROM churn_predictions WHERE user_id = ? AND for_date = ?");
-    $deletePrev->execute([$uid, $forDate]);
+    // ===== FIX: DELETE today's previous predictions, then INSERT fresh one =====
+    // Step 1: Delete ALL previous predictions for TODAY (for_date = today's Manila date)
+    $deletePrev = $pdo->prepare("
+      DELETE FROM churn_predictions 
+      WHERE user_id = ? AND for_date = ?
+    ");
+    $deletePrev->execute([$uid, $manilaDate]);
 
+    // Step 2: Insert fresh prediction for TODAY
     $insert = $pdo->prepare("
       INSERT INTO churn_predictions
         (user_id, date, risk_score, risk_level, factors, description, created_at, level, risk_percentage, for_date)
       VALUES
-        (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     $insert->execute([
@@ -728,6 +756,7 @@ if ($action === 'run') {
       $level,
       json_encode($factorAnalysis['factors'], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),
       $desc,
+      $manilaDateTime,
       $level,
       round($riskPct, 3),
       $forDate
