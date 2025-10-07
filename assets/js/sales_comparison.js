@@ -486,9 +486,7 @@ const ChartManager = {
     },
 
     createComparisonChart(comparisonData) {
-        const ctx = Utils.$('#comparisonChart');
-        if (!ctx) {
-            console.error('Chart canvas not found: comparisonChart');
+        
             return;
         }
 
