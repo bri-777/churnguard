@@ -3452,8 +3452,8 @@ body {
 }
 
 .kpi-icon-pro {
-    width: 56px;
-    height: 56px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
