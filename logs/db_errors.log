@@ -1090,3 +1090,44 @@
 [07-Oct-2025 08:38:09 Asia/Manila] Record 9: 2025-09-24 - Medium (55%) - REAL
 [07-Oct-2025 08:38:09 Asia/Manila] Record 10: 2025-09-23 - Low (15%) - REAL
 [07-Oct-2025 08:38:34 Asia/Manila] 2025-10-07 08:38:34 - DB Connected: churnguard on localhost
+[07-Oct-2025 08:38:50 Asia/Manila] 2025-10-07 08:38:50 - DB Connected: churnguard on localhost
+[07-Oct-2025 08:38:50 Asia/Manila] === ULTIMATE ACCURACY DEBUG ===
+[07-Oct-2025 08:38:50 Asia/Manila] User: 1
+[07-Oct-2025 08:38:50 Asia/Manila] Churn records found: 11
+[07-Oct-2025 08:38:50 Asia/Manila] Raw predictions found: 11
+[07-Oct-2025 08:38:50 Asia/Manila] Unique prediction dates: 11
+[07-Oct-2025 08:38:50 Asia/Manila] Prediction stats from DB: {"Low":5,"Medium":2,"High":4,"total":11}
+[07-Oct-2025 08:38:50 Asia/Manila] Final combined records: 11
+[07-Oct-2025 08:38:50 Asia/Manila] Final risk distribution: {"Low":5,"Medium":2,"High":4}
+[07-Oct-2025 08:38:50 Asia/Manila] Record 0: 2025-10-07 - Medium (53.71%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 1: 2025-10-06 - High (100%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 2: 2025-10-02 - Low (12%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 3: 2025-09-30 - Low (5.99%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 4: 2025-09-29 - High (97.95%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 5: 2025-09-28 - High (79.97%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 6: 2025-09-27 - High (68.06%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 7: 2025-09-26 - Low (15%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 8: 2025-09-25 - Low (15%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 9: 2025-09-24 - Medium (55%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] Record 10: 2025-09-23 - Low (15%) - REAL
+[07-Oct-2025 08:38:50 Asia/Manila] 2025-10-07 08:38:50 - DB Connected: churnguard on localhost
+[07-Oct-2025 08:38:57 Asia/Manila] 2025-10-07 08:38:57 - DB Connected: churnguard on localhost
+[07-Oct-2025 08:38:57 Asia/Manila] === ULTIMATE ACCURACY DEBUG ===
+[07-Oct-2025 08:38:57 Asia/Manila] User: 1
+[07-Oct-2025 08:38:57 Asia/Manila] Churn records found: 11
+[07-Oct-2025 08:38:57 Asia/Manila] Raw predictions found: 11
+[07-Oct-2025 08:38:57 Asia/Manila] Unique prediction dates: 11
+[07-Oct-2025 08:38:57 Asia/Manila] Prediction stats from DB: {"Low":5,"Medium":2,"High":4,"total":11}
+[07-Oct-2025 08:38:57 Asia/Manila] Final combined records: 11
+[07-Oct-2025 08:38:57 Asia/Manila] Final risk distribution: {"Low":5,"Medium":2,"High":4}
+[07-Oct-2025 08:38:57 Asia/Manila] Record 0: 2025-10-07 - Medium (53.71%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 1: 2025-10-06 - High (100%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 2: 2025-10-02 - Low (12%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 3: 2025-09-30 - Low (5.99%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 4: 2025-09-29 - High (97.95%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 5: 2025-09-28 - High (79.97%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 6: 2025-09-27 - High (68.06%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 7: 2025-09-26 - Low (15%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 8: 2025-09-25 - Low (15%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 9: 2025-09-24 - Medium (55%) - REAL
+[07-Oct-2025 08:38:57 Asia/Manila] Record 10: 2025-09-23 - Low (15%) - REAL
