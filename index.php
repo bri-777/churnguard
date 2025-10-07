@@ -5054,8 +5054,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         <div class="header-title">
           <div class="header-icon">📊</div>
           <div>
-            <h1>Customer Monitoring Dashboard</h1>
-            <div class="header-subtitle">Real-time churn prediction and customer retention analytics</div>
+           <h1 style="font-size:28px; font-weight:700; color:#111827; margin:0; line-height:1.2;">
+    Customer Monitoring Dashboard
+  </h1>
+  <div style="font-size:16px; color:#6b7280; margin-top:6px; font-weight:500;">
+    Real-time churn prediction and customer retention analytics
+  </div>
           </div>
         </div>
       </div>
