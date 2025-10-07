@@ -1450,25 +1450,7 @@ function doLogout() {
                         </div>
                     </div>
 
-                    <!-- Performance Comparison Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <h3 class="chart-title">Performance Metrics</h3>
-                                <p class="chart-subtitle">Current vs Previous Period</p>
-                            </div>
-                            <div class="chart-controls">
-                                <select id="comparisonMetric" class="chart-select" onchange="updateComparisonChart()">
-                                    <option value="all" selected>All Metrics</option>
-                                    <option value="sales">Sales Only</option>
-                                    <option value="traffic">Traffic Only</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="comparisonChart" style="max-height: 300px;"></canvas>
-                        </div>
-                    </div>
+                  
                 </div>
             </section>
 
