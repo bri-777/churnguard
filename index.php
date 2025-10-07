@@ -1503,11 +1503,7 @@ function doLogout() {
                     </div>
                 </div>
 
-                <div class="comparison-results" id="comparisonResults">
-                    <div class="comparison-grid">
-                        <!-- Results will be populated here -->
-                    </div>
-                </div>
+               
             </section>
 
             <!-- Targets Management -->
@@ -3432,7 +3428,7 @@ body {
 .kpi-card-pro {
     background: var(--bg-primary);
     border-radius: var(--radius-xl);
-    padding: 20px;
+    padding: 24px;
     border: 1px solid var(--gray-200);
     transition: all var(--transition-slow);
     cursor: pointer;
@@ -3452,8 +3448,8 @@ body {
 }
 
 .kpi-icon-pro {
-    width: 40px;
-    height: 40px;
+    width: 56px;
+    height: 56px;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
