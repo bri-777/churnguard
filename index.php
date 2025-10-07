@@ -24,63 +24,9 @@ if (!$me) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1200, initial-scale=0.3, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChurnGuard Pro - XGBoost-Powered Customer Retention Analytics</title>
 <link rel="stylesheet" href="styles.css"><!-- use YOUR provided CSS file -->
-
-
-
-
-<link rel="stylesheet" href="styles.css">
-
-
-
-<!-- SIMPLE MOBILE FIX -->
-<style>
-@media (max-width: 768px) {
-  /* Hide sidebar, add menu button */
-  .sidebar { position: fixed; left: -300px; width: 280px; height: 100vh; z-index: 999; transition: 0.3s; }
-  .sidebar.open { left: 0; }
-  
-  /* Adjust main content */
-  .main-content { margin-left: 0 !important; padding: 70px 15px 20px !important; }
-  
-  /* Menu button */
-  #menuBtn { position: fixed; top: 15px; left: 15px; width: 50px; height: 50px; 
-             background: #667eea; color: white; border: none; border-radius: 8px; 
-             z-index: 1000; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-  
-  /* Dark overlay */
-  #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-             background: rgba(0,0,0,0.5); z-index: 998; }
-  #overlay.show { display: block; }
-  
-  /* Stack everything in 1 column */
-  .kpi-grid, .charts-grid, .form-grid, .profile-grid, .content-grid, 
-  .insights-grid, .metrics-grid, .recommendations-grid { 
-    display: grid !important; grid-template-columns: 1fr !important; gap: 15px !important; 
-  }
-  
-  /* Full width buttons */
-  .btn-primary, .btn-secondary, .action-section { width: 100% !important; }
-  .action-section { display: flex !important; flex-direction: column !important; gap: 10px !important; }
-  
-  /* Smaller text */
-  .page-header h1 { font-size: 1.5rem !important; }
-  .kpi-value { font-size: 1.5rem !important; }
-  table { font-size: 13px !important; }
-  th, td { padding: 8px 5px !important; }
-  
-  /* Charts smaller */
-  .chart-container { height: 250px !important; }
-}
-
-/* Tablet - 2 columns */
-@media (min-width: 769px) and (max-width: 991px) {
-  .kpi-grid, .charts-grid { grid-template-columns: repeat(2, 1fr) !important; }
-}
-</style>
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
@@ -8256,58 +8202,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script src="assets/js/loginhistory.js"></script>
-
-<!-- SIMPLE MOBILE MENU -->
-<script>
-(function() {
-  // Only run on mobile
-  if (window.innerWidth > 768) return;
-  
-  // Create menu button
-  var btn = document.createElement('button');
-  btn.id = 'menuBtn';
-  btn.innerHTML = '☰';
-  document.body.appendChild(btn);
-  
-  // Create overlay
-  var overlay = document.createElement('div');
-  overlay.id = 'overlay';
-  document.body.appendChild(overlay);
-  
-  // Get sidebar
-  var sidebar = document.querySelector('.sidebar');
-  
-  // Toggle menu
-  btn.onclick = function() {
-    if (sidebar.classList.contains('open')) {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-      document.body.style.overflow = '';
-    } else {
-      sidebar.classList.add('open');
-      overlay.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-  };
-  
-  // Close on overlay click
-  overlay.onclick = function() {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('show');
-    document.body.style.overflow = '';
-  };
-  
-  // Close on menu item click
-  document.querySelectorAll('.menu-item').forEach(function(item) {
-    item.onclick = function() {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-      document.body.style.overflow = '';
-    };
-  });
-})();
-</script>
-
-
 </body>
 </html>
