@@ -1343,7 +1343,7 @@ function doLogout() {
                             <span class="kpi-label-pro">Today's Revenue</span>
                             <h3 class="kpi-value-pro" id="todaySales">₱0.00</h3>
                             <div class="kpi-footer">
-                                <span class="kpi-comparison" id="salesComparison">vs yesterday</span>
+                                <span class="kpi-comparison" id="salesComparison"></span>
                                 <span class="kpi-sparkline" id="salesSparkline">●●●●●●●</span>
                             </div>
                         </div>
@@ -1369,7 +1369,7 @@ function doLogout() {
                             <span class="kpi-label-pro">Customer Traffic</span>
                             <h3 class="kpi-value-pro" id="todayCustomers">0</h3>
                             <div class="kpi-footer">
-                                <span class="kpi-comparison" id="customersComparison">vs yesterday</span>
+                                <span class="kpi-comparison" id="customersComparison"></span>
                                 <span class="kpi-sparkline" id="customersSparkline">●●●●●●●</span>
                             </div>
                         </div>
@@ -1394,7 +1394,7 @@ function doLogout() {
                             <span class="kpi-label-pro">Transactions</span>
                             <h3 class="kpi-value-pro" id="todayTransactions">0</h3>
                             <div class="kpi-footer">
-                                <span class="kpi-comparison" id="transactionsComparison">vs yesterday</span>
+                                <span class="kpi-comparison" id="transactionsComparison"></span>
                                 <span class="kpi-sparkline" id="transactionsSparkline">●●●●●●●</span>
                             </div>
                         </div>
