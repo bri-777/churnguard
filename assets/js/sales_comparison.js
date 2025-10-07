@@ -269,9 +269,10 @@ const UIManager = {
     }
 };
 
-// ==================== API SERVICE ====================
+// ==================== API SERVICE (FIXED) ====================
 const APIService = {
     async fetch(action, params = {}, retryCount = 0) {
+        // FIXED: Better URL construction
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
         
@@ -280,6 +281,8 @@ const APIService = {
                 url.searchParams.append(key, value);
             }
         });
+
+        console.log('API Request:', action, url.toString()); // DEBUG
 
         const controller = new AbortController();
         const requestId = `${action}-${Date.now()}`;
@@ -298,12 +301,16 @@ const APIService = {
 
             AppState.activeRequests.delete(requestId);
 
+            console.log('API Response Status:', response.status); // DEBUG
+
             if (response.status === 401) {
                 window.location.href = '/login.php';
                 throw new Error('Unauthorized');
             }
 
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error Response:', errorText); // DEBUG
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
@@ -322,7 +329,16 @@ const APIService = {
                 return null;
             }
 
+            // FIXED: Enhanced error logging
+            console.error('API Error Details:', {
+                action,
+                message: error.message,
+                url: url.toString(),
+                retry: retryCount
+            });
+
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                console.log(`Retrying request (${retryCount + 1}/${CONFIG.MAX_RETRIES})...`);
                 await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
                 return this.fetch(action, params, retryCount + 1);
             }
@@ -333,8 +349,11 @@ const APIService = {
     },
 
     async post(action, body, retryCount = 0) {
+        // FIXED: Better URL construction
         const url = new URL(CONFIG.API_BASE, window.location.origin);
         url.searchParams.append('action', action);
+
+        console.log('API POST Request:', action, url.toString()); // DEBUG
 
         const controller = new AbortController();
         const requestId = `${action}-${Date.now()}`;
@@ -354,12 +373,16 @@ const APIService = {
 
             AppState.activeRequests.delete(requestId);
 
+            console.log('API POST Response Status:', response.status); // DEBUG
+
             if (response.status === 401) {
                 window.location.href = '/login.php';
                 throw new Error('Unauthorized');
             }
 
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API POST Error Response:', errorText); // DEBUG
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
@@ -378,7 +401,16 @@ const APIService = {
                 return null;
             }
 
+            // FIXED: Enhanced error logging
+            console.error('API POST Error Details:', {
+                action,
+                message: error.message,
+                url: url.toString(),
+                retry: retryCount
+            });
+
             if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                console.log(`Retrying POST request (${retryCount + 1}/${CONFIG.MAX_RETRIES})...`);
                 await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY * (retryCount + 1)));
                 return this.post(action, body, retryCount + 1);
             }
@@ -539,7 +571,7 @@ const DataManager = {
 
         } catch (error) {
             console.error('KPI Summary Error:', error);
-            UIManager.showNotification('Failed to load KPI data', 'error');
+            UIManager.showNotification('Failed to load KPI data: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -566,7 +598,7 @@ const DataManager = {
             }
         } catch (error) {
             console.error('Trend Data Error:', error);
-            UIManager.showNotification('Failed to load trend data', 'error');
+            UIManager.showNotification('Failed to load trend data: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -638,7 +670,7 @@ const DataManager = {
             }
         } catch (error) {
             console.error('Comparison Error:', error);
-            UIManager.showNotification('Failed to load comparison', 'error');
+            UIManager.showNotification('Failed to load comparison: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -691,7 +723,7 @@ const TargetManager = {
             }
         } catch (error) {
             console.error('Load Targets Error:', error);
-            UIManager.showNotification('Failed to load targets', 'error');
+            UIManager.showNotification('Failed to load targets: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -844,7 +876,7 @@ const TargetManager = {
             ModalManager.open();
         } catch (error) {
             console.error('Edit Target Error:', error);
-            UIManager.showNotification('Failed to load target', 'error');
+            UIManager.showNotification('Failed to load target: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -867,7 +899,7 @@ const TargetManager = {
             ]);
         } catch (error) {
             console.error('Delete Target Error:', error);
-            UIManager.showNotification('Failed to delete target', 'error');
+            UIManager.showNotification('Failed to delete target: ' + error.message, 'error');
         } finally {
             AppState.decrementLoading();
         }
@@ -1064,7 +1096,7 @@ const App = {
             console.log('✅ Dashboard initialized successfully');
         } catch (error) {
             console.error('❌ Initialization error:', error);
-            UIManager.showNotification('Failed to initialize dashboard', 'error');
+            UIManager.showNotification('Failed to initialize dashboard: ' + error.message, 'error');
         }
     },
 

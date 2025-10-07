@@ -14,58 +14,74 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
 
-// CORS Configuration
-// CORS Configuration - Fixed
-$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'] ?? '';
+// ==================== CORS CONFIGURATION (FIXED) ====================
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$host = $_SERVER['HTTP_HOST'] ?? '';
+
+// Allow requests from same domain and localhost
 $allowedOrigins = [
     'http://localhost',
-    'https://churnguard.site', // Update with your actual domain
+    'http://127.0.0.1',
+    'https://' . $host,
+    'http://' . $host
 ];
 
-// Allow same-origin requests
-if (empty($origin) || 
-    in_array($origin, $allowedOrigins) || 
-    strpos($origin, 'localhost') !== false ||
-    strpos($origin, '127.0.0.1') !== false) {
-    header("Access-Control-Allow-Origin: " . ($origin ?: '*'));
-    header('Access-Control-Allow-Credentials: true');
+// Check if origin is allowed
+if (!empty($origin) && (in_array($origin, $allowedOrigins) || 
+    strpos($origin, 'localhost') !== false || 
+    strpos($origin, '127.0.0.1') !== false ||
+    strpos($origin, $host) !== false)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    // Allow same-origin requests
+    header("Access-Control-Allow-Origin: *");
 }
 
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
 
+// Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
 // ==================== DATABASE CONFIGURATION ====================
-// IMPORTANT: Move these to a config file outside web root in production
-// For Hostinger: Use environment variables or separate config.php
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('DB_NAME') ?: 'u393812660_churnguard');
-define('DB_USER', getenv('DB_USER') ?: 'u393812660_churnguard');
-define('DB_PASS', getenv('DB_PASS') ?: '102202Brian_');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'u393812660_churnguard');
+define('DB_USER', 'u393812660_churnguard');
+define('DB_PASS', '102202Brian_');
 
 // ==================== SESSION CONFIGURATION ====================
 ini_set('session.cookie_httponly', '1');
-ini_set('session.cookie_secure', '1'); // Ensure HTTPS
-ini_set('session.cookie_samesite', 'Strict');
 ini_set('session.use_strict_mode', '1');
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Debug logging
+error_log("=== API Request Started ===");
+error_log("Action: " . ($_GET['action'] ?? 'none'));
+error_log("Method: " . $_SERVER['REQUEST_METHOD']);
+error_log("Session ID: " . session_id());
+error_log("User ID in session: " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'NOT SET'));
+
+// Check authentication
 if (!isset($_SESSION['user_id'])) {
+    error_log("Authentication failed - no user_id in session");
     http_response_code(401);
     echo json_encode([
         'status' => 'error',
         'error' => 'unauthorized',
-        'message' => 'Authentication required'
+        'message' => 'Authentication required. Please log in.'
     ]);
     exit;
 }
 
 $userId = (int)$_SESSION['user_id'];
+error_log("Authenticated user ID: " . $userId);
 
 // ==================== DATABASE CONNECTION ====================
 try {
@@ -78,16 +94,17 @@ try {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-            PDO::ATTR_PERSISTENT => false // Change to true for connection pooling
+            PDO::ATTR_PERSISTENT => false
         ]
     );
+    error_log("Database connected successfully");
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
     http_response_code(503);
     echo json_encode([
         'status' => 'error',
         'error' => 'service_unavailable',
-        'message' => 'Service temporarily unavailable'
+        'message' => 'Database connection failed. Please try again later.'
     ]);
     exit;
 }
@@ -100,10 +117,12 @@ function jsonResponse(array $data, int $statusCode = 200): void {
 }
 
 function jsonSuccess(array $data = []): void {
+    error_log("Success response: " . json_encode($data));
     jsonResponse(array_merge(['status' => 'success'], $data));
 }
 
 function jsonError(string $message, int $code = 400, string $error = null): void {
+    error_log("Error response: $message (code: $code)");
     $response = [
         'status' => 'error',
         'message' => $message
@@ -174,11 +193,15 @@ function calculateTargetProgress(float $current, float $target): array {
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
+error_log("Processing action: $action with method: $method");
+
 // ==================== ROUTES ====================
 
 // KPI Summary
 if ($action === 'kpi_summary') {
     try {
+        error_log("Loading KPI summary for user: $userId");
+        
         $today = date('Y-m-d');
         $yesterday = date('Y-m-d', strtotime('-1 day'));
         
@@ -275,7 +298,7 @@ if ($action === 'kpi_summary') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("KPI Summary Error: " . $e->getMessage());
+        error_log("KPI Summary Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Failed to load KPI summary', 500);
     }
 }
@@ -285,6 +308,8 @@ elseif ($action === 'compare') {
     try {
         $currentDate = $_GET['currentDate'] ?? date('Y-m-d');
         $compareDate = $_GET['compareDate'] ?? date('Y-m-d', strtotime('-1 day'));
+        
+        error_log("Comparing dates: $currentDate vs $compareDate");
         
         if (!validateDate($currentDate) || !validateDate($compareDate)) {
             jsonError('Invalid date format. Use YYYY-MM-DD', 422, 'invalid_date');
@@ -375,7 +400,7 @@ elseif ($action === 'compare') {
         ]);
         
     } catch (Throwable $e) {
-        error_log("Comparison Error: " . $e->getMessage());
+        error_log("Comparison Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Comparison failed', 500);
     }
 }
@@ -385,6 +410,8 @@ elseif ($action === 'get_targets') {
     try {
         $filter = $_GET['filter'] ?? 'all';
         $validFilters = ['all', 'active', 'achieved', 'near', 'below'];
+        
+        error_log("Getting targets with filter: $filter for user: $userId");
         
         if (!in_array($filter, $validFilters, true)) {
             jsonError('Invalid filter parameter', 422, 'invalid_filter');
@@ -441,10 +468,12 @@ elseif ($action === 'get_targets') {
             $targets = array_values(array_filter($targets, fn($t) => $t['status'] === $filter));
         }
         
+        error_log("Found " . count($targets) . " targets");
+        
         jsonSuccess(['targets' => $targets]);
         
     } catch (Throwable $e) {
-        error_log("Get Targets Error: " . $e->getMessage());
+        error_log("Get Targets Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Failed to load targets', 500);
     }
 }
@@ -453,6 +482,8 @@ elseif ($action === 'get_targets') {
 elseif ($action === 'save_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
+        error_log("Save target raw input: " . $rawInput);
+        
         $data = json_decode($rawInput, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -506,13 +537,16 @@ elseif ($action === 'save_target' && $method === 'POST') {
             $store
         ]);
         
+        $newId = (int)$pdo->lastInsertId();
+        error_log("Target created successfully with ID: $newId");
+        
         jsonSuccess([
-            'id' => (int)$pdo->lastInsertId(),
+            'id' => $newId,
             'message' => 'Target created successfully'
         ]);
         
     } catch (Throwable $e) {
-        error_log("Save Target Error: " . $e->getMessage());
+        error_log("Save Target Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Failed to save target', 500);
     }
 }
@@ -521,6 +555,8 @@ elseif ($action === 'save_target' && $method === 'POST') {
 elseif ($action === 'update_target' && $method === 'POST') {
     try {
         $rawInput = file_get_contents('php://input');
+        error_log("Update target raw input: " . $rawInput);
+        
         $data = json_decode($rawInput, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -593,13 +629,15 @@ elseif ($action === 'update_target' && $method === 'POST') {
             $userId
         ]);
         
+        error_log("Target updated successfully: $id");
+        
         jsonSuccess([
             'id' => $id,
             'message' => 'Target updated successfully'
         ]);
         
     } catch (Throwable $e) {
-        error_log("Update Target Error: " . $e->getMessage());
+        error_log("Update Target Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Failed to update target', 500);
     }
 }
@@ -608,6 +646,8 @@ elseif ($action === 'update_target' && $method === 'POST') {
 elseif ($action === 'delete_target') {
     try {
         $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
+        
+        error_log("Deleting target ID: $id for user: $userId");
         
         if ($id === false || $id <= 0) {
             jsonError('Invalid target ID', 422, 'invalid_id');
@@ -625,10 +665,12 @@ elseif ($action === 'delete_target') {
         $deleteStmt = $pdo->prepare("DELETE FROM targets WHERE id = ? AND user_id = ?");
         $deleteStmt->execute([$id, $userId]);
         
+        error_log("Target deleted successfully: $id");
+        
         jsonSuccess(['message' => 'Target deleted successfully']);
         
     } catch (Throwable $e) {
-        error_log("Delete Target Error: " . $e->getMessage());
+        error_log("Delete Target Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Failed to delete target', 500);
     }
 }
@@ -638,6 +680,8 @@ elseif ($action === 'trend_data') {
     try {
         $days = filter_var($_GET['days'] ?? 30, FILTER_VALIDATE_INT);
         $days = max(7, min(90, $days ?: 30));
+        
+        error_log("Loading trend data for $days days, user: $userId");
         
         $stmt = $pdo->prepare("
             SELECT 
@@ -655,15 +699,18 @@ elseif ($action === 'trend_data') {
         $stmt->execute([$userId, $days]);
         $trendData = $stmt->fetchAll();
         
+        error_log("Found " . count($trendData) . " trend data records");
+        
         jsonSuccess(['trend_data' => $trendData]);
         
     } catch (Throwable $e) {
-        error_log("Trend Data Error: " . $e->getMessage());
+        error_log("Trend Data Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         jsonError('Failed to load trend data', 500);
     }
 }
 
 // Invalid action
 else {
+    error_log("Invalid action requested: $action");
     jsonError('Invalid action parameter', 400, 'invalid_action');
 }
