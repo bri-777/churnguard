@@ -148,6 +148,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Churn Prediction System</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <style>
     :root {
       --black: #1a1a1a;
@@ -924,7 +929,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <!-- Header -->
  <header>
-    <nav>
+     <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
 	<br><br>
       <h1 style="font-family: 'Inter', 'Poppins', Arial, sans-serif;
            font-size: 2.4em;
@@ -1006,7 +1013,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </nav>
  
   </header>
-
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
   <!-- Login Container -->
   <div class="login-container">
     <div class="login-header">
@@ -1499,5 +1506,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       });
     });
   </script>
+  </main>
+    </div>
+  </div>
 </body>
 </html>

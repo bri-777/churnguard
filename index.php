@@ -33,7 +33,10 @@ if (!$me) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <meta name="csrf-token" content="<?=htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES)?>">
 <!-- NEW: help the JS persist prediction state per user -->
 <meta name="user-id" content="<?= (int)($me['user_id'] ?? 0) ?>">
@@ -905,7 +908,7 @@ function doLogout() {
 
     </div>
   </aside>
-
+  <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
   <!-- Main Content Area -->
   <main class="main-content">
     <!-- Analytics Dashboard Page -->
@@ -1606,6 +1609,7 @@ function doLogout() {
             </section>
 
         </main>
+        
 
         <!-- Target Modal -->
         <div class="modal-overlay" id="targetModal" onclick="closeTargetModal(event)">
@@ -5331,7 +5335,10 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </div>
     </div>
   </main>
+  </main>
 </div>
+    </div>
+  </div>
 
 
 
