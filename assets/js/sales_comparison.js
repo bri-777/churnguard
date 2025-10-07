@@ -3,7 +3,7 @@
 
 // ==================== CONFIGURATION ====================
 const CONFIG = {
-    API_BASE: 'api/sales_comparison.php',
+   API_BASE: './api/sales_comparison.php',
     REQUEST_TIMEOUT: 30000,
     MAX_RETRIES: 3,
     RETRY_DELAY: 1000,

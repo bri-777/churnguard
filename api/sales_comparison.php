@@ -15,18 +15,24 @@ header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
 
 // CORS Configuration
-$allowedOrigins = ['https://yourdomain.com']; // Update with your domain
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+// CORS Configuration - Fixed
+$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'] ?? '';
+$allowedOrigins = [
+    'http://localhost',
+    'https://churnguard.site', // Update with your actual domain
+];
 
-if (in_array($origin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: $origin");
-} else {
-    header('Access-Control-Allow-Origin: *'); // Change in production
+// Allow same-origin requests
+if (empty($origin) || 
+    in_array($origin, $allowedOrigins) || 
+    strpos($origin, 'localhost') !== false ||
+    strpos($origin, '127.0.0.1') !== false) {
+    header("Access-Control-Allow-Origin: " . ($origin ?: '*'));
+    header('Access-Control-Allow-Credentials: true');
 }
 
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
