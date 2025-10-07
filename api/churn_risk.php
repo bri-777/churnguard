@@ -5,11 +5,11 @@ declare(strict_types=1);
 require __DIR__ . '/_bootstrap.php';
 $uid = require_login();
 
-// ===== CRITICAL FIX: Set MySQL timezone to Manila =====
+// ===== CRITICAL: Set MySQL timezone to Manila =====
 try {
     $pdo->exec("SET time_zone = '+08:00'");
 } catch (Exception $e) {
-    // Fallback: continue without timezone setting
+    // Continue if timezone setting fails
 }
 
 function j_ok(array $d = []) { json_ok($d); }
@@ -536,11 +536,11 @@ if ($action === 'latest') {
 
 if ($action === 'run') {
   try {
-    // ===== FIX: Use Manila timezone consistently =====
+    // ===== FIX: Use Manila date consistently =====
     $manilaDate = get_manila_date();
     $manilaDateTime = get_manila_datetime();
 
-    // ===== FIX: Get today's churn_data for Manila date =====
+    // ===== FIX: Query specifically for TODAY's data, not just latest =====
     $q = $pdo->prepare("
       SELECT * FROM churn_data 
       WHERE user_id = ? AND date = ?
@@ -550,7 +550,7 @@ if ($action === 'run') {
     $q->execute([$uid, $manilaDate]);
     $cd = $q->fetch(PDO::FETCH_ASSOC);
 
-    // If no data for today, create default entry using UPSERT
+    // If no data for today, create default entry with UPSERT
     if (!$cd) {
       $defaultInsert = $pdo->prepare("
         INSERT INTO churn_data 
@@ -733,7 +733,7 @@ if ($action === 'run') {
       $desc .= ' (Using heuristic analysis - model optimization recommended)';
     }
 
-    // ===== FIX: Use UPSERT (INSERT ... ON DUPLICATE KEY UPDATE) =====
+    // ===== FIX: Use UPSERT to prevent duplicates =====
     $upsert = $pdo->prepare("
       INSERT INTO churn_predictions
         (user_id, date, risk_score, risk_level, factors, description, created_at, level, risk_percentage, for_date)
