@@ -103,7 +103,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             extendSessionCookie(7 * 24 * 60 * 60);
                         }
 
-                        $redirect = '../index.php?page=data-input';
+                        // safe absolute redirect (adjust the path '/churnguard-pro' to your app root)
+$redirect = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+          . '://' . $_SERVER['HTTP_HOST'] . '/churnguard-pro/index.php?page=data-input';
+
 
 
                         // AJAX?
