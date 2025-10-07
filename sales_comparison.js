@@ -571,7 +571,7 @@ const DataManager = {
 
         } catch (error) {
             console.error('KPI Summary Error:', error);
-            UIManager.showNotification('Failed to load KPI data: ' + error.message, 'error');
+           
         } finally {
             AppState.decrementLoading();
         }
@@ -598,7 +598,7 @@ const DataManager = {
             }
         } catch (error) {
             console.error('Trend Data Error:', error);
-            UIManager.showNotification('Failed to load trend data: ' + error.message, 'error');
+           
         } finally {
             AppState.decrementLoading();
         }
@@ -670,7 +670,7 @@ const DataManager = {
             }
         } catch (error) {
             console.error('Comparison Error:', error);
-            UIManager.showNotification('Failed to load comparison: ' + error.message, 'error');
+          
         } finally {
             AppState.decrementLoading();
         }
@@ -723,7 +723,7 @@ const TargetManager = {
             }
         } catch (error) {
             console.error('Load Targets Error:', error);
-            UIManager.showNotification('Failed to load targets: ' + error.message, 'error');
+           
         } finally {
             AppState.decrementLoading();
         }
@@ -876,7 +876,7 @@ const TargetManager = {
             ModalManager.open();
         } catch (error) {
             console.error('Edit Target Error:', error);
-            UIManager.showNotification('Failed to load target: ' + error.message, 'error');
+          
         } finally {
             AppState.decrementLoading();
         }
@@ -899,7 +899,7 @@ const TargetManager = {
             ]);
         } catch (error) {
             console.error('Delete Target Error:', error);
-            UIManager.showNotification('Failed to delete target: ' + error.message, 'error');
+           
         } finally {
             AppState.decrementLoading();
         }
