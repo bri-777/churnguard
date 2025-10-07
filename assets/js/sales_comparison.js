@@ -3,7 +3,7 @@
 
 // ==================== CONFIGURATION ====================
 const CONFIG = {
- API_BASE: '../api/sales_comparison.php',
+ API_BASE: '../../api/sales_comparison.php',
     REQUEST_TIMEOUT: 30000,
     MAX_RETRIES: 3,
     RETRY_DELAY: 1000,
@@ -486,7 +486,9 @@ const ChartManager = {
     },
 
     createComparisonChart(comparisonData) {
-        
+        const ctx = Utils.$('#comparisonChart');
+        if (!ctx) {
+            console.error('Chart canvas not found: comparisonChart');
             return;
         }
 
