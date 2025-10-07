@@ -8286,12 +8286,5 @@ window.addEventListener('resize', function() {
 });
 </script>
 
-<!-- Your existing scripts below -->
-<script>
-  // Your existing ChurnGuard JavaScript code
-</script>
-</body>
-</html>
-
 </body>
 </html>
