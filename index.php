@@ -1336,12 +1336,7 @@ function doLogout() {
                                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                                 </svg>
                             </div>
-                            <div class="kpi-trend-badge" id="salesTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
+                          
                         </div>
                         <div class="kpi-body">
                             <span class="kpi-label-pro">Today's Revenue</span>
@@ -1362,12 +1357,7 @@ function doLogout() {
                                     <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
                                 </svg>
                             </div>
-                            <div class="kpi-trend-badge" id="customersTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
+                           
                         </div>
                         <div class="kpi-body">
                             <span class="kpi-label-pro">Customer Traffic</span>
@@ -1387,12 +1377,7 @@ function doLogout() {
                                     <path d="M2 10h20"/>
                                 </svg>
                             </div>
-                            <div class="kpi-trend-badge" id="transactionsTrendBadge">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 14l5-5 5 5H7z"/>
-                                </svg>
-                                <span>0%</span>
-                            </div>
+                            
                         </div>
                         <div class="kpi-body">
                             <span class="kpi-label-pro">Transactions</span>
