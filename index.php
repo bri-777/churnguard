@@ -24,7 +24,7 @@ if (!$me) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1200, initial-scale=0.3, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
 <title>ChurnGuard Pro - XGBoost-Powered Customer Retention Analytics</title>
 <link rel="stylesheet" href="styles.css"><!-- use YOUR provided CSS file -->
 
@@ -32,49 +32,111 @@ if (!$me) {
 
 
 <link rel="stylesheet" href="styles.css">
-<style>
-/* ========== MOBILE FIX - SIMPLE ========== */
+<link rel="stylesheet" href="styles.css">
 
-/* Hide sidebar on mobile, show menu button */
-@media (max-width: 768px) {
+<style>
+/* ============================================
+   MOBILE OPTIMIZED - DESKTOP LAYOUT ON PHONE
+   Simple zoom-friendly mobile experience
+============================================ */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 1200px;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Make sidebar always visible on desktop */
+@media (min-width: 992px) {
   .sidebar {
     position: fixed;
-    left: -300px;
+    left: 0;
     top: 0;
     width: 280px;
     height: 100vh;
-    z-index: 999;
-    transition: left 0.3s;
     overflow-y: auto;
+    z-index: 100;
   }
   
-  .sidebar.mobile-open {
+  .main-content {
+    margin-left: 280px;
+    padding: 2rem;
+  }
+  
+  .mobile-menu-toggle {
+    display: none;
+  }
+}
+
+/* Mobile menu for small screens */
+@media (max-width: 991px) {
+  body {
+    min-width: 100%;
+  }
+  
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1001;
+    background: #fff;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar.mobile-active {
     left: 0;
   }
   
   .main-content {
     margin-left: 0 !important;
-    padding: 70px 10px 20px 10px !important;
+    padding: 80px 15px 20px 15px !important;
   }
   
   /* Mobile menu button */
-  body::before {
-    content: '☰';
+  .mobile-menu-toggle {
+    display: flex;
     position: fixed;
     top: 15px;
     left: 15px;
     width: 50px;
     height: 50px;
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    display: flex;
+    border: none;
+    border-radius: 10px;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    border-radius: 8px;
-    z-index: 1000;
+    font-size: 22px;
+    z-index: 1002;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-menu-toggle:active {
+    transform: scale(0.95);
+  }
+  
+  .mobile-menu-toggle.active {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
   }
   
   /* Overlay */
@@ -85,69 +147,110 @@ if (!$me) {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 998;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
   }
   
-  .mobile-overlay.show {
+  .mobile-overlay.active {
     display: block;
   }
 }
 
-/* Stack cards on mobile */
-@media (max-width: 768px) {
+/* Touch-friendly improvements */
+button, a, .menu-item, input, select {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on input focus iOS */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+/* Make tables scrollable */
+.table-wrapper-pro,
+.history-table-container,
+.data-table-pro,
+.history-table {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure charts are responsive */
+.chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* Fix modal on mobile */
+.modal-overlay {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-container {
+  margin: 20px auto;
+  max-width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Responsive grids - stack on very small screens */
+@media (max-width: 600px) {
+  body {
+    min-width: 100%;
+  }
+  
   .kpi-grid {
-    display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 15px !important;
+    gap: 15px;
   }
   
   .charts-grid {
-    display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 15px !important;
-  }
-  
-  .chart-card {
-    width: 100% !important;
-  }
-  
-  .chart-container {
-    height: 250px !important;
+    gap: 15px;
   }
   
   .form-grid {
-    display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 15px !important;
+    gap: 15px;
   }
   
   .profile-grid {
-    display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 15px !important;
   }
   
-  .data-card {
-    width: 100% !important;
+  .content-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .kpi-card, .chart-card, .data-card {
+    margin-bottom: 15px;
   }
   
   .action-section {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
+    flex-direction: column;
+    gap: 10px;
   }
   
   .btn-primary, .btn-secondary {
-    width: 100% !important;
+    width: 100%;
+    padding: 15px;
   }
   
   table {
-    font-size: 12px !important;
+    font-size: 13px;
   }
   
   th, td {
-    padding: 8px 4px !important;
+    padding: 10px 8px !important;
   }
   
   .page-header h1 {
@@ -155,42 +258,55 @@ if (!$me) {
   }
   
   .kpi-value {
-    font-size: 1.5rem !important;
+    font-size: 1.8rem !important;
+  }
+  
+  .chart-container {
+    min-height: 250px;
   }
 }
 
-/* 2 columns on tablets */
-@media (min-width: 769px) and (max-width: 991px) {
+/* Medium screens - 2 columns */
+@media (min-width: 601px) and (max-width: 991px) {
   .kpi-grid {
-    display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
   }
   
   .charts-grid {
-    display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
   }
-}
-
-/* 4 columns on desktop */
-@media (min-width: 992px) {
-  .kpi-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+  
+  .chart-card.large {
+    grid-column: 1 / -1;
   }
 }
 
-/* Make tables scrollable */
-.table-wrapper-pro,
-.history-table-container {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
-/* Touch friendly inputs */
-input, select, textarea, button {
-  font-size: 16px !important;
-  min-height: 44px !important;
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Print styles */
+@media print {
+  .sidebar,
+  .mobile-menu-toggle,
+  .mobile-overlay,
+  .btn-primary,
+  .btn-secondary {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
 }
 </style>
 
@@ -8372,63 +8488,172 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="assets/js/loginhistory.js"></script>
 
 <script>
-// Simple mobile menu
+// ============================================
+// SIMPLE MOBILE MENU - WORKS EVERYWHERE
+// ============================================
+
 (function() {
-  if (window.innerWidth <= 768) {
+  'use strict';
+  
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  
+  function init() {
+    console.log('Initializing mobile menu...');
+    
+    // Only create mobile menu for small screens
+    if (window.innerWidth <= 991) {
+      createMobileMenu();
+    }
+    
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        if (window.innerWidth <= 991) {
+          if (!document.querySelector('.mobile-menu-toggle')) {
+            createMobileMenu();
+          }
+        } else {
+          removeMobileMenu();
+        }
+        
+        // Resize charts
+        resizeCharts();
+      }, 250);
+    });
+    
+    console.log('Mobile menu initialized');
+  }
+  
+  function createMobileMenu() {
+    // Check if already exists
+    if (document.querySelector('.mobile-menu-toggle')) {
+      return;
+    }
+    
+    console.log('Creating mobile menu...');
+    
+    // Create menu toggle button
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'mobile-menu-toggle';
+    menuBtn.setAttribute('aria-label', 'Toggle menu');
+    menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+    document.body.appendChild(menuBtn);
+    
     // Create overlay
-    var overlay = document.createElement('div');
+    const overlay = document.createElement('div');
     overlay.className = 'mobile-overlay';
     document.body.appendChild(overlay);
     
-    // Toggle menu when clicking top-left area
-    document.addEventListener('click', function(e) {
-      var x = e.clientX;
-      var y = e.clientY;
-      
-      // If clicked top-left corner (menu button area)
-      if (x <= 65 && y <= 65) {
-        var sidebar = document.querySelector('.sidebar');
-        var isOpen = sidebar.classList.contains('mobile-open');
-        
-        if (isOpen) {
-          sidebar.classList.remove('mobile-open');
-          overlay.classList.remove('show');
-          document.body.style.overflow = '';
-        } else {
-          sidebar.classList.add('mobile-open');
-          overlay.classList.add('show');
-          document.body.style.overflow = 'hidden';
-        }
-      }
-    });
+    // Get sidebar
+    const sidebar = document.querySelector('.sidebar');
     
-    // Close menu when clicking overlay
-    overlay.addEventListener('click', function() {
-      document.querySelector('.sidebar').classList.remove('mobile-open');
-      overlay.classList.remove('show');
+    if (!sidebar) {
+      console.error('Sidebar not found!');
+      return;
+    }
+    
+    // Toggle menu function
+    function toggleMenu() {
+      const isActive = sidebar.classList.contains('mobile-active');
+      
+      if (isActive) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    }
+    
+    function openMenu() {
+      sidebar.classList.add('mobile-active');
+      overlay.classList.add('active');
+      menuBtn.classList.add('active');
+      menuBtn.innerHTML = '<i class="fas fa-times"></i>';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMenu() {
+      sidebar.classList.remove('mobile-active');
+      overlay.classList.remove('active');
+      menuBtn.classList.remove('active');
+      menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
       document.body.style.overflow = '';
-    });
+    }
+    
+    // Event listeners
+    menuBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
     
     // Close menu when clicking menu items
-    var menuItems = document.querySelectorAll('.menu-item');
+    const menuItems = sidebar.querySelectorAll('.menu-item');
     menuItems.forEach(function(item) {
       item.addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.remove('mobile-open');
-        overlay.classList.remove('show');
-        document.body.style.overflow = '';
+        setTimeout(closeMenu, 300); // Small delay for better UX
       });
     });
+    
+    console.log('Mobile menu created successfully');
   }
   
-  // Resize charts on window resize
-  window.addEventListener('resize', function() {
+  function removeMobileMenu() {
+    const menuBtn = document.querySelector('.mobile-menu-toggle');
+    const overlay = document.querySelector('.mobile-overlay');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (menuBtn) menuBtn.remove();
+    if (overlay) overlay.remove();
+    if (sidebar) {
+      sidebar.classList.remove('mobile-active');
+    }
+    document.body.style.overflow = '';
+  }
+  
+  function resizeCharts() {
+    // Resize Chart.js charts
     if (window.Chart && Chart.instances) {
       Object.values(Chart.instances).forEach(function(chart) {
-        if (chart && chart.resize) chart.resize();
+        if (chart && typeof chart.resize === 'function') {
+          try {
+            chart.resize();
+          } catch (e) {
+            console.warn('Chart resize failed:', e);
+          }
+        }
       });
     }
-  });
+    
+    // Resize charts global object
+    if (window.charts) {
+      Object.values(window.charts).forEach(function(chart) {
+        if (chart && typeof chart.resize === 'function') {
+          try {
+            chart.resize();
+          } catch (e) {
+            console.warn('Chart resize failed:', e);
+          }
+        }
+      });
+    }
+  }
+  
 })();
+
+// Prevent double-tap zoom on buttons
+document.addEventListener('DOMContentLoaded', function() {
+  const buttons = document.querySelectorAll('button, .btn-primary, .btn-secondary');
+  buttons.forEach(function(button) {
+    button.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      this.click();
+    }, { passive: false });
+  });
+});
 </script>
 
 </body>
