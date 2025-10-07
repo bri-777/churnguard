@@ -33,634 +33,51 @@ if (!$me) {
 
 <link rel="stylesheet" href="styles.css">
 
+
+
+<!-- SIMPLE MOBILE FIX -->
 <style>
-/* ============================================
-   ENHANCED MOBILE OPTIMIZED - IMPROVED VERSION
-   Perfect layout for all devices
-============================================ */
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+@media (max-width: 768px) {
+  /* Hide sidebar, add menu button */
+  .sidebar { position: fixed; left: -300px; width: 280px; height: 100vh; z-index: 999; transition: 0.3s; }
+  .sidebar.open { left: 0; }
+  
+  /* Adjust main content */
+  .main-content { margin-left: 0 !important; padding: 70px 15px 20px !important; }
+  
+  /* Menu button */
+  #menuBtn { position: fixed; top: 15px; left: 15px; width: 50px; height: 50px; 
+             background: #667eea; color: white; border: none; border-radius: 8px; 
+             z-index: 1000; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  
+  /* Dark overlay */
+  #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+             background: rgba(0,0,0,0.5); z-index: 998; }
+  #overlay.show { display: block; }
+  
+  /* Stack everything in 1 column */
+  .kpi-grid, .charts-grid, .form-grid, .profile-grid, .content-grid, 
+  .insights-grid, .metrics-grid, .recommendations-grid { 
+    display: grid !important; grid-template-columns: 1fr !important; gap: 15px !important; 
+  }
+  
+  /* Full width buttons */
+  .btn-primary, .btn-secondary, .action-section { width: 100% !important; }
+  .action-section { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+  
+  /* Smaller text */
+  .page-header h1 { font-size: 1.5rem !important; }
+  .kpi-value { font-size: 1.5rem !important; }
+  table { font-size: 13px !important; }
+  th, td { padding: 8px 5px !important; }
+  
+  /* Charts smaller */
+  .chart-container { height: 250px !important; }
 }
 
-html {
-  width: 100%;
-  overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-}
-
-/* ============ DESKTOP LAYOUT (992px+) ============ */
-@media (min-width: 992px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 100;
-    background: #fff;
-  }
-  
-  .main-content {
-    margin-left: 280px;
-    padding: 2rem;
-    min-height: 100vh;
-  }
-  
-  .mobile-menu-toggle {
-    display: none !important;
-  }
-  
-  .mobile-overlay {
-    display: none !important;
-  }
-}
-
-/* ============ TABLET & MOBILE (< 992px) ============ */
-@media (max-width: 991px) {
-  /* Sidebar - hidden by default */
-  .sidebar {
-    position: fixed;
-    left: -300px;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    z-index: 1050;
-    background: #fff;
-    transition: left 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
-    overflow-y: auto;
-    overflow-x: hidden;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Sidebar visible state */
-  .sidebar.mobile-active {
-    left: 0;
-  }
-  
-  /* Main content adjusted for mobile */
-  .main-content {
-    margin-left: 0 !important;
-    padding: 20px 16px !important;
-    min-height: 100vh;
-    padding-top: 80px !important;
-  }
-  
-  /* Mobile menu button - ENHANCED */
-  .mobile-menu-toggle {
-    display: flex !important;
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    z-index: 1100;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-  }
-  
-  .mobile-menu-toggle:active {
-    transform: scale(0.92);
-  }
-  
-  .mobile-menu-toggle.active {
-    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-    box-shadow: 0 6px 20px rgba(245, 101, 101, 0.5);
-  }
-  
-  /* Brand title on mobile header */
-  .mobile-brand-title {
-    position: fixed;
-    top: 26px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 18px;
-    font-weight: 700;
-    color: #1f2937;
-    z-index: 1000;
-    text-align: center;
-    white-space: nowrap;
-  }
-  
-  /* Overlay - ENHANCED */
-  .mobile-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1040;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .mobile-overlay.active {
-    display: block;
-    opacity: 1;
-  }
-}
-
-/* ============ MOBILE PORTRAIT (< 600px) ============ */
-@media (max-width: 600px) {
-  /* Page headers */
-  .page-header {
-    padding: 16px !important;
-    margin-bottom: 20px !important;
-  }
-  
-  .page-header h1 {
-    font-size: 1.5rem !important;
-    line-height: 1.3;
-    margin-bottom: 8px;
-  }
-  
-  .page-header p {
-    font-size: 0.9rem !important;
-    line-height: 1.4;
-  }
-  
-  /* KPI Grid - Single column */
-  .kpi-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-    padding: 0 !important;
-  }
-  
-  .kpi-card {
-    padding: 20px !important;
-    border-radius: 12px !important;
-  }
-  
-  .kpi-value {
-    font-size: 2rem !important;
-    font-weight: 700;
-  }
-  
-  .kpi-label {
-    font-size: 0.95rem !important;
-  }
-  
-  .kpi-change {
-    font-size: 0.9rem !important;
-  }
-  
-  /* Charts Grid - Single column */
-  .charts-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  
-  .chart-card {
-    padding: 20px 16px !important;
-    border-radius: 12px !important;
-  }
-  
-  .chart-card.large {
-    grid-column: 1 !important;
-  }
-  
-  .chart-container {
-    min-height: 280px !important;
-    height: 280px !important;
-  }
-  
-  /* Forms - Single column */
-  .form-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-  
-  .form-group {
-    margin-bottom: 0 !important;
-  }
-  
-  .form-group label {
-    font-size: 0.95rem !important;
-    font-weight: 600;
-    margin-bottom: 8px;
-    display: block;
-  }
-  
-  .form-group input,
-  .form-group select {
-    padding: 14px 12px !important;
-    font-size: 16px !important;
-    border-radius: 8px !important;
-  }
-  
-  /* Profile Grid - Single column */
-  .profile-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  
-  .profile-card {
-    padding: 20px !important;
-  }
-  
-  /* Content Grid - Single column */
-  .content-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  
-  .data-card {
-    padding: 20px 16px !important;
-  }
-  
-  /* Buttons - Full width */
-  .action-section {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    margin-top: 20px !important;
-  }
-  
-  .btn-primary,
-  .btn-secondary,
-  .btn-quiet {
-    width: 100% !important;
-    padding: 16px 20px !important;
-    font-size: 1rem !important;
-    border-radius: 10px !important;
-    min-height: 52px !important;
-  }
-  
-  /* Tables - Scrollable */
-  table {
-    font-size: 14px !important;
-    min-width: 600px;
-  }
-  
-  th, td {
-    padding: 12px 10px !important;
-    white-space: nowrap;
-  }
-  
-  /* Dashboard Container */
-  .kpi-section .kpi-grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  /* Customer Insights */
-  .insights-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-  
-  .insight-card {
-    padding: 20px !important;
-  }
-  
-  /* Customer Monitoring */
-  .metrics-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-  
-  .metric-card {
-    padding: 20px !important;
-  }
-  
-  /* Recommendations */
-  .recommendations-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-  
-  /* Navbar */
-  .top-navbar {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
-    padding: 16px !important;
-  }
-  
-  .navbar-left,
-  .navbar-center,
-  .navbar-right {
-    width: 100% !important;
-    justify-content: space-between !important;
-  }
-  
-  /* Comparison Controls */
-  .comparison-controls {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-  
-  /* Modal */
-  .modal-container {
-    width: 95% !important;
-    max-width: 95% !important;
-    margin: 20px auto !important;
-  }
-  
-  .modal-body-pro {
-    padding: 20px 16px !important;
-  }
-  
-  .modal-header-pro {
-    padding: 20px 16px !important;
-  }
-  
-  .modal-footer-pro {
-    padding: 16px !important;
-    flex-direction: column !important;
-  }
-  
-  .modal-footer-pro button {
-    width: 100% !important;
-  }
-}
-
-/* ============ TABLET PORTRAIT (601px - 767px) ============ */
-@media (min-width: 601px) and (max-width: 767px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
-  }
-  
-  .charts-grid {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  
-  .form-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .insights-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-/* ============ TABLET LANDSCAPE (768px - 991px) ============ */
-@media (min-width: 768px) and (max-width: 991px) {
-  .main-content {
-    padding: 24px 20px !important;
-    padding-top: 80px !important;
-  }
-  
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
-  }
-  
-  .charts-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
-  }
-  
-  .chart-card.large {
-    grid-column: 1 / -1;
-  }
-  
-  .form-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .profile-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .insights-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .recommendations-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-/* ============ TOUCH & INTERACTION IMPROVEMENTS ============ */
-button, a, .menu-item, input, select {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  touch-action: manipulation;
-  cursor: pointer;
-}
-
-/* Prevent zoom on input focus iOS */
-input, select, textarea, button {
-  font-size: 16px !important;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Better scrollbars on mobile */
-.sidebar::-webkit-scrollbar,
-.table-wrapper-pro::-webkit-scrollbar,
-.history-table-container::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.sidebar::-webkit-scrollbar-thumb,
-.table-wrapper-pro::-webkit-scrollbar-thumb,
-.history-table-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-/* ============ TABLE IMPROVEMENTS ============ */
-.table-wrapper-pro,
-.history-table-container {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch;
-  margin: 0 -16px;
-  padding: 0 16px;
-}
-
-@media (max-width: 600px) {
-  .table-wrapper-pro,
-  .history-table-container {
-    margin: 0 -8px;
-    padding: 0 8px;
-  }
-}
-
-/* ============ CHART IMPROVEMENTS ============ */
-.chart-container {
-  position: relative;
-  width: 100%;
-}
-
-.chart-container canvas {
-  max-width: 100% !important;
-  height: auto !important;
-}
-
-/* ============ MODAL IMPROVEMENTS ============ */
-.modal-overlay {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 20px 0;
-}
-
-/* ============ SIDEBAR IMPROVEMENTS ============ */
-@media (max-width: 991px) {
-  .sidebar-header,
-  .sidebar-menu,
-  .sidebar-footer {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-  
-  .menu-item {
-    padding: 14px 20px !important;
-    font-size: 15px !important;
-    border-radius: 8px;
-    margin-bottom: 4px;
-  }
-  
-  .menu-item i {
-    font-size: 18px !important;
-    min-width: 24px;
-  }
-  
-  .menu-title {
-    font-size: 12px !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 16px 0 8px 0;
-    margin-top: 20px;
-  }
-  
-  .brand {
-    padding: 20px 0 !important;
-  }
-  
-  .brand-name {
-    font-size: 20px !important;
-  }
-  
-  .brand-subtitle {
-    font-size: 13px !important;
-  }
-}
-
-/* ============ FIX FOR iOS SAFARI ============ */
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
-  }
-  
-  .sidebar {
-    height: -webkit-fill-available;
-  }
-}
-
-/* ============ PRINT STYLES ============ */
-@media print {
-  .sidebar,
-  .mobile-menu-toggle,
-  .mobile-overlay,
-  .mobile-brand-title,
-  .btn-primary,
-  .btn-secondary {
-    display: none !important;
-  }
-  
-  .main-content {
-    margin-left: 0 !important;
-    padding: 0 !important;
-  }
-  
-  .page-header {
-    page-break-after: avoid;
-  }
-  
-  .kpi-card,
-  .chart-card {
-    page-break-inside: avoid;
-  }
-}
-
-/* ============ ACCESSIBILITY ============ */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Focus visible states */
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 3px solid #667eea;
-  outline-offset: 2px;
-}
-
-/* ============ LOADING STATES ============ */
-.loading {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* ============ ANIMATIONS ============ */
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.sidebar.mobile-active {
-  animation: slideInLeft 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.mobile-overlay.active {
-  animation: fadeIn 0.3s ease;
+/* Tablet - 2 columns */
+@media (min-width: 769px) and (max-width: 991px) {
+  .kpi-grid, .charts-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 </style>
 
@@ -8840,255 +8257,57 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script src="assets/js/loginhistory.js"></script>
 
+<!-- SIMPLE MOBILE MENU -->
 <script>
-// ============================================
-// ENHANCED MOBILE MENU - PERFECT FOR ALL DEVICES
-// ============================================
-
 (function() {
-  'use strict';
+  // Only run on mobile
+  if (window.innerWidth > 768) return;
   
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  // Create menu button
+  var btn = document.createElement('button');
+  btn.id = 'menuBtn';
+  btn.innerHTML = '☰';
+  document.body.appendChild(btn);
   
-  function init() {
-    console.log('🚀 Initializing enhanced mobile menu...');
-    
-    // Create mobile components
-    createMobileComponents();
-    
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Handle resize
-    handleResize();
-    
-    console.log('✅ Mobile menu initialized successfully');
-  }
+  // Create overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'overlay';
+  document.body.appendChild(overlay);
   
-  function createMobileComponents() {
-    // Only create for mobile/tablet
-    if (window.innerWidth >= 992) {
-      return;
-    }
-    
-    // Create menu toggle button
-    if (!document.querySelector('.mobile-menu-toggle')) {
-      const menuBtn = document.createElement('button');
-      menuBtn.className = 'mobile-menu-toggle';
-      menuBtn.setAttribute('aria-label', 'Toggle navigation menu');
-      menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-      document.body.appendChild(menuBtn);
-    }
-    
-    // Create overlay
-    if (!document.querySelector('.mobile-overlay')) {
-      const overlay = document.createElement('div');
-      overlay.className = 'mobile-overlay';
-      overlay.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(overlay);
-    }
-    
-    // Create brand title in header
-    if (!document.querySelector('.mobile-brand-title')) {
-      const brandTitle = document.createElement('div');
-      brandTitle.className = 'mobile-brand-title';
-      brandTitle.textContent = 'ChurnGuard Pro';
-      document.body.appendChild(brandTitle);
-    }
-  }
+  // Get sidebar
+  var sidebar = document.querySelector('.sidebar');
   
-  function setupEventListeners() {
-    const menuBtn = document.querySelector('.mobile-menu-toggle');
-    const overlay = document.querySelector('.mobile-overlay');
-    const sidebar = document.querySelector('.sidebar');
-    
-    if (!menuBtn || !overlay || !sidebar) {
-      console.warn('⚠️ Required elements not found');
-      return;
-    }
-    
-    // Toggle menu on button click
-    menuBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      toggleMenu();
-    });
-    
-    // Close menu on overlay click
-    overlay.addEventListener('click', function() {
-      closeMenu();
-    });
-    
-    // Close menu when clicking menu items
-    const menuItems = sidebar.querySelectorAll('.menu-item');
-    menuItems.forEach(function(item) {
-      item.addEventListener('click', function() {
-        // Small delay for better UX
-        setTimeout(closeMenu, 200);
-      });
-    });
-    
-    // Handle escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && sidebar.classList.contains('mobile-active')) {
-        closeMenu();
-      }
-    });
-    
-    // Prevent body scroll when menu is open
-    sidebar.addEventListener('touchmove', function(e) {
-      e.stopPropagation();
-    }, { passive: true });
-  }
-  
-  function toggleMenu() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.mobile-overlay');
-    const menuBtn = document.querySelector('.mobile-menu-toggle');
-    
-    const isActive = sidebar.classList.contains('mobile-active');
-    
-    if (isActive) {
-      closeMenu();
+  // Toggle menu
+  btn.onclick = function() {
+    if (sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
     } else {
-      openMenu();
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
     }
-  }
-  
-  function openMenu() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.mobile-overlay');
-    const menuBtn = document.querySelector('.mobile-menu-toggle');
-    
-    sidebar.classList.add('mobile-active');
-    overlay.classList.add('active');
-    menuBtn.classList.add('active');
-    menuBtn.innerHTML = '<i class="fas fa-times"></i>';
-    
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    
-    // Accessibility
-    sidebar.setAttribute('aria-hidden', 'false');
-    overlay.setAttribute('aria-hidden', 'false');
-    
-    console.log('📖 Menu opened');
-  }
-  
-  function closeMenu() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.mobile-overlay');
-    const menuBtn = document.querySelector('.mobile-menu-toggle');
-    
-    if (!sidebar || !overlay || !menuBtn) return;
-    
-    sidebar.classList.remove('mobile-active');
-    overlay.classList.remove('active');
-    menuBtn.classList.remove('active');
-    menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-    
-    // Restore body scroll
-    document.body.style.overflow = '';
-    
-    // Accessibility
-    sidebar.setAttribute('aria-hidden', 'true');
-    overlay.setAttribute('aria-hidden', 'true');
-    
-    console.log('📕 Menu closed');
-  }
-  
-  function handleResize() {
-    let resizeTimer;
-    
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      
-      resizeTimer = setTimeout(function() {
-        const width = window.innerWidth;
-        
-        if (width >= 992) {
-          // Desktop - remove mobile components
-          removeMobileComponents();
-          closeMenu();
-        } else {
-          // Mobile/Tablet - ensure components exist
-          createMobileComponents();
-        }
-        
-        // Resize charts
-        resizeCharts();
-        
-      }, 250);
-    });
-  }
-  
-  function removeMobileComponents() {
-    const menuBtn = document.querySelector('.mobile-menu-toggle');
-    const overlay = document.querySelector('.mobile-overlay');
-    const brandTitle = document.querySelector('.mobile-brand-title');
-    
-    if (menuBtn) menuBtn.remove();
-    if (overlay) overlay.remove();
-    if (brandTitle) brandTitle.remove();
-  }
-  
-  function resizeCharts() {
-    // Resize Chart.js charts
-    try {
-      if (window.Chart && Chart.instances) {
-        Object.values(Chart.instances).forEach(function(chart) {
-          if (chart && typeof chart.resize === 'function') {
-            chart.resize();
-          }
-        });
-      }
-      
-      // Resize custom charts object
-      if (window.charts) {
-        Object.values(window.charts).forEach(function(chart) {
-          if (chart && typeof chart.resize === 'function') {
-            chart.resize();
-          }
-        });
-      }
-    } catch (e) {
-      console.warn('Chart resize warning:', e.message);
-    }
-  }
-  
-  // Expose functions globally for debugging
-  window.ChurnGuardMobile = {
-    openMenu: openMenu,
-    closeMenu: closeMenu,
-    toggleMenu: toggleMenu
   };
   
-})();
-
-// ============================================
-// PREVENT DOUBLE-TAP ZOOM ON BUTTONS
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-  let lastTap = 0;
+  // Close on overlay click
+  overlay.onclick = function() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  };
   
-  document.addEventListener('touchend', function(e) {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    
-    if (tapLength < 300 && tapLength > 0) {
-      e.preventDefault();
-    }
-    
-    lastTap = currentTime;
+  // Close on menu item click
+  document.querySelectorAll('.menu-item').forEach(function(item) {
+    item.onclick = function() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    };
   });
-});
-
-console.log('✨ ChurnGuard Pro Mobile - Enhanced Version Loaded');
+})();
 </script>
+
 
 </body>
 </html>
