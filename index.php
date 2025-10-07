@@ -3314,7 +3314,7 @@ body {
 
 .navbar-left .brand-title {
     display: flex;
-    align-items: center;
+    align-items: left;
     gap: 12px;
     font-size: 20px;
     font-weight: 700;
@@ -3328,7 +3328,7 @@ body {
 
 .navbar-center .date-display {
     display: flex;
-    align-items: center;
+    align-items: left;
     gap: 8px;
     padding: 8px 16px;
     background: var(--gray-50);
