@@ -25,7 +25,6 @@ if (!$me) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>ChurnGuard Pro - XGBoost-Powered Customer Retention Analytics</title>
 <link rel="stylesheet" href="styles.css"><!-- use YOUR provided CSS file -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -34,9 +33,7 @@ if (!$me) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    
 <meta name="csrf-token" content="<?=htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES)?>">
 <!-- NEW: help the JS persist prediction state per user -->
 <meta name="user-id" content="<?= (int)($me['user_id'] ?? 0) ?>">
@@ -70,7 +67,7 @@ if (!$me) {
         <i class="fas fa-bars"></i>
       </button>
     </div>
-<aside class="sidebar bg-dark text-white p-3" id="sidebar">
+
     <nav class="sidebar-menu">
       <div class="menu-section">
         <div class="menu-title">Analytics Dashboard</div>
@@ -131,7 +128,7 @@ if (!$me) {
 <button class="logout-btn" onclick="openLogoutModal()">
   <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
 </button>
- </aside>
+
 <!-- Modal -->
 <div id="logoutModal" class="modal">
   <div class="modal-content">
@@ -1012,86 +1009,6 @@ function doLogout() {
 .delta.pos { color:#065f46 }
 .delta.neg { color:#991b1b }
 .compact-list { margin:.25rem 0 0; padding-left:1rem }
-
-|
-
-
-:root { --sidebar-width: 250px; }
-
-/* cover common sidebar wrapper names so it works with different HTML structures */
-.sidebar, .sidebar-wrapper, .sidebar-menu-container {
-  width: var(--sidebar-width);
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  overflow-y: auto;
-  transition: transform .25s ease, width .25s ease;
-  z-index: 1000;
-  background: var(--sidebar-bg, #fff);
-}
-
-/* If your actual sidebar element is .sidebar-menu (nested), this helps but may need small tweak */
-.sidebar-menu {
-  display: block;
-}
-
-/* collapsed on desktop */
-body.sidebar-collapsed .sidebar,
-body.sidebar-collapsed .sidebar-wrapper,
-body.sidebar-collapsed .sidebar-menu-container {
-  transform: translateX(-100%);
-}
-
-/* main content offset on desktop */
-.main-content {
-  margin-left: var(--sidebar-width);
-  transition: margin-left .25s ease;
-  min-height: 100vh;
-}
-
-/* when sidebar collapsed on desktop */
-body.sidebar-collapsed .main-content {
-  margin-left: 0;
-}
-
-/* Mobile behavior */
-@media (max-width: 768px) {
-  /* by default, hide sidebar off-canvas on mobile */
-  .sidebar, .sidebar-wrapper, .sidebar-menu-container {
-    transform: translateX(-100%);
-  }
-  /* when mobile toggle opens */
-  body.sidebar-open .sidebar,
-  body.sidebar-open .sidebar-wrapper,
-  body.sidebar-open .sidebar-menu-container {
-    transform: translateX(0);
-  }
-
-  /* main gets full width on small screens */
-  .main-content { margin-left: 0; }
-
-  /* overlay for mobile */
-  .sidebar-overlay { display: none; }
-  body.sidebar-open .sidebar-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 900;
-  }
-}
-
-/* simple page show/hide rules — compatible with your .page.active approach */
-.page { display: none; }
-.page.active { display: block; }
-
-/* small visual for active menu item (adjust colors to your theme) */
-.sidebar-menu .menu-item.active,
-.menu-item.active {
-  background: rgba(255,165,0,0.08); /* light orange highlight */
-  font-weight: 600;
-}
 
 </style>
 
@@ -5531,16 +5448,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     });
   }
   window.showPage = showPage;
- window.toggleSidebar = function() {
-  if (window.innerWidth <= 768) {
-    // mobile: open/close overlay drawer
-    document.body.classList.toggle('sidebar-open');
-  } else {
-    // desktop: collapse/expand sidebar
-    document.body.classList.toggle('sidebar-collapsed');
-  }
-};
-
+  window.toggleSidebar = () => document.body.classList.toggle('sidebar-collapsed');
 
   /* -------------------- schema helpers -------------------- */
   function normalizePrediction(resp) {
@@ -8140,6 +8048,9 @@ window.uploadAvatar = function () {
   window.loadCustomerMonitoring = loadCustomerMonitoring;
 })();
 </script>
+
+
+
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
