@@ -3278,7 +3278,7 @@ body {
 .top-navbar {
     background: var(--bg-primary);
     border-bottom: 1px solid var(--gray-200);
-    padding: 16px 32px;
+    padding: 25px 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
