@@ -3297,7 +3297,7 @@ body {
 .navbar-left .brand-title svg {
   width: 30px;
   height: 30px;
-  color: #f59e0b; /* orange accent */
+
 }
 
 /* Date Display (Center Section) */
