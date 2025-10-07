@@ -24,7 +24,7 @@ if (!$me) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1200, initial-scale=0.3, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+<meta name="viewport" content="width=1400, user-scalable=yes, initial-scale=0.25, minimum-scale=0.1, maximum-scale=3.0">
 <title>ChurnGuard Pro - XGBoost-Powered Customer Retention Analytics</title>
 <link rel="stylesheet" href="styles.css"><!-- use YOUR provided CSS file -->
 
@@ -34,251 +34,253 @@ if (!$me) {
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="styles.css">
 
+<link rel="stylesheet" href="styles.css">
+
 <style>
 /* ============================================
-   MOBILE OPTIMIZED - DESKTOP LAYOUT ON PHONE
-   Simple zoom-friendly mobile experience
+   FORCE DESKTOP LAYOUT ON ALL DEVICES
+   Keep everything exactly as desktop
 ============================================ */
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
+/* Force minimum width - prevents mobile stacking */
+html, body {
+  min-width: 1400px !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
   width: 100%;
-  overflow-x: auto;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
+  height: 100%;
 }
 
 body {
-  min-width: 1200px;
   margin: 0;
   padding: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* Make sidebar always visible on desktop */
-@media (min-width: 992px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 100;
-  }
-  
-  .main-content {
-    margin-left: 280px;
-    padding: 2rem;
-  }
-  
-  .mobile-menu-toggle {
-    display: none;
-  }
+/* Keep app container at desktop size */
+.app-container {
+  min-width: 1400px !important;
+  display: flex;
+  flex-direction: row !important;
 }
 
-/* Mobile menu for small screens */
-@media (max-width: 991px) {
-  body {
-    min-width: 100%;
-  }
-  
-  .sidebar {
-    position: fixed;
-    left: -280px;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    z-index: 1001;
-    background: #fff;
-    transition: left 0.3s ease;
-    overflow-y: auto;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-  }
-  
-  .sidebar.mobile-active {
-    left: 0;
-  }
-  
-  .main-content {
-    margin-left: 0 !important;
-    padding: 80px 15px 20px 15px !important;
-  }
-  
-  /* Mobile menu button */
-  .mobile-menu-toggle {
-    display: flex;
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    z-index: 1002;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s ease;
-  }
-  
-  .mobile-menu-toggle:active {
-    transform: scale(0.95);
-  }
-  
-  .mobile-menu-toggle.active {
-    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-  }
-  
-  /* Overlay */
-  .mobile-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    backdrop-filter: blur(2px);
-  }
-  
-  .mobile-overlay.active {
-    display: block;
-  }
+/* Sidebar - always visible, always fixed position */
+.sidebar {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 280px !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 100 !important;
+  display: block !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
-/* Touch-friendly improvements */
-button, a, .menu-item, input, select {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  touch-action: manipulation;
+/* Main content - always has left margin for sidebar */
+.main-content {
+  margin-left: 280px !important;
+  width: calc(100% - 280px) !important;
+  min-width: 1120px !important;
+  padding: 2rem !important;
 }
 
-/* Prevent zoom on input focus iOS */
-input, select, textarea {
-  font-size: 16px !important;
+/* Keep all grids as desktop layout */
+.kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
 }
 
-/* Make tables scrollable */
+.charts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+.chart-card.large {
+  grid-column: 1 / -1 !important;
+}
+
+.form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1rem !important;
+}
+
+.content-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+.profile-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+.profile-card.full-width {
+  grid-column: 1 / -1 !important;
+}
+
+/* Dashboard container grids */
+.kpi-section .kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+.comparison-controls {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1rem !important;
+}
+
+.targets-grid {
+  display: grid !important;
+  gap: 1rem !important;
+}
+
+/* Customer insights grids */
+.insights-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+/* Customer monitoring metrics */
+.metrics-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+}
+
+.metric-card {
+  flex: 1 1 calc(16.666% - 1rem) !important;
+  min-width: 180px !important;
+}
+
+/* Recommendations grid */
+.recommendations-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+/* Action buttons - keep in row */
+.action-section {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+.btn-primary, .btn-secondary {
+  width: auto !important;
+  min-width: 150px !important;
+}
+
+/* Tables - keep desktop width */
 .table-wrapper-pro,
-.history-table-container,
-.data-table-pro,
-.history-table {
+.history-table-container {
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Ensure charts are responsive */
+.data-table-pro,
+.history-table {
+  width: 100% !important;
+  min-width: 800px !important;
+}
+
+/* Charts - keep desktop size */
 .chart-container {
-  position: relative;
-  width: 100%;
-  min-height: 300px;
+  width: 100% !important;
+  height: 400px !important;
+  position: relative !important;
 }
 
 .chart-container canvas {
-  max-width: 100%;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
-/* Fix modal on mobile */
-.modal-overlay {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
+/* Modal - keep desktop size */
 .modal-container {
-  margin: 20px auto;
-  max-width: 95%;
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 600px !important;
+  max-width: 90vw !important;
 }
 
-/* Responsive grids - stack on very small screens */
-@media (max-width: 600px) {
-  body {
-    min-width: 100%;
-  }
-  
-  .kpi-grid {
-    grid-template-columns: 1fr !important;
-    gap: 15px;
-  }
-  
-  .charts-grid {
-    grid-template-columns: 1fr !important;
-    gap: 15px;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr !important;
-    gap: 15px;
-  }
-  
-  .profile-grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  .content-grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  .kpi-card, .chart-card, .data-card {
-    margin-bottom: 15px;
-  }
-  
-  .action-section {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .btn-primary, .btn-secondary {
-    width: 100%;
-    padding: 15px;
-  }
-  
-  table {
-    font-size: 13px;
-  }
-  
-  th, td {
-    padding: 10px 8px !important;
-  }
-  
-  .page-header h1 {
-    font-size: 1.5rem !important;
-  }
-  
-  .kpi-value {
-    font-size: 1.8rem !important;
-  }
-  
-  .chart-container {
-    min-height: 250px;
-  }
+/* Top navbar - keep desktop layout */
+.top-navbar {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  padding: 1.5rem 2rem !important;
 }
 
-/* Medium screens - 2 columns */
-@media (min-width: 601px) and (max-width: 991px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .charts-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .chart-card.large {
-    grid-column: 1 / -1;
-  }
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+}
+
+/* Keep date picker controls in row */
+.date-picker-container {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+}
+
+/* Prevent any responsive hiding */
+* {
+  display: inherit !important;
+}
+
+.sidebar,
+.sidebar-header,
+.sidebar-menu,
+.sidebar-footer,
+.menu-item,
+.menu-item span {
+  display: block !important;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-quiet {
+  display: inline-flex !important;
+}
+
+/* Remove any mobile-specific elements that might be added */
+.mobile-header,
+.mobile-menu-btn,
+.mobile-menu-toggle,
+.mobile-hamburger,
+.mobile-overlay,
+.sidebar-overlay {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Prevent sidebar toggle on mobile */
+.sidebar-collapsed .sidebar {
+  left: 0 !important;
+  width: 280px !important;
+}
+
+/* Touch improvements */
+button, a, input, select {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
 }
 
 /* Smooth scrolling */
@@ -286,26 +288,37 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Fix for iOS Safari */
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
+/* Prevent zoom on input focus (iOS) */
+input, select, textarea, button {
+  font-size: 16px !important;
+}
+
+/* Fix for very small screens - still keep desktop layout */
+@media (max-width: 600px) {
+  html, body {
+    min-width: 1400px !important;
+  }
+  
+  .app-container {
+    min-width: 1400px !important;
   }
 }
 
 /* Print styles */
 @media print {
-  .sidebar,
-  .mobile-menu-toggle,
-  .mobile-overlay,
-  .btn-primary,
-  .btn-secondary {
-    display: none !important;
+  html, body {
+    min-width: 100% !important;
+  }
+  
+  .sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
   }
   
   .main-content {
     margin-left: 0 !important;
-    padding: 0 !important;
+    width: 100% !important;
   }
 }
 </style>
