@@ -143,14 +143,15 @@ if (!$me) {
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function() {
   const params = new URLSearchParams(window.location.search);
-  const page = params.get('page');
-  if (page) {
-    showPage(page);
+  const page = params.get("page");
+  if (page === "data-input") {
+    showPage("data-input");
   }
 });
 </script>
+
 
 <style>
   .date-wrap {
