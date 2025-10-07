@@ -1195,12 +1195,10 @@ if (document.readyState === 'loading') {
 // ==================== ERROR HANDLERS ====================
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
-    UIManager.showNotification('An error occurred. Please refresh the page.', 'error');
+    // Error notification disabled - check console for details
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    if (event.reason?.message !== 'Unauthorized') {
-        UIManager.showNotification('A network error occurred.', 'error');
-    }
+    // Error notification disabled - check console for details
 });
