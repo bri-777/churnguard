@@ -1441,31 +1441,7 @@ function doLogout() {
             </section>
 
             <!-- Charts Section -->
-            <section class="charts-section">
-                <div class="chart-container-wrapper">
-                    <!-- Sales Trend Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <h3 class="chart-title">Sales Trend Analysis</h3>
-                                <p class="chart-subtitle">Last 30 days revenue performance</p>
-                            </div>
-                            <div class="chart-controls">
-                                <select id="trendPeriod" class="chart-select" onchange="updateTrendChart()">
-                                    <option value="7">Last 7 Days</option>
-                                    <option value="30" selected>Last 30 Days</option>
-                                    <option value="90">Last 90 Days</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="salesTrendChart" style="max-height: 300px;"></canvas>
-                        </div>
-                    </div>
-
-                  
-                </div>
-            </section>
+            
 
             <!-- Advanced Comparison Section -->
             <section class="comparison-section-pro">
@@ -1503,7 +1479,11 @@ function doLogout() {
                     </div>
                 </div>
 
-               
+                <div class="comparison-results" id="comparisonResults">
+                    <div class="comparison-grid">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
             </section>
 
             <!-- Targets Management -->
