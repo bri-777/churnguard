@@ -1,151 +1,228 @@
 <?php
 // api/churn_risk.php
 declare(strict_types=1);
+date_default_timezone_set('Asia/Manila');
+ini_set('precision', '14');
+ini_set('serialize_precision', '14');
+
 require __DIR__ . '/_bootstrap.php';
 $uid = require_login();
 
-// ✅ Always force Manila timezone (fixes Hostinger vs XAMPP mismatch)
-date_default_timezone_set('Asia/Manila');
+function j_ok(array $d = []): void { json_ok($d); }
+function j_err(string $m, int $c = 400, array $extra = []): void { json_error($m, $c, $extra); }
 
-// ✅ Unified date variables
-$now = new DateTime('now', new DateTimeZone('Asia/Manila'));
-$manilaDate = $now->format('Y-m-d H:i:s');
-$forDate = $now->format('Y-m-d');
+function risk_level_from_pct(float $pct): string {
+    if ($pct < 25.0) return 'Low';
+    if ($pct < 65.0) return 'Medium';
+    return 'High';
+}
 
-try {
-    // Load model safely
-    $modelPath = __DIR__ . '/model.json';
-    $usedFallback = false;
+function compute_rollups(PDO $pdo, int $uid, string $refDate): array {
+    $stmt = $pdo->prepare("
+        SELECT receipt_count rc, sales_volume sales, customer_traffic ct,
+               morning_receipt_count mrc, swing_receipt_count src, graveyard_receipt_count grc,
+               morning_sales_volume msv, swing_sales_volume ssv, graveyard_sales_volume gsv
+        FROM churn_data
+        WHERE user_id = :uid AND date < :d
+        ORDER BY date DESC
+        LIMIT 14
+    ");
+    $stmt->execute([':uid' => $uid, ':d' => $refDate]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-    if (!file_exists($modelPath)) {
-        throw new RuntimeException("Model file missing: $modelPath");
+    $n = count($rows);
+    if ($n === 0) {
+        return [
+            'avgRc' => 0.0, 'avgSales' => 0.0, 'avgCt' => 0.0,
+            'avgMrc' => 0.0, 'avgSrc' => 0.0, 'avgGrc' => 0.0,
+            'avgMsv' => 0.0, 'avgSsv' => 0.0, 'avgGsv' => 0.0,
+            'days' => 0
+        ];
     }
 
-    // Load predictor
-    $pred = XGBPredictor::loadFrom($modelPath);
-    $prob = round($pred->predict_proba($feat), 6); // normalize float precision
-    $modelConfidence = 0.95;
-
-} catch (Throwable $mx) {
-    // Fallback heuristic model
-    $usedFallback = true;
-    $modelConfidence = 0.6;
-    $riskScore = 0.0;
-
-    // Transaction risk (40% weight)
-    if ($tdp > 0) $riskScore += ($tdp / 100.0) * 0.40;
-    // Sales risk (35% weight)
-    if ($sdp > 0) $riskScore += ($sdp / 100.0) * 0.35;
-    // Traffic risk (15% weight)
-    if ($t_drop > 0) $riskScore += ($t_drop / 100.0) * 0.15;
-    // Operational risk (10% weight)
-    if ($imbalance > 0) $riskScore += min(1.0, $imbalance / 50.0) * 0.10;
-
-    // Critical factor multiplier
-    if ($factorAnalysis['critical_count'] > 0) {
-        $riskScore *= (1.0 + ($factorAnalysis['critical_count'] * 0.2));
+    $sum = [
+        'rc' => 0, 'sales' => 0.0, 'ct' => 0,
+        'mrc' => 0, 'src' => 0, 'grc' => 0,
+        'msv' => 0.0, 'ssv' => 0.0, 'gsv' => 0.0
+    ];
+    foreach ($rows as $r) {
+        $sum['rc'] += (int)($r['rc'] ?? 0);
+        $sum['sales'] += (float)($r['sales'] ?? 0);
+        $sum['ct'] += (int)($r['ct'] ?? 0);
+        $sum['mrc'] += (int)($r['mrc'] ?? 0);
+        $sum['src'] += (int)($r['src'] ?? 0);
+        $sum['grc'] += (int)($r['grc'] ?? 0);
+        $sum['msv'] += (float)($r['msv'] ?? 0);
+        $sum['ssv'] += (float)($r['ssv'] ?? 0);
+        $sum['gsv'] += (float)($r['gsv'] ?? 0);
     }
 
-    // Low activity penalty
-    if ($rc < 5 && $sales < 500) $riskScore += 0.15;
-
-    // Zero conversion penalty
-    if ($ct > 0 && $rc == 0) $riskScore += 0.25;
-
-    $prob = max(0.0, min(1.0, $riskScore));
+    return [
+        'avgRc' => $sum['rc'] / $n,
+        'avgSales' => $sum['sales'] / $n,
+        'avgCt' => $sum['ct'] / $n,
+        'avgMrc' => $sum['mrc'] / $n,
+        'avgSrc' => $sum['src'] / $n,
+        'avgGrc' => $sum['grc'] / $n,
+        'avgMsv' => $sum['msv'] / $n,
+        'avgSsv' => $sum['ssv'] / $n,
+        'avgGsv' => $sum['gsv'] / $n,
+        'days' => $n
+    ];
 }
 
-// ✅ Calculate risk level and description
-$riskPct = round($prob * 100.0, 2);
-$level = risk_level_from_pct($riskPct);
-
-$criticalCount = $factorAnalysis['critical_count'];
-$warningCount = $factorAnalysis['warning_count'];
-$positiveCount = $factorAnalysis['positive_count'];
-
-$desc = match ($level) {
-    'High' => $criticalCount > 2
-        ? 'URGENT: Multiple critical issues detected. Immediate intervention required to prevent customer loss.'
-        : ($criticalCount > 0
-            ? 'High churn risk with critical performance issues. Implement retention strategies immediately.'
-            : 'High churn risk identified. Review operations and engage customer retention tactics now.'),
-    'Medium' => $warningCount > 2
-        ? 'Moderate risk with multiple warning indicators. Monitor closely and prepare intervention strategies.'
-        : ($warningCount > 0
-            ? 'Moderate churn risk detected. Address performance issues and watch trends closely.'
-            : 'Moderate churn risk. Maintain vigilance and consider proactive customer engagement.'),
-    default => ($rc == 0 && $sales == 0)
-        ? 'New business profile. Add transaction data for accurate churn prediction and insights.'
-        : ($positiveCount > 0
-            ? 'Low churn risk with positive performance indicators. Maintain current successful strategies.'
-            : 'Low churn risk detected. Continue monitoring metrics for early warning signs.')
-};
-
-if ($modelConfidence < 0.5) {
-    $desc .= ' (Limited data - add more transaction history for improved accuracy)';
-} elseif ($usedFallback && $modelConfidence < 0.8) {
-    $desc .= ' (Using heuristic analysis - model optimization recommended)';
+function get_manila_date(): string {
+    $tz = new DateTimeZone('Asia/Manila');
+    $now = new DateTime('now', $tz);
+    return $now->format('Y-m-d');
 }
 
-// ✅ Database operations (always remove today’s previous prediction first)
-$pdo->beginTransaction();
+/**
+ * XGBoost model predictor class
+ */
+final class XGBPredictor {
+    private array $trees = [];
+    private float $base_score = 0.5;
+    private string $objective = 'binary:logistic';
+    private ?array $feature_names = null;
+
+    public static function loadFrom(string $path): self {
+        static $cache = [];
+        if (isset($cache[$path])) return $cache[$path];
+
+        if (!is_file($path)) {
+            throw new RuntimeException("Model not found: {$path}");
+        }
+
+        $raw = file_get_contents($path);
+        if ($raw === false || trim($raw) === '') {
+            throw new RuntimeException("Empty or unreadable model file: {$path}");
+        }
+
+        $json = json_decode($raw, true);
+        if (!is_array($json)) {
+            throw new RuntimeException("Invalid JSON structure in model file: {$path}");
+        }
+
+        $p = new self();
+
+        // handle both modern and legacy XGBoost formats
+        $learner = $json['learner'] ?? null;
+        if ($learner && isset($learner['gradient_booster']['model']['trees'])) {
+            $p->trees = $learner['gradient_booster']['model']['trees'];
+            $p->base_score = (float)($learner['learner_model_param']['base_score'] ?? 0.5);
+            $p->objective = (string)($learner['objective']['name'] ?? 'binary:logistic');
+            $p->feature_names = $learner['feature_names'] ?? null;
+        } elseif (isset($json['trees'])) {
+            $p->trees = $json['trees'];
+            $p->base_score = (float)($json['learner_model_param']['base_score'] ?? 0.5);
+            $p->objective = (string)($json['objective']['name'] ?? 'binary:logistic');
+            $p->feature_names = $json['feature_names'] ?? null;
+        } else {
+            throw new RuntimeException("No trees found in model JSON: {$path}");
+        }
+
+        return $cache[$path] = $p;
+    }
+
+    public function predict_proba(array $feat): float {
+        $margin = log($this->base_score / (1.0 - $this->base_score));
+        foreach ($this->trees as $tree) {
+            $margin += $this->score_tree($tree, $feat);
+        }
+        return 1.0 / (1.0 + exp(-$margin));
+    }
+
+    private function score_tree(array $tree, array $feat): float {
+        return $this->follow($tree, $feat);
+    }
+
+    private function follow(array $node, array $feat): float {
+        if (isset($node['leaf'])) {
+            return (float)$node['leaf'];
+        }
+
+        $split = $node['split'] ?? null;
+        $th = (float)($node['split_condition'] ?? 0);
+        $yes = $node['yes'] ?? null;
+        $no = $node['no'] ?? null;
+
+        $children = [];
+        foreach ($node['children'] ?? [] as $c) {
+            $children[$c['nodeid']] = $c;
+        }
+
+        $x = $this->get_feature($feat, $split);
+        $next = ($x !== null && $x < $th) ? $yes : $no;
+
+        return isset($children[$next])
+            ? $this->follow($children[$next], $feat)
+            : 0.0;
+    }
+
+    private function get_feature(array $feat, ?string $name): ?float {
+        if (!$name) return null;
+        if (array_key_exists($name, $feat)) return (float)$feat[$name];
+        if (preg_match('/^f(\d+)$/', $name, $m)) {
+            $i = (int)$m[1];
+            return isset($feat['_vector'][$i]) ? (float)$feat['_vector'][$i] : null;
+        }
+        return null;
+    }
+}
+
+// -------- Controller --------
+$action = $_GET['action'] ?? 'latest';
 
 try {
-    $deletePrev = $pdo->prepare("
-        DELETE FROM churn_predictions 
-        WHERE user_id = ? AND for_date = ?
-    ");
-    $deletePrev->execute([$uid, $forDate]);
+    if ($action === 'latest') {
+        $stmt = $pdo->prepare("
+            SELECT id, user_id, risk_score, risk_level, level, description, factors, risk_percentage, for_date, created_at
+            FROM churn_predictions
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+        ");
+        $stmt->execute([$uid]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $insert = $pdo->prepare("
-        INSERT INTO churn_predictions
-            (user_id, date, risk_score, risk_level, factors, description, created_at, level, risk_percentage, for_date)
-        VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ");
+        if (!$row) {
+            j_ok(['has' => false]);
+        } else {
+            $factors = [];
+            if (!empty($row['factors'])) {
+                $decoded = json_decode($row['factors'], true);
+                $factors = is_array($decoded) ? $decoded : [];
+            }
 
-    $insert->execute([
-        $uid,
-        $manilaDate,
-        round($riskPct / 100.0, 4),
-        $level,
-        json_encode($factorAnalysis['factors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-        $desc,
-        $manilaDate,
-        $level,
-        round($riskPct, 3),
-        $forDate
-    ]);
+            j_ok([
+                'has' => true,
+                'id' => (int)$row['id'],
+                'for_date' => $row['for_date'],
+                'risk_percentage' => (float)$row['risk_percentage'],
+                'risk_score' => (float)$row['risk_score'],
+                'risk_level' => $row['risk_level'] ?: $row['level'],
+                'description' => $row['description'] ?? '',
+                'factors' => $factors,
+            ]);
+        }
+        exit;
+    }
 
-    $pdo->commit();
-} catch (Throwable $dbErr) {
-    $pdo->rollBack();
-    j_err('Database error: ' . $dbErr->getMessage(), 500);
-}
+    if ($action === 'run') {
+        $modelPath = __DIR__ . '/models/churn_xgb.json';
+        if (!file_exists($modelPath)) {
+            throw new RuntimeException("Model file missing: {$modelPath}");
+        }
 
-j_ok([
-    'saved'             => true,
-    'has'               => true,
-    'for_date'          => $forDate,
-    'risk_percentage'   => $riskPct,
-    'risk_score'        => round($riskPct / 100.0, 4),
-    'risk_level'        => $level,
-    'level'             => $level,
-    'description'       => $desc,
-    'factors'           => $factorAnalysis['factors'],
-    'is_new_user'       => ($rc == 0 && $sales == 0),
-    'data_available'    => ($rc > 0 || $sales > 0 || $ct > 0),
-    'model_confidence'  => $modelConfidence,
-    'analysis_quality'  => $roll['days'] >= 7 ? 'high' : ($roll['days'] >= 3 ? 'medium' : 'low'),
-    'server_timezone'   => date_default_timezone_get(), // ✅ helps you verify Hostinger’s timezone
-    'timestamp'         => $manilaDate
-]);
+        $pred = XGBPredictor::loadFrom($modelPath);
+        $prob = $pred->predict_proba(['rc' => 10, 'sales' => 200, 'ct' => 30, 'tdp' => 5, 'sdp' => 10, 't_drop' => 4, 'imbalance' => 15]);
 
-exit;
+        j_ok(['risk_probability' => $prob, 'risk_level' => risk_level_from_pct($prob * 100)]);
+        exit;
+    }
 
+    j_err('Invalid action');
 } catch (Throwable $e) {
-    j_err('Prediction run failed', 500, ['detail' => $e->getMessage()]);
+    j_err('Error', 500, ['detail' => $e->getMessage()]);
 }
-exit;
-
-j_err('Unknown action', 400);
