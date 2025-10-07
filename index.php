@@ -27,9 +27,15 @@ if (!$me) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChurnGuard Pro - XGBoost-Powered Customer Retention Analytics</title>
 <link rel="stylesheet" href="styles.css"><!-- use YOUR provided CSS file -->
+<link rel="stylesheet" href="mobile.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -8200,6 +8206,92 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateSalesTotal();
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/loginhistory.js"></script>
+
+<!-- Bootstrap JS (Add this if not already added) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Mobile Menu Script -->
+<script>
+// ============================================
+// SIMPLE MOBILE MENU - JUST WORKS
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  setupMobileMenu();
+});
+
+function setupMobileMenu() {
+  // Create mobile menu button
+  const menuBtn = document.createElement('button');
+  menuBtn.className = 'mobile-menu-btn';
+  menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+  menuBtn.onclick = toggleMobileMenu;
+  document.body.appendChild(menuBtn);
+  
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'sidebar-overlay';
+  overlay.onclick = closeMobileMenu;
+  document.body.appendChild(overlay);
+  
+  // Close menu when clicking menu items
+  const menuItems = document.querySelectorAll('.menu-item');
+  menuItems.forEach(item => {
+    item.addEventListener('click', closeMobileMenu);
+  });
+  
+  // Close menu on window resize if desktop
+  window.addEventListener('resize', function() {
+    if (window.innerWidth >= 992) {
+      closeMobileMenu();
+    }
+  });
+}
+
+function toggleMobileMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  const btn = document.querySelector('.mobile-menu-btn');
+  
+  if (sidebar.classList.contains('active')) {
+    closeMobileMenu();
+  } else {
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+    btn.innerHTML = '<i class="fas fa-times"></i>';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  const btn = document.querySelector('.mobile-menu-btn');
+  
+  sidebar.classList.remove('active');
+  overlay.classList.remove('active');
+  btn.innerHTML = '<i class="fas fa-bars"></i>';
+  document.body.style.overflow = '';
+}
+
+// Resize charts on window resize
+window.addEventListener('resize', function() {
+  if (window.Chart) {
+    Object.values(Chart.instances || {}).forEach(chart => {
+      if (chart && chart.resize) chart.resize();
+    });
+  }
+});
+</script>
+
+<!-- Your existing scripts below -->
+<script>
+  // Your existing ChurnGuard JavaScript code
+</script>
+</body>
+</html>
+
 </body>
 </html>
