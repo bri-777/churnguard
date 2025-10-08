@@ -2752,29 +2752,29 @@ const ModalManager = {
 };
 
         // Validation
-        if (!formData.name) {
-            UIManager.showNotification('Please enter a target name', 'warning');
-            Utils.$('#targetName')?.focus();
-            return;
-        }
+if (!formData.target_name) {
+    UIManager.showNotification('Please enter a target name', 'warning');
+    Utils.$('#targetName')?.focus();
+    return;
+}
 
-        if (!formData.type) {
-            UIManager.showNotification('Please select a target type', 'warning');
-            Utils.$('#targetType')?.focus();
-            return;
-        }
+if (!formData.target_type) {
+    UIManager.showNotification('Please select a target type', 'warning');
+    Utils.$('#targetType')?.focus();
+    return;
+}
 
-        if (isNaN(formData.value) || formData.value <= 0) {
-            UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
-            Utils.$('#targetValue')?.focus();
-            return;
-        }
+if (isNaN(formData.target_value) || formData.target_value <= 0) {
+    UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
+    Utils.$('#targetValue')?.focus();
+    return;
+}
 
-        if (formData.value > 999999999) {
-            UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
-            Utils.$('#targetValue')?.focus();
-            return;
-        }
+if (formData.target_value > 999999999) {
+    UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
+    Utils.$('#targetValue')?.focus();
+    return;
+}
 
         if (!formData.start_date || !formData.end_date) {
             UIManager.showNotification('Please select both start and end dates', 'warning');
