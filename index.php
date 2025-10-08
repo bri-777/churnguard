@@ -4221,28 +4221,26 @@ body {
   <!-- LEFT-ALIGNED CONTAINER -->
   <div style="width:100%; max-width:1280px; margin:0;">
 
-    <!-- Header -->
-    <div class="report-header" style="
-      display:flex; justify-content:space-between; align-items:center; gap:1rem;
-      flex-wrap:wrap;
-      margin:0 0 1.5rem 0; padding:1.25rem 1.25rem; background:#fff; border-radius:12px;
-      box-shadow:0 6px 20px rgba(94,114,228,.12);
-    ">
-      <div class="header-left" style="flex:1; min-width:260px; display:flex; align-items:center; gap:.8rem;">
-  <!-- Bullseye SVG icon (uses currentColor) -->
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:0 0 28px; color:#111827;">
-    <circle cx="12" cy="12" r="9"></circle>
-    <circle cx="12" cy="12" r="5.2" fill="currentColor" style="opacity:.06"></circle>
-    <circle cx="12" cy="12" r="2.2" fill="currentColor"></circle>
+    <div class="header-left" style="
+  flex:1;
+  min-width:260px;
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+">
+  <!-- Analytics (chart line) icon -->
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 3v18h18"/>
+    <path d="M18 9l-5 5-3-3-4 4"/>
   </svg>
 
   <div style="min-width:0;">
-    <h1 class="page-title" id="ci-title" style="
-      font-size:1.85rem;
+    <h1 id="ci-title" style="
+      font-size:1.75rem;
       font-weight:800;
-      letter-spacing:.2px;
-      margin:0 0 .2rem 0;
       color:#111827;
+      margin:0 0 .25rem 0;
+      letter-spacing:.2px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -4250,71 +4248,71 @@ body {
       Churn Analysis Report
     </h1>
 
-    <p class="last-updated" style="
-      font-size:.88rem;
+    <p style="
+      font-size:.9rem;
       color:#6b7280;
       margin:0;
       display:flex;
-      gap:.35rem;
       align-items:center;
+      gap:.35rem;
+      letter-spacing:.1px;
     ">
       Last updated:
-      <span id="lastUpdated" style="color:#374151; font-weight:700;">Loading...</span>
+      <span id="lastUpdated" style="color:#2563EB; font-weight:600;">Loading...</span>
     </p>
   </div>
 </div>
 
-<div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
-  <!-- Minimal flat Refresh button with inline SVG -->
-  <button class="btn-action" onclick="refreshReports()" style="
-    padding:.56rem .9rem;
+<div class="header-right" style="
+  display:flex;
+  gap:.6rem;
+  align-items:center;
+">
+  <!-- Refresh Button -->
+  <button onclick="refreshReports()" style="
+    padding:.55rem .9rem;
     border:none;
-    border-radius:.5rem;
+    border-radius:.45rem;
     font-size:.88rem;
-    font-weight:700;
+    font-weight:600;
     cursor:pointer;
     display:inline-flex;
     align-items:center;
-    gap:.5rem;
-    letter-spacing:.2px;
-    background:#4F46E5;
+    gap:.45rem;
+    background:#2563EB;
     color:#fff;
-    box-shadow:none;
-    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-    opacity:1;
+    transition:all .15s ease;
   "
-  onmouseover="this.style.transform='translateY(-2px)'; this.style.opacity='0.98';"
-  onmouseout="this.style.transform=''; this.style.opacity='1';">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:0 0 16px; color:inherit;">
-      <path d="M21 12a9 9 0 1 1-3-6.7" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M21 3v6h-6" stroke-linecap="round" stroke-linejoin="round"></path>
+  onmouseover="this.style.background='#1D4ED8';"
+  onmouseout="this.style.background='#2563EB';">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 1 1-3-6.7"/>
+      <path d="M21 3v6h-6"/>
     </svg>
     Refresh
   </button>
 
-  <!-- Minimal flat Export button with inline SVG -->
-  <button class="btn-action" onclick="showExportModal()" style="
-    padding:.56rem .9rem;
-    border:1px solid rgba(16,185,129,.12);
-    border-radius:.5rem;
+  <!-- Export Button -->
+  <button onclick="showExportModal()" style="
+    padding:.55rem .9rem;
+    border:none;
+    border-radius:.45rem;
     font-size:.88rem;
-    font-weight:700;
+    font-weight:600;
     cursor:pointer;
     display:inline-flex;
     align-items:center;
-    gap:.5rem;
-    letter-spacing:.2px;
+    gap:.45rem;
     background:#10B981;
     color:#fff;
-    box-shadow:none;
-    transition:transform .12s ease, opacity .12s ease;
+    transition:all .15s ease;
   "
-  onmouseover="this.style.transform='translateY(-2px)'; this.style.opacity='0.98';"
-  onmouseout="this.style.transform=''; this.style.opacity='1';">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:0 0 16px; color:inherit;">
-      <path d="M21 15v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M7 10l5-5 5 5" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M12 5v12" stroke-linecap="round" stroke-linejoin="round"></path>
+  onmouseover="this.style.background='#059669';"
+  onmouseout="this.style.background='#10B981';">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4"/>
+      <path d="M7 10l5-5 5 5"/>
+      <path d="M12 5v12"/>
     </svg>
     Export
   </button>
