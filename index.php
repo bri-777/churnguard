@@ -86,7 +86,7 @@ if (!$me) {
           <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
         </a>
      <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
-          <i class="fas fa-bullseye"></i> <span>Performance Target</span>
+          <i class="fas fa-bullseye"></i> <span>Analytics Target</span>
         </a>
       </div>
 
@@ -1294,7 +1294,7 @@ function doLogout() {
   <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
 </svg>
 
-                   Performance Target
+                   Analytics Target
                 </h1>
             </div>
             <div class="navbar-center">
