@@ -2789,11 +2789,11 @@ const ModalManager = {
 
         AppState.incrementLoading();
         try {
-            const action = AppState.editingTargetId ? 'update_target' : 'save_target';
-            
-            if (AppState.editingTargetId) {
-                formData.id = AppState.editingTargetId;
-            }
+            const action = AppState.editingTargetId ? 'update_target' : 'create_target';
+
+if (AppState.editingTargetId) {
+    formData.id = AppState.editingTargetId;
+}
 
             console.log(`[MODAL] Saving target with action: ${action}`, formData);
             
