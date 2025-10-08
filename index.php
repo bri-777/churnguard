@@ -3158,7 +3158,7 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
   top: 650px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90%; /* wide, but still leaves some margin */
+  width: 80%; /* wide, but still leaves some margin */
 }
 
 
