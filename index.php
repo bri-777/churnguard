@@ -877,6 +877,323 @@ html, body {
   #customer-insights .mini-metrics { grid-template-columns: 1fr 1fr; }
   #customer-insights .page-tools { justify-content: flex-start; }
 }
+/* ==================== NOTIFICATION SYSTEM ==================== */
+.notification-panel {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 380px;
+    max-height: calc(100vh - 100px);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(420px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    overflow: hidden;
+}
+
+.notification-panel.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification-header {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-badge {
+    background: rgba(255,255,255,0.3);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.notification-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.notification-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(90deg);
+}
+
+.notification-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding: 0;
+}
+
+.notification-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-body::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+.notification-body::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.notification-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-item:hover {
+    background: #f9fafb;
+}
+
+.notification-item.unread {
+    background: #eff6ff;
+}
+
+.notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #6366f1;
+}
+
+.notification-item-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.notification-icon.success {
+    background: #d1fae5;
+    color: #10b981;
+}
+
+.notification-icon.warning {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.notification-icon.danger {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.notification-icon.info {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.notification-time {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 6px;
+    display: block;
+}
+
+.notification-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+}
+
+.notification-empty svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.notification-trigger {
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.notification-trigger:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.notification-trigger .notification-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* ==================== KPI DATE CONTROLS ==================== */
+.section-header-pro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.kpi-date-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.kpi-date-controls label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.kpi-date-label {
+    font-size: 13px;
+    color: #6366f1;
+    font-weight: 600;
+    padding: 8px 16px;
+    background: #eff6ff;
+    border-radius: 8px;
+    margin-left: 8px;
+}
+
+/* ==================== IMPROVED COMPARISON SECTION ==================== */
+.comparison-date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+}
+
+.comparison-date-range svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ==================== TARGET EXPIRATION BADGE ==================== */
+.target-expiration {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.target-expiration.expired {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.target-expiration.expiring-soon {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.target-expiration.active {
+    background: #d1fae5;
+    color: #10b981;
+}
+
+/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
+@media (max-width: 768px) {
+    .notification-panel {
+        width: calc(100% - 40px);
+        right: 20px;
+    }
+    
+    .kpi-date-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .section-header-pro {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
 </style>
 
 
@@ -1325,20 +1642,23 @@ function doLogout() {
 
         <!-- Main Content -->
         <main class="dashboard-content">
-            
-            <!-- KPI Summary Cards -->
-            <section class="kpi-section">
-                <h2 class="section-title-main">Today's Analytical Overview</h2>
-                <div class="kpi-grid">
-                    <div class="kpi-card-pro" data-metric="sales">
-                        <div class="kpi-header">
-                            <div class="kpi-icon-pro sales-gradient">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                </svg>
-                            </div>
-                          
-                        </div>
+           <!-- KPI Summary Cards with Date Filter -->
+<section class="kpi-section">
+    <div class="section-header-pro">
+        <h2 class="section-title-main">Analytical Overview</h2>
+        <div class="kpi-date-controls">
+            <label for="kpiDateFilter">View Date:</label>
+            <input type="date" id="kpiDateFilter" class="form-input-pro" style="width: 180px;">
+            <button class="btn-primary-small" onclick="loadKPIByDate()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                Load
+            </button>
+            <button class="btn-outline-small" onclick="loadTodayKPI()">Today</button>
+        </div>
+    </div>
                         <div class="kpi-body">
                             <span class="kpi-label-pro">Today's Revenue</span>
                             <h3 class="kpi-value-pro" id="todaySales">₱0.00</h3>
@@ -1945,6 +2265,282 @@ const UIManager = {
         }
     }
 };
+
+
+// ==================== NOTIFICATION MANAGER ====================
+const NotificationManager = {
+    notifications: [],
+    maxNotifications: 50,
+    
+    init() {
+        console.log('[NOTIFICATION] Initializing notification system');
+        this.loadNotifications();
+        // Check for new notifications every 2 minutes
+        setInterval(() => this.checkForNotifications(), 120000);
+    },
+    
+    loadNotifications() {
+        const stored = localStorage.getItem('dashboard_notifications');
+        if (stored) {
+            try {
+                this.notifications = JSON.parse(stored);
+                this.render();
+            } catch (e) {
+                console.error('[NOTIFICATION] Error loading notifications:', e);
+                this.notifications = [];
+            }
+        }
+    },
+    
+    saveNotifications() {
+        try {
+            // Keep only the most recent notifications
+            if (this.notifications.length > this.maxNotifications) {
+                this.notifications = this.notifications.slice(0, this.maxNotifications);
+            }
+            localStorage.setItem('dashboard_notifications', JSON.stringify(this.notifications));
+        } catch (e) {
+            console.error('[NOTIFICATION] Error saving notifications:', e);
+        }
+    },
+    
+    add(title, message, type = 'info', data = {}) {
+        const notification = {
+            id: Date.now() + Math.random(),
+            title,
+            message,
+            type, // success, warning, danger, info
+            data,
+            timestamp: new Date().toISOString(),
+            read: false
+        };
+        
+        this.notifications.unshift(notification);
+        this.saveNotifications();
+        this.render();
+        
+        console.log('[NOTIFICATION] Added:', notification);
+        
+        // Also show toast
+        UIManager.showNotification(message, type === 'danger' ? 'error' : type);
+    },
+    
+    markAsRead(id) {
+        const notification = this.notifications.find(n => n.id === id);
+        if (notification) {
+            notification.read = true;
+            this.saveNotifications();
+            this.render();
+        }
+    },
+    
+    markAllAsRead() {
+        this.notifications.forEach(n => n.read = true);
+        this.saveNotifications();
+        this.render();
+    },
+    
+    clear() {
+        if (confirm('Clear all notifications?')) {
+            this.notifications = [];
+            this.saveNotifications();
+            this.render();
+        }
+    },
+    
+    getUnreadCount() {
+        return this.notifications.filter(n => !n.read).length;
+    },
+    
+    render() {
+        const body = Utils.$('#notificationBody');
+        const badge = Utils.$('#notificationBadge');
+        const count = Utils.$('#notificationCount');
+        
+        if (!body) return;
+        
+        const unreadCount = this.getUnreadCount();
+        
+        // Update badges
+        if (badge) {
+            badge.textContent = this.notifications.length;
+        }
+        
+        if (count) {
+            if (unreadCount > 0) {
+                count.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                count.style.display = 'block';
+            } else {
+                count.style.display = 'none';
+            }
+        }
+        
+        // Render notifications
+        if (this.notifications.length === 0) {
+            body.innerHTML = `
+                <div class="notification-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <p>No notifications yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const icons = {
+            success: '✓',
+            warning: '⚠',
+            danger: '✕',
+            info: 'ℹ'
+        };
+        
+        body.innerHTML = this.notifications.map(n => {
+            const timeAgo = this.getTimeAgo(n.timestamp);
+            return `
+                <div class="notification-item ${n.read ? '' : 'unread'}" onclick="NotificationManager.markAsRead(${n.id})">
+                    <div class="notification-item-header">
+                        <div class="notification-icon ${n.type}">
+                            ${icons[n.type] || icons.info}
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${Utils.escapeHtml(n.title)}</div>
+                            <div class="notification-message">${Utils.escapeHtml(n.message)}</div>
+                            <span class="notification-time">${timeAgo}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+    
+    getTimeAgo(timestamp) {
+        const now = new Date();
+        const then = new Date(timestamp);
+        const seconds = Math.floor((now - then) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+        return Utils.formatDate(timestamp);
+    },
+    
+    async checkForNotifications() {
+        try {
+            // Check for target achievements
+            const targetsResponse = await APIService.fetch('get_targets', { filter: 'all' });
+            if (targetsResponse && targetsResponse.targets) {
+                this.checkTargetNotifications(targetsResponse.targets);
+            }
+        } catch (error) {
+            console.error('[NOTIFICATION] Error checking notifications:', error);
+        }
+    },
+    
+    checkTargetNotifications(targets) {
+        const now = new Date();
+        
+        targets.forEach(target => {
+            const endDate = new Date(target.end_date);
+            const daysUntilExpiry = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+            const progress = parseFloat(target.progress);
+            
+            // Check if recently achieved
+            if (progress >= 100 && target.status === 'achieved') {
+                const notificationExists = this.notifications.some(n => 
+                    n.data.targetId === target.id && n.data.type === 'achieved'
+                );
+                
+                if (!notificationExists) {
+                    this.add(
+                        '🎯 Target Achieved!',
+                        `Congratulations! "${target.target_name}" has been achieved with ${progress.toFixed(1)}% completion.`,
+                        'success',
+                        { targetId: target.id, type: 'achieved' }
+                    );
+                }
+            }
+            
+            // Check if expiring soon (3 days or less)
+            if (daysUntilExpiry > 0 && daysUntilExpiry <= 3 && progress < 100) {
+                const notificationExists = this.notifications.some(n => 
+                    n.data.targetId === target.id && 
+                    n.data.type === 'expiring' &&
+                    new Date(n.timestamp).toDateString() === now.toDateString()
+                );
+                
+                if (!notificationExists) {
+                    this.add(
+                        '⏰ Target Expiring Soon',
+                        `"${target.target_name}" expires in ${daysUntilExpiry} day${daysUntilExpiry > 1 ? 's' : ''}. Current progress: ${progress.toFixed(1)}%`,
+                        'warning',
+                        { targetId: target.id, type: 'expiring', daysLeft: daysUntilExpiry }
+                    );
+                }
+            }
+            
+            // Check if expired
+            if (daysUntilExpiry < 0 && progress < 100) {
+                const notificationExists = this.notifications.some(n => 
+                    n.data.targetId === target.id && n.data.type === 'expired'
+                );
+                
+                if (!notificationExists) {
+                    this.add(
+                        '❌ Target Expired',
+                        `"${target.target_name}" has expired with ${progress.toFixed(1)}% completion.`,
+                        'danger',
+                        { targetId: target.id, type: 'expired' }
+                    );
+                }
+            }
+            
+            // Check if near target (90-99%)
+            if (progress >= 90 && progress < 100) {
+                const notificationExists = this.notifications.some(n => 
+                    n.data.targetId === target.id && n.data.type === 'near'
+                );
+                
+                if (!notificationExists) {
+                    this.add(
+                        '📈 Almost There!',
+                        `"${target.target_name}" is at ${progress.toFixed(1)}%. Just a little more to achieve your goal!`,
+                        'info',
+                        { targetId: target.id, type: 'near' }
+                    );
+                }
+            }
+        });
+    }
+};
+
+// Global toggle function
+window.toggleNotifications = function() {
+    const panel = Utils.$('#notificationPanel');
+    if (panel) {
+        panel.classList.toggle('active');
+        
+        // Mark all as read when opening
+        if (panel.classList.contains('active')) {
+            setTimeout(() => {
+                NotificationManager.markAllAsRead();
+            }, 1000);
+        }
+    }
+};
+
+// Close notifications when clicking outside
+document.addEventListener('click', function(event) {
+    const panel = Utils.$('#notificationPanel');
+    const trigger = event.target.closest('.notification-trigger');
+    
+    if (panel && panel.classList.contains('active') && !panel.contains(event.target) && !trigger) {
+        panel.classList.remove('active');
+    }
+});
+
 
 // ==================== API SERVICE ====================
 const APIService = {
@@ -5150,6 +5746,38 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
    
    
    
+
+
+
+
+<!-- Notification Panel -->
+<div class="notification-panel" id="notificationPanel">
+    <div class="notification-header">
+        <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Notifications
+            <span class="notification-badge" id="notificationBadge">0</span>
+        </h3>
+        <button class="notification-close" onclick="toggleNotifications()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    <div class="notification-body" id="notificationBody">
+        <div class="notification-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <p>No notifications yet</p>
+        </div>
+    </div>
+</div>
+
    
    
 
