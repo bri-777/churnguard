@@ -3153,6 +3153,14 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
 
 </script>
 <style>
+.history-section {
+  position: absolute;
+  top: -20px; /* moves it up by 10 pixels */
+}
+
+
+
+
   /* ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD CSS ==================== */
 
 /* CSS Variables */
@@ -5096,10 +5104,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </div>
       </div>
     </div>
-
-  
   </div>
-
   <div class="history-section">
     <div class="history-header">
       <div class="history-title">📋Historical Data</div>
