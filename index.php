@@ -4318,7 +4318,6 @@ body {
   </button>
 </div>
 
-    </div>
 
     <!-- Date Range Selector -->
     <div class="date-controls" style="
