@@ -3155,7 +3155,7 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
 <style>
 .history-section {
   position: absolute;
-  top:-5; /* moves it up by 10 pixels */
+  top:-15; /* moves it up by 10 pixels */
 }
 
 
