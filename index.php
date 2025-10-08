@@ -4228,34 +4228,78 @@ body {
       margin:0 0 1.5rem 0; padding:1.25rem 1.25rem; background:#fff; border-radius:12px;
       box-shadow:0 6px 20px rgba(94,114,228,.12);
     ">
-      <div class="header-left" style="flex:1; min-width:260px;">
-        <h1 class="page-title" id="ci-title" style="font-size:1.875rem; font-weight:800; letter-spacing:.2px; margin:0 0 .25rem 0;">
-          Churn Analysis Report
-        </h1>
-        <p class="last-updated" style="font-size:.92rem; color:#6b7280; margin:0;">
-          Last updated: <span id="lastUpdated" style="color:#5E72E4; font-weight:700;">Loading...</span>
-        </p>
-      </div>
-      <div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
-        <button class="btn-action" onclick="refreshReports()" style="
-          padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
-          display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
-          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 14px rgba(94,114,228,.35);
-          transition:transform .15s ease, box-shadow .15s ease;
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(94,114,228,.4)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(94,114,228,.35)';">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-        <button class="btn-action" onclick="showExportModal()" style="
-          padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
-          display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
-          background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,.35);
-          transition:transform .15s ease, box-shadow .15s ease;
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(16,185,129,.4)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(16,185,129,.35)';">
-          <i class="fas fa-download"></i> Export
-        </button>
-      </div>
+     <div class="header-left" style="flex:1; min-width:260px;">
+  <h1 class="page-title" id="ci-title" style="
+    font-size:1.9rem; 
+    font-weight:800; 
+    letter-spacing:.3px; 
+    margin:0 0 .35rem 0;
+    color:#111827;
+  ">
+    Churn Analysis Report
+  </h1>
+  <p class="last-updated" style="
+    font-size:.9rem; 
+    color:#6b7280; 
+    margin:0; 
+    letter-spacing:.2px;
+  ">
+    Last updated: 
+    <span id="lastUpdated" style="
+      color:#4F46E5; 
+      font-weight:700;
+    ">Loading...</span>
+  </p>
+</div>
+
+<div class="header-right" style="
+  display:flex; 
+  gap:.75rem; 
+  align-items:center;
+">
+  <button class="btn-action" onclick="refreshReports()" style="
+    padding:.65rem 1.2rem; 
+    border:none; 
+    border-radius:.6rem; 
+    font-size:.9rem; 
+    font-weight:700; 
+    cursor:pointer;
+    display:inline-flex; 
+    align-items:center; 
+    gap:.45rem; 
+    letter-spacing:.25px;
+    background:linear-gradient(135deg,#4F46E5 0%,#6366F1 100%); 
+    color:#fff; 
+    box-shadow:0 3px 10px rgba(79,70,229,.3);
+    transition:all .2s ease;
+  " 
+  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(79,70,229,.35)';"
+  onmouseout="this.style.transform=''; this.style.boxShadow='0 3px 10px rgba(79,70,229,.3)';">
+    <i class="fas fa-sync-alt" style="font-size:.85rem;"></i> Refresh
+  </button>
+
+  <button class="btn-action" onclick="showExportModal()" style="
+    padding:.65rem 1.2rem; 
+    border:none; 
+    border-radius:.6rem; 
+    font-size:.9rem; 
+    font-weight:700; 
+    cursor:pointer;
+    display:inline-flex; 
+    align-items:center; 
+    gap:.45rem; 
+    letter-spacing:.25px;
+    background:linear-gradient(135deg,#059669 0%,#10B981 100%); 
+    color:#fff; 
+    box-shadow:0 3px 10px rgba(5,150,105,.3);
+    transition:all .2s ease;
+  " 
+  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(5,150,105,.35)';"
+  onmouseout="this.style.transform=''; this.style.boxShadow='0 3px 10px rgba(5,150,105,.3)';">
+    <i class="fas fa-download" style="font-size:.85rem;"></i> Export
+  </button>
+</div>
+
     </div>
 
     <!-- Date Range Selector -->
