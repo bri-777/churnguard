@@ -4228,20 +4228,27 @@ body {
       margin:0 0 1.5rem 0; padding:1.25rem 1.25rem; background:#fff; border-radius:12px;
       box-shadow:0 6px 20px rgba(94,114,228,.12);
     ">
-   <div class="header-left" style="flex:1; min-width:260px; display:flex; align-items:center; gap:.8rem;">
-  <!-- Analytics (chart line) icon -->
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="header-left" style="
+  flex:1; 
+  min-width:260px; 
+  display:flex; 
+  align-items:center; 
+  gap:.75rem;
+">
+  <!-- Clean black analytics icon -->
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
     <path d="M3 3v18h18"/>
     <path d="M18 9l-5 5-3-3-4 4"/>
   </svg>
 
   <div>
     <h1 class="page-title" id="ci-title" style="
-      font-size:1.85rem;
+      font-size:1.8rem;
       font-weight:800;
-      letter-spacing:.25px;
+      letter-spacing:.2px;
       margin:0 0 .25rem 0;
-      color:#111827;
+      color:#111;
+      text-transform:none;
     ">
       Churn Analysis Report
     </h1>
@@ -4249,15 +4256,15 @@ body {
       font-size:.9rem;
       color:#6b7280;
       margin:0;
-      letter-spacing:.15px;
+      letter-spacing:.1px;
     ">
       Last updated: 
-      <span id="lastUpdated" style="color:#2563EB; font-weight:700;">Loading...</span>
+      <span id="lastUpdated" style="font-weight:700;">Loading...</span>
     </p>
   </div>
 </div>
 
-<!-- 🔹 Your original buttons (unchanged) -->
+<!-- Original buttons kept the same -->
 <div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
   <button class="btn-action" onclick="refreshReports()" style="
     padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
