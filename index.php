@@ -1420,51 +1420,10 @@ function doLogout() {
                 </div>
             </section>
 
-            <!-- Charts Section -->
+            
             
 
-            <!-- Advanced Comparison Section -->
-            <section class="comparison-section-pro">
-                <div class="section-header-pro">
-                    <h2 class="section-title-main">Data Comparison Analysis</h2>
-                    <button class="btn-outline-small" onclick="resetComparison()">Reset</button>
-                </div>
-                
-                <div class="comparison-controls">
-                    <div class="control-group">
-                        <label>Comparison Type</label>
-                        <select id="comparisonType" class="form-select-pro" onchange="updateComparisonDates()">
-                            <option value="today_vs_yesterday">Today vs Yesterday</option>
-                            <option value="week_vs_week">This Week vs Last Week</option>
-                            <option value="month_vs_month">This Month vs Last Month</option>
-                            <option value="custom">Custom Comparison</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label>Current Period</label>
-                        <input type="date" id="currentDate" class="form-input-pro">
-                    </div>
-                    <div class="control-group">
-                        <label>Compare With</label>
-                        <input type="date" id="compareDate" class="form-input-pro">
-                    </div>
-                    <div class="control-group">
-                        <button class="btn-primary-pro" onclick="loadComparison()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="m21 21-4.35-4.35"/>
-                            </svg>
-                            Analyze
-                        </button>
-                    </div>
-                </div>
-
-                <div class="comparison-results" id="comparisonResults">
-                    <div class="comparison-grid">
-                        <!-- Results will be populated here -->
-                    </div>
-                </div>
-            </section>
+           
 
             <!-- Targets Management -->
             <section class="targets-section-pro">
