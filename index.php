@@ -5300,30 +5300,35 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-    <!-- Settings Page -->
-    <div id="settings" class="page">
-      <div class="page-header">
+   <div id="settings" class="page">
+    <div class="page-header">
         <h1><i class="fas fa-cog"></i> System Settings</h1>
         <p>Configure system preferences and analytics settings</p>
-      </div>
+    </div>
 
-   
-
-        <div class="settings-card">
-          <div class="settings-header"><i class="fas fa-palette"></i><h3>System Preferences</h3></div>
-          <div class="settings-content">
-            <div class="toggle-group">
-              <div class="toggle-item">
-                <div><strong>Dark Mode</strong><p>Switch to dark theme</p></div>
-                <div class="toggle-switch">
-                  <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
-                  <span class="slider"></span>
-                </div>
-              </div>
-            </div>
-          </div>
+    <!-- Appearance Settings -->
+    <div class="settings-card">
+        <div class="settings-header">
+            <i class="fas fa-palette"></i>
+            <h3>Appearance</h3>
         </div>
-      </div>
+        <div class="settings-content">
+            <div class="toggle-group">
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <strong>Dark Mode</strong>
+                        <p>Switch between light and dark theme</p>
+                    </div>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	  
+	  
     </div>
   </main>
 </div>
