@@ -112,9 +112,7 @@ if (!$me) {
         <a href="#" class="menu-item" onclick="showPage('profile')">
           <i class="fas fa-user-circle"></i> <span>User Profile</span>
         </a>
-        <a href="#" class="menu-item" onclick="showPage('settings')">
-          <i class="fas fa-cog"></i> <span>Settings</span>
-        </a>
+       
       </div>
     </nav>
 
@@ -4228,65 +4226,34 @@ body {
       margin:0 0 1.5rem 0; padding:1.25rem 1.25rem; background:#fff; border-radius:12px;
       box-shadow:0 6px 20px rgba(94,114,228,.12);
     ">
-      <div class="header-left" style="
-  flex:1; 
-  min-width:260px; 
-  display:flex; 
-  align-items:center; 
-  gap:.75rem;
-">
-  <!-- Clean black analytics icon -->
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-    <path d="M3 3v18h18"/>
-    <path d="M18 9l-5 5-3-3-4 4"/>
-  </svg>
-
-  <div>
-    <h1 class="page-title" id="ci-title" style="
-      font-size:1.8rem;
-      font-weight:800;
-      letter-spacing:.2px;
-      margin:0 0 .25rem 0;
-      color:#111;
-      text-transform:none;
-    ">
-      Churn Analysis Report
-    </h1>
-    <p class="last-updated" style="
-      font-size:.9rem;
-      color:#6b7280;
-      margin:0;
-      letter-spacing:.1px;
-    ">
-      Last updated: 
-      <span id="lastUpdated" style="font-weight:700;">Loading...</span>
-    </p>
-  </div>
-</div>
-
-<!-- Original buttons kept the same -->
-<div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
-  <button class="btn-action" onclick="refreshReports()" style="
-    padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
-    display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
-    background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 14px rgba(94,114,228,.35);
-    transition:transform .15s ease, box-shadow .15s ease;
-  " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(94,114,228,.4)';"
-     onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(94,114,228,.35)';">
-    <i class="fas fa-sync-alt"></i> Refresh
-  </button>
-
-  <button class="btn-action" onclick="showExportModal()" style="
-    padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
-    display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
-    background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,.35);
-    transition:transform .15s ease, box-shadow .15s ease;
-  " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(16,185,129,.4)';"
-     onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(16,185,129,.35)';">
-    <i class="fas fa-download"></i> Export
-  </button>
-</div>
-
+      <div class="header-left" style="flex:1; min-width:260px;">
+        <h1 class="page-title" id="ci-title" style="font-size:1.875rem; font-weight:800; letter-spacing:.2px; margin:0 0 .25rem 0;">
+          Churn Analysis Report
+        </h1>
+        <p class="last-updated" style="font-size:.92rem; color:#6b7280; margin:0;">
+          Last updated: <span id="lastUpdated" style="color:#5E72E4; font-weight:700;">Loading...</span>
+        </p>
+      </div>
+      <div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
+        <button class="btn-action" onclick="refreshReports()" style="
+          padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
+          display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
+          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 14px rgba(94,114,228,.35);
+          transition:transform .15s ease, box-shadow .15s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(94,114,228,.4)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(94,114,228,.35)';">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button class="btn-action" onclick="showExportModal()" style="
+          padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
+          display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
+          background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,.35);
+          transition:transform .15s ease, box-shadow .15s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(16,185,129,.4)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(16,185,129,.35)';">
+          <i class="fas fa-download"></i> Export
+        </button>
+      </div>
     </div>
 
     <!-- Date Range Selector -->
@@ -5300,35 +5267,30 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 
-   <div id="settings" class="page">
-    <div class="page-header">
+    <!-- Settings Page -->
+    <div id="settings" class="page">
+      <div class="page-header">
         <h1><i class="fas fa-cog"></i> System Settings</h1>
         <p>Configure system preferences and analytics settings</p>
-    </div>
+      </div>
 
-    <!-- Appearance Settings -->
-    <div class="settings-card">
-        <div class="settings-header">
-            <i class="fas fa-palette"></i>
-            <h3>Appearance</h3>
-        </div>
-        <div class="settings-content">
+   
+
+        <div class="settings-card">
+          <div class="settings-header"><i class="fas fa-palette"></i><h3>System Preferences</h3></div>
+          <div class="settings-content">
             <div class="toggle-group">
-                <div class="toggle-item">
-                    <div class="toggle-info">
-                        <strong>Dark Mode</strong>
-                        <p>Switch between light and dark theme</p>
-                    </div>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
-                        <span class="slider"></span>
-                    </div>
+              <div class="toggle-item">
+                <div><strong>Dark Mode</strong><p>Switch to dark theme</p></div>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
+                  <span class="slider"></span>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-	  
-	  
+      </div>
     </div>
   </main>
 </div>
