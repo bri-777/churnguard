@@ -3156,9 +3156,9 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
 .history-section {
   position: absolute;
   top: 650px;
-  left: 59%;
+  left: 58%;
   transform: translateX(-50%);
-  width: 80%; /* wide, but still leaves some margin */
+  width: 77%; /* wide, but still leaves some margin */
 }
 
 
