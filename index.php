@@ -2738,91 +2738,90 @@ const ModalManager = {
         console.log('[MODAL] Target modal closed');
     },
 
-  async saveTarget(event) {
-    event.preventDefault();
+    async saveTarget(event) {
+        event.preventDefault();
 
-    // Collect form data with correct backend parameter names
-    const formData = {
-        target_name: Utils.$('#targetName')?.value.trim(),
-        target_type: Utils.$('#targetType')?.value,
-        target_value: parseFloat(Utils.$('#targetValue')?.value),
-        start_date: Utils.$('#targetStartDate')?.value,
-        end_date: Utils.$('#targetEndDate')?.value,
-        store: Utils.$('#targetStore')?.value.trim() || ''
-    };
+        // Collect form data
+        const formData = {
+            name: Utils.$('#targetName')?.value.trim(),
+            type: Utils.$('#targetType')?.value,
+            value: parseFloat(Utils.$('#targetValue')?.value),
+            start_date: Utils.$('#targetStartDate')?.value,
+            end_date: Utils.$('#targetEndDate')?.value,
+            store: Utils.$('#targetStore')?.value.trim() || ''
+        };
 
-    // Validation
-    if (!formData.target_name) {
-        UIManager.showNotification('Please enter a target name', 'warning');
-        Utils.$('#targetName')?.focus();
-        return;
-    }
-
-    if (!formData.target_type) {
-        UIManager.showNotification('Please select a target type', 'warning');
-        Utils.$('#targetType')?.focus();
-        return;
-    }
-
-    if (isNaN(formData.target_value) || formData.target_value <= 0) {
-        UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
-        Utils.$('#targetValue')?.focus();
-        return;
-    }
-
-    if (formData.target_value > 999999999) {
-        UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
-        Utils.$('#targetValue')?.focus();
-        return;
-    }
-
-    if (!formData.start_date || !formData.end_date) {
-        UIManager.showNotification('Please select both start and end dates', 'warning');
-        return;
-    }
-
-    if (new Date(formData.end_date) < new Date(formData.start_date)) {
-        UIManager.showNotification('End date must be after start date', 'warning');
-        Utils.$('#targetEndDate')?.focus();
-        return;
-    }
-
-    AppState.incrementLoading();
-    try {
-        let result;
-        
-        if (AppState.editingTargetId) {
-            // For updates, add the ID
-            formData.id = AppState.editingTargetId;
-            result = await APIService.fetch('update_target', formData);
-        } else {
-            // For new targets, use GET request like other endpoints
-            result = await APIService.fetch('save_target', formData);
+        // Validation
+        if (!formData.name) {
+            UIManager.showNotification('Please enter a target name', 'warning');
+            Utils.$('#targetName')?.focus();
+            return;
         }
-        
-        if (!result) return;
 
-        UIManager.showNotification(
-            AppState.editingTargetId ? 'Target updated successfully' : 'Target created successfully', 
-            'success'
-        );
-        
-        this.close();
-        
-        // Reload data
-        await Promise.all([
-            TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
-            DataManager.loadKPISummary()
-        ]);
-        
-        console.log('[MODAL] Target saved successfully');
-    } catch (error) {
-        console.error('[MODAL] Save Target Error:', error);
-        UIManager.showNotification(error.message || 'Failed to save target', 'error');
-    } finally {
-        AppState.decrementLoading();
+        if (!formData.type) {
+            UIManager.showNotification('Please select a target type', 'warning');
+            Utils.$('#targetType')?.focus();
+            return;
+        }
+
+        if (isNaN(formData.value) || formData.value <= 0) {
+            UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
+            Utils.$('#targetValue')?.focus();
+            return;
+        }
+
+        if (formData.value > 999999999) {
+            UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
+            Utils.$('#targetValue')?.focus();
+            return;
+        }
+
+        if (!formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please select both start and end dates', 'warning');
+            return;
+        }
+
+        if (new Date(formData.end_date) < new Date(formData.start_date)) {
+            UIManager.showNotification('End date must be after start date', 'warning');
+            Utils.$('#targetEndDate')?.focus();
+            return;
+        }
+
+        AppState.incrementLoading();
+        try {
+            const action = AppState.editingTargetId ? 'update_target' : 'save_target';
+            
+            if (AppState.editingTargetId) {
+                formData.id = AppState.editingTargetId;
+            }
+
+            console.log(`[MODAL] Saving target with action: ${action}`, formData);
+            
+            const result = await APIService.post(action, formData);
+            
+            if (!result) return;
+
+            UIManager.showNotification(
+                AppState.editingTargetId ? 'Target updated successfully' : 'Target created successfully', 
+                'success'
+            );
+            
+            this.close();
+            
+            // Reload data
+            await Promise.all([
+                TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                DataManager.loadKPISummary()
+            ]);
+            
+            console.log('[MODAL] Target saved successfully');
+        } catch (error) {
+            console.error('[MODAL] Save Target Error:', error);
+            UIManager.showNotification(error.message || 'Failed to save target', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
     }
-}
 };
 
 // ==================== GLOBAL FUNCTIONS ====================
