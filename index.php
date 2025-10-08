@@ -1996,18 +1996,11 @@ const APIService = {
         }
     },
 
-   async post(action, body, retryCount = 0) {
+  async post(action, body, retryCount = 0) {
     const url = new URL(CONFIG.API_BASE, window.location.origin);
     url.searchParams.append('action', action);
-    
-    // Add body parameters to URL for GET-style request
-    Object.entries(body).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && value !== '') {
-            url.searchParams.append(key, String(value));
-        }
-    });
 
-    console.log(`[API] POST ${action}:`, url.toString());
+    console.log(`[API] POST ${action}:`, body);
 
     const controller = new AbortController();
     const requestId = `${action}-${Date.now()}-${Math.random()}`;
@@ -2019,11 +2012,12 @@ const APIService = {
 
     try {
         const response = await fetch(url.toString(), {
-            method: 'GET',
+            method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
                 'X-Requested-With': 'XMLHttpRequest'
             },
+            body: new URLSearchParams(body).toString(),
             signal: controller.signal,
             credentials: 'same-origin',
             cache: 'no-cache'
