@@ -2743,13 +2743,13 @@ const ModalManager = {
 
         // Collect form data
         const formData = {
-            name: Utils.$('#targetName')?.value.trim(),
-            type: Utils.$('#targetType')?.value,
-            value: parseFloat(Utils.$('#targetValue')?.value),
-            start_date: Utils.$('#targetStartDate')?.value,
-            end_date: Utils.$('#targetEndDate')?.value,
-            store: Utils.$('#targetStore')?.value.trim() || ''
-        };
+    target_name: Utils.$('#targetName')?.value.trim(),
+    target_type: Utils.$('#targetType')?.value,
+    target_value: parseFloat(Utils.$('#targetValue')?.value),
+    start_date: Utils.$('#targetStartDate')?.value,
+    end_date: Utils.$('#targetEndDate')?.value,
+    store: Utils.$('#targetStore')?.value.trim() || ''
+};
 
         // Validation
         if (!formData.name) {
