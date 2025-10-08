@@ -5054,7 +5054,51 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
   </div>
 
+  <!-- Make content flow vertically so metrics sit BELOW the chart -->
+  <div class="main-content" style="display:block; max-width:1400px; margin:0 auto; padding:0 1.25rem 1.25rem;">
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title">📈 Customer Traffic & Churn Analytics</div>
+        <div class="date-picker-container">
+          <div class="date-picker">
+            <div class="date-picker-input" onclick="toggleChartDatePicker()">
+              <span id="selectedChartDateRange">Last 14 Days</span>
+              <span>▼</span>
+            </div>
+            <div class="date-picker-dropdown" id="chartDatePickerDropdown">
+              <div class="date-option" data-value="today">
+                <span>Today</span>
+                <span class="date-option-range">Current day</span>
+              </div>
+              <div class="date-option" data-value="7days">
+                <span>Last 7 Days</span>
+                <span class="date-option-range">Week overview</span>
+              </div>
+              <div class="date-option active" data-value="14days">
+                <span>Last 14 Days</span>
+                <span class="date-option-range">2-week trend</span>
+              </div>
+            </div>
+          </div>
+          <button class="refresh-btn" onclick="refreshDashboardData()">
+            <span>🔄</span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-loading" id="chartLoadingIndicator">
+          <div class="loading-spinner"></div>
+        </div>
+        <div class="chart-canvas">
+          <canvas id="trafficChurnChart" width="800" height="400"></canvas>
+          <div class="chart-tooltip" id="chartTooltipDisplay"></div>
+        </div>
+      </div>
+    </div>
 
+  
+  </div>
 
   <div class="history-section">
     <div class="history-header">
