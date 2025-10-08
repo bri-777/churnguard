@@ -1996,87 +1996,87 @@ const APIService = {
         }
     },
 
-  async post(action, body, retryCount = 0) {
-    const url = new URL(CONFIG.API_BASE, window.location.origin);
-    url.searchParams.append('action', action);
+    async post(action, body, retryCount = 0) {
+        const url = new URL(CONFIG.API_BASE, window.location.origin);
+        url.searchParams.append('action', action);
 
-    console.log(`[API] POST ${action}:`, body);
+        console.log(`[API] POST ${action}:`, body);
 
-    const controller = new AbortController();
-    const requestId = `${action}-${Date.now()}-${Math.random()}`;
-    AppState.activeRequests.set(requestId, controller);
+        const controller = new AbortController();
+        const requestId = `${action}-${Date.now()}-${Math.random()}`;
+        AppState.activeRequests.set(requestId, controller);
 
-    const timeoutId = setTimeout(() => {
-        controller.abort();
-    }, CONFIG.REQUEST_TIMEOUT);
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, CONFIG.REQUEST_TIMEOUT);
 
-    try {
-        const response = await fetch(url.toString(), {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: new URLSearchParams(body).toString(),
-            signal: controller.signal,
-            credentials: 'same-origin',
-            cache: 'no-cache'
-        });
+        try {
+            const response = await fetch(url.toString(), {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal,
+                credentials: 'same-origin',
+                cache: 'no-cache'
+            });
 
-        clearTimeout(timeoutId);
-        AppState.activeRequests.delete(requestId);
+            clearTimeout(timeoutId);
+            AppState.activeRequests.delete(requestId);
 
-        console.log(`[API] POST ${action} Response:`, response.status);
+            console.log(`[API] POST ${action} Response:`, response.status);
 
-        if (response.status === 401) {
-            UIManager.showNotification('Session expired. Redirecting to login...', 'error');
-            setTimeout(() => {
-                window.location.href = '/login.php';
-            }, 2000);
-            throw new Error('Unauthorized');
+            if (response.status === 401) {
+                UIManager.showNotification('Session expired. Redirecting to login...', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.php';
+                }, 2000);
+                throw new Error('Unauthorized');
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`[API] POST ${action} Error:`, errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Invalid response format. Expected JSON.');
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'error') {
+                throw new Error(data.message || 'API error occurred');
+            }
+
+            console.log(`[API] POST ${action} Success:`, data);
+            return data;
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            AppState.activeRequests.delete(requestId);
+
+            if (error.name === 'AbortError') {
+                console.log(`[API] POST ${action} Cancelled`);
+                return null;
+            }
+
+            console.error(`[API] POST ${action} Error:`, error);
+
+            if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                const delay = CONFIG.RETRY_DELAY * (retryCount + 1);
+                console.log(`[API] Retrying POST ${action} in ${delay}ms (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return this.post(action, body, retryCount + 1);
+            }
+
+            throw error;
         }
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`[API] POST ${action} Error:`, errorText);
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            throw new Error('Invalid response format. Expected JSON.');
-        }
-
-        const data = await response.json();
-        
-        if (data.status === 'error') {
-            throw new Error(data.message || 'API error occurred');
-        }
-
-        console.log(`[API] POST ${action} Success:`, data);
-        return data;
-
-    } catch (error) {
-        clearTimeout(timeoutId);
-        AppState.activeRequests.delete(requestId);
-
-        if (error.name === 'AbortError') {
-            console.log(`[API] POST ${action} Cancelled`);
-            return null;
-        }
-
-        console.error(`[API] POST ${action} Error:`, error);
-
-        if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
-            const delay = CONFIG.RETRY_DELAY * (retryCount + 1);
-            console.log(`[API] Retrying POST ${action} in ${delay}ms (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return this.post(action, body, retryCount + 1);
-        }
-
-        throw error;
     }
-}
 };
 
 // ==================== CHART MANAGER ====================
@@ -2741,7 +2741,7 @@ const ModalManager = {
   async saveTarget(event) {
     event.preventDefault();
 
-    // Collect form data
+    // Collect form data with correct backend parameter names
     const formData = {
         target_name: Utils.$('#targetName')?.value.trim(),
         target_type: Utils.$('#targetType')?.value,
@@ -2792,10 +2792,12 @@ const ModalManager = {
         let result;
         
         if (AppState.editingTargetId) {
+            // For updates, add the ID
             formData.id = AppState.editingTargetId;
-            result = await APIService.post('update_target', formData);
+            result = await APIService.fetch('update_target', formData);
         } else {
-            result = await APIService.post('save_target', formData);
+            // For new targets, use GET request like other endpoints
+            result = await APIService.fetch('save_target', formData);
         }
         
         if (!result) return;
