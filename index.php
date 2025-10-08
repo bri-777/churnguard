@@ -1997,93 +1997,86 @@ const APIService = {
     },
 
     async post(action, body, retryCount = 0) {
-    const url = new URL(CONFIG.API_BASE, window.location.origin);
-    url.searchParams.append('action', action);
+        const url = new URL(CONFIG.API_BASE, window.location.origin);
+        url.searchParams.append('action', action);
 
-    console.log(`[API] POST ${action}:`, body);
+        console.log(`[API] POST ${action}:`, body);
 
-    const controller = new AbortController();
-    const requestId = `${action}-${Date.now()}-${Math.random()}`;
-    AppState.activeRequests.set(requestId, controller);
+        const controller = new AbortController();
+        const requestId = `${action}-${Date.now()}-${Math.random()}`;
+        AppState.activeRequests.set(requestId, controller);
 
-    const timeoutId = setTimeout(() => {
-        controller.abort();
-    }, CONFIG.REQUEST_TIMEOUT);
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, CONFIG.REQUEST_TIMEOUT);
 
-    try {
-        // Create FormData for proper POST submission
-        const formData = new FormData();
-        Object.entries(body).forEach(([key, value]) => {
-            if (value !== null && value !== undefined && value !== '') {
-                formData.append(key, String(value));
+        try {
+            const response = await fetch(url.toString(), {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal,
+                credentials: 'same-origin',
+                cache: 'no-cache'
+            });
+
+            clearTimeout(timeoutId);
+            AppState.activeRequests.delete(requestId);
+
+            console.log(`[API] POST ${action} Response:`, response.status);
+
+            if (response.status === 401) {
+                UIManager.showNotification('Session expired. Redirecting to login...', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.php';
+                }, 2000);
+                throw new Error('Unauthorized');
             }
-        });
 
-        const response = await fetch(url.toString(), {
-            method: 'POST',
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData,
-            signal: controller.signal,
-            credentials: 'same-origin',
-            cache: 'no-cache'
-        });
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`[API] POST ${action} Error:`, errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
 
-        clearTimeout(timeoutId);
-        AppState.activeRequests.delete(requestId);
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Invalid response format. Expected JSON.');
+            }
 
-        console.log(`[API] POST ${action} Response:`, response.status);
+            const data = await response.json();
+            
+            if (data.status === 'error') {
+                throw new Error(data.message || 'API error occurred');
+            }
 
-        if (response.status === 401) {
-            UIManager.showNotification('Session expired. Redirecting to login...', 'error');
-            setTimeout(() => {
-                window.location.href = '/login.php';
-            }, 2000);
-            throw new Error('Unauthorized');
+            console.log(`[API] POST ${action} Success:`, data);
+            return data;
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            AppState.activeRequests.delete(requestId);
+
+            if (error.name === 'AbortError') {
+                console.log(`[API] POST ${action} Cancelled`);
+                return null;
+            }
+
+            console.error(`[API] POST ${action} Error:`, error);
+
+            if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
+                const delay = CONFIG.RETRY_DELAY * (retryCount + 1);
+                console.log(`[API] Retrying POST ${action} in ${delay}ms (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return this.post(action, body, retryCount + 1);
+            }
+
+            throw error;
         }
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`[API] POST ${action} Error:`, errorText);
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            throw new Error('Invalid response format. Expected JSON.');
-        }
-
-        const data = await response.json();
-        
-        if (data.status === 'error') {
-            throw new Error(data.message || 'API error occurred');
-        }
-
-        console.log(`[API] POST ${action} Success:`, data);
-        return data;
-
-    } catch (error) {
-        clearTimeout(timeoutId);
-        AppState.activeRequests.delete(requestId);
-
-        if (error.name === 'AbortError') {
-            console.log(`[API] POST ${action} Cancelled`);
-            return null;
-        }
-
-        console.error(`[API] POST ${action} Error:`, error);
-
-        if (retryCount < CONFIG.MAX_RETRIES && !error.message.includes('Unauthorized')) {
-            const delay = CONFIG.RETRY_DELAY * (retryCount + 1);
-            console.log(`[API] Retrying POST ${action} in ${delay}ms (attempt ${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return this.post(action, body, retryCount + 1);
-        }
-
-        throw error;
     }
-}
 };
 
 // ==================== CHART MANAGER ====================
@@ -2745,93 +2738,90 @@ const ModalManager = {
         console.log('[MODAL] Target modal closed');
     },
 
-   async saveTarget(event) {
-    event.preventDefault();
+    async saveTarget(event) {
+        event.preventDefault();
 
-    // Collect form data
-    const formData = {
-        target_name: Utils.$('#targetName')?.value.trim(),
-        target_type: Utils.$('#targetType')?.value,
-        target_value: parseFloat(Utils.$('#targetValue')?.value),
-        start_date: Utils.$('#targetStartDate')?.value,
-        end_date: Utils.$('#targetEndDate')?.value,
-        store: Utils.$('#targetStore')?.value.trim() || ''
-    };
+        // Collect form data
+        const formData = {
+            name: Utils.$('#targetName')?.value.trim(),
+            type: Utils.$('#targetType')?.value,
+            value: parseFloat(Utils.$('#targetValue')?.value),
+            start_date: Utils.$('#targetStartDate')?.value,
+            end_date: Utils.$('#targetEndDate')?.value,
+            store: Utils.$('#targetStore')?.value.trim() || ''
+        };
 
-    // Validation
-    if (!formData.target_name) {
-        UIManager.showNotification('Please enter a target name', 'warning');
-        Utils.$('#targetName')?.focus();
-        return;
-    }
-
-    if (!formData.target_type) {
-        UIManager.showNotification('Please select a target type', 'warning');
-        Utils.$('#targetType')?.focus();
-        return;
-    }
-
-    if (isNaN(formData.target_value) || formData.target_value <= 0) {
-        UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
-        Utils.$('#targetValue')?.focus();
-        return;
-    }
-
-    if (formData.target_value > 999999999) {
-        UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
-        Utils.$('#targetValue')?.focus();
-        return;
-    }
-
-    if (!formData.start_date || !formData.end_date) {
-        UIManager.showNotification('Please select both start and end dates', 'warning');
-        return;
-    }
-
-    if (new Date(formData.end_date) < new Date(formData.start_date)) {
-        UIManager.showNotification('End date must be after start date', 'warning');
-        Utils.$('#targetEndDate')?.focus();
-        return;
-    }
-
-    AppState.incrementLoading();
-    try {
-        let action;
-        
-        if (AppState.editingTargetId) {
-            action = 'update_target';
-            formData.id = AppState.editingTargetId;
-        } else {
-            action = 'save_target';
+        // Validation
+        if (!formData.name) {
+            UIManager.showNotification('Please enter a target name', 'warning');
+            Utils.$('#targetName')?.focus();
+            return;
         }
 
-        console.log(`[MODAL] Saving target with action: ${action}`, formData);
-        
-        const result = await APIService.post(action, formData);
-        
-        if (!result) return;
+        if (!formData.type) {
+            UIManager.showNotification('Please select a target type', 'warning');
+            Utils.$('#targetType')?.focus();
+            return;
+        }
 
-        UIManager.showNotification(
-            AppState.editingTargetId ? 'Target updated successfully' : 'Target created successfully', 
-            'success'
-        );
-        
-        this.close();
-        
-        // Reload data
-        await Promise.all([
-            TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
-            DataManager.loadKPISummary()
-        ]);
-        
-        console.log('[MODAL] Target saved successfully');
-    } catch (error) {
-        console.error('[MODAL] Save Target Error:', error);
-        UIManager.showNotification(error.message || 'Failed to save target', 'error');
-    } finally {
-        AppState.decrementLoading();
+        if (isNaN(formData.value) || formData.value <= 0) {
+            UIManager.showNotification('Please enter a valid target value greater than 0', 'warning');
+            Utils.$('#targetValue')?.focus();
+            return;
+        }
+
+        if (formData.value > 999999999) {
+            UIManager.showNotification('Target value is too large. Maximum is 999,999,999', 'warning');
+            Utils.$('#targetValue')?.focus();
+            return;
+        }
+
+        if (!formData.start_date || !formData.end_date) {
+            UIManager.showNotification('Please select both start and end dates', 'warning');
+            return;
+        }
+
+        if (new Date(formData.end_date) < new Date(formData.start_date)) {
+            UIManager.showNotification('End date must be after start date', 'warning');
+            Utils.$('#targetEndDate')?.focus();
+            return;
+        }
+
+        AppState.incrementLoading();
+        try {
+            const action = AppState.editingTargetId ? 'update_target' : 'save_target';
+            
+            if (AppState.editingTargetId) {
+                formData.id = AppState.editingTargetId;
+            }
+
+            console.log(`[MODAL] Saving target with action: ${action}`, formData);
+            
+            const result = await APIService.post(action, formData);
+            
+            if (!result) return;
+
+            UIManager.showNotification(
+                AppState.editingTargetId ? 'Target updated successfully' : 'Target created successfully', 
+                'success'
+            );
+            
+            this.close();
+            
+            // Reload data
+            await Promise.all([
+                TargetManager.loadTargets(Utils.$('#targetFilter')?.value || 'all'),
+                DataManager.loadKPISummary()
+            ]);
+            
+            console.log('[MODAL] Target saved successfully');
+        } catch (error) {
+            console.error('[MODAL] Save Target Error:', error);
+            UIManager.showNotification(error.message || 'Failed to save target', 'error');
+        } finally {
+            AppState.decrementLoading();
+        }
     }
-}
 };
 
 // ==================== GLOBAL FUNCTIONS ====================
