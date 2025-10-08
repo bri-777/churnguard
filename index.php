@@ -1289,9 +1289,11 @@ function doLogout() {
             <div class="navbar-left">
                 <h1 class="brand-title">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3v18h18"/>
-                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                    </svg>
+  <circle cx="12" cy="12" r="10"></circle>
+  <circle cx="12" cy="12" r="6"></circle>
+  <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+</svg>
+
                    Performance Target
                 </h1>
             </div>
