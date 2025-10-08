@@ -4221,103 +4221,66 @@ body {
   <!-- LEFT-ALIGNED CONTAINER -->
   <div style="width:100%; max-width:1280px; margin:0;">
 
-    <div class="header-left" style="
-  flex:1;
-  min-width:260px;
-  display:flex;
-  align-items:center;
-  gap:.8rem;
-">
+    <!-- Header -->
+    <div class="report-header" style="
+      display:flex; justify-content:space-between; align-items:center; gap:1rem;
+      flex-wrap:wrap;
+      margin:0 0 1.5rem 0; padding:1.25rem 1.25rem; background:#fff; border-radius:12px;
+      box-shadow:0 6px 20px rgba(94,114,228,.12);
+    ">
+   <div class="header-left" style="flex:1; min-width:260px; display:flex; align-items:center; gap:.8rem;">
   <!-- Analytics (chart line) icon -->
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M3 3v18h18"/>
     <path d="M18 9l-5 5-3-3-4 4"/>
   </svg>
 
-  <div style="min-width:0;">
-    <h1 id="ci-title" style="
-      font-size:1.75rem;
+  <div>
+    <h1 class="page-title" id="ci-title" style="
+      font-size:1.85rem;
       font-weight:800;
-      color:#111827;
+      letter-spacing:.25px;
       margin:0 0 .25rem 0;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      color:#111827;
     ">
       Churn Analysis Report
     </h1>
-
-    <p style="
+    <p class="last-updated" style="
       font-size:.9rem;
       color:#6b7280;
       margin:0;
-      display:flex;
-      align-items:center;
-      gap:.35rem;
-      letter-spacing:.1px;
+      letter-spacing:.15px;
     ">
-      Last updated:
-      <span id="lastUpdated" style="color:#2563EB; font-weight:600;">Loading...</span>
+      Last updated: 
+      <span id="lastUpdated" style="color:#2563EB; font-weight:700;">Loading...</span>
     </p>
   </div>
 </div>
 
-<div class="header-right" style="
-  display:flex;
-  gap:.6rem;
-  align-items:center;
-">
-  <!-- Refresh Button -->
-  <button onclick="refreshReports()" style="
-    padding:.55rem .9rem;
-    border:none;
-    border-radius:.45rem;
-    font-size:.88rem;
-    font-weight:600;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:.45rem;
-    background:#2563EB;
-    color:#fff;
-    transition:all .15s ease;
-  "
-  onmouseover="this.style.background='#1D4ED8';"
-  onmouseout="this.style.background='#2563EB';">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12a9 9 0 1 1-3-6.7"/>
-      <path d="M21 3v6h-6"/>
-    </svg>
-    Refresh
+<!-- 🔹 Your original buttons (unchanged) -->
+<div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
+  <button class="btn-action" onclick="refreshReports()" style="
+    padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
+    display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
+    background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 14px rgba(94,114,228,.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(94,114,228,.4)';"
+     onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(94,114,228,.35)';">
+    <i class="fas fa-sync-alt"></i> Refresh
   </button>
 
-  <!-- Export Button -->
-  <button onclick="showExportModal()" style="
-    padding:.55rem .9rem;
-    border:none;
-    border-radius:.45rem;
-    font-size:.88rem;
-    font-weight:600;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:.45rem;
-    background:#10B981;
-    color:#fff;
-    transition:all .15s ease;
-  "
-  onmouseover="this.style.background='#059669';"
-  onmouseout="this.style.background='#10B981';">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4"/>
-      <path d="M7 10l5-5 5 5"/>
-      <path d="M12 5v12"/>
-    </svg>
-    Export
+  <button class="btn-action" onclick="showExportModal()" style="
+    padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
+    display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
+    background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(16,185,129,.4)';"
+     onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(16,185,129,.35)';">
+    <i class="fas fa-download"></i> Export
   </button>
 </div>
 
+    </div>
 
     <!-- Date Range Selector -->
     <div class="date-controls" style="
