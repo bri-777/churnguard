@@ -2,3 +2,18 @@
 signup.php
 .env
 *.env
+# Environment variables (ALWAYS ignore)
+.env
+.env.*
+!.env.example
+
+# Temporary - Remove after moving key back to .env
+api/reports/strategic_recommendation.php
+
+# PHP logs
+*.log
+php_error_log
+
+# Other sensitive files
+config.php
+database.php
