@@ -7729,568 +7729,263 @@ window.debugCustomerInsights = function() {
 
   
 
-<style>
-/* Recommendations Page Styles */
-.page-header {
-  margin-bottom: 30px;
-}
-
-.page-header h1 {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* Category Filters */
-.category-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(0,0,0,0.02);
-  border-radius: 12px;
-}
-
-.filter-btn {
-  padding: 8px 18px;
-  border: 2px solid #ddd;
-  background: white;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #555;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.filter-btn:hover {
-  border-color: #3498db;
-  color: #3498db;
-  transform: translateY(-2px);
-}
-
-.filter-btn.active {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
-  border-color: #3498db;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-}
-
-/* Recommendations Grid */
-.recommendations-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 24px;
-  margin-top: 20px;
-}
-
-.recommendation-item {
-  background: white;
-  border-radius: 16px;
-  padding: 28px;
-  border-left: 5px solid #ddd;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  position: relative;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.recommendation-item:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-
-.recommendation-item.priority-high {
-  border-left-color: #e74c3c;
-  background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
-}
-
-.recommendation-item.priority-medium {
-  border-left-color: #f39c12;
-  background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
-}
-
-.recommendation-item.priority-low {
-  border-left-color: #3498db;
-  background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
-}
-
-.recommendation-item.implemented {
-  opacity: 0.7;
-  border-left-color: #27ae60;
-  background: linear-gradient(135deg, #fff 0%, #f0fff4 100%);
-}
-
-.rec-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.rec-header-left,
-.rec-header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.rec-header i.fa-bolt {
-  font-size: 18px;
-}
-
-.priority-high .rec-header i.fa-bolt {
-  color: #e74c3c;
-}
-
-.priority-medium .rec-header i.fa-bolt {
-  color: #f39c12;
-}
-
-.priority-low .rec-header i.fa-bolt {
-  color: #3498db;
-}
-
-.rec-priority {
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.priority-high .rec-priority {
-  color: #e74c3c;
-}
-
-.priority-medium .rec-priority {
-  color: #f39c12;
-}
-
-.priority-low .rec-priority {
-  color: #3498db;
-}
-
-/* Category Badge */
-.category-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: rgba(52, 152, 219, 0.1);
-  color: #2980b9;
-  border-radius: 16px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.category-badge i {
-  font-size: 12px;
-}
-
-/* Title and Description */
-.recommendation-item h4 {
-  font-size: 19px;
-  font-weight: 700;
-  margin: 0 0 14px 0;
-  color: #2c3e50;
-  line-height: 1.4;
-}
-
-.recommendation-item p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #555;
-  margin: 0 0 20px 0;
-}
-
-/* Effectiveness Score */
-.rec-effectiveness {
-  margin: 20px 0;
-  padding: 16px;
-  background: rgba(0,0,0,0.03);
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.05);
-}
-
-.eff-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 13px;
-}
-
-.eff-label span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #666;
-  font-weight: 600;
-}
-
-.eff-label span i {
-  color: #3498db;
-}
-
-.eff-label strong {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.eff-label strong.eff-high {
-  color: #27ae60;
-}
-
-.eff-label strong.eff-medium {
-  color: #f39c12;
-}
-
-.eff-label strong.eff-low {
-  color: #e74c3c;
-}
-
-.eff-bar {
-  height: 10px;
-  background: rgba(0,0,0,0.08);
-  border-radius: 5px;
-  overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.eff-fill {
-  height: 100%;
-  border-radius: 5px;
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.eff-fill.eff-high {
-  background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
-  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
-}
-
-.eff-fill.eff-medium {
-  background: linear-gradient(90deg, #f39c12 0%, #f1c40f 100%);
-  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
-}
-
-.eff-fill.eff-low {
-  background: linear-gradient(90deg, #e74c3c 0%, #e67e73 100%);
-  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
-}
-
-/* Reasoning */
-.rec-reasoning {
-  font-size: 13px;
-  color: #555;
-  margin: 16px 0;
-  padding: 12px 14px;
-  background: rgba(52, 152, 219, 0.08);
-  border-left: 4px solid #3498db;
-  border-radius: 6px;
-  line-height: 1.6;
-}
-
-.rec-reasoning i {
-  margin-right: 8px;
-  color: #3498db;
-  font-size: 14px;
-}
-
-/* Metrics */
-.rec-metrics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 18px;
-  border-top: 2px solid rgba(0,0,0,0.06);
-}
-
-.rec-metrics span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  padding: 8px 14px;
-  background: rgba(0,0,0,0.05);
-  border-radius: 20px;
-  color: #555;
-  font-weight: 600;
-}
-
-.rec-metrics span i {
-  color: #27ae60;
-  font-size: 11px;
-}
-
-/* Actions */
-.rec-actions {
-  margin-top: 20px;
-  padding-top: 18px;
-  border-top: 2px solid rgba(0,0,0,0.06);
-}
-
-.btn-implement {
-  width: 100%;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-implement:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.3);
-}
-
-.btn-implement:disabled {
-  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-
-/* AI Badges */
-.ai-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 24px;
-  font-size: 13px;
-  font-weight: 700;
-  animation: shimmer 2s infinite;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.ai-badge i {
-  font-size: 15px;
-}
-
-@keyframes shimmer {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
-}
-
-.ai-mini-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 50%;
-  font-size: 13px;
-  animation: pulse 2s infinite;
-  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-/* Empty/Error States */
-.no-recommendations,
-.error-recommendations {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 80px 30px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-}
-
-.no-recommendations i {
-  font-size: 72px;
-  color: #27ae60;
-  margin-bottom: 24px;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-.error-recommendations i {
-  font-size: 72px;
-  color: #e74c3c;
-  margin-bottom: 24px;
-}
-
-.no-recommendations h3,
-.error-recommendations h3 {
-  font-size: 26px;
-  margin: 0 0 14px 0;
-  color: #2c3e50;
-  font-weight: 700;
-}
-
-.no-recommendations p,
-.error-recommendations p {
-  font-size: 16px;
-  color: #7f8c8d;
-  max-width: 600px;
-  margin: 0 auto 12px;
-  line-height: 1.6;
-}
-
-.no-recommendations small {
-  display: block;
-  margin-top: 16px;
-  color: #95a5a6;
-  font-size: 14px;
-}
-
-.error-recommendations small {
-  display: block;
-  margin: 16px auto 20px;
-  color: #95a5a6;
-  font-size: 13px;
-  max-width: 500px;
-}
-
-.btn-retry {
-  margin-top: 20px;
-  padding: 12px 24px;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-retry:hover {
-  background: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-}
-
-/* Toast Notifications */
-.toast {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 16px 24px;
-  background: #2c3e50;
-  color: white;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  z-index: 10000;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.toast.toast-success {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-}
-
-.toast.toast-error {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .recommendations-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+  /* -------------------- Recommendations (api/, optional) -------------------- */
+ async function refreshRecommendations() {
+  try {
+    const j = await apiTry([
+      'api/reports/strategic_recommendation.php',
+      'api/reports/stratigic_recommendation.php'
+    ]);
+
+    const items = Array.isArray(j.recommendations) ? j.recommendations : [];
+    if (!items.length) {
+      showNoRecommendations();
+      return;
+    }
+
+    const grid = document.querySelector('#recommendations .recommendations-grid');
+    if (!grid) return;
+
+    // Show AI badge if powered by AI
+    const aiPowered = j.ai_powered;
+    const headerBadge = aiPowered 
+      ? '<span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered</span>' 
+      : '';
+
+    // Update header
+    const pageHeader = document.querySelector('#recommendations .page-header h1');
+    if (pageHeader && aiPowered) {
+      pageHeader.innerHTML = `
+        <i class="fas fa-lightbulb"></i> Strategic Store Recommendations 
+        ${headerBadge}
+      `;
+    }
+
+    // Category icons mapping
+    const categoryIcons = {
+      'Operations': 'fa-cogs',
+      'Merchandising': 'fa-store',
+      'Promotions': 'fa-tags',
+      'Inventory': 'fa-boxes',
+      'Experience': 'fa-smile',
+      'Traffic': 'fa-chart-line'
+    };
+
+    grid.innerHTML = items.map(it => {
+      const pri = String(it.priority || 'medium').toLowerCase();
+      const cl = pri === 'high' ? 'priority-high' 
+               : pri === 'low' ? 'priority-low' 
+               : 'priority-medium';
+      const head = pri === 'high' ? 'High Priority' 
+                 : pri === 'low' ? 'Low Priority' 
+                 : 'Medium Priority';
+
+      // Effectiveness score and bar
+      const effectiveness = parseInt(it.effectiveness || 75);
+      const effClass = effectiveness >= 80 ? 'eff-high' 
+                     : effectiveness >= 60 ? 'eff-medium' 
+                     : 'eff-low';
+
+      // Category badge
+      const category = it.category || 'General';
+      const categoryIcon = categoryIcons[category] || 'fa-lightbulb';
+      const categoryBadge = `
+        <span class="category-badge">
+          <i class="fas ${categoryIcon}"></i> ${category}
+        </span>
+      `;
+
+      // Metrics display
+      const metrics = Array.isArray(it.metrics) && it.metrics.length
+        ? it.metrics.filter(m => m && m.trim())
+        : [
+            it.impact ? `Impact: ${it.impact}` : null,
+            it.eta ? `Timeline: ${it.eta}` : null,
+            it.cost ? `Cost: ${it.cost}` : null
+          ].filter(Boolean);
+
+      // AI badge on card
+      const aiCardBadge = it.ai_generated 
+        ? '<span class="ai-mini-badge" title="AI Generated"><i class="fas fa-sparkles"></i></span>' 
+        : '';
+
+      // Reasoning tooltip
+      const reasoning = it.reasoning 
+        ? `<div class="rec-reasoning">
+             <i class="fas fa-info-circle"></i> 
+             <span>${escapeHtml(it.reasoning)}</span>
+           </div>` 
+        : '';
+
+      return `
+        <div class="recommendation-item ${cl}" data-category="${category}">
+          <div class="rec-header">
+            <div class="rec-header-left">
+              <i class="fas fa-bolt"></i>
+              <span class="rec-priority">${head}</span>
+            </div>
+            <div class="rec-header-right">
+              ${categoryBadge}
+              ${aiCardBadge}
+            </div>
+          </div>
+          
+          <h4>${escapeHtml(String(it.title || 'Recommendation'))}</h4>
+          <p>${escapeHtml(String(it.description || '').trim())}</p>
+          
+          <div class="rec-effectiveness">
+            <div class="eff-label">
+              <span><i class="fas fa-chart-bar"></i> Success Probability</span>
+              <strong class="${effClass}">${effectiveness}%</strong>
+            </div>
+            <div class="eff-bar">
+              <div class="eff-fill ${effClass}" style="width: ${effectiveness}%"></div>
+            </div>
+          </div>
+          
+          ${reasoning}
+          
+          <div class="rec-metrics">
+            ${metrics.map(m => `<span><i class="fas fa-check-circle"></i> ${escapeHtml(String(m))}</span>`).join('')}
+          </div>
+
+          <div class="rec-actions">
+            <button class="btn-implement" onclick="markAsImplemented(this)" data-title="${escapeHtml(it.title)}">
+              <i class="fas fa-check"></i> Mark as Implemented
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add filter buttons if not already present
+    addCategoryFilters();
+
+  } catch (e) {
+    console.warn('[Recommendations]', e.message);
+    showErrorRecommendations(e.message);
   }
 }
 
-@media (max-width: 768px) {
-  .recommendations-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+// Add category filter buttons
+function addCategoryFilters() {
+  const pageHeader = document.querySelector('#recommendations .page-header');
+  if (!pageHeader || document.querySelector('.category-filters')) return;
+
+  const categories = ['All', 'Operations', 'Merchandising', 'Promotions', 'Inventory', 'Experience', 'Traffic'];
+  const filterHtml = `
+    <div class="category-filters">
+      ${categories.map(cat => 
+        `<button class="filter-btn ${cat === 'All' ? 'active' : ''}" 
+                onclick="filterByCategory('${cat}')" 
+                data-category="${cat}">
+          ${cat}
+        </button>`
+      ).join('')}
+    </div>
+  `;
   
-  .recommendation-item {
-    padding: 24px;
-  }
+  pageHeader.insertAdjacentHTML('beforeend', filterHtml);
+}
+
+// Filter recommendations by category
+function filterByCategory(category) {
+  const items = document.querySelectorAll('.recommendation-item');
+  const buttons = document.querySelectorAll('.filter-btn');
   
-  .category-filters {
-    gap: 8px;
-  }
+  // Update active button
+  buttons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.category === category);
+  });
+
+  // Show/hide items
+  items.forEach(item => {
+    if (category === 'All') {
+      item.style.display = '';
+      item.style.animation = 'fadeIn 0.3s ease';
+    } else {
+      const matches = item.dataset.category === category;
+      item.style.display = matches ? '' : 'none';
+      if (matches) item.style.animation = 'fadeIn 0.3s ease';
+    }
+  });
+}
+
+// Mark recommendation as implemented
+function markAsImplemented(button) {
+  const card = button.closest('.recommendation-item');
+  const title = button.dataset.title;
   
-  .filter-btn {
-    padding: 6px 14px;
-    font-size: 12px;
-  }
-  
-  .ai-badge {
-    font-size: 11px;
-    padding: 6px 12px;
-  }
-  
-  .rec-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .rec-header-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .toast {
-    right: 15px;
-    bottom: 15px;
-    left: 15px;
-    text-align: center;
+  if (confirm(`Mark "${title}" as implemented?`)) {
+    card.classList.add('implemented');
+    button.innerHTML = '<i class="fas fa-check-double"></i> Implemented';
+    button.disabled = true;
+    
+    // Optional: Send to backend to track
+    // fetch('api/track_implementation.php', { method: 'POST', body: JSON.stringify({ title }) });
+    
+    // Show success message
+    showToast('✅ Recommendation marked as implemented!', 'success');
   }
 }
 
-/* Print Styles */
-@media print {
-  .category-filters,
-  .rec-actions,
-  .ai-badge,
-  .ai-mini-badge {
-    display: none !important;
-  }
+// Toast notification
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
   
-  .recommendation-item {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
+  setTimeout(() => toast.classList.add('show'), 100);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
-</style>
+
+function showNoRecommendations() {
+  const grid = document.querySelector('#recommendations .recommendations-grid');
+  if (!grid) return;
+  grid.innerHTML = `
+    <div class="no-recommendations">
+      <i class="fas fa-check-circle"></i>
+      <h3>All Systems Operating Smoothly!</h3>
+      <p>Your store metrics look healthy. Continue monitoring your daily performance and maintaining current operations.</p>
+      <small>Recommendations will appear here when optimization opportunities are detected.</small>
+    </div>
+  `;
+}
+
+function showErrorRecommendations(error) {
+  const grid = document.querySelector('#recommendations .recommendations-grid');
+  if (!grid) return;
+  grid.innerHTML = `
+    <div class="error-recommendations">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Unable to Generate Recommendations</h3>
+      <p>Please refresh the page or check your data inputs. If the issue persists, contact support.</p>
+      <small>${escapeHtml(error)}</small>
+      <button onclick="refreshRecommendations()" class="btn-retry">
+        <i class="fas fa-sync"></i> Retry
+      </button>
+    </div>
+  `;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Auto-refresh every 10 minutes (reduced frequency)
+setInterval(refreshRecommendations, 600000);
+
+// Export for external use
+window.filterByCategory = filterByCategory;
+window.markAsImplemented = markAsImplemented;
+
+  
  
 
   
