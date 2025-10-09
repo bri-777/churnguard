@@ -7,7 +7,7 @@ signup.php
 .env.*
 !.env.example
 
-# Temporary - Remove after moving key back to .env
+
 api/reports/strategic_recommendation.php
 
 # PHP logs
