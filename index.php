@@ -7729,8 +7729,8 @@ window.debugCustomerInsights = function() {
 
   
 
-  /* -------------------- Recommendations (api/, optional) -------------------- */
- async function refreshRecommendations() {
+/* Enhanced Recommendations Display with Categories */
+async function refreshRecommendations() {
   try {
     const j = await apiTry([
       'api/reports/strategic_recommendation.php',
