@@ -4,7 +4,7 @@ require __DIR__ . '/../_bootstrap.php';
 $uid = require_login();
 
 // ⚠️ PASTE YOUR API KEY HERE (FOR TESTING ONLY)
-$HARDCODED_API_KEY = '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'; // Replace with your FULL key
+$HARDCODED_API_KEY = 'sk-proj-hjwylpeCxB3B1CwDE4T0bWJk63X4fFdB3C2DMG7Jc6'; // Replace with your FULL key
 $HARDCODED_MODEL = 'gpt-4o-mini';
 
 /**
