@@ -7730,10 +7730,54 @@ window.debugCustomerInsights = function() {
   
 
   /* -------------------- Recommendations (api/, optional) -------------------- */
+  async function refreshRecommendations() {
+    try {
+      const j = await apiTry(['api/reports/stratigic_recommendation.php', 'api/reports/strategic_recommendation.php']);
+      const items = Array.isArray(j.recommendations) ? j.recommendations : (Array.isArray(j.items) ? j.items : []);
+      if (!items.length) return;
+
+      const grid = document.querySelector('#recommendations .recommendations-grid');
+      if (!grid) return;
+
+      grid.innerHTML = items.map(it => {
+        const pri  = String(it.priority || 'medium').toLowerCase();
+        const cl   = pri === 'high' ? 'priority-high' : pri === 'low' ? 'priority-low' : 'priority-medium';
+        const head = pri === 'high' ? 'High Priority' : pri === 'low' ? 'Low Priority' : 'Medium Priority';
+
+        const metrics = Array.isArray(it.metrics) && it.metrics.length
+          ? it.metrics
+          : [
+              it.impact ? `Impact: ${it.impact}` : null,
+              it.eta    ? `ETA: ${it.eta}`       : null,
+              it.cost   ? `Cost: ${it.cost}`     : null,
+            ].filter(Boolean);
+
+        return `
+          <div class="recommendation-item ${cl}">
+            <div class="rec-header"><i class="fas fa-bolt"></i><span class="rec-priority">${head}</span></div>
+            <h4>${String(it.title || 'Recommendation')}</h4>
+            <p>${String(it.description || '').trim()}</p>
+            <div class="rec-metrics">${metrics.map(m => `<span>${String(m)}</span>`).join('')}</div>
+          </div>
+        `;
+      }).join('');
+    } catch (e) { console.warn('[Recommendations]', e.message); }
+  }
 
 
-  <link rel = "stylesheet" href = "recomm.css">
-  <script src ="recommendation.js"></script> 
+  
+  /* Customer Monitoring JavaScript - Fixed with Unique Names */
+
+// Main function to load customer monitoring data
+// Enhanced Customer Monitoring JavaScript - 14-Day Historical Analysis
+// Complete rewrite with comprehensive error handling and performance optimization
+
+
+
+
+  
+  
+  
   
   
   
