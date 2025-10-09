@@ -30,7 +30,7 @@ if (!$me) {
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-
+<link rel="stylesheet" href="recomm.css"><!-- use YOUR provided CSS file -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -7730,50 +7730,333 @@ window.debugCustomerInsights = function() {
   
 
   /* -------------------- Recommendations (api/, optional) -------------------- */
-  async function refreshRecommendations() {
-    try {
-      const j = await apiTry(['api/reports/stratigic_recommendation.php', 'api/reports/strategic_recommendation.php']);
-      const items = Array.isArray(j.recommendations) ? j.recommendations : (Array.isArray(j.items) ? j.items : []);
-      if (!items.length) return;
-
-      const grid = document.querySelector('#recommendations .recommendations-grid');
-      if (!grid) return;
-
-      grid.innerHTML = items.map(it => {
-        const pri  = String(it.priority || 'medium').toLowerCase();
-        const cl   = pri === 'high' ? 'priority-high' : pri === 'low' ? 'priority-low' : 'priority-medium';
-        const head = pri === 'high' ? 'High Priority' : pri === 'low' ? 'Low Priority' : 'Medium Priority';
-
-        const metrics = Array.isArray(it.metrics) && it.metrics.length
-          ? it.metrics
-          : [
-              it.impact ? `Impact: ${it.impact}` : null,
-              it.eta    ? `ETA: ${it.eta}`       : null,
-              it.cost   ? `Cost: ${it.cost}`     : null,
-            ].filter(Boolean);
-
-        return `
-          <div class="recommendation-item ${cl}">
-            <div class="rec-header"><i class="fas fa-bolt"></i><span class="rec-priority">${head}</span></div>
-            <h4>${String(it.title || 'Recommendation')}</h4>
-            <p>${String(it.description || '').trim()}</p>
-            <div class="rec-metrics">${metrics.map(m => `<span>${String(m)}</span>`).join('')}</div>
-          </div>
-        `;
-      }).join('');
-    } catch (e) { console.warn('[Recommendations]', e.message); }
+ /* Enhanced Recommendations Display - Shows Clear Errors */
+async function refreshRecommendations() {
+  const grid = document.querySelector('#recommendations .recommendations-grid');
+  
+  // Show loading state
+  if (grid) {
+    grid.innerHTML = `
+      <div class="loading-recommendations">
+        <i class="fas fa-spinner fa-spin"></i>
+        <h3>Generating AI Recommendations...</h3>
+        <p>Analyzing your store data with OpenAI...</p>
+      </div>
+    `;
   }
 
+  try {
+    const j = await apiTry([
+      'api/reports/strategic_recommendation.php',
+      'api/reports/stratigic_recommendation.php'
+    ]);
+
+    console.log('API Response:', j);
+
+    // Check if AI powered
+    if (j.ai_powered === false) {
+      showErrorRecommendations('AI is not working. Check server logs.');
+      return;
+    }
+
+    const items = Array.isArray(j.recommendations) ? j.recommendations : [];
+    
+    if (!items.length) {
+      showErrorRecommendations('No recommendations generated. Check if you have data.');
+      return;
+    }
+
+    if (!grid) return;
+
+    // Show AI badge - should ALWAYS show if we got here
+    const aiPowered = j.ai_powered;
+    const headerBadge = '<span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered ✨</span>';
+
+    // Update header
+    const pageHeader = document.querySelector('#recommendations .page-header h1');
+    if (pageHeader) {
+      pageHeader.innerHTML = `
+        <i class="fas fa-lightbulb"></i> Strategic Store Recommendations 
+        ${headerBadge}
+      `;
+    }
+
+    // Category icons mapping
+    const categoryIcons = {
+      'Operations': 'fa-cogs',
+      'Merchandising': 'fa-store',
+      'Promotions': 'fa-tags',
+      'Inventory': 'fa-boxes',
+      'Experience': 'fa-smile',
+      'Traffic': 'fa-chart-line'
+    };
+
+    grid.innerHTML = items.map(it => {
+      const pri = String(it.priority || 'medium').toLowerCase();
+      const cl = pri === 'high' ? 'priority-high' 
+               : pri === 'low' ? 'priority-low' 
+               : 'priority-medium';
+      const head = pri === 'high' ? 'High Priority' 
+                 : pri === 'low' ? 'Low Priority' 
+                 : 'Medium Priority';
+
+      // Effectiveness score and bar
+      const effectiveness = parseInt(it.effectiveness || 75);
+      const effClass = effectiveness >= 80 ? 'eff-high' 
+                     : effectiveness >= 60 ? 'eff-medium' 
+                     : 'eff-low';
+
+      // Category badge
+      const category = it.category || 'General';
+      const categoryIcon = categoryIcons[category] || 'fa-lightbulb';
+      const categoryBadge = `
+        <span class="category-badge">
+          <i class="fas ${categoryIcon}"></i> ${category}
+        </span>
+      `;
+
+      // Metrics display
+      const metrics = Array.isArray(it.metrics) && it.metrics.length
+        ? it.metrics.filter(m => m && m.trim())
+        : [
+            it.impact ? `Impact: ${it.impact}` : null,
+            it.eta ? `Timeline: ${it.eta}` : null,
+            it.cost ? `Cost: ${it.cost}` : null
+          ].filter(Boolean);
+
+      // AI badge on card - MUST show
+      const aiCardBadge = '<span class="ai-mini-badge" title="AI Generated"><i class="fas fa-sparkles"></i></span>';
+
+      // Reasoning tooltip
+      const reasoning = it.reasoning 
+        ? `<div class="rec-reasoning">
+             <i class="fas fa-info-circle"></i> 
+             <span>${escapeHtml(it.reasoning)}</span>
+           </div>` 
+        : '';
+
+      return `
+        <div class="recommendation-item ${cl}" data-category="${category}">
+          <div class="rec-header">
+            <div class="rec-header-left">
+              <i class="fas fa-bolt"></i>
+              <span class="rec-priority">${head}</span>
+            </div>
+            <div class="rec-header-right">
+              ${categoryBadge}
+              ${aiCardBadge}
+            </div>
+          </div>
+          
+          <h4>${escapeHtml(String(it.title || 'Recommendation'))}</h4>
+          <p>${escapeHtml(String(it.description || '').trim())}</p>
+          
+          <div class="rec-effectiveness">
+            <div class="eff-label">
+              <span><i class="fas fa-chart-bar"></i> Success Probability</span>
+              <strong class="${effClass}">${effectiveness}%</strong>
+            </div>
+            <div class="eff-bar">
+              <div class="eff-fill ${effClass}" style="width: ${effectiveness}%"></div>
+            </div>
+          </div>
+          
+          ${reasoning}
+          
+          <div class="rec-metrics">
+            ${metrics.map(m => `<span><i class="fas fa-check-circle"></i> ${escapeHtml(String(m))}</span>`).join('')}
+          </div>
+
+          <div class="rec-actions">
+            <button class="btn-implement" onclick="markAsImplemented(this)" data-title="${escapeHtml(it.title)}">
+              <i class="fas fa-check"></i> Mark as Implemented
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add filter buttons
+    addCategoryFilters();
+
+    // Show success message
+    console.log('✅ AI Recommendations loaded successfully!');
+    showToast('✅ AI recommendations generated successfully!', 'success');
+
+  } catch (e) {
+    console.error('❌ Recommendations Error:', e);
+    showErrorRecommendations(e.message || 'Unknown error');
+  }
+}
+
+function addCategoryFilters() {
+  const pageHeader = document.querySelector('#recommendations .page-header');
+  if (!pageHeader || document.querySelector('.category-filters')) return;
+
+  const categories = ['All', 'Operations', 'Merchandising', 'Promotions', 'Inventory', 'Experience', 'Traffic'];
+  const filterHtml = `
+    <div class="category-filters">
+      ${categories.map(cat => 
+        `<button class="filter-btn ${cat === 'All' ? 'active' : ''}" 
+                onclick="filterByCategory('${cat}')" 
+                data-category="${cat}">
+          ${cat}
+        </button>`
+      ).join('')}
+    </div>
+  `;
+  
+  pageHeader.insertAdjacentHTML('beforeend', filterHtml);
+}
+
+function filterByCategory(category) {
+  const items = document.querySelectorAll('.recommendation-item');
+  const buttons = document.querySelectorAll('.filter-btn');
+  
+  buttons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.category === category);
+  });
+
+  items.forEach(item => {
+    if (category === 'All') {
+      item.style.display = '';
+      item.style.animation = 'fadeIn 0.3s ease';
+    } else {
+      const matches = item.dataset.category === category;
+      item.style.display = matches ? '' : 'none';
+      if (matches) item.style.animation = 'fadeIn 0.3s ease';
+    }
+  });
+}
+
+function markAsImplemented(button) {
+  const card = button.closest('.recommendation-item');
+  const title = button.dataset.title;
+  
+  if (confirm(`Mark "${title}" as implemented?`)) {
+    card.classList.add('implemented');
+    button.innerHTML = '<i class="fas fa-check-double"></i> Implemented';
+    button.disabled = true;
+    showToast('✅ Recommendation marked as implemented!', 'success');
+  }
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add('show'), 100);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function showErrorRecommendations(error) {
+  const grid = document.querySelector('#recommendations .recommendations-grid');
+  if (!grid) return;
+  
+  // Parse error message for specific issues
+  let errorTitle = '❌ OpenAI API Error';
+  let errorMessage = error;
+  let troubleshootSteps = [];
+
+  if (error.includes('API key not configured') || error.includes('.env file not found')) {
+    errorTitle = '🔑 API Key Not Found';
+    errorMessage = 'OpenAI API key is missing or .env file not found.';
+    troubleshootSteps = [
+      'Create a .env file in your project root',
+      'Add: OPENAI_API_KEY=your-key-here',
+      'Get your key from: https://platform.openai.com/api-keys',
+      'Restart your server after adding the key'
+    ];
+  } else if (error.includes('Invalid API key') || error.includes('401')) {
+    errorTitle = '🔑 Invalid API Key';
+    errorMessage = 'Your OpenAI API key is incorrect or expired.';
+    troubleshootSteps = [
+      'Generate a new API key at: https://platform.openai.com/api-keys',
+      'Update your .env file with the new key',
+      'Make sure there are no spaces before/after the key',
+      'Key should start with "sk-" or "sk-proj-"'
+    ];
+  } else if (error.includes('Rate limit') || error.includes('429')) {
+    errorTitle = '💳 No Credits / Rate Limit';
+    errorMessage = 'You have no credits or hit your rate limit.';
+    troubleshootSteps = [
+      'Add billing at: https://platform.openai.com/account/billing',
+      'Add at least $5 in credits',
+      'Wait a few minutes if you hit rate limits',
+      'Check your usage at: https://platform.openai.com/usage'
+    ];
+  } else if (error.includes('No data available')) {
+    errorTitle = '📊 No Data Available';
+    errorMessage = 'No churn data found for your store.';
+    troubleshootSteps = [
+      'Go to the Churn Prediction page',
+      'Add your store data (sales, receipts, traffic)',
+      'Run a prediction',
+      'Then come back here for recommendations'
+    ];
+  }
+
+  grid.innerHTML = `
+    <div class="error-recommendations">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h2>${errorTitle}</h2>
+      <p class="error-msg">${escapeHtml(errorMessage)}</p>
+      
+      ${troubleshootSteps.length > 0 ? `
+        <div class="troubleshoot-steps">
+          <h3>🔧 How to Fix:</h3>
+          <ol>
+            ${troubleshootSteps.map(step => `<li>${step}</li>`).join('')}
+          </ol>
+        </div>
+      ` : ''}
+      
+      <div class="error-details">
+        <details>
+          <summary>📋 Technical Details</summary>
+          <pre>${escapeHtml(error)}</pre>
+        </details>
+      </div>
+      
+      <div class="error-actions">
+        <button onclick="refreshRecommendations()" class="btn-retry">
+          <i class="fas fa-sync"></i> Retry
+        </button>
+        <button onclick="window.open('https://platform.openai.com/account', '_blank')" class="btn-openai">
+          <i class="fas fa-external-link-alt"></i> Open OpenAI Dashboard
+        </button>
+      </div>
+      
+      <p class="error-hint">
+        💡 <strong>Tip:</strong> Check your browser console (F12) and PHP error logs for more details
+      </p>
+    </div>
+  `;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Auto-refresh every 10 minutes
+setInterval(refreshRecommendations, 600000);
+
+// Export for external use
+window.filterByCategory = filterByCategory;
+window.markAsImplemented = markAsImplemented;
+window.refreshRecommendations = refreshRecommendations;
 
   
-  /* Customer Monitoring JavaScript - Fixed with Unique Names */
-
-// Main function to load customer monitoring data
-// Enhanced Customer Monitoring JavaScript - 14-Day Historical Analysis
-// Complete rewrite with comprehensive error handling and performance optimization
-
-
-
+ 
 
   
   
