@@ -1,18 +1,41 @@
 <?php
-/* api/reports/strategic_recommendation.php - HARDCODED API KEY FOR TESTING */
+/* api/reports/strategic_recommendation.php - AI ONLY (No Fallback) */
 require __DIR__ . '/../_bootstrap.php';
 $uid = require_login();
 
-// ⚠️ PASTE YOUR API KEY HERE (FOR TESTING ONLY)
-$HARDCODED_API_KEY = 'sk-proj-hjwylpeCxB3B1CwDE4T0bWJk63X4fFdB3C2DMG7Jc6'; // Replace with your FULL key
-$HARDCODED_MODEL = 'gpt-4o-mini';
+
+function loadEnv($file = __DIR__ . '/../../.env') {
+  if (!file_exists($file)) {
+    error_log("❌ ERROR: .env file not found at: $file");
+    throw new Exception('.env file not found');
+  }
+  $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+  foreach ($lines as $line) {
+    if (strpos(trim($line), '#') === 0) continue;
+    if (strpos($line, '=') === false) continue;
+    list($key, $val) = explode('=', $line, 2);
+    $_ENV[trim($key)] = trim($val);
+  }
+  error_log("✅ .env file loaded successfully");
+}
+
+loadEnv();
 
 /**
  * Call OpenAI API for intelligent store-wide recommendations
  */
-function getAIRecommendations($context, $apiKey, $model) {
+function getAIRecommendations($context) {
   error_log("=== AI RECOMMENDATION REQUEST START ===");
-  error_log("✅ Using hardcoded API key: " . substr($apiKey, 0, 15) . "..." . substr($apiKey, -8));
+  
+  $apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
+  if (empty($apiKey)) {
+    error_log("❌ CRITICAL: OPENAI_API_KEY is empty or not set in .env");
+    throw new Exception('OpenAI API key not configured in .env file');
+  }
+  
+  error_log("✅ API Key found: " . substr($apiKey, 0, 10) . "..." . substr($apiKey, -4));
+  
+  $model = $_ENV['OPENAI_MODEL'] ?? 'gpt-4o-mini';
   error_log("📊 Using model: $model");
   error_log("📈 Risk Level: {$context['risk_level']} ({$context['risk_percentage']}%)");
 
@@ -161,8 +184,9 @@ PROMPT;
     
     error_log("❌ OpenAI API Error (HTTP $httpCode): $errorMsg");
     
+    // Specific error messages for common issues
     if ($httpCode === 401) {
-      throw new Exception("Invalid API key. Please check your API key is correct and active.");
+      throw new Exception("Invalid API key. Please check your .env file and get a new key from https://platform.openai.com/api-keys");
     } elseif ($httpCode === 429) {
       throw new Exception("Rate limit exceeded or no credits. Add billing at https://platform.openai.com/account/billing");
     } elseif ($httpCode === 400) {
@@ -175,6 +199,7 @@ PROMPT;
   $data = json_decode($response, true);
   if (!isset($data['choices'][0]['message']['content'])) {
     error_log("❌ Invalid response format from OpenAI");
+    error_log("Response: " . substr($response, 0, 500));
     throw new Exception('Invalid OpenAI response format');
   }
 
@@ -194,6 +219,7 @@ PROMPT;
   $recommendations = json_decode($content, true);
   if (!is_array($recommendations)) {
     error_log("❌ Failed to parse AI response as JSON");
+    error_log("AI Response: " . substr($content, 0, 500));
     throw new Exception('Failed to parse AI recommendations - invalid JSON format');
   }
 
@@ -302,8 +328,8 @@ try {
     'graveyard_sales' => $g_sales
   ];
 
-  /* ---- Get AI Recommendations (using hardcoded key) ---- */
-  $recommendations = getAIRecommendations($aiContext, $HARDCODED_API_KEY, $HARDCODED_MODEL);
+  /* ---- Get AI Recommendations (NO FALLBACK) ---- */
+  $recommendations = getAIRecommendations($aiContext);
   
   // Enrich with metrics
   foreach ($recommendations as &$rec) {
@@ -343,6 +369,7 @@ try {
 } catch (Throwable $e) {
   error_log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   error_log("❌ FATAL ERROR: " . $e->getMessage());
+  error_log("Stack trace: " . $e->getTraceAsString());
   error_log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   
   json_error('AI Recommendation Error: ' . $e->getMessage(), 500, [
