@@ -1,30 +1,43 @@
 <?php
-/* api/reports/strategic_recommendation.php */
+/* api/reports/strategic_recommendation.php - AI ONLY (No Fallback) */
 require __DIR__ . '/../_bootstrap.php';
 $uid = require_login();
 
 // Load environment variables
 function loadEnv($file = __DIR__ . '/../../.env') {
-  if (!file_exists($file)) return;
+  if (!file_exists($file)) {
+    error_log("❌ ERROR: .env file not found at: $file");
+    throw new Exception('.env file not found');
+  }
   $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
   foreach ($lines as $line) {
     if (strpos(trim($line), '#') === 0) continue;
+    if (strpos($line, '=') === false) continue;
     list($key, $val) = explode('=', $line, 2);
     $_ENV[trim($key)] = trim($val);
   }
+  error_log("✅ .env file loaded successfully");
 }
+
 loadEnv();
 
 /**
  * Call OpenAI API for intelligent store-wide recommendations
  */
 function getAIRecommendations($context) {
+  error_log("=== AI RECOMMENDATION REQUEST START ===");
+  
   $apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
-  if (!$apiKey) {
-    throw new Exception('OpenAI API key not configured');
+  if (empty($apiKey)) {
+    error_log("❌ CRITICAL: OPENAI_API_KEY is empty or not set in .env");
+    throw new Exception('OpenAI API key not configured in .env file');
   }
-
+  
+  error_log("✅ API Key found: " . substr($apiKey, 0, 10) . "..." . substr($apiKey, -4));
+  
   $model = $_ENV['OPENAI_MODEL'] ?? 'gpt-4o-mini';
+  error_log("📊 Using model: $model");
+  error_log("📈 Risk Level: {$context['risk_level']} ({$context['risk_percentage']}%)");
 
   // Calculate additional insights
   $peakShift = 'morning';
@@ -134,6 +147,8 @@ PROMPT;
     'max_tokens' => 2500
   ];
 
+  error_log("🚀 Sending request to OpenAI API...");
+  
   $ch = curl_init('https://api.openai.com/v1/chat/completions');
   curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
@@ -146,26 +161,75 @@ PROMPT;
     CURLOPT_TIMEOUT => 30
   ]);
 
+  $startTime = microtime(true);
   $response = curl_exec($ch);
+  $endTime = microtime(true);
+  $responseTime = round(($endTime - $startTime) * 1000, 2);
+  
   $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $curlError = curl_error($ch);
   curl_close($ch);
 
+  error_log("⏱️  Response received in {$responseTime}ms");
+  error_log("📡 HTTP Status Code: $httpCode");
+
+  if (!empty($curlError)) {
+    error_log("❌ CURL ERROR: $curlError");
+    throw new Exception("Connection error: $curlError");
+  }
+
   if ($httpCode !== 200) {
-    throw new Exception("OpenAI API error: HTTP $httpCode");
+    $errorData = json_decode($response, true);
+    $errorMsg = $errorData['error']['message'] ?? 'Unknown error';
+    
+    error_log("❌ OpenAI API Error (HTTP $httpCode): $errorMsg");
+    
+    // Specific error messages for common issues
+    if ($httpCode === 401) {
+      throw new Exception("Invalid API key. Please check your .env file and get a new key from https://platform.openai.com/api-keys");
+    } elseif ($httpCode === 429) {
+      throw new Exception("Rate limit exceeded or no credits. Add billing at https://platform.openai.com/account/billing");
+    } elseif ($httpCode === 400) {
+      throw new Exception("Bad request: $errorMsg");
+    } else {
+      throw new Exception("OpenAI API error (HTTP $httpCode): $errorMsg");
+    }
   }
 
   $data = json_decode($response, true);
   if (!isset($data['choices'][0]['message']['content'])) {
+    error_log("❌ Invalid response format from OpenAI");
+    error_log("Response: " . substr($response, 0, 500));
     throw new Exception('Invalid OpenAI response format');
   }
 
   $content = trim($data['choices'][0]['message']['content']);
+  
+  // Log token usage
+  if (isset($data['usage'])) {
+    $tokens = $data['usage']['total_tokens'];
+    $cost = ($data['usage']['prompt_tokens'] / 1000000 * 0.15) + 
+            ($data['usage']['completion_tokens'] / 1000000 * 0.60);
+    error_log("💰 Tokens used: {$tokens}, Cost: $" . number_format($cost, 6));
+  }
+  
+  // Remove markdown code blocks if present
   $content = preg_replace('/^```json\s*|\s*```$/m', '', $content);
   
   $recommendations = json_decode($content, true);
   if (!is_array($recommendations)) {
-    throw new Exception('Failed to parse AI recommendations');
+    error_log("❌ Failed to parse AI response as JSON");
+    error_log("AI Response: " . substr($content, 0, 500));
+    throw new Exception('Failed to parse AI recommendations - invalid JSON format');
   }
+
+  if (count($recommendations) === 0) {
+    error_log("❌ AI returned empty recommendations array");
+    throw new Exception('AI returned no recommendations');
+  }
+
+  error_log("✅ SUCCESS: AI generated " . count($recommendations) . " recommendations");
+  error_log("=== AI RECOMMENDATION REQUEST END ===");
 
   return $recommendations;
 }
@@ -184,29 +248,20 @@ function level_from_pct(float $p): string {
   return 'Low';
 }
 
-/**
- * Improved fallback recommendations (store-wide focus)
- */
-function rec($priority, $title, $desc, $impact, $eta, $cost, $effectiveness, $reasoning, $category) {
-  return [
-    'priority' => $priority,
-    'title' => $title,
-    'description' => $desc,
-    'impact' => $impact,
-    'eta' => $eta,
-    'cost' => $cost,
-    'effectiveness' => $effectiveness,
-    'reasoning' => $reasoning,
-    'category' => $category,
-    'metrics' => []
-  ];
-}
-
 try {
+  error_log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  error_log("Starting recommendation generation for user: $uid");
+  
   /* ---- Gather latest context ---- */
   $qd = $pdo->prepare("SELECT * FROM churn_data WHERE user_id=? ORDER BY date DESC LIMIT 1");
   $qd->execute([$uid]);
   $cd = $qd->fetch(PDO::FETCH_ASSOC) ?: [];
+
+  if (empty($cd)) {
+    error_log("⚠️  No churn data found for user: $uid");
+    json_error('No data available. Please add churn data first.', 400);
+    exit;
+  }
 
   $qdp = $pdo->prepare("SELECT * FROM churn_data WHERE user_id=? ORDER BY date DESC LIMIT 2");
   $qdp->execute([$uid]);
@@ -273,181 +328,30 @@ try {
     'graveyard_sales' => $g_sales
   ];
 
-  /* ---- Get AI Recommendations ---- */
-  $recommendations = [];
-  $aiSuccess = false;
+  /* ---- Get AI Recommendations (NO FALLBACK) ---- */
+  $recommendations = getAIRecommendations($aiContext);
   
-  try {
-    $recommendations = getAIRecommendations($aiContext);
-    $aiSuccess = true;
-    
-    // Enrich with metrics
-    foreach ($recommendations as &$rec) {
-      $rec['metrics'] = [
-        "Risk: {$riskPct}%",
-        "Category: {$rec['category']}",
-        "Effectiveness: {$rec['effectiveness']}%",
-        $rec['impact'] ?? '',
-        $rec['cost'] ?? ''
-      ];
-      $rec['ai_generated'] = true;
-    }
-  } catch (Exception $e) {
-    // Improved fallback recommendations (store-wide focus)
-    error_log("AI recommendation failed: " . $e->getMessage());
-    
-    if ($riskPct >= 67) {
-      // HIGH RISK - Urgent operational interventions
-      $recommendations[] = rec(
-        'High', 
-        'Flash Weekend Sale - High-Margin Items',
-        'Launch a 3-day flash promotion on your top 20 best-selling items with 10-15% discount. Display prominently at entrance and checkout counter. Use bright signage "WEEKEND SALE!" to catch attention of passing foot traffic. Train staff to mention promo to every customer.',
-        '₱8K-12K weekend revenue boost, +25-35% footfall',
-        '2 days',
-        'Low',
-        88,
-        'High churn risk with declining traffic requires immediate aggressive promotion to reverse momentum',
-        'Promotions'
-      );
-      
-      $recommendations[] = rec(
-        'High',
-        'Express Checkout Lane + Queue Management',
-        'Designate one counter as express lane (5 items or less) during peak hours identified in your shift data. Add queue markers on floor and "Next Customer" signage. This reduces perceived wait time which is a major churn driver.',
-        '+20-30% checkout speed, -15% cart abandonment',
-        '3 days',
-        'Low',
-        85,
-        'Shift imbalance of '.$shiftImbalance.'% indicates capacity bottlenecks causing customer frustration',
-        'Operations'
-      );
-      
-      $recommendations[] = rec(
-        'High',
-        'Extend High-Value Hours Staffing',
-        'Add one extra staff member during your peak shift ('.$maxShift.' receipts). Position them to help with restocking, bagging, and customer queries to speed up overall flow. Peak efficiency = more customers served = less churn.',
-        '₱5K-8K daily uplift, +15-20% transaction capacity',
-        '5 days',
-        'Medium',
-        82,
-        'Peak shift congestion is limiting revenue potential during high-demand windows',
-        'Operations'
-      );
-    } elseif ($riskPct >= 34) {
-      // MEDIUM RISK - Preventive measures
-      $recommendations[] = rec(
-        'Medium',
-        'Bundle Builder Program (Meal Deals)',
-        'Create 3 fixed-price bundles: Breakfast (₱65), Lunch (₱85), Snack (₱50). Place bundle cards near related products. Bundle high-margin items with slower movers. Update bundles monthly based on what sells.',
-        '+8-12% basket size, ₱4K-6K daily increase',
-        '1 week',
-        'Low',
-        78,
-        'Average basket ₱'.$avgBasket.' is '.$basketDelta.'% below weekly average - bundles encourage larger purchases',
-        'Merchandising'
-      );
-      
-      $recommendations[] = rec(
-        'Medium',
-        'Happy Hour Pricing (Off-Peak Traffic)',
-        'Introduce 2-4PM "Happy Hour" with ₱5-10 discount on drinks/snacks. Promotes during slow afternoon period to redistribute traffic. Advertise with window posters and social media.',
-        '+15-25% off-peak traffic, ₱2K-4K new revenue',
-        '5 days',
-        'Low',
-        75,
-        'Traffic shows imbalance - need to attract customers during traditionally slow hours',
-        'Promotions'
-      );
-    } else {
-      // LOW RISK - Growth and optimization
-      $recommendations[] = rec(
-        'Low',
-        'Premium Product Line Introduction',
-        'Add 10-15 premium items (imported snacks, specialty drinks, organic options) at 20-30% higher margins. Target growing middle-class segment. Place at eye level on main aisle.',
-        '+₱3K-5K daily, +5-8% margin improvement',
-        '2 weeks',
-        'Medium',
-        72,
-        'Low churn risk allows experimentation with higher-margin offerings',
-        'Inventory'
-      );
-      
-      $recommendations[] = rec(
-        'Low',
-        'Store Ambiance Upgrade',
-        'Improve lighting (LED), add background music, ensure AC works well, keep floors spotless. Small touches that make customers stay longer = higher basket value. Schedule deep clean weekly.',
-        '+3-5% dwell time, +2-4% basket size',
-        '1 week',
-        'Low',
-        70,
-        'Stable metrics allow focus on customer experience enhancements for gradual growth',
-        'Experience'
-      );
-    }
-    
-    // Universal recommendation based on data patterns
-    if ($basketDelta < -5) {
-      $recommendations[] = rec(
-        'Medium',
-        'Checkout Counter Impulse Display Refresh',
-        'Rotate impulse items at checkout weekly: Week 1: Candy/gum, Week 2: Small beverages, Week 3: Load cards, Week 4: Batteries/lighters. Strategic placement drives last-minute additions to basket.',
-        '+₱2K-4K daily from impulse buys',
-        '3 days',
-        'Low',
-        80,
-        'Declining basket size suggests customers buying less per visit - impulse placement recovers margin',
-        'Merchandising'
-      );
-    }
-    
-    if ($shiftImbalance > 30) {
-      $recommendations[] = rec(
-        'Medium',
-        'Shift-Based Pricing Strategy',
-        'Test price optimization by shift: Morning (premium pricing on breakfast), Swing (competitive on basics), Graveyard (convenience premium). Maximize revenue per traffic pattern.',
-        '+₱3K-6K weekly revenue optimization',
-        '1 week',
-        'Low',
-        76,
-        'High shift imbalance ('.$shiftImbalance.'%) shows different customer behaviors by time - pricing should reflect this',
-        'Promotions'
-      );
-    }
-    
-    // Add metrics to fallback recommendations
-    foreach ($recommendations as &$rec) {
-      $rec['metrics'] = [
-        "Risk: {$riskPct}%",
-        "Category: {$rec['category']}",
-        "Effectiveness: {$rec['effectiveness']}%",
-        $rec['impact'] ?? '',
-        $rec['cost'] ?? ''
-      ];
-      $rec['ai_generated'] = false;
-    }
+  // Enrich with metrics
+  foreach ($recommendations as &$rec) {
+    $rec['metrics'] = [
+      "Risk: {$riskPct}%",
+      "Category: {$rec['category']}",
+      "Effectiveness: {$rec['effectiveness']}%",
+      $rec['impact'] ?? '',
+      $rec['cost'] ?? ''
+    ];
+    $rec['ai_generated'] = true;
   }
 
   // Ensure we have exactly 5 recommendations
   $recommendations = array_slice($recommendations, 0, 5);
-  
-  // If we have less than 5, add general best practices
-  while (count($recommendations) < 5) {
-    $recommendations[] = rec(
-      'Low',
-      'Daily Sales Dashboard Review',
-      'Spend 10 minutes each morning reviewing yesterday\'s performance. Look for patterns in shifts, products, and traffic. Data-driven decisions consistently beat gut feelings.',
-      'Better decision quality, trend spotting',
-      'Daily habit',
-      'Low',
-      70,
-      'Consistent monitoring enables proactive rather than reactive management',
-      'Operations'
-    );
-  }
+
+  error_log("✅ Sending response with " . count($recommendations) . " AI recommendations");
+  error_log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   json_ok([
     'recommendations' => $recommendations,
-    'ai_powered' => $aiSuccess,
+    'ai_powered' => true,
     'context' => [
       'risk_percentage' => $riskPct,
       'risk_level' => $riskLvl,
@@ -461,6 +365,16 @@ try {
       'traffic_today' => $traffic
     ]
   ]);
+  
 } catch (Throwable $e) {
-  json_error('Server error', 500, ['detail' => $e->getMessage()]);
+  error_log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  error_log("❌ FATAL ERROR: " . $e->getMessage());
+  error_log("Stack trace: " . $e->getTraceAsString());
+  error_log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  
+  json_error('AI Recommendation Error: ' . $e->getMessage(), 500, [
+    'detail' => $e->getMessage(),
+    'hint' => 'Check PHP error logs for detailed information',
+    'ai_powered' => false
+  ]);
 }
