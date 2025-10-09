@@ -7730,51 +7730,31 @@ window.debugCustomerInsights = function() {
   
 
   /* -------------------- Recommendations (api/, optional) -------------------- */
- /* Enhanced Recommendations Display - Shows Clear Errors */
-async function refreshRecommendations() {
-  const grid = document.querySelector('#recommendations .recommendations-grid');
-  
-  // Show loading state
-  if (grid) {
-    grid.innerHTML = `
-      <div class="loading-recommendations">
-        <i class="fas fa-spinner fa-spin"></i>
-        <h3>Generating AI Recommendations...</h3>
-        <p>Analyzing your store data with OpenAI...</p>
-      </div>
-    `;
-  }
-
+ async function refreshRecommendations() {
   try {
     const j = await apiTry([
       'api/reports/strategic_recommendation.php',
       'api/reports/stratigic_recommendation.php'
     ]);
 
-    console.log('API Response:', j);
-
-    // Check if AI powered
-    if (j.ai_powered === false) {
-      showErrorRecommendations('AI is not working. Check server logs.');
-      return;
-    }
-
     const items = Array.isArray(j.recommendations) ? j.recommendations : [];
-    
     if (!items.length) {
-      showErrorRecommendations('No recommendations generated. Check if you have data.');
+      showNoRecommendations();
       return;
     }
 
+    const grid = document.querySelector('#recommendations .recommendations-grid');
     if (!grid) return;
 
-    // Show AI badge - should ALWAYS show if we got here
+    // Show AI badge if powered by AI
     const aiPowered = j.ai_powered;
-    const headerBadge = '<span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered ✨</span>';
+    const headerBadge = aiPowered 
+      ? '<span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered</span>' 
+      : '';
 
     // Update header
     const pageHeader = document.querySelector('#recommendations .page-header h1');
-    if (pageHeader) {
+    if (pageHeader && aiPowered) {
       pageHeader.innerHTML = `
         <i class="fas fa-lightbulb"></i> Strategic Store Recommendations 
         ${headerBadge}
@@ -7824,8 +7804,10 @@ async function refreshRecommendations() {
             it.cost ? `Cost: ${it.cost}` : null
           ].filter(Boolean);
 
-      // AI badge on card - MUST show
-      const aiCardBadge = '<span class="ai-mini-badge" title="AI Generated"><i class="fas fa-sparkles"></i></span>';
+      // AI badge on card
+      const aiCardBadge = it.ai_generated 
+        ? '<span class="ai-mini-badge" title="AI Generated"><i class="fas fa-sparkles"></i></span>' 
+        : '';
 
       // Reasoning tooltip
       const reasoning = it.reasoning 
@@ -7876,19 +7858,16 @@ async function refreshRecommendations() {
       `;
     }).join('');
 
-    // Add filter buttons
+    // Add filter buttons if not already present
     addCategoryFilters();
 
-    // Show success message
-    console.log('✅ AI Recommendations loaded successfully!');
-    showToast('✅ AI recommendations generated successfully!', 'success');
-
   } catch (e) {
-    console.error('❌ Recommendations Error:', e);
-    showErrorRecommendations(e.message || 'Unknown error');
+    console.warn('[Recommendations]', e.message);
+    showErrorRecommendations(e.message);
   }
 }
 
+// Add category filter buttons
 function addCategoryFilters() {
   const pageHeader = document.querySelector('#recommendations .page-header');
   if (!pageHeader || document.querySelector('.category-filters')) return;
@@ -7909,14 +7888,17 @@ function addCategoryFilters() {
   pageHeader.insertAdjacentHTML('beforeend', filterHtml);
 }
 
+// Filter recommendations by category
 function filterByCategory(category) {
   const items = document.querySelectorAll('.recommendation-item');
   const buttons = document.querySelectorAll('.filter-btn');
   
+  // Update active button
   buttons.forEach(btn => {
     btn.classList.toggle('active', btn.dataset.category === category);
   });
 
+  // Show/hide items
   items.forEach(item => {
     if (category === 'All') {
       item.style.display = '';
@@ -7929,6 +7911,7 @@ function filterByCategory(category) {
   });
 }
 
+// Mark recommendation as implemented
 function markAsImplemented(button) {
   const card = button.closest('.recommendation-item');
   const title = button.dataset.title;
@@ -7937,10 +7920,16 @@ function markAsImplemented(button) {
     card.classList.add('implemented');
     button.innerHTML = '<i class="fas fa-check-double"></i> Implemented';
     button.disabled = true;
+    
+    // Optional: Send to backend to track
+    // fetch('api/track_implementation.php', { method: 'POST', body: JSON.stringify({ title }) });
+    
+    // Show success message
     showToast('✅ Recommendation marked as implemented!', 'success');
   }
 }
 
+// Toast notification
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
@@ -7954,89 +7943,31 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
+function showNoRecommendations() {
+  const grid = document.querySelector('#recommendations .recommendations-grid');
+  if (!grid) return;
+  grid.innerHTML = `
+    <div class="no-recommendations">
+      <i class="fas fa-check-circle"></i>
+      <h3>All Systems Operating Smoothly!</h3>
+      <p>Your store metrics look healthy. Continue monitoring your daily performance and maintaining current operations.</p>
+      <small>Recommendations will appear here when optimization opportunities are detected.</small>
+    </div>
+  `;
+}
+
 function showErrorRecommendations(error) {
   const grid = document.querySelector('#recommendations .recommendations-grid');
   if (!grid) return;
-  
-  // Parse error message for specific issues
-  let errorTitle = '❌ OpenAI API Error';
-  let errorMessage = error;
-  let troubleshootSteps = [];
-
-  if (error.includes('API key not configured') || error.includes('.env file not found')) {
-    errorTitle = '🔑 API Key Not Found';
-    errorMessage = 'OpenAI API key is missing or .env file not found.';
-    troubleshootSteps = [
-      'Create a .env file in your project root',
-      'Add: OPENAI_API_KEY=your-key-here',
-      'Get your key from: https://platform.openai.com/api-keys',
-      'Restart your server after adding the key'
-    ];
-  } else if (error.includes('Invalid API key') || error.includes('401')) {
-    errorTitle = '🔑 Invalid API Key';
-    errorMessage = 'Your OpenAI API key is incorrect or expired.';
-    troubleshootSteps = [
-      'Generate a new API key at: https://platform.openai.com/api-keys',
-      'Update your .env file with the new key',
-      'Make sure there are no spaces before/after the key',
-      'Key should start with "sk-" or "sk-proj-"'
-    ];
-  } else if (error.includes('Rate limit') || error.includes('429')) {
-    errorTitle = '💳 No Credits / Rate Limit';
-    errorMessage = 'You have no credits or hit your rate limit.';
-    troubleshootSteps = [
-      'Add billing at: https://platform.openai.com/account/billing',
-      'Add at least $5 in credits',
-      'Wait a few minutes if you hit rate limits',
-      'Check your usage at: https://platform.openai.com/usage'
-    ];
-  } else if (error.includes('No data available')) {
-    errorTitle = '📊 No Data Available';
-    errorMessage = 'No churn data found for your store.';
-    troubleshootSteps = [
-      'Go to the Churn Prediction page',
-      'Add your store data (sales, receipts, traffic)',
-      'Run a prediction',
-      'Then come back here for recommendations'
-    ];
-  }
-
   grid.innerHTML = `
     <div class="error-recommendations">
-      <div class="error-icon">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
-      <h2>${errorTitle}</h2>
-      <p class="error-msg">${escapeHtml(errorMessage)}</p>
-      
-      ${troubleshootSteps.length > 0 ? `
-        <div class="troubleshoot-steps">
-          <h3>🔧 How to Fix:</h3>
-          <ol>
-            ${troubleshootSteps.map(step => `<li>${step}</li>`).join('')}
-          </ol>
-        </div>
-      ` : ''}
-      
-      <div class="error-details">
-        <details>
-          <summary>📋 Technical Details</summary>
-          <pre>${escapeHtml(error)}</pre>
-        </details>
-      </div>
-      
-      <div class="error-actions">
-        <button onclick="refreshRecommendations()" class="btn-retry">
-          <i class="fas fa-sync"></i> Retry
-        </button>
-        <button onclick="window.open('https://platform.openai.com/account', '_blank')" class="btn-openai">
-          <i class="fas fa-external-link-alt"></i> Open OpenAI Dashboard
-        </button>
-      </div>
-      
-      <p class="error-hint">
-        💡 <strong>Tip:</strong> Check your browser console (F12) and PHP error logs for more details
-      </p>
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Unable to Generate Recommendations</h3>
+      <p>Please refresh the page or check your data inputs. If the issue persists, contact support.</p>
+      <small>${escapeHtml(error)}</small>
+      <button onclick="refreshRecommendations()" class="btn-retry">
+        <i class="fas fa-sync"></i> Retry
+      </button>
     </div>
   `;
 }
@@ -8047,13 +7978,12 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// Auto-refresh every 10 minutes
+// Auto-refresh every 10 minutes (reduced frequency)
 setInterval(refreshRecommendations, 600000);
 
 // Export for external use
 window.filterByCategory = filterByCategory;
 window.markAsImplemented = markAsImplemented;
-window.refreshRecommendations = refreshRecommendations;
 
   
  
