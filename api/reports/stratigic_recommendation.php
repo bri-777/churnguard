@@ -4,7 +4,7 @@ require __DIR__ . '/../_bootstrap.php';
 $uid = require_login();
 
 // Load environment variables
-function loadEnv($file = __DIR__ . '/../../.env') {
+function loadEnv($file = __DIR__ . '.env') {
   if (!file_exists($file)) {
     error_log("❌ ERROR: .env file not found at: $file");
     throw new Exception('.env file not found');
