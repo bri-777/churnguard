@@ -1,4 +1,2 @@
 #index.php
-auth/signup.php
-.env
-*.env
+signup.php
