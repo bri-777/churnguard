@@ -1,4 +1,6 @@
 .env
 *.env
+.env.*
+!.env.example
 check_setup.php
 test_*.php
