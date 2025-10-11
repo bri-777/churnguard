@@ -318,3 +318,313 @@ document.addEventListener('keydown', function(event) {
     showExportModal();
   }
 });
+
+// ==================== AI CHART SUMMARY MODULE ====================
+// Add this section to your existing churn-report.js file
+
+const AIChartSummary = {
+    // Configuration
+    config: {
+        apiEndpoint: 'openai_chart_summary.php',
+        timeout: 45000, // 45 seconds
+        retryAttempts: 2,
+        retryDelay: 2000
+    },
+
+    // Active requests tracking
+    activeRequests: new Map(),
+
+    /**
+     * Generate AI summary for a specific chart
+     * @param {string} chartType - Type of chart (retention, behavior, revenue, trends)
+     * @param {Array} chartData - Data array from the chart
+     * @param {string} containerId - ID of the summary container
+     */
+    async generateSummary(chartType, chartData, containerId) {
+        console.log(`[AI SUMMARY] Generating summary for ${chartType}`);
+
+        // Validate inputs
+        if (!chartType || !chartData || !containerId) {
+            console.error('[AI SUMMARY] Invalid parameters');
+            return;
+        }
+
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.error(`[AI SUMMARY] Container not found: ${containerId}`);
+            return;
+        }
+
+        // Show loading state
+        this.showLoadingState(container);
+
+        try {
+            // Call API to generate summary
+            const summary = await this.callSummaryAPI(chartType, chartData);
+            
+            if (summary) {
+                this.showSuccessState(container, summary);
+                console.log(`[AI SUMMARY] Summary generated successfully for ${chartType}`);
+            } else {
+                throw new Error('Empty summary returned');
+            }
+        } catch (error) {
+            console.error('[AI SUMMARY] Error:', error);
+            this.showErrorState(container, error.message, chartType, chartData, containerId);
+        }
+    },
+
+    /**
+     * Call the OpenAI API endpoint
+     * @param {string} chartType - Type of chart
+     * @param {Array} chartData - Chart data
+     * @returns {Promise<string>} - AI-generated summary
+     */
+    async callSummaryAPI(chartType, chartData, retryCount = 0) {
+        const controller = new AbortController();
+        const requestId = `${chartType}-${Date.now()}`;
+        
+        // Store controller for potential cancellation
+        this.activeRequests.set(requestId, controller);
+
+        // Set timeout
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, this.config.timeout);
+
+        try {
+            const response = await fetch(this.config.apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    chartType: chartType,
+                    chartData: chartData
+                }),
+                signal: controller.signal,
+                credentials: 'same-origin'
+            });
+
+            clearTimeout(timeoutId);
+            this.activeRequests.delete(requestId);
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expired. Please log in again.');
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            if (data.status === 'error') {
+                throw new Error(data.message || 'Failed to generate summary');
+            }
+
+            return data.summary || '';
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            this.activeRequests.delete(requestId);
+
+            if (error.name === 'AbortError') {
+                throw new Error('Request timeout. Please try again.');
+            }
+
+            // Retry logic
+            if (retryCount < this.config.retryAttempts) {
+                console.log(`[AI SUMMARY] Retrying... (${retryCount + 1}/${this.config.retryAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, this.config.retryDelay));
+                return this.callSummaryAPI(chartType, chartData, retryCount + 1);
+            }
+
+            throw error;
+        }
+    },
+
+    /**
+     * Show loading state in container
+     * @param {HTMLElement} container - Summary container element
+     */
+    showLoadingState(container) {
+        container.style.display = 'block';
+        container.className = 'ai-chart-summary-container';
+        container.innerHTML = `
+            <div class="ai-summary-loading">
+                <div class="spinner-small"></div>
+                <span>Generating AI-powered insights...</span>
+            </div>
+        `;
+    },
+
+    /**
+     * Show success state with summary
+     * @param {HTMLElement} container - Summary container element
+     * @param {string} summary - AI-generated summary text
+     */
+    showSuccessState(container, summary) {
+        container.className = 'ai-chart-summary-container ai-summary-success';
+        
+        // Get chart type from container ID
+        const chartType = container.id.replace('-ai-summary', '');
+        const tooltipText = this.getTooltipText(chartType);
+        
+        container.innerHTML = `
+            <div class="ai-summary-header">
+                <div class="ai-summary-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    AI-Powered Insights
+                </div>
+                <div class="summary-info-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <div class="summary-tooltip">${tooltipText}</div>
+                </div>
+            </div>
+            <p class="ai-summary-content">${this.escapeHtml(summary)}</p>
+        `;
+    },
+
+    /**
+     * Show error state with retry option
+     * @param {HTMLElement} container - Summary container element
+     * @param {string} errorMessage - Error message
+     * @param {string} chartType - Chart type for retry
+     * @param {Array} chartData - Chart data for retry
+     * @param {string} containerId - Container ID for retry
+     */
+    showErrorState(container, errorMessage, chartType, chartData, containerId) {
+        container.className = 'ai-chart-summary-container ai-summary-error';
+        container.innerHTML = `
+            <div class="ai-summary-error-content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <div>
+                    <div style="font-weight:700; margin-bottom:4px;">Unable to generate AI summary</div>
+                    <div style="font-size:0.85rem;">${this.escapeHtml(errorMessage)}</div>
+                </div>
+            </div>
+            <button class="ai-summary-retry-btn" onclick="AIChartSummary.generateSummary('${chartType}', ${JSON.stringify(chartData)}, '${containerId}')">
+                Try Again
+            </button>
+        `;
+    },
+
+    /**
+     * Get tooltip text for specific chart type
+     * @param {string} chartType - Type of chart
+     * @returns {string} - Tooltip text
+     */
+    getTooltipText(chartType) {
+        const tooltips = {
+            'retention': 'This AI-generated summary analyzes your retention data to identify key trends, patterns, and actionable recommendations for improving customer retention.',
+            'behavior': 'This AI analysis reveals customer behavior patterns, transaction trends, and purchasing habits to help optimize your sales strategy.',
+            'revenue': 'AI-driven revenue analysis identifies financial trends, growth opportunities, and potential risks affecting your bottom line.',
+            'trends': 'This AI assessment evaluates 30-day risk trends to highlight concerning patterns and suggest proactive retention strategies.',
+            'sales_trend': 'AI-powered sales analysis highlighting key trends, peak periods, and performance insights to drive growth.',
+            'comparison': 'AI comparison analysis identifying significant differences and trends across time periods to inform decision-making.'
+        };
+        return tooltips[chartType] || 'AI-generated insights based on your data patterns and trends.';
+    },
+
+    /**
+     * Escape HTML to prevent XSS
+     * @param {string} text - Text to escape
+     * @returns {string} - Escaped text
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    },
+
+    /**
+     * Cancel all active requests
+     */
+    cancelAllRequests() {
+        this.activeRequests.forEach(controller => {
+            try {
+                controller.abort();
+            } catch (e) {
+                console.warn('[AI SUMMARY] Error canceling request:', e);
+            }
+        });
+        this.activeRequests.clear();
+        console.log('[AI SUMMARY] All requests canceled');
+    },
+
+    /**
+     * Prepare chart data for API
+     * @param {Chart} chart - Chart.js instance
+     * @returns {Array} - Formatted data array
+     */
+    prepareChartData(chart) {
+        if (!chart || !chart.data) {
+            return [];
+        }
+
+        const labels = chart.data.labels || [];
+        const datasets = chart.data.datasets || [];
+
+        // Format data for API
+        const formattedData = labels.map((label, index) => {
+            const dataPoint = { label: label };
+            
+            datasets.forEach((dataset, datasetIndex) => {
+                const value = dataset.data[index];
+                const key = dataset.label || `dataset_${datasetIndex}`;
+                dataPoint[key] = value;
+            });
+            
+            return dataPoint;
+        });
+
+        return formattedData;
+    },
+
+    /**
+     * Generate summary after chart is created/updated
+     * @param {Chart} chartInstance - Chart.js instance
+     * @param {string} chartType - Type of chart
+     * @param {string} containerId - Summary container ID
+     */
+    generateSummaryForChart(chartInstance, chartType, containerId) {
+        if (!chartInstance || !chartInstance.data) {
+            console.warn('[AI SUMMARY] Invalid chart instance');
+            return;
+        }
+
+        const chartData = this.prepareChartData(chartInstance);
+        
+        if (chartData.length === 0) {
+            console.warn('[AI SUMMARY] No data to analyze');
+            return;
+        }
+
+        // Generate summary with a slight delay to ensure chart is fully rendered
+        setTimeout(() => {
+            this.generateSummary(chartType, chartData, containerId);
+        }, 500);
+    }
+};
+
+// Make AIChartSummary available globally
+window.AIChartSummary = AIChartSummary;
+
+// Cancel requests on page unload
+window.addEventListener('beforeunload', () => {
+    AIChartSummary.cancelAllRequests();
+});
+
+console.log('[AI SUMMARY] Module loaded successfully');
