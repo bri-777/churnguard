@@ -5186,6 +5186,7 @@ body {
 
 <script>
 // ChurnGuard Dashboard — accurate Executive Summary, PH currency, hardened UI
+// WITH AI SUMMARY INTEGRATION
 
 let cgx_charts = {};
 let cgx_currentView = '14days';
@@ -5305,7 +5306,6 @@ function cgx_showNoDataMessage(availability){
 
   const zeros = {
     atRiskCount:'0', atRiskChange:'0.0%', revenueAtRisk:'₱0', revenueChange:'0.0%',
-    // neutral when no data
     retentionRate:'100%', retentionChange:'0.0%',
     currentRetention:'0%', churnRate:'0%',
     wowChange:'0.0%', highRiskCount:'0', mediumRiskCount:'0'
@@ -5351,7 +5351,6 @@ function cgx_populateExecutiveSummary(d){
   cgx_setElementValue('retentionRate', `${cgx_formatDecimal(rr)}%`);
   cgx_setChangeValue('retentionChange', rrc, false);
 
-  // ensure no opacity leftovers
   ['riskLevel','riskDescription','atRiskCount','revenueAtRisk','retentionRate'].forEach(id=>{
     const el = document.getElementById(id);
     if (el) el.style.opacity = '1';
@@ -5407,6 +5406,7 @@ function cgx_updateCharts(trends){
   const bgA = trends.map(t => (parseInt(t.is_gap)===1)?'rgba(107,114,128,0.1)':'rgba(94,114,228,0.1)');
   const bdA = trends.map(t => (parseInt(t.is_gap)===1)?'rgba(107,114,128,0.5)':'#5E72E4');
 
+  // *** RETENTION CHART ***
   cgx_createChart('retentionChart', {
     type:'line',
     data:{
@@ -5422,8 +5422,9 @@ function cgx_updateCharts(trends){
         segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
       }]
     }
-  });
+  }, 'retention'); // ← ADD THIS PARAMETER
 
+  // *** BEHAVIOR CHART ***
   cgx_createChart('behaviorChart', {
     type:'bar',
     data:{
@@ -5436,8 +5437,9 @@ function cgx_updateCharts(trends){
         borderWidth:1
       }]
     }
-  });
+  }, 'behavior'); // ← ADD THIS PARAMETER
 
+  // *** REVENUE CHART ***
   cgx_createChart('revenueChart', {
     type:'line',
     data:{
@@ -5452,8 +5454,9 @@ function cgx_updateCharts(trends){
         segment:{ borderDash: ctx => (parseInt(trends[ctx.p1DataIndex]?.is_gap)===1 ? [5,5] : undefined) }
       }]
     }
-  });
+  }, 'revenue'); // ← ADD THIS PARAMETER
 
+  // *** TRENDS CHART ***
   cgx_createChart('trendsChart', {
     type:'line',
     data:{
@@ -5473,15 +5476,18 @@ function cgx_updateCharts(trends){
         tooltip:{ callbacks:{ afterLabel: (ctx)=>(parseInt(trends[ctx.dataIndex]?.is_gap)===1?'No data available for this date':'') } }
       }
     }
-  });
+  }, 'trends'); // ← ADD THIS PARAMETER
 
   cgx_log('Charts updated', {points: trends.length});
 }
 
-function cgx_createChart(canvasId, config){
+// *** MODIFIED cgx_createChart FUNCTION - THIS IS THE KEY FIX ***
+function cgx_createChart(canvasId, config, chartType){
   const canvas = document.getElementById(canvasId);
   if (!canvas){ cgx_log(`Canvas not found: ${canvasId}`); return; }
   const ctx = canvas.getContext('2d');
+  
+  // Destroy old chart
   if (cgx_charts[canvasId]) cgx_charts[canvasId].destroy();
 
   const defaults = {
@@ -5497,8 +5503,32 @@ function cgx_createChart(canvasId, config){
       x:{ grid:{ display:false, drawBorder:false }, ticks:{ font:{ size:11 } } }
     }
   };
+  
   config.options = { ...defaults, ...(config.options || {}) };
-  cgx_charts[canvasId] = new Chart(ctx, config);
+  
+  // Create chart
+  const chartInstance = new Chart(ctx, config);
+  cgx_charts[canvasId] = chartInstance;
+  
+  // *** KEY FIX: Store chart in global scope for AI module ***
+  if (chartType) {
+    window[`${chartType}ChartInstance`] = chartInstance;
+    cgx_log(`Chart stored globally: ${chartType}ChartInstance`);
+    
+    // *** Trigger AI Summary Generation ***
+    if (typeof AIChartSummary !== 'undefined') {
+      setTimeout(() => {
+        cgx_log(`Triggering AI summary for: ${chartType}`);
+        AIChartSummary.generateSummaryForChart(
+          chartInstance,
+          chartType,
+          `${chartType}-ai-summary`
+        );
+      }, 800);
+    } else {
+      cgx_log('AIChartSummary module not found');
+    }
+  }
 }
 
 function cgx_updateComparisonTable(d){
@@ -5566,6 +5596,29 @@ function switchTab(tabName){
   });
   const match = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.trim().toLowerCase().includes(tabName.toLowerCase()));
   if (match){ match.classList.add('active'); match.style.color='#5E72E4'; match.style.borderBottom='3px solid #5E72E4'; match.style.marginBottom='-2px'; }
+  
+  // *** Trigger AI summary when switching tabs ***
+  if (typeof AIChartSummary !== 'undefined') {
+    setTimeout(() => {
+      const chartInstance = window[`${tabName}ChartInstance`];
+      const container = document.getElementById(`${tabName}-ai-summary`);
+      
+      if (chartInstance && chartInstance.data && container) {
+        // Check if summary already generated
+        const hasContent = container.querySelector('.ai-summary-content');
+        const isLoading = container.querySelector('.ai-summary-loading');
+        
+        if (!hasContent || isLoading) {
+          cgx_log(`Generating AI summary for tab: ${tabName}`);
+          AIChartSummary.generateSummaryForChart(
+            chartInstance,
+            tabName,
+            `${tabName}-ai-summary`
+          );
+        }
+      }
+    }, 1000);
+  }
 }
 
 function drillDown(riskLevel){
@@ -5598,7 +5651,6 @@ function applyCustomRange(){
   const s = document.getElementById('startDate')?.value;
   const e = document.getElementById('endDate')?.value;
   if (!s || !e){ alert('Please select both start and end dates'); return; }
-  // backend custom range not yet implemented
   cgx_loadData('30days');
 }
 
@@ -5635,8 +5687,6 @@ window.onclick = function(ev){
 
 cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: cgx_debugMode});
 </script>
-
-
 
 
 

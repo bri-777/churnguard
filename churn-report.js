@@ -320,7 +320,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 // ==================== AI CHART SUMMARY MODULE ====================
-// ADD THIS ENTIRE SECTION TO THE END OF YOUR churn-report.js FILE
+// ADD THIS TO THE END OF churn-report.js FILE
 
 const AIChartSummary = {
     config: {
@@ -472,26 +472,11 @@ const AIChartSummary = {
 
     retryGeneration(chartType, containerId) {
         console.log(`[AI] Retrying summary for ${chartType}`);
-        // Get the chart data based on type
-        const chartData = this.getChartDataByType(chartType);
-        if (chartData) {
+        const chartInstance = window[`${chartType}ChartInstance`];
+        if (chartInstance && chartInstance.data) {
+            const chartData = this.prepareChartData(chartInstance);
             this.generateSummary(chartType, chartData, containerId);
         }
-    },
-
-    getChartDataByType(chartType) {
-        const chartMap = {
-            'retention': window.retentionChartInstance,
-            'behavior': window.behaviorChartInstance,
-            'revenue': window.revenueChartInstance,
-            'trends': window.trendsChartInstance
-        };
-        
-        const chart = chartMap[chartType];
-        if (chart && chart.data) {
-            return this.prepareChartData(chart);
-        }
-        return null;
     },
 
     getTooltipText(chartType) {
@@ -549,96 +534,4 @@ const AIChartSummary = {
 // Make it globally available
 window.AIChartSummary = AIChartSummary;
 
-// ==================== HOOK INTO EXISTING CHART FUNCTIONS ====================
-// Find your existing chart creation code and add AI summary generation
-
-// Listen for when charts are created
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('[AI] AI Summary module loaded');
-    
-    // Set up observers for chart canvases
-    const observeChart = (canvasId, chartType, containerId) => {
-        const canvas = document.getElementById(canvasId);
-        if (canvas) {
-            // Create mutation observer to detect when chart is drawn
-            const observer = new MutationObserver(() => {
-                const chartInstance = window[`${chartType}ChartInstance`];
-                if (chartInstance && chartInstance.data) {
-                    console.log(`[AI] Chart detected: ${chartType}`);
-                    AIChartSummary.generateSummaryForChart(
-                        chartInstance,
-                        chartType,
-                        containerId
-                    );
-                    observer.disconnect();
-                }
-            });
-            
-            observer.observe(canvas.parentElement, {
-                childList: true,
-                subtree: true,
-                attributes: true
-            });
-            
-            // Also check immediately
-            setTimeout(() => {
-                const chartInstance = window[`${chartType}ChartInstance`];
-                if (chartInstance && chartInstance.data) {
-                    console.log(`[AI] Chart ready: ${chartType}`);
-                    AIChartSummary.generateSummaryForChart(
-                        chartInstance,
-                        chartType,
-                        containerId
-                    );
-                }
-            }, 1000);
-        }
-    };
-    
-    // Observe all charts
-    observeChart('retentionChart', 'retention', 'retention-ai-summary');
-    observeChart('behaviorChart', 'behavior', 'behavior-ai-summary');
-    observeChart('revenueChart', 'revenue', 'revenue-ai-summary');
-    observeChart('trendsChart', 'trends', 'trends-ai-summary');
-});
-
-// Override the switchTab function to trigger AI summaries
-const originalSwitchTab = window.switchTab;
-if (originalSwitchTab) {
-    window.switchTab = function(tabName) {
-        originalSwitchTab(tabName);
-        
-        // Wait a bit for chart to render, then generate AI summary
-        setTimeout(() => {
-            const chartMap = {
-                'retention': { instance: 'retentionChartInstance', container: 'retention-ai-summary' },
-                'behavior': { instance: 'behaviorChartInstance', container: 'behavior-ai-summary' },
-                'revenue': { instance: 'revenueChartInstance', container: 'revenue-ai-summary' },
-                'trends': { instance: 'trendsChartInstance', container: 'trends-ai-summary' }
-            };
-            
-            const config = chartMap[tabName];
-            if (config) {
-                const chartInstance = window[config.instance];
-                const container = document.getElementById(config.container);
-                
-                if (chartInstance && chartInstance.data && container) {
-                    // Check if summary already exists
-                    const hasContent = container.querySelector('.ai-summary-content');
-                    const hasLoadingState = container.querySelector('.ai-summary-loading');
-                    
-                    if (!hasContent && !hasLoadingState) {
-                        console.log(`[AI] Generating summary for ${tabName}`);
-                        AIChartSummary.generateSummaryForChart(
-                            chartInstance,
-                            tabName,
-                            config.container
-                        );
-                    }
-                }
-            }
-        }, 1500);
-    };
-}
-
-console.log('[AI] AI Chart Summary Integration Complete');
+console.log('[AI] AI Chart Summary Module Loaded');
