@@ -1,4 +1,4 @@
-#index.php
-auth/signup.php
 .env
 *.env
+check_setup.php
+test_*.php
