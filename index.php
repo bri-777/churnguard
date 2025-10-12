@@ -5953,7 +5953,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   </main>
 </div>
 
-<script src = "traffic.js"></script>
+
 
 <script>
 /* ============================================================
@@ -6751,164 +6751,660 @@ function normalizePrediction(data) {
   window.clearForm = clearForm;
 
   /* -------------------- Charts (api/, Chart.js) -------------------- */
-  /* -------------------- Enhanced Charts with Real Prediction Context -------------------- */
-let charts = { traffic: null, churn: null, revenue: null };
-let currentMetrics = {};
+  /**
+ * Enhanced Professional Dashboard Analytics System
+ * High-performance data visualization and business metrics analysis
+ * Best practices: SOLID principles, error handling, performance optimization, accessibility
+ */
 
-function destroyChart(c) { 
-  try { 
-    c && typeof c.destroy === 'function' && c.destroy(); 
-  } catch {} 
-}
+// ============================================================================
+// CONFIGURATION & CONSTANTS
+// ============================================================================
 
-function ensureCanvasMinH(id) { 
-  const c = $('#' + id) || document.getElementById(id); 
-  if (c && c.clientHeight < 180) c.style.minHeight = '300px'; 
-}
-
-function v(id) { return document.getElementById(id)?.value || $('#' + id)?.value || ''; }
-
-
-
-// Enhanced traffic loading with 14-day support
-
-
-async function loadChurnDistribution() {
-  try {
-    // Call the correct API endpoint to get the latest risk prediction
-    const riskData = await apiTry([
-      'api/churn_risk.php?action=latest',
-      'api/churn_predictions.php?action=recent_predictions',
-      'api/churn_distribution.php'
-    ]);
-    
-    let churnLowRisk = 0, churnMediumRisk = 0, churnHighRisk = 0;
-    let churnRiskDescription = 'No risk data available';
-    let churnAvgRiskScore = 0;
-    let churnDetailedFactors = [];
-    
-    console.log('Risk API Response:', riskData);
-    
-    // Check if we have valid risk data
-    if (riskData.has && riskData.risk_percentage && riskData.risk_level) {
-      const actualRiskScore = parseFloat(riskData.risk_percentage);
-      const riskLevel = riskData.risk_level.toLowerCase();
-      
-      console.log('Found risk data:', { actualRiskScore, riskLevel });
-      
-      // ACCURATE DISTRIBUTION LOGIC:
-      // The risk score represents the probability of that specific risk level
-      if (riskLevel === 'high') {
-        // High risk: 79% means 79% chance of high risk
-        churnHighRisk = Math.round(actualRiskScore);
-        // Remaining 21% distributed intelligently
-        const remaining = 100 - churnHighRisk;
-        churnLowRisk = Math.round(remaining * 0.8);  // Most of remaining goes to low
-        churnMediumRisk = remaining - churnLowRisk;   // Small portion to medium
-        
-      } else if (riskLevel === 'medium') {
-        // Medium risk: 45% means 45% chance of medium risk
-        churnMediumRisk = Math.round(actualRiskScore);
-        // Remaining 55% distributed intelligently
-        const remaining = 100 - churnMediumRisk;
-        churnLowRisk = Math.round(remaining * 0.75);  // Most of remaining goes to low
-        churnHighRisk = remaining - churnLowRisk;      // Some to high
-        
-      } else if (riskLevel === 'low') {
-        // Low risk: 15% means 15% risk, so 85% safe
-        churnLowRisk = Math.round(100 - actualRiskScore);
-        // The risk portion (15%) split between medium and high
-        const riskPortion = 100 - churnLowRisk;
-        churnMediumRisk = Math.round(riskPortion * 0.7);
-        churnHighRisk = riskPortion - churnMediumRisk;
-      }
-      
-      // Ensure perfect 100% total
-      const total = churnLowRisk + churnMediumRisk + churnHighRisk;
-      if (total !== 100) {
-        const diff = 100 - total;
-        // Add difference to the dominant category
-        if (riskLevel === 'high') churnHighRisk += diff;
-        else if (riskLevel === 'medium') churnMediumRisk += diff;
-        else churnLowRisk += diff;
-      }
-      
-      churnAvgRiskScore = actualRiskScore;
-      churnRiskDescription = riskData.description || `${riskLevel} Risk: ${actualRiskScore}% probability`;
-      churnDetailedFactors = riskData.factors || [];
-      
-    } else {
-      // Fallback for when no risk data is available
-      console.warn('No valid risk data found, using defaults');
-      churnLowRisk = 70;
-      churnMediumRisk = 20; 
-      churnHighRisk = 10;
-      churnRiskDescription = 'No recent risk analysis available';
+const CONFIG = {
+  API: {
+    BASE_URL: '/api',
+    TIMEOUT: 5000,
+    RETRY_ATTEMPTS: 3,
+    RETRY_DELAY: 1000
+  },
+  CHART: {
+    ANIMATION_DURATION: 1200,
+    ANIMATION_EASING: 'easeOutQuart',
+    MIN_CANVAS_HEIGHT: 300,
+    COLORS: {
+      PRIMARY: 'rgba(54, 162, 235, 0.8)',
+      SUCCESS: 'rgba(40, 167, 69, 0.8)',
+      WARNING: 'rgba(255, 193, 7, 0.8)',
+      DANGER: 'rgba(220, 53, 69, 0.8)',
+      INFO: 'rgba(153, 102, 255, 0.8)',
+      SECONDARY: 'rgba(255, 159, 64, 0.8)',
+      NEUTRAL: 'rgba(201, 203, 207, 0.8)'
     }
-    
-    // Ensure all values are positive integers
-    churnLowRisk = Math.max(0, Math.round(churnLowRisk));
-    churnMediumRisk = Math.max(0, Math.round(churnMediumRisk));
-    churnHighRisk = Math.max(0, Math.round(churnHighRisk));
-    
-    console.log('Final calculated distribution:', {
-      low: churnLowRisk,
-      medium: churnMediumRisk, 
-      high: churnHighRisk,
-      total: churnLowRisk + churnMediumRisk + churnHighRisk
-    });
-    
-    // Store metrics
-    currentMetrics.churn = {
-      low: churnLowRisk,
-      medium: churnMediumRisk,
-      high: churnHighRisk,
-      totalCustomers: 100,
-      loyalCustomers: churnLowRisk,
-      avgRiskScore: churnAvgRiskScore,
-      riskDescription: churnRiskDescription,
-      predictions: riskData.has ? [riskData] : [],
-      detailedFactors: churnDetailedFactors
+  },
+  SHIFTS: {
+    MORNING: { name: 'Morning', color: 'rgba(255, 206, 86, 0.8)', border: 'rgba(255, 206, 86, 1)' },
+    SWING: { name: 'Swing', color: 'rgba(54, 162, 235, 0.8)', border: 'rgba(54, 162, 235, 1)' },
+    GRAVEYARD: { name: 'Graveyard', color: 'rgba(153, 102, 255, 0.8)', border: 'rgba(153, 102, 255, 1)' }
+  },
+  RISK_LEVELS: {
+    LOW: { label: 'Low Risk', icon: '✓', description: 'Stable patterns detected' },
+    MEDIUM: { label: 'Medium Risk', icon: '⚠', description: 'Moderate risk detected' },
+    HIGH: { label: 'High Risk', icon: '🚨', description: 'High risk detected' }
+  },
+  LOCALE: 'en-PH',
+  CURRENCY: 'PHP'
+};
+
+// ============================================================================
+// UTILITY SERVICES
+// ============================================================================
+
+/**
+ * Logger Service - Centralized logging with levels
+ */
+class Logger {
+  constructor(prefix = 'Dashboard') {
+    this.prefix = prefix;
+  }
+
+  log(message, data = null) {
+    console.log(`[${this.prefix}] ${message}`, data ?? '');
+  }
+
+  warn(message, data = null) {
+    console.warn(`[${this.prefix}] ⚠️  ${message}`, data ?? '');
+  }
+
+  error(message, error = null) {
+    console.error(`[${this.prefix}] ❌ ${message}`, error ?? '');
+  }
+
+  info(message, data = null) {
+    console.info(`[${this.prefix}] ℹ️ ${message}`, data ?? '');
+  }
+}
+
+const logger = new Logger('DashboardAnalytics');
+
+/**
+ * API Service - Handles all HTTP requests with retry logic and timeout
+ */
+class APIService {
+  constructor(config) {
+    this.config = config;
+    this.cache = new Map();
+    this.requestQueue = [];
+  }
+
+  async request(endpoint, options = {}) {
+    const {
+      method = 'GET',
+      useCache = true,
+      timeout = this.config.TIMEOUT,
+      retryAttempts = this.config.RETRY_ATTEMPTS
+    } = options;
+
+    const cacheKey = `${method}:${endpoint}`;
+
+    if (useCache && this.cache.has(cacheKey)) {
+      const cached = this.cache.get(cacheKey);
+      if (Date.now() - cached.timestamp < 60000) {
+        logger.info(`Cache hit for ${endpoint}`);
+        return cached.data;
+      }
+    }
+
+    let lastError;
+
+    for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        const url = `${this.config.BASE_URL}${endpoint}`;
+        const response = await fetch(url, {
+          method,
+          signal: controller.signal,
+          ...options
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (useCache) {
+          this.cache.set(cacheKey, { data, timestamp: Date.now() });
+        }
+
+        logger.log(`Successfully fetched ${endpoint}`);
+        return data;
+      } catch (error) {
+        lastError = error;
+        logger.warn(`Attempt ${attempt}/${retryAttempts} failed for ${endpoint}`, error.message);
+
+        if (attempt < retryAttempts) {
+          await this.delay(this.config.RETRY_DELAY * attempt);
+        }
+      }
+    }
+
+    throw new Error(`Failed to fetch ${endpoint} after ${retryAttempts} attempts: ${lastError?.message}`);
+  }
+
+  async fetchMultiple(endpoints) {
+    return Promise.allSettled(
+      endpoints.map(ep => this.request(ep, { useCache: true }))
+    );
+  }
+
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  clearCache() {
+    this.cache.clear();
+  }
+}
+
+const apiService = new APIService(CONFIG.API);
+
+/**
+ * Formatter Service - Centralized data formatting
+ */
+class FormatterService {
+  static currency(value, currency = CONFIG.CURRENCY, locale = CONFIG.LOCALE) {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  static number(value, decimals = 1) {
+    return new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: decimals,
+      minimumFractionDigits: 0
+    }).format(value);
+  }
+
+  static percentage(value, decimals = 1) {
+    return `${this.number(value, decimals)}%`;
+  }
+
+  static timestamp() {
+    return new Date().toLocaleTimeString(CONFIG.LOCALE);
+  }
+
+  static calculateDistribution(riskLevel, riskScore) {
+    const score = Math.max(0, Math.min(100, parseFloat(riskScore) || 0));
+
+    const distributions = {
+      high: {
+        high: score,
+        medium: Math.round((100 - score) * 0.2),
+        low: Math.round((100 - score) * 0.8)
+      },
+      medium: {
+        medium: score,
+        low: Math.round((100 - score) * 0.75),
+        high: Math.round((100 - score) * 0.25)
+      },
+      low: {
+        low: 100 - score,
+        medium: Math.round(score * 0.7),
+        high: Math.round(score * 0.3)
+      }
     };
-    
-    // Update UI
-    updateChurnUI(currentMetrics.churn);
-    
-    // Create the chart
-    const churnChartCtx = document.getElementById('churnChart');
-    if (!churnChartCtx || !window.Chart) return;
-    
-    ensureCanvasMinH('churnChart');
-    destroyChart(charts.churn);
-    
-    charts.churn = new Chart(churnChartCtx, {
+
+    const dist = distributions[riskLevel?.toLowerCase()] || distributions.low;
+    const total = dist.low + dist.medium + dist.high;
+    const diff = 100 - total;
+
+    if (diff !== 0) {
+      if (riskLevel?.toLowerCase() === 'high') dist.high += diff;
+      else if (riskLevel?.toLowerCase() === 'medium') dist.medium += diff;
+      else dist.low += diff;
+    }
+
+    return {
+      low: Math.max(0, dist.low),
+      medium: Math.max(0, dist.medium),
+      high: Math.max(0, dist.high)
+    };
+  }
+}
+
+/**
+ * DOM Service - Safe DOM manipulation with error handling
+ */
+class DOMService {
+  static getElementById(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+      logger.warn(`Element with ID '${id}' not found`);
+    }
+    return element;
+  }
+
+  static setValue(id, value) {
+    const element = this.getElementById(id);
+    if (element) {
+      element.textContent = value;
+    }
+  }
+
+  static setHTML(id, html) {
+    const element = this.getElementById(id);
+    if (element) {
+      element.innerHTML = html;
+    }
+  }
+
+  static updateElements(updates) {
+    Object.entries(updates).forEach(([id, value]) => {
+      this.setValue(id, value);
+    });
+  }
+
+  static ensureMinHeight(id, minHeight = CONFIG.CHART.MIN_CANVAS_HEIGHT) {
+    const element = this.getElementById(id);
+    if (element && element.clientHeight < minHeight) {
+      element.style.minHeight = `${minHeight}px`;
+    }
+  }
+}
+
+// ============================================================================
+// CHART MANAGEMENT
+// ============================================================================
+
+/**
+ * Chart Manager - Handles all chart lifecycle and rendering
+ */
+class ChartManager {
+  constructor() {
+    this.charts = new Map();
+  }
+
+  create(id, config) {
+    this.destroy(id);
+
+    const canvas = DOMService.getElementById(id);
+    if (!canvas || !window.Chart) {
+      logger.error(`Cannot create chart: canvas '${id}' or Chart.js not available`);
+      return null;
+    }
+
+    DOMService.ensureMinHeight(id);
+    const ctx = canvas.getContext('2d');
+
+    try {
+      const chartInstance = new Chart(ctx, config);
+      this.charts.set(id, chartInstance);
+      logger.log(`Chart created: ${id}`);
+      return chartInstance;
+    } catch (error) {
+      logger.error(`Failed to create chart ${id}`, error);
+      return null;
+    }
+  }
+
+  update(id, data) {
+    const chart = this.charts.get(id);
+    if (chart) {
+      chart.data = data;
+      chart.update('active');
+      logger.log(`Chart updated: ${id}`);
+    }
+  }
+
+  destroy(id) {
+    const chart = this.charts.get(id);
+    if (chart && typeof chart.destroy === 'function') {
+      try {
+        chart.destroy();
+        this.charts.delete(id);
+        logger.log(`Chart destroyed: ${id}`);
+      } catch (error) {
+        logger.error(`Failed to destroy chart ${id}`, error);
+      }
+    }
+  }
+
+  destroyAll() {
+    this.charts.forEach((chart, id) => this.destroy(id));
+    this.charts.clear();
+  }
+}
+
+const chartManager = new ChartManager();
+
+// ============================================================================
+// DATA PROCESSORS
+// ============================================================================
+
+/**
+ * Traffic Data Processor - Processes and validates traffic data
+ */
+class TrafficProcessor {
+  static async load(period = 'today') {
+    try {
+      logger.log(`Loading traffic data for period: ${period}`);
+
+      const data = await apiService.request(
+        `/churn_data.php?action=latest&ts=${Date.now()}`
+      );
+
+      return this.process(data);
+    } catch (error) {
+      logger.error('Failed to load traffic data', error);
+      return this.getFallback();
+    }
+  }
+
+  static process(data) {
+    if (!data?.item) {
+      return this.getFallback();
+    }
+
+    const morning = parseInt(data.item.morning_receipt_count || 0);
+    const swing = parseInt(data.item.swing_receipt_count || 0);
+    const graveyard = parseInt(data.item.graveyard_receipt_count || 0);
+    const totalCustomerTraffic = parseInt(data.item.customer_traffic || 0);
+
+    const totalShiftReceipts = morning + swing + graveyard;
+    const other = Math.max(0, totalCustomerTraffic - totalShiftReceipts);
+
+    return {
+      labels: ['Morning', 'Swing', 'Graveyard'],
+      values: [morning, swing, graveyard, other],
+      total: totalCustomerTraffic,
+      peak: Math.max(morning, swing, graveyard),
+      trend: parseFloat(data.item.transaction_drop_percentage || 0),
+      breakdown: { morning, swing, graveyard, other },
+      isValid: true
+    };
+  }
+
+  static getFallback() {
+    return {
+      labels: ['Morning', 'Swing', 'Graveyard'],
+      values: [0, 0, 0, 0],
+      total: 0,
+      peak: 0,
+      trend: 0,
+      breakdown: { morning: 0, swing: 0, graveyard: 0, other: 0 },
+      isValid: false
+    };
+  }
+}
+
+/**
+ * Churn Risk Processor - Processes risk assessment data
+ */
+class ChurnRiskProcessor {
+  static async load() {
+    try {
+      logger.log('Loading churn risk data');
+
+      const results = await apiService.fetchMultiple([
+        '/churn_risk.php?action=latest',
+        '/churn_predictions.php?action=recent_predictions',
+        '/churn_distribution.php'
+      ]);
+
+      const data = results
+        .filter(r => r.status === 'fulfilled')
+        .map(r => r.value)
+        .find(d => d);
+
+      return this.process(data);
+    } catch (error) {
+      logger.error('Failed to load churn risk data', error);
+      return this.getFallback();
+    }
+  }
+
+  static process(data) {
+    if (!data?.has || !data?.risk_percentage || !data?.risk_level) {
+      return this.getFallback();
+    }
+
+    const riskScore = parseFloat(data.risk_percentage);
+    const riskLevel = data.risk_level.toLowerCase();
+
+    const dist = FormatterService.calculateDistribution(riskLevel, riskScore);
+
+    return {
+      low: dist.low,
+      medium: dist.medium,
+      high: dist.high,
+      score: riskScore,
+      level: riskLevel,
+      description: data.description || `${riskLevel} Risk: ${riskScore}% probability`,
+      factors: data.factors || [],
+      isValid: true
+    };
+  }
+
+  static getFallback() {
+    return {
+      low: 70,
+      medium: 20,
+      high: 10,
+      score: 0,
+      level: 'low',
+      description: 'No recent risk analysis available',
+      factors: [],
+      isValid: false
+    };
+  }
+}
+
+/**
+ * Behavior Processor - Processes purchase behavior and metrics
+ */
+class BehaviorProcessor {
+  static async load() {
+    try {
+      logger.log('Loading purchase behavior data');
+
+      const data = await apiService.request(
+        `/churn_data.php?action=recent&limit=30&ts=${Date.now()}`
+      );
+
+      return this.process(data);
+    } catch (error) {
+      logger.error('Failed to load behavior data', error);
+      return this.getFallback();
+    }
+  }
+
+  static process(data) {
+    if (!data?.data || !Array.isArray(data.data) || data.data.length === 0) {
+      return this.getFallback();
+    }
+
+    const businessData = data.data;
+    const latest = businessData[0];
+
+    const totals = businessData.reduce(
+      (acc, row) => ({
+        receipts: acc.receipts + parseInt(row.receipt_count || 0),
+        sales: acc.sales + parseFloat(row.sales_volume || 0),
+        traffic: acc.traffic + parseInt(row.customer_traffic || 0),
+        morningReceipts: acc.morningReceipts + parseInt(row.morning_receipt_count || 0),
+        swingReceipts: acc.swingReceipts + parseInt(row.swing_receipt_count || 0),
+        graveyardReceipts: acc.graveyardReceipts + parseInt(row.graveyard_receipt_count || 0),
+        morningSales: acc.morningSales + parseFloat(row.morning_sales_volume || 0),
+        swingSales: acc.swingSales + parseFloat(row.swing_sales_volume || 0),
+        graveyardSales: acc.graveyardSales + parseFloat(row.graveyard_sales_volume || 0),
+        days: acc.days + 1
+      }),
+      {
+        receipts: 0,
+        sales: 0,
+        traffic: 0,
+        days: 0,
+        morningReceipts: 0,
+        swingReceipts: 0,
+        graveyardReceipts: 0,
+        morningSales: 0,
+        swingSales: 0,
+        graveyardSales: 0
+      }
+    );
+
+    const avgDailyReceipts = totals.days > 0 ? totals.receipts / totals.days : 0;
+    const avgTransactionValue = totals.receipts > 0 ? totals.sales / totals.receipts : 0;
+    const revenuePerCustomer = totals.traffic > 0 ? totals.sales / totals.traffic : 0;
+    const conversionRate = totals.traffic > 0 ? (totals.receipts / totals.traffic) * 100 : 0;
+
+    const totalShiftReceipts = totals.morningReceipts + totals.swingReceipts + totals.graveyardReceipts;
+
+    return {
+      avgDailyReceipts,
+      avgTransactionValue,
+      revenuePerCustomer,
+      conversionRate,
+      morningPercentage: totalShiftReceipts > 0 ? (totals.morningReceipts / totalShiftReceipts) * 100 : 0,
+      swingPercentage: totalShiftReceipts > 0 ? (totals.swingReceipts / totalShiftReceipts) * 100 : 0,
+      graveyardPercentage: totalShiftReceipts > 0 ? (totals.graveyardReceipts / totalShiftReceipts) * 100 : 0,
+      todayReceipts: parseInt(latest.receipt_count || 0),
+      todaySales: parseFloat(latest.sales_volume || 0),
+      todayTraffic: parseInt(latest.customer_traffic || 0),
+      totalDays: totals.days,
+      totalReceipts: totals.receipts,
+      totalSales: totals.sales,
+      isValid: true
+    };
+  }
+
+  static getFallback() {
+    return {
+      avgDailyReceipts: 0,
+      avgTransactionValue: 0,
+      revenuePerCustomer: 0,
+      conversionRate: 0,
+      morningPercentage: 0,
+      swingPercentage: 0,
+      graveyardPercentage: 0,
+      todayReceipts: 0,
+      todaySales: 0,
+      todayTraffic: 0,
+      totalDays: 0,
+      totalReceipts: 0,
+      totalSales: 0,
+      isValid: false
+    };
+  }
+}
+
+// ============================================================================
+// CHART BUILDERS
+// ============================================================================
+
+/**
+ * Traffic Chart Builder - Constructs traffic visualization
+ */
+class TrafficChartBuilder {
+  static buildConfig(data) {
+    return {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            label: 'Shift Traffic',
+            data: data.values,
+            backgroundColor: [
+              CONFIG.SHIFTS.MORNING.color,
+              CONFIG.SHIFTS.SWING.color,
+              CONFIG.SHIFTS.GRAVEYARD.color,
+              CONFIG.CHART.COLORS.NEUTRAL
+            ],
+            borderColor: [
+              CONFIG.SHIFTS.MORNING.border,
+              CONFIG.SHIFTS.SWING.border,
+              CONFIG.SHIFTS.GRAVEYARD.border,
+              'rgba(201, 203, 207, 1)'
+            ],
+            borderWidth: 2,
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            callbacks: {
+              title: (context) => `Shift: ${context[0]?.label || 'Unknown'}`,
+              label: (context) => {
+                const value = context.parsed.y;
+                const shiftName = data.labels[context.dataIndex] || 'Unknown';
+                return ` ${FormatterService.number(value, 0)} receipts (${shiftName} shift)`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 },
+            title: { display: true, text: 'Number of Receipts' }
+          },
+          x: { title: { display: true, text: 'Shift Period' } }
+        },
+        animation: {
+          duration: CONFIG.CHART.ANIMATION_DURATION,
+          easing: CONFIG.CHART.ANIMATION_EASING
+        }
+      }
+    };
+  }
+}
+
+/**
+ * Churn Chart Builder - Constructs churn risk visualization
+ */
+class ChurnChartBuilder {
+  static buildConfig(data) {
+    return {
       type: 'doughnut',
       data: {
         labels: [
-          `Low Risk (${churnLowRisk}%)`,
-          `Medium Risk (${churnMediumRisk}%)`, 
-          `High Risk (${churnHighRisk}%)`
+          `Low Risk (${data.low}%)`,
+          `Medium Risk (${data.medium}%)`,
+          `High Risk (${data.high}%)`
         ],
-        datasets: [{
-          data: [churnLowRisk, churnMediumRisk, churnHighRisk],
-          backgroundColor: [
-            'rgba(40, 167, 69, 0.8)',  // Green for Low
-            'rgba(255, 193, 7, 0.8)',  // Yellow for Medium  
-            'rgba(220, 53, 69, 0.8)'   // Red for High
-          ],
-          borderColor: [
-            'rgba(40, 167, 69, 1)',
-            'rgba(255, 193, 7, 1)', 
-            'rgba(220, 53, 69, 1)'
-          ],
-          borderWidth: 2,
-          hoverOffset: 8,
-          hoverBackgroundColor: [
-            'rgba(40, 167, 69, 0.9)',
-            'rgba(255, 193, 7, 0.9)',
-            'rgba(220, 53, 69, 0.9)'
-          ]
-        }]
+        datasets: [
+          {
+            data: [data.low, data.medium, data.high],
+            backgroundColor: [
+              CONFIG.CHART.COLORS.SUCCESS,
+              CONFIG.CHART.COLORS.WARNING,
+              CONFIG.CHART.COLORS.DANGER
+            ],
+            borderColor: [
+              'rgba(40, 167, 69, 1)',
+              'rgba(255, 193, 7, 1)',
+              'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 2,
+            hoverOffset: 8
+          }
+        ]
       },
       options: {
         responsive: true,
@@ -6916,33 +7412,25 @@ async function loadChurnDistribution() {
         plugins: {
           legend: {
             position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 15,
-              font: { size: 11 }
-            }
+            labels: { usePointStyle: true, padding: 15, font: { size: 11 } }
           },
           tooltip: {
             backgroundColor: 'rgba(0, 0, 0, 0.9)',
             titleColor: '#fff',
             bodyColor: '#fff',
-            borderColor: '#333',
-            borderWidth: 1,
-            cornerRadius: 8,
-            displayColors: true,
             callbacks: {
-              title: function(context) {
-                const levels = ['Low Risk', 'Medium Risk', 'High Risk'];
-                return levels[context[0].dataIndex];
+              title: (context) => {
+                const titles = ['Low Risk', 'Medium Risk', 'High Risk'];
+                return titles[context[0]?.dataIndex] || 'Risk Level';
               },
-              label: function(context) {
-                return `Probability: ${context.parsed}%`;
-              },
-              afterLabel: function(context) {
-                const index = context.dataIndex;
-                if (index === 0) return ['✓ Stable patterns', '✓ Low churn probability'];
-                if (index === 1) return ['⚠ Moderate risk', '⚠ Monitor closely'];
-                return ['🚨 High risk detected', '🚨 Take action immediately'];
+              label: (context) => `Probability: ${context.parsed}%`,
+              afterLabel: (context) => {
+                const descriptions = [
+                  '✓ Stable patterns\n✓ Low churn probability',
+                  '⚠ Moderate risk\n⚠ Monitor closely',
+                  '🚨 High risk detected\n🚨 Take action immediately'
+                ];
+                return descriptions[context.dataIndex] || '';
               }
             }
           }
@@ -6950,234 +7438,70 @@ async function loadChurnDistribution() {
         cutout: '60%',
         animation: {
           animateRotate: true,
-          duration: 1200,
-          easing: 'easeOutQuart'
+          duration: CONFIG.CHART.ANIMATION_DURATION,
+          easing: CONFIG.CHART.ANIMATION_EASING
         }
       }
-    });
-    
-    console.log('Chart created successfully with distribution:', {
-      'Green (Low)': `${churnLowRisk}%`,
-      'Yellow (Medium)': `${churnMediumRisk}%`, 
-      'Red (High)': `${churnHighRisk}%`
-    });
-    
-  } catch (error) {
-    console.error('Churn distribution error:', error);
-    createFallbackChurnChart();
+    };
   }
 }
 
-// Fallback chart when API fails
-function createFallbackChurnChart() {
-  const ctx = document.getElementById('churnChart');
-  if (!ctx || !window.Chart) return;
-  
-  ensureCanvasMinH('churnChart');
-  destroyChart(charts.churn);
-  
-  charts.churn = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Low Risk (70%)', 'Medium Risk (20%)', 'High Risk (10%)'],
-      datasets: [{
-        data: [70, 20, 10],
-        backgroundColor: [
-          'rgba(40, 167, 69, 0.6)',
-          'rgba(255, 193, 7, 0.6)', 
-          'rgba(220, 53, 69, 0.6)'
-        ],
-        borderColor: [
-          'rgba(40, 167, 69, 0.8)',
-          'rgba(255, 193, 7, 0.8)',
-          'rgba(220, 53, 69, 0.8)'
-        ],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom' },
-        tooltip: {
-          callbacks: {
-            label: () => 'No data available - using defaults'
-          }
-        }
-      },
-      cutout: '60%'
-    }
-  });
-}
+/**
+ * Behavior Chart Builder - Constructs behavior metrics visualization
+ */
+class BehaviorChartBuilder {
+  static buildConfig(data) {
+    const labels = [
+      'Daily Receipts (Avg)',
+      'Transaction Value (₱)',
+      'Revenue per Customer (₱)',
+      'Morning Shift %',
+      'Swing Shift %',
+      'Graveyard Shift %',
+      'Conversion Rate %'
+    ];
 
-// Fixed and Enhanced Purchase Behavior Analysis
-async function loadPurchaseBehavior() {
-  try {
-    console.log('Loading purchase behavior data...');
-    
-    // Get comprehensive business data
-    const data = await apiTry([
-      'api/churn_data.php?action=recent&limit=30&ts=' + Date.now(),
-      'api/purchase_behavior.php?ts=' + Date.now(),
-      'api/churn_data.php?action=analytics'
-    ]);
+    const values = [
+      data.avgDailyReceipts,
+      data.avgTransactionValue,
+      data.revenuePerCustomer,
+      data.morningPercentage,
+      data.swingPercentage,
+      data.graveyardPercentage,
+      data.conversionRate
+    ];
 
-    console.log('Purchase behavior raw data:', data);
-
-    let labels = [];
-    let values = [];
-    let insights = {};
-    
-    // Process churn data for comprehensive business analysis
-    if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-      const businessData = data.data;
-      const latest = businessData[0]; // Most recent day
-      console.log('Latest business data:', latest);
-      
-      // Calculate comprehensive business metrics
-      const totals = businessData.reduce((acc, row) => {
-        const receipts = parseInt(row.receipt_count || 0);
-        const sales = parseFloat(row.sales_volume || 0);
-        const traffic = parseInt(row.customer_traffic || 0);
-        
-        return {
-          receipts: acc.receipts + receipts,
-          sales: acc.sales + sales,
-          traffic: acc.traffic + traffic,
-          morningReceipts: acc.morningReceipts + parseInt(row.morning_receipt_count || 0),
-          swingReceipts: acc.swingReceipts + parseInt(row.swing_receipt_count || 0),
-          graveyardReceipts: acc.graveyardReceipts + parseInt(row.graveyard_receipt_count || 0),
-          morningSales: acc.morningSales + parseFloat(row.morning_sales_volume || 0),
-          swingSales: acc.swingSales + parseFloat(row.swing_sales_volume || 0),
-          graveyardSales: acc.graveyardSales + parseFloat(row.graveyard_sales_volume || 0),
-          days: acc.days + 1
-        };
-      }, { 
-        receipts: 0, sales: 0, traffic: 0, days: 0,
-        morningReceipts: 0, swingReceipts: 0, graveyardReceipts: 0,
-        morningSales: 0, swingSales: 0, graveyardSales: 0
-      });
-
-      console.log('Calculated totals:', totals);
-      
-      // Key business metrics
-      const avgDailyReceipts = totals.days > 0 ? totals.receipts / totals.days : 0;
-      const avgTransactionValue = totals.receipts > 0 ? totals.sales / totals.receipts : 0;
-      const avgDailySales = totals.days > 0 ? totals.sales / totals.days : 0;
-      const revenuePerCustomer = totals.traffic > 0 ? totals.sales / totals.traffic : 0;
-      
-      // Shift analysis
-      const totalShiftReceipts = totals.morningReceipts + totals.swingReceipts + totals.graveyardReceipts;
-      const morningPercentage = totalShiftReceipts > 0 ? (totals.morningReceipts / totalShiftReceipts) * 100 : 0;
-      const swingPercentage = totalShiftReceipts > 0 ? (totals.swingReceipts / totalShiftReceipts) * 100 : 0;
-      const graveyardPercentage = totalShiftReceipts > 0 ? (totals.graveyardReceipts / totalShiftReceipts) * 100 : 0;
-      
-      // Conversion and efficiency metrics
-      const conversionRate = totals.traffic > 0 ? (totals.receipts / totals.traffic) * 100 : 0;
-      const basketSize = avgTransactionValue; // Alias for clarity
-      
-      // Today's performance (from latest entry)
-      const todayReceipts = parseInt(latest.receipt_count || 0);
-      const todaySales = parseFloat(latest.sales_volume || 0);
-      const todayTraffic = parseInt(latest.customer_traffic || 0);
-      const todayAvgTicket = todayReceipts > 0 ? todaySales / todayReceipts : 0;
-      
-      // Store comprehensive insights
-      insights = {
-        avgDailyReceipts, avgTransactionValue, avgDailySales, revenuePerCustomer,
-        morningPercentage, swingPercentage, graveyardPercentage, conversionRate,
-        basketSize, todayReceipts, todaySales, todayTraffic, todayAvgTicket,
-        totalDays: totals.days, totalReceipts: totals.receipts, totalSales: totals.sales
-      };
-      
-      // Chart data for visualization
-      labels = [
-        'Daily Receipts (Avg)',
-        'Transaction Value (₱)', 
-        'Revenue per Customer (₱)',
-        'Morning Shift %',
-        'Swing Shift %', 
-        'Graveyard Shift %',
-        'Conversion Rate %'
-      ];
-      
-      values = [
-        avgDailyReceipts,
-        avgTransactionValue,
-        revenuePerCustomer,
-        morningPercentage,
-        swingPercentage,
-        graveyardPercentage,
-        conversionRate
-      ];
-      
-    } else if (data.categories && data.values) {
-      // Use provided structured data
-      labels = data.categories;
-      values = data.values;
-      insights = data.insights || {};
-    } else {
-      // Default demo data for development
-      labels = ['Daily Receipts', 'Avg Transaction (₱)', 'Conversion Rate %', 'Morning %', 'Swing %', 'Graveyard %'];
-      values = [280, 160, 85, 35, 45, 20];
-      insights = { avgTransactionValue: 160, todayReceipts: 280, conversionRate: 85 };
-    }
-
-    console.log('Final chart data:', { labels, values, insights });
-    
-    // Store metrics globally
-    currentMetrics.behavior = insights;
-    
-    // Update UI with business insights
-    updateBehaviorUI(insights);
-
-    // Create the chart
-    const canvas = document.getElementById('purchaseBehaviorChart');
-    if (!canvas) {
-      console.warn('Purchase behavior chart canvas not found');
-      return;
-    }
-    
-    if (!window.Chart) {
-      console.warn('Chart.js not loaded');
-      return;
-    }
-
-    const ctx = canvas.getContext('2d');
-    ensureCanvasMinH('purchaseBehaviorChart');
-    destroyChart(charts.revenue);
-    
-    // Enhanced chart with professional styling
-    charts.revenue = new Chart(ctx, {
+    return {
       type: 'bar',
       data: {
-        labels: labels,
-        datasets: [{
-          label: 'Business Metrics',
-          data: values,
-          backgroundColor: [
-            'rgba(54, 162, 235, 0.8)',   // Daily Receipts
-            'rgba(255, 99, 132, 0.8)',   // Transaction Value  
-            'rgba(75, 192, 192, 0.8)',   // Revenue per Customer
-            'rgba(255, 205, 86, 0.8)',   // Morning
-            'rgba(153, 102, 255, 0.8)',  // Swing
-            'rgba(255, 159, 64, 0.8)',   // Graveyard
-            'rgba(199, 199, 199, 0.8)'   // Conversion
-          ],
-          borderColor: [
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 99, 132, 1)', 
-            'rgba(75, 192, 192, 1)',
-            'rgba(255, 205, 86, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)',
-            'rgba(199, 199, 199, 1)'
-          ],
-          borderWidth: 2,
-          borderRadius: 6,
-          borderSkipped: false
-        }]
+        labels,
+        datasets: [
+          {
+            label: 'Business Metrics',
+            data: values,
+            backgroundColor: [
+              CONFIG.CHART.COLORS.PRIMARY,
+              'rgba(255, 99, 132, 0.8)',
+              'rgba(75, 192, 192, 0.8)',
+              CONFIG.CHART.COLORS.WARNING,
+              CONFIG.CHART.COLORS.INFO,
+              CONFIG.CHART.COLORS.SECONDARY,
+              'rgba(199, 199, 199, 0.8)'
+            ],
+            borderColor: [
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(255, 205, 86, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(199, 199, 199, 1)'
+            ],
+            borderWidth: 2,
+            borderRadius: 6,
+            borderSkipped: false
+          }
+        ]
       },
       options: {
         responsive: true,
@@ -7191,28 +7515,15 @@ async function loadPurchaseBehavior() {
             callbacks: {
               title: (items) => items[0]?.label || '',
               label: (ctx) => {
-                const label = ctx.label || '';
                 const value = ctx.parsed.y;
-                
-                if (label.includes('₱') || label.includes('Transaction') || label.includes('Revenue')) {
-                  return ` ₱${new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value)}`;
+                const label = ctx.label || '';
+
+                if (label.includes('₱')) {
+                  return ` ₱${FormatterService.number(value, 2)}`;
                 } else if (label.includes('%')) {
-                  return ` ${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(value)}%`;
-                } else {
-                  return ` ${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value)}`;
+                  return ` ${FormatterService.percentage(value, 1)}`;
                 }
-              },
-              afterLabel: (ctx) => {
-                const descriptions = {
-                  'Daily Receipts': 'Average transactions per day',
-                  'Transaction Value': 'Average amount per receipt', 
-                  'Revenue per Customer': 'Sales divided by traffic',
-                  'Morning %': 'Morning shift performance',
-                  'Swing %': 'Peak hours performance',
-                  'Graveyard %': 'Late shift performance',
-                  'Conversion Rate': 'Traffic to sales conversion'
-                };
-                return descriptions[ctx.label.replace(' (Avg)', '').replace(' (₱)', '').replace(' %', '')] || '';
+                return ` ${FormatterService.number(value, 0)}`;
               }
             }
           }
@@ -7222,160 +7533,239 @@ async function loadPurchaseBehavior() {
             beginAtZero: true,
             grid: { color: 'rgba(0, 0, 0, 0.05)', drawBorder: false },
             ticks: {
-              callback: function(value) {
-                if (value >= 1000) return `₱${(value/1000).toFixed(1)}k`;
+              callback: (value) => {
+                if (value >= 1000) return `₱${(value / 1000).toFixed(1)}k`;
                 if (value >= 100) return `₱${value.toFixed(0)}`;
                 return value.toFixed(1);
               }
             }
           },
-          x: {
-            grid: { display: false },
-            ticks: { maxRotation: 45, font: { size: 10 } }
-          }
+          x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } }
         },
-        animation: { duration: 1200, easing: 'easeOutQuart' }
+        animation: {
+          duration: CONFIG.CHART.ANIMATION_DURATION,
+          easing: CONFIG.CHART.ANIMATION_EASING
+        }
       }
-    });
-    
-    console.log('Purchase behavior chart created successfully');
-    
-  } catch (e) {
-    console.error('[purchase behavior] Error:', e);
-    currentMetrics.behavior = {};
-    
-    // Show fallback chart with demo data
-    createFallbackBehaviorChart();
+    };
   }
 }
 
-// Fallback chart for development/testing
-function createFallbackBehaviorChart() {
-  const canvas = document.getElementById('purchaseBehaviorChart');
-  if (!canvas || !window.Chart) return;
-  
-  const ctx = canvas.getContext('2d');
-  destroyChart(charts.revenue);
-  
-  charts.revenue = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Daily Receipts', 'Avg Transaction', 'Conversion Rate', 'Morning Shift', 'Swing Shift', 'Graveyard'],
-      datasets: [{
-        label: 'Demo Data',
-        data: [280, 160.71, 87.5, 33.9, 42.9, 23.2],
-        backgroundColor: 'rgba(54, 162, 235, 0.7)'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } }
+// ============================================================================
+// MAIN DASHBOARD CONTROLLER
+// ============================================================================
+
+/**
+ * Dashboard Controller - Orchestrates data loading and chart rendering
+ */
+class DashboardController {
+  constructor() {
+    this.metrics = {};
+    this.isLoading = false;
+  }
+
+  async loadTraffic() {
+    try {
+      const data = await TrafficProcessor.load();
+      const config = TrafficChartBuilder.buildConfig(data);
+
+      chartManager.create('trafficChart', config);
+
+      DOMService.updateElements({
+        totalCustomersToday: FormatterService.number(data.total, 0),
+        peakHourTraffic: FormatterService.number(data.peak, 0),
+        trafficTrend: `${data.trend >= 0 ? '+' : ''}${FormatterService.percentage(data.trend, 1)}`
+      });
+
+      this.metrics.traffic = data;
+      logger.info('Traffic chart loaded successfully');
+    } catch (error) {
+      logger.error('Failed to load traffic chart', error);
+      this.createFallbackChart('trafficChart', 'bar');
     }
+  }
+
+  async loadChurn() {
+    try {
+      const data = await ChurnRiskProcessor.load();
+      const config = ChurnChartBuilder.buildConfig(data);
+
+      chartManager.create('churnChart', config);
+
+      DOMService.updateElements({
+        lowRiskCount: data.low,
+        mediumRiskCount: data.medium,
+        highRiskCount: data.high,
+        churnLastUpdated: `Last updated: ${FormatterService.timestamp()}`
+      });
+
+      this.metrics.churn = data;
+      logger.info('Churn chart loaded successfully');
+    } catch (error) {
+      logger.error('Failed to load churn chart', error);
+      this.createFallbackChart('churnChart', 'doughnut');
+    }
+  }
+
+  async loadBehavior() {
+    try {
+      const data = await BehaviorProcessor.load();
+      const config = BehaviorChartBuilder.buildConfig(data);
+
+      chartManager.create('purchaseBehaviorChart', config);
+
+      DOMService.updateElements({
+        avgTransactionValue: FormatterService.currency(data.avgTransactionValue),
+        avgDailyReceipts: FormatterService.number(data.avgDailyReceipts, 0),
+        conversionRate: FormatterService.percentage(data.conversionRate, 1),
+        revenuePerCustomer: FormatterService.currency(data.revenuePerCustomer),
+        receiptsToday: FormatterService.number(data.todayReceipts, 0),
+        salesToday: FormatterService.currency(data.todaySales),
+        behaviorLastUpdated: `Last updated: ${FormatterService.timestamp()}`
+      });
+
+      this.metrics.behavior = data;
+      logger.info('Behavior chart loaded successfully');
+    } catch (error) {
+      logger.error('Failed to load behavior chart', error);
+      this.createFallbackChart('purchaseBehaviorChart', 'bar');
+    }
+  }
+
+  async loadAllCharts() {
+    if (this.isLoading) {
+      logger.warn('Charts already loading');
+      return;
+    }
+
+    this.isLoading = true;
+    logger.log('Starting chart load sequence');
+
+    const results = await Promise.allSettled([
+      this.loadTraffic(),
+      this.loadChurn(),
+      this.loadBehavior()
+    ]);
+
+    results.forEach((result, index) => {
+      const names = ['traffic', 'churn', 'behavior'];
+      if (result.status === 'rejected') {
+        logger.error(`Failed to load ${names[index]} chart`, result.reason);
+      }
+    });
+
+    this.isLoading = false;
+    logger.info('Chart loading sequence completed', { metrics: this.metrics });
+  }
+
+  createFallbackChart(canvasId, type = 'bar') {
+    const fallbackData = {
+      type,
+      data: {
+        labels: type === 'doughnut' 
+          ? ['Low Risk (70%)', 'Medium Risk (20%)', 'High Risk (10%)']
+          : ['Morning', 'Swing', 'Graveyard', ''],
+        datasets: [
+          {
+            label: type === 'doughnut' ? 'Risk Distribution' : 'Demo Traffic',
+            data: type === 'doughnut' 
+              ? [70, 20, 10]
+              : [0, 0, 0, 0],
+            backgroundColor: type === 'doughnut'
+              ? [CONFIG.CHART.COLORS.SUCCESS, CONFIG.CHART.COLORS.WARNING, CONFIG.CHART.COLORS.DANGER]
+              : [CONFIG.SHIFTS.MORNING.color, CONFIG.SHIFTS.SWING.color, CONFIG.SHIFTS.GRAVEYARD.color, CONFIG.CHART.COLORS.NEUTRAL]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: type === 'doughnut' },
+          tooltip: {
+            callbacks: {
+              label: () => 'No data available - using demo'
+            }
+          }
+        },
+        ...(type === 'doughnut' && { cutout: '60%' })
+      }
+    };
+
+    chartManager.create(canvasId, fallbackData);
+  }
+
+  getMetrics() {
+    return {
+      traffic: this.metrics.traffic || {},
+      churn: this.metrics.churn || {},
+      behavior: this.metrics.behavior || {},
+      timestamp: FormatterService.timestamp()
+    };
+  }
+
+  refresh(chartType = 'all') {
+    logger.log(`Refreshing ${chartType} chart(s)`);
+
+    const refreshMap = {
+      traffic: () => this.loadTraffic(),
+      churn: () => this.loadChurn(),
+      behavior: () => this.loadBehavior(),
+      all: () => this.loadAllCharts()
+    };
+
+    return (refreshMap[chartType] || refreshMap.all)();
+  }
+
+  destroy() {
+    logger.log('Destroying dashboard');
+    chartManager.destroyAll();
+    apiService.clearCache();
+    this.metrics = {};
+  }
+}
+
+// ============================================================================
+// GLOBAL INITIALIZATION & EXPORTS
+// ============================================================================
+
+const dashboard = new DashboardController();
+
+// Global API for external access
+window.DashboardAPI = {
+  loadCharts: () => dashboard.loadAllCharts(),
+  loadTraffic: () => dashboard.loadTraffic(),
+  loadChurn: () => dashboard.loadChurn(),
+  loadBehavior: () => dashboard.loadBehavior(),
+  refresh: (type = 'all') => dashboard.refresh(type),
+  getMetrics: () => dashboard.getMetrics(),
+  destroy: () => dashboard.destroy(),
+
+  // Advanced utilities
+  setConfig: (key, value) => {
+    const keys = key.split('.');
+    let obj = CONFIG;
+    for (let i = 0; i < keys.length - 1; i++) {
+      obj = obj[keys[i]];
+    }
+    obj[keys[keys.length - 1]] = value;
+    logger.info(`Config updated: ${key}`, value);
+  },
+
+  clearCache: () => apiService.clearCache(),
+  logger: logger
+};
+
+// Auto-initialize on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    logger.info('Dashboard initialized on DOM ready');
+    window.DashboardAPI.loadCharts();
   });
+} else {
+  logger.info('Dashboard auto-initializing');
+  window.DashboardAPI.loadCharts();
 }
-
-// UI update functions
-function updateChurnUI(metrics) {
-  const elements = {
-    lowRiskCount: metrics.low || 0,
-    mediumRiskCount: metrics.medium || 0,
-    highRiskCount: metrics.high || 0,
-    loyalCustomersCount: metrics.loyalCustomers || 0,
-    totalCustomersAnalyzed: metrics.totalCustomers || 0
-  };
-  
-  Object.entries(elements).forEach(([id, value]) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = new Intl.NumberFormat().format(value);
-  });
-  
-  // Update timestamps
-  const timestamp = new Date().toLocaleTimeString();
-  const updateEls = ['churnLastUpdated', 'riskAnalysisTime'];
-  updateEls.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = `Last updated: ${timestamp}`;
-  });
-}
-
-function updateBehaviorUI(insights) {
-  const pesoFmt = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 2 });
-  const numFmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
-  
-  const elements = {
-    avgTransactionValue: pesoFmt.format(insights.avgTransactionValue || 0),
-    avgDailyReceipts: numFmt.format(insights.avgDailyReceipts || insights.todayReceipts || 0),
-    conversionRate: numFmt.format(insights.conversionRate || 0) + '%',
-    revenuePerCustomer: pesoFmt.format(insights.revenuePerCustomer || 0),
-    receiptsToday: numFmt.format(insights.todayReceipts || 0),
-    salesToday: pesoFmt.format(insights.todaySales || 0)
-  };
-  
-  Object.entries(elements).forEach(([id, value]) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  });
-  
-  // Update timestamps
-  const timestamp = new Date().toLocaleTimeString();
-  const updateEls = ['behaviorLastUpdated', 'behaviorAnalysisTime'];
-  updateEls.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = `Last updated: ${timestamp}`;
-  });
-}
-
-// Main loading functions
-async function loadCharts() {
-  console.log('Loading all charts...');
-  const results = await Promise.allSettled([
-    loadTraffic().catch(e => console.warn('[traffic chart]', e.message)),
-    loadChurnDistribution().catch(e => console.warn('[churn chart]', e.message)),
-    loadPurchaseBehavior().catch(e => console.warn('[purchase behavior chart]', e.message))
-  ]);
-  console.log('Charts loading completed:', results);
-}
-
-async function updateTrafficChart() { 
-  try { await loadTraffic(); } catch (e) { console.warn('[updateTrafficChart]', e.message); } 
-}
-
-// Individual refresh functions
-async function refreshChurnChart() {
-  console.log('Refreshing churn chart...');
-  await loadChurnDistribution();
-}
-
-async function refreshBehaviorChart() {
-  console.log('Refreshing behavior chart...');
-  await loadPurchaseBehavior();
-}
-
-// Utility to get current business insights
-function getBusinessInsights() {
-  return {
-    churn: currentMetrics.churn || {},
-    behavior: currentMetrics.behavior || {},
-    summary: {
-      totalCustomers: (currentMetrics.churn?.totalCustomers || 0),
-      loyalCustomers: (currentMetrics.churn?.loyalCustomers || 0),
-      avgTransaction: (currentMetrics.behavior?.avgTransactionValue || 0),
-      conversionRate: (currentMetrics.behavior?.conversionRate || 0)
-    },
-    timestamp: new Date().toISOString()
-  };
-}
-
-// Expose all functions globally
-window.updateTrafficChart = updateTrafficChart;
-window.loadChurnDistribution = loadChurnDistribution;
-window.loadPurchaseBehavior = loadPurchaseBehavior;
-window.loadCharts = loadCharts;
-window.refreshChurnChart = refreshChurnChart;
-window.refreshBehaviorChart = refreshBehaviorChart;
-window.getBusinessInsights = getBusinessInsights;
-window.currentMetrics = currentMetrics;
   
   
   
