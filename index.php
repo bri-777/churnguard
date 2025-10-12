@@ -4899,9 +4899,13 @@ body {
       <!-- Retention -->
       <div class="tab-content active" id="retention-tab" style="display:block;">
         <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; align-items:start;">
-          <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Retention Trend</h3>
-            <canvas id="retentionChart" height="240"></canvas>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
+              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Retention Trend</h3>
+              <canvas id="retentionChart" height="240"></canvas>
+            </div>
+            <!-- *** NEW: AI SUMMARY CONTAINER *** -->
+            <div id="retention-ai-summary"></div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Average</h3>
@@ -4913,8 +4917,6 @@ body {
               <span style="font-size:.92rem; color:#6b7280;">Churn Rate</span>
               <span id="churnRate" style="font-size:1rem; font-weight:800;">0%</span>
             </div>
-           
-            
           </div>
         </div>
       </div>
@@ -4922,9 +4924,13 @@ body {
       <!-- Behavior -->
       <div class="tab-content" id="behavior-tab" style="display:none;">
         <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
-          <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Transaction Patterns</h3>
-            <canvas id="behaviorChart" height="240"></canvas>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
+              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Transaction Patterns</h3>
+              <canvas id="behaviorChart" height="240"></canvas>
+            </div>
+            <!-- *** NEW: AI SUMMARY CONTAINER *** -->
+            <div id="behavior-ai-summary"></div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Behavior Metrics</h3>
@@ -4936,8 +4942,6 @@ body {
               <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Value</span>
               <span id="avgValue" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
-          
-          
           </div>
         </div>
       </div>
@@ -4945,28 +4949,30 @@ body {
       <!-- Revenue -->
       <div class="tab-content" id="revenue-tab" style="display:none;">
         <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
-          <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Revenue Impact Analysis</h3>
-            <canvas id="revenueChart" height="240"></canvas>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
+              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Revenue Impact Analysis</h3>
+              <canvas id="revenueChart" height="240"></canvas>
+            </div>
+            <!-- *** NEW: AI SUMMARY CONTAINER *** -->
+            <div id="revenue-ai-summary"></div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-          
-        
-             
-      
-            
-           
+            <!-- Your existing metrics -->
           </div>
         </div>
       </div>
 
-     
       <!-- Trends -->
       <div class="tab-content" id="trends-tab" style="display:none;">
         <div class="trends-container">
-          <div class="chart-container full-width" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">30-Day Churn Risk Trend</h3>
-            <canvas id="trendsChart" height="250"></canvas>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="chart-container full-width" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
+              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">30-Day Churn Risk Trend</h3>
+              <canvas id="trendsChart" height="250"></canvas>
+            </div>
+            <!-- *** NEW: AI SUMMARY CONTAINER *** -->
+            <div id="trends-ai-summary"></div>
           </div>
           <div class="comparison-table" style="margin-top:1.25rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
@@ -5073,8 +5079,17 @@ body {
         </div>
       </div>
     </div>
- <script src="churn-report.js"></script>
+
+    <!-- Required Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="churn-report.js"></script>
+    
+    <!-- *** NEW: AI SUMMARY SCRIPT *** -->
+    <script src="ai-chart-summary.js"></script>
+
   </div>
+  
   <!-- Print Styles -->
   <style>
     @media print {
@@ -5090,10 +5105,6 @@ body {
       .page-break { page-break-after: always; }
     }
   </style>
-
-  <!-- Required Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
 </div>
 
