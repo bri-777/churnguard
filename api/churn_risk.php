@@ -657,7 +657,7 @@ if ($action === 'run') {
       $modelConfidence = 0.1;
     } else {
       try {
-        $modelPath = __DIR__ . '/models/churn_xgb.json';
+        $modelPath = __DIR__ . 'api/models/churn_xgb.json';
         $pred = XGBPredictor::loadFrom($modelPath);
         $prob = $pred->predict_proba($feat);
         $modelConfidence = 0.95;
