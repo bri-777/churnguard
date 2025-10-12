@@ -2021,7 +2021,7 @@ function doLogout() {
                 <div class="table-tabs">
                     <button class="tab-btn active" onclick="switchTab('trend')" data-tab="trend">Sales Trend</button>
                     <button class="tab-btn" onclick="switchTab('active-targets')" data-tab="active-targets">Active Targets</button>
-                    <button class="tab-btn" onclick="switchTab('performance')" data-tab="performance">Performance Log</button>
+                
                 </div>
 
                 <div class="tab-content active" id="trend-tab">
@@ -2064,25 +2064,7 @@ function doLogout() {
                     </div>
                 </div>
 
-                <div class="tab-content" id="performance-tab">
-                    <div class="table-wrapper-pro">
-                        <table class="data-table-pro">
-                            <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Today</th>
-                                    <th>Yesterday</th>
-                                    <th>Last Week</th>
-                                    <th>Last Month</th>
-                                    <th>Trend</th>
-                                </tr>
-                            </thead>
-                            <tbody id="performanceTableBody">
-                                <tr><td colspan="6" class="loading-cell">Loading data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+              
             </section>
 
         </main>
