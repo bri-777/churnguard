@@ -6770,108 +6770,110 @@ function v(id) { return document.getElementById(id)?.value || $('#' + id)?.value
 
 
 
-// Enhanced traffic loading with 14-day support
-// Using unique variable names to avoid conflicts
+// Enhanced 14-day traffic loading with shift breakdown
+// Using unique variable names to avoid conflicts with other charts
 async function loadTrafficChart(period) {
   try {
     const trafficPeriodSelect = $('#trafficPeriod') || document.getElementById('trafficPeriod');
-    const selectedPeriod = period || (trafficPeriodSelect ? trafficPeriodSelect.value : 'today') || 'today';
+    const selectedTrafficPeriod = period || (trafficPeriodSelect ? trafficPeriodSelect.value : 'today') || 'today';
     
-    console.log(`Loading traffic data for period: ${selectedPeriod}`);
+    console.log(`Loading traffic data for period: ${selectedTrafficPeriod}`);
     
-    let trafficLabels, trafficValues, trafficTotalToday, trafficPeakValue, trafficTrendPercent;
+    let trafficChartLabels, trafficChartValues, trafficChartTotalToday, trafficChartPeakValue, trafficChartTrendPct;
     
-    // Load today's data from API
-    console.log('Loading today data from traffic endpoint...');
-    
-    const trafficResponse = await api(`api/churn_data.php?action=latest&ts=${Date.now()}`);
-    console.log('Traffic API response:', trafficResponse);
-    
-    if (trafficResponse && trafficResponse.item) {
-      const trafficItem = trafficResponse.item;
+    // For today: load shift-specific data
+    if (selectedTrafficPeriod === 'today') {
+      console.log('Loading today data from latest entry...');
       
-      // Extract shift data from latest entry
-      const trafficMorning = parseInt(trafficItem.morning_receipt_count || 0);
-      const trafficSwing = parseInt(trafficItem.swing_receipt_count || 0);  
-      const trafficGraveyard = parseInt(trafficItem.graveyard_receipt_count || 0);
-      const trafficCustomerTotal = parseInt(trafficItem.customer_traffic || 0);
+      const trafficLatestResponse = await api(`api/churn_data.php?action=latest&ts=${Date.now()}`);
+      console.log('Latest traffic data response:', trafficLatestResponse);
       
-      // Calculate other traffic (difference between total traffic and shift receipts)
-      const trafficShiftTotal = trafficMorning + trafficSwing + trafficGraveyard;
-      const trafficOther = Math.max(0, trafficCustomerTotal - trafficShiftTotal);
-      
-      trafficLabels = ['Morning', 'Swing', 'Graveyard'];
-      trafficValues = [trafficMorning, trafficSwing, trafficGraveyard, trafficOther];
-      trafficTotalToday = trafficCustomerTotal;
-      trafficPeakValue = Math.max(trafficMorning, trafficSwing, trafficGraveyard);
-      trafficTrendPercent = parseFloat(trafficItem.transaction_drop_percentage || 0);
-      
-      console.log('Processed traffic data:', {
-        morning: trafficMorning,
-        swing: trafficSwing,
-        graveyard: trafficGraveyard,
-        other: trafficOther,
-        total: trafficCustomerTotal,
-        shiftTotal: trafficShiftTotal
-      });
-      
-    } else {
-      // If no data found, try the fallback endpoint
-      console.log('No latest data, trying fallback endpoint...');
-      
-      try {
-        const trafficFallbackResponse = await api(`api/traffic_data.php?period=today&ts=${Date.now()}`);
+      if (trafficLatestResponse && trafficLatestResponse.item) {
+        const trafficData = trafficLatestResponse.item;
         
-        if (trafficFallbackResponse) {
-          trafficLabels = trafficFallbackResponse.labels || trafficFallbackResponse.hours || ['Morning', 'Swing', 'Graveyard', ''];
-          trafficValues = trafficFallbackResponse.values || trafficFallbackResponse.counts || trafficFallbackResponse.data || [0, 0, 0, 0];
-          trafficTotalToday = trafficFallbackResponse.totalToday || trafficFallbackResponse.total || trafficValues.reduce((a, b) => a + Number(b || 0), 0);
-          trafficPeakValue = trafficFallbackResponse.peakHourTraffic || trafficFallbackResponse.peak || Math.max(...trafficValues);
-          trafficTrendPercent = trafficFallbackResponse.trendPct || trafficFallbackResponse.trend || 0;
-        } else {
-          throw new Error('No fallback data available');
-        }
-      } catch (trafficFallbackError) {
-        console.log('Fallback failed, using demo data');
-        // Final fallback - demo data
-        trafficLabels = ['Morning', 'Swing', 'Graveyard', ''];
-        trafficValues = [0, 0, 0, 0];
-        trafficTotalToday = 0;
-        trafficPeakValue = 0;
-        trafficTrendPercent = 0;
+        // Extract shift data from latest entry
+        const trafficMorningCount = parseInt(trafficData.morning_receipt_count || 0);
+        const trafficSwingCount = parseInt(trafficData.swing_receipt_count || 0);  
+        const trafficGraveyardCount = parseInt(trafficData.graveyard_receipt_count || 0);
+        const trafficCustomerTotal = parseInt(trafficData.customer_traffic || 0);
+        
+        // Calculate other traffic (difference between total traffic and shift receipts)
+        const trafficShiftTotal = trafficMorningCount + trafficSwingCount + trafficGraveyardCount;
+        const trafficOtherCount = Math.max(0, trafficCustomerTotal - trafficShiftTotal);
+        
+        trafficChartLabels = ['Morning', 'Swing', 'Graveyard'];
+        trafficChartValues = [trafficMorningCount, trafficSwingCount, trafficGraveyardCount, trafficOtherCount];
+        trafficChartTotalToday = trafficCustomerTotal;
+        trafficChartPeakValue = Math.max(trafficMorningCount, trafficSwingCount, trafficGraveyardCount);
+        trafficChartTrendPct = parseFloat(trafficData.transaction_drop_percentage || 0);
+        
+        console.log('Processed today traffic data:', {
+          morning: trafficMorningCount,
+          swing: trafficSwingCount,
+          graveyard: trafficGraveyardCount,
+          other: trafficOtherCount,
+          total: trafficCustomerTotal,
+          shiftTotal: trafficShiftTotal
+        });
+      } else {
+        throw new Error('No latest data available');
+      }
+    } else {
+      // For 14-day or other periods: load 14-day data from the PHP endpoint
+      console.log('Loading 14-day traffic data...');
+      
+      const trafficPeriodResponse = await api(`api/traffic_data.php?period=14d&ts=${Date.now()}`);
+      console.log('14-day traffic response:', trafficPeriodResponse);
+      
+      if (trafficPeriodResponse) {
+        trafficChartLabels = trafficPeriodResponse.labels || trafficPeriodResponse.hours || [];
+        trafficChartValues = trafficPeriodResponse.values || trafficPeriodResponse.counts || [];
+        trafficChartTotalToday = trafficPeriodResponse.totalToday || trafficPeriodResponse.total || 0;
+        trafficChartPeakValue = trafficPeriodResponse.peak || trafficPeriodResponse.peakHourTraffic || 0;
+        trafficChartTrendPct = trafficPeriodResponse.trendPct || trafficPeriodResponse.trend || 0;
+      } else {
+        throw new Error('No period data available');
       }
     }
 
-    // Update UI elements with unique IDs
+    // Update UI elements
     const trafficTotalElement = $('#totalCustomersToday') || document.getElementById('totalCustomersToday');
     const trafficPeakElement = $('#peakHourTraffic') || document.getElementById('peakHourTraffic');
     const trafficTrendElement = $('#trafficTrend') || document.getElementById('trafficTrend');
     
     if (trafficTotalElement) {
-      trafficTotalElement.textContent = String(trafficTotalToday);
+      trafficTotalElement.textContent = String(trafficChartTotalToday);
     }
     if (trafficPeakElement) {
-      trafficPeakElement.textContent = String(trafficPeakValue);
+      trafficPeakElement.textContent = String(trafficChartPeakValue);
     }
     if (trafficTrendElement) {
-      const trafficSign = trafficTrendPercent >= 0 ? '+' : '';
-      trafficTrendElement.textContent = `${trafficSign}${trafficTrendPercent.toFixed(1)}% (vs prev)`;
+      const trafficTrendSign = trafficChartTrendPct >= 0 ? '+' : '';
+      trafficTrendElement.textContent = `${trafficTrendSign}${trafficChartTrendPct.toFixed(1)}% (vs prev)`;
     }
 
     // Update chart
-    const trafficCanvasContext = $('#trafficChart') || document.getElementById('trafficChart');
-    if (!trafficCanvasContext || !window.Chart) {
+    const trafficChartCanvas = $('#trafficChart') || document.getElementById('trafficChart');
+    if (!trafficChartCanvas || !window.Chart) {
       console.warn('Traffic chart canvas or Chart.js not available');
       return;
     }
 
     ensureCanvasMinH('trafficChart');
+    
+    // Destroy existing chart instance
     if (window.trafficChartInstance) {
       window.trafficChartInstance.destroy();
     }
     
+    // Determine chart type based on period
+    let trafficChartType = 'bar';
+    if (selectedTrafficPeriod !== 'today') {
+      trafficChartType = 'line';
+    }
+    
     // Chart colors for today's shifts
-    const trafficChartColors = {
+    const trafficChartBgColors = {
       backgroundColor: [
         'rgba(255, 206, 86, 0.8)',   // Morning - Yellow
         'rgba(54, 162, 235, 0.8)',   // Swing - Blue  
@@ -6886,36 +6888,55 @@ async function loadTrafficChart(period) {
       ]
     };
     
-    // Chart configuration for today only
-    const trafficChartConfig = {
-      type: 'bar',
+    // Build chart config
+    const trafficChartConfiguration = {
+      type: trafficChartType,
       data: { 
-        labels: trafficLabels, 
+        labels: trafficChartLabels, 
         datasets: [{ 
-          label: 'Shift Traffic',
-          data: trafficValues, 
-          backgroundColor: trafficChartColors.backgroundColor,
-          borderColor: trafficChartColors.borderColor,
+          label: selectedTrafficPeriod === 'today' ? 'Shift Traffic' : '14-Day Traffic Trend',
+          data: trafficChartValues,
+          backgroundColor: trafficChartType === 'bar' ? trafficChartBgColors.backgroundColor : 'rgba(54, 162, 235, 0.2)',
+          borderColor: trafficChartType === 'bar' ? trafficChartBgColors.borderColor : 'rgba(54, 162, 235, 1)',
           borderWidth: 2,
-          borderRadius: 4
+          borderRadius: trafficChartType === 'bar' ? 4 : 0,
+          fill: trafficChartType === 'line' ? true : false,
+          tension: trafficChartType === 'line' ? 0.3 : 0,
+          pointRadius: trafficChartType === 'line' ? 4 : 0,
+          pointBackgroundColor: trafficChartType === 'line' ? 'rgba(54, 162, 235, 1)' : undefined
         }] 
       },
       options: { 
         responsive: true, 
         maintainAspectRatio: false, 
         plugins: { 
-          legend: { display: false },
+          legend: { 
+            display: trafficChartType === 'line',
+            position: 'top'
+          },
           tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#333',
+            borderWidth: 1,
+            cornerRadius: 8,
             callbacks: {
               title: (context) => {
-                const trafficLabel = context[0].label;
-                return `Shift: ${trafficLabel}`;
+                if (trafficChartType === 'bar') {
+                  const trafficLabel = context[0].label;
+                  return `Shift: ${trafficLabel}`;
+                }
+                return context[0].label || 'Date';
               },
               label: (context) => {
                 const trafficValue = context.parsed.y;
-                const trafficShiftNames = ['Morning', 'Swing', 'Graveyard', ''];
-                const trafficShiftName = trafficShiftNames[context.dataIndex] || 'Unknown';
-                return ` ${trafficValue} receipts (${trafficShiftName} shift)`;
+                if (trafficChartType === 'bar') {
+                  const trafficShiftNames = ['Morning', 'Swing', 'Graveyard', 'Other'];
+                  const trafficShiftName = trafficShiftNames[context.dataIndex] || 'Unknown';
+                  return ` ${trafficValue} receipts (${trafficShiftName} shift)`;
+                }
+                return ` Traffic: ${trafficValue}`;
               }
             }
           }
@@ -6926,13 +6947,13 @@ async function loadTrafficChart(period) {
             ticks: { precision: 0 },
             title: {
               display: true,
-              text: 'Number of Receipts'
+              text: selectedTrafficPeriod === 'today' ? 'Number of Receipts' : 'Customer Traffic'
             }
           },
           x: {
             title: {
               display: true,
-              text: 'Shift Period'
+              text: selectedTrafficPeriod === 'today' ? 'Shift Period' : 'Date'
             }
           }
         },
@@ -6943,19 +6964,14 @@ async function loadTrafficChart(period) {
       }
     };
     
-    window.trafficChartInstance = new Chart(trafficCanvasContext, trafficChartConfig);
+    window.trafficChartInstance = new Chart(trafficChartCanvas, trafficChartConfiguration);
     
-    console.log(`Traffic chart loaded successfully for today:`, {
-      dataPoints: trafficValues.length,
-      total: trafficTotalToday,
-      peak: trafficPeakValue,
-      trend: trafficTrendPercent,
-      shifts: {
-        morning: trafficValues[0] || 0,
-        swing: trafficValues[1] || 0, 
-        graveyard: trafficValues[2] || 0,
-        other: trafficValues[3] || 0
-      }
+    console.log(`Traffic chart loaded successfully for ${selectedTrafficPeriod}:`, {
+      type: trafficChartType,
+      dataPoints: trafficChartValues.length,
+      total: trafficChartTotalToday,
+      peak: trafficChartPeakValue,
+      trend: trafficChartTrendPct
     });
     
   } catch (error) {
@@ -6977,15 +6993,16 @@ async function loadTrafficChart(period) {
 
 // Fallback chart when data fails to load
 function createFallbackTrafficChart() {
-  const trafficFallbackCanvasCtx = document.getElementById('trafficChart');
-  if (!trafficFallbackCanvasCtx || !window.Chart) return;
+  const trafficFallbackCanvas = document.getElementById('trafficChart');
+  if (!trafficFallbackCanvas || !window.Chart) return;
   
   ensureCanvasMinH('trafficChart');
+  
   if (window.trafficChartInstance) {
     window.trafficChartInstance.destroy();
   }
   
-  window.trafficChartInstance = new Chart(trafficFallbackCanvasCtx, {
+  window.trafficChartInstance = new Chart(trafficFallbackCanvas, {
     type: 'bar',
     data: {
       labels: ['Morning', 'Swing', 'Graveyard', ''],
@@ -6997,7 +7014,15 @@ function createFallbackTrafficChart() {
           'rgba(54, 162, 235, 0.8)', 
           'rgba(153, 102, 255, 0.8)',
           'rgba(201, 203, 207, 0.8)'
-        ]
+        ],
+        borderColor: [
+          'rgba(255, 206, 86, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(201, 203, 207, 1)'
+        ],
+        borderWidth: 2,
+        borderRadius: 4
       }]
     },
     options: {
@@ -7007,7 +7032,7 @@ function createFallbackTrafficChart() {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (context) => ` No data available`
+            label: () => 'No data available - using demo'
           }
         }
       },
