@@ -1769,7 +1769,7 @@ function doLogout() {
                 <label for="graveyardSalesVolume"> Graveyard Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
                 </label>
-                <input type="number" id="graveyardSalesVolume" placeholder="e.g., 35,000" min="0" step="0.01" required>
+                <input type="number" id="graveyardSalesVolume" placeholder="e.g., 30,000" min="0" step="0.01" required>
               </div>
             </div>
           </div>
