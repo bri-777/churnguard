@@ -1,0 +1,97 @@
+{
+  "learner": {
+    "feature_names": ["rc", "sales", "ct", "tdp", "sdp", "t_drop", "imbalance"],
+    "feature_types": ["float", "float", "float", "float", "float", "float", "float"],
+    "gradient_booster": {
+      "model": {
+        "trees": [
+          {
+            "tree_param": {"num_feature": "7", "size_leaf_vector": "0", "num_nodes": "7"},
+            "num_nodes": 7,
+            "nodes": [
+              {"nodeid": 0, "split": "tdp", "split_condition": 35.5, "yes": 1, "no": 2, "missing": 1, "default_left": true, "children": [
+                {"nodeid": 1, "split": "sdp", "split_condition": 28.5, "yes": 3, "no": 4, "missing": 3, "default_left": true, "children": [
+                  {"nodeid": 3, "leaf": 0.0892},
+                  {"nodeid": 4, "leaf": 0.2156}
+                ]},
+                {"nodeid": 2, "split": "rc", "split_condition": 15.5, "yes": 5, "no": 6, "missing": 5, "default_left": true, "children": [
+                  {"nodeid": 5, "leaf": 0.3542},
+                  {"nodeid": 6, "leaf": 0.1234}
+                ]}
+              ]}
+            ]
+          },
+          {
+            "tree_param": {"num_feature": "7", "size_leaf_vector": "0", "num_nodes": "7"},
+            "num_nodes": 7,
+            "nodes": [
+              {"nodeid": 0, "split": "t_drop", "split_condition": 40.5, "yes": 1, "no": 2, "missing": 1, "default_left": true, "children": [
+                {"nodeid": 1, "split": "imbalance", "split_condition": 55.5, "yes": 3, "no": 4, "missing": 3, "default_left": true, "children": [
+                  {"nodeid": 3, "leaf": 0.0756},
+                  {"nodeid": 4, "leaf": 0.1823}
+                ]},
+                {"nodeid": 2, "split": "sales", "split_condition": 500.5, "yes": 5, "no": 6, "missing": 5, "default_left": true, "children": [
+                  {"nodeid": 5, "leaf": 0.2867},
+                  {"nodeid": 6, "leaf": 0.0987}
+                ]}
+              ]}
+            ]
+          },
+          {
+            "tree_param": {"num_feature": "7", "size_leaf_vector": "0", "num_nodes": "5"},
+            "num_nodes": 5,
+            "nodes": [
+              {"nodeid": 0, "split": "sdp", "split_condition": 45.5, "yes": 1, "no": 2, "missing": 1, "default_left": true, "children": [
+                {"nodeid": 1, "split": "tdp", "split_condition": 50.5, "yes": 3, "no": 4, "missing": 3, "default_left": true, "children": [
+                  {"nodeid": 3, "leaf": 0.0645},
+                  {"nodeid": 4, "leaf": 0.1567}
+                ]},
+                {"nodeid": 2, "leaf": 0.2234}
+              ]}
+            ]
+          },
+          {
+            "tree_param": {"num_feature": "7", "size_leaf_vector": "0", "num_nodes": "7"},
+            "num_nodes": 7,
+            "nodes": [
+              {"nodeid": 0, "split": "rc", "split_condition": 8.5, "yes": 1, "no": 2, "missing": 1, "default_left": true, "children": [
+                {"nodeid": 1, "split": "ct", "split_condition": 12.5, "yes": 3, "no": 4, "missing": 3, "default_left": true, "children": [
+                  {"nodeid": 3, "leaf": 0.2456},
+                  {"nodeid": 4, "leaf": 0.1234}
+                ]},
+                {"nodeid": 2, "split": "imbalance", "split_condition": 65.5, "yes": 5, "no": 6, "missing": 5, "default_left": true, "children": [
+                  {"nodeid": 5, "leaf": 0.0567},
+                  {"nodeid": 6, "leaf": 0.1567}
+                ]}
+              ]}
+            ]
+          },
+          {
+            "tree_param": {"num_feature": "7", "size_leaf_vector": "0", "num_nodes": "5"},
+            "num_nodes": 5,
+            "nodes": [
+              {"nodeid": 0, "split": "t_drop", "split_condition": 55.5, "yes": 1, "no": 2, "missing": 1, "default_left": true, "children": [
+                {"nodeid": 1, "leaf": 0.0423},
+                {"nodeid": 2, "split": "sales", "split_condition": 1500.5, "yes": 3, "no": 4, "missing": 3, "default_left": true, "children": [
+                  {"nodeid": 3, "leaf": 0.1789},
+                  {"nodeid": 4, "leaf": 0.0876}
+                ]}
+              ]}
+            ]
+          }
+        ]
+      },
+      "name": "gbtree"
+    },
+    "learner_model_param": {
+      "base_score": "0.5",
+      "num_class": "0",
+      "num_feature": "7"
+    },
+    "objective": {
+      "name": "binary:logistic",
+      "reg_loss_param": {"scale_pos_weight": "1"}
+    }
+  },
+  "version": [1, 8, 2]
+}
