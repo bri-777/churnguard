@@ -1745,7 +1745,7 @@ function doLogout() {
                 <label for="morningSalesVolume"> Morning Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance"></i>
                 </label>
-                <input type="number" id="morningSalesVolume" placeholder="e.g., 15000" min="0" step="0.01" required>
+                <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
                 <label for="swingReceiptCount"> Swing Receipt Count <span class="required">*</span>
@@ -1757,7 +1757,7 @@ function doLogout() {
                 <label for="swingSalesVolume"> Swing Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
                 </label>
-                <input type="number" id="swingSalesVolume" placeholder="e.g., 20000" min="0" step="0.01" required>
+                <input type="number" id="swingSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
                 <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
@@ -1769,7 +1769,7 @@ function doLogout() {
                 <label for="graveyardSalesVolume"> Graveyard Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
                 </label>
-                <input type="number" id="graveyardSalesVolume" placeholder="e.g., 10000" min="0" step="0.01" required>
+                <input type="number" id="graveyardSalesVolume" placeholder="e.g., 35,000" min="0" step="0.01" required>
               </div>
             </div>
           </div>
