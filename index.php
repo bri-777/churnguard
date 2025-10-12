@@ -2151,6 +2151,7 @@ function doLogout() {
     </div>
 </div>
 <script>
+
 // ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD ====================
 'use strict';
 
@@ -3674,7 +3675,6 @@ window.TargetManager = TargetManager;
 
 console.log('[APP] Sales Analytics Dashboard Script Loaded')
 
-
 </script>
 <style>
 .history-section {
@@ -4775,15 +4775,12 @@ body {
   
   
   
-<!-- Customer Insights - Left-aligned, cleaned layout with AI Summaries -->
+<!-- Customer Insights - Left-aligned, cleaned layout -->
 <div id="customer-insights" class="page main-content cgx-scope" aria-labelledby="ci-title" data-module="customer-insights" style="
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   background:#F6F9FC; color:#32325D; line-height:1.6;
   min-height:100vh; padding:1.5rem 2rem; margin:0;
 ">
-  <!-- Add CSS for AI Summaries -->
-  <link rel="stylesheet" href="chart-summary-styles.css">
-
   <!-- LEFT-ALIGNED CONTAINER -->
   <div style="width:100%; max-width:1280px; margin:0;">
 
@@ -4873,6 +4870,8 @@ body {
       </div>
     </div>
 
+   
+
     <!-- Tabs + Content -->
     <div class="report-section" style="
       background:#fff; border-radius:12px; padding:1.5rem; margin:0 0 1.5rem 0;
@@ -4891,6 +4890,7 @@ body {
         <button class="tab-btn" onclick="switchTab('revenue')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
         " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
+      
         <button class="tab-btn" onclick="switchTab('trends')" style="
           padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
         " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Risk Level Trends</button>
@@ -4902,30 +4902,6 @@ body {
           <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Retention Trend</h3>
             <canvas id="retentionChart" height="240"></canvas>
-            
-            <!-- AI Summary Container for Retention -->
-            <div id="retention-ai-summary" class="ai-chart-summary-container" style="display:none;">
-              <div class="ai-summary-header">
-                <div class="ai-summary-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                  </svg>
-                  AI-Powered Insights
-                </div>
-                <div class="summary-info-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                  </svg>
-                  <div class="summary-tooltip">
-                    This AI-generated summary analyzes your retention data to identify key trends, patterns, and actionable recommendations for improving customer retention.
-                  </div>
-                </div>
-              </div>
-              <p class="ai-summary-content" id="retention-summary-text">Loading AI insights...</p>
-            </div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Average</h3>
@@ -4937,6 +4913,8 @@ body {
               <span style="font-size:.92rem; color:#6b7280;">Churn Rate</span>
               <span id="churnRate" style="font-size:1rem; font-weight:800;">0%</span>
             </div>
+           
+            
           </div>
         </div>
       </div>
@@ -4947,30 +4925,6 @@ body {
           <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Transaction Patterns</h3>
             <canvas id="behaviorChart" height="240"></canvas>
-            
-            <!-- AI Summary Container for Behavior -->
-            <div id="behavior-ai-summary" class="ai-chart-summary-container" style="display:none;">
-              <div class="ai-summary-header">
-                <div class="ai-summary-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                  </svg>
-                  AI-Powered Insights
-                </div>
-                <div class="summary-info-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                  </svg>
-                  <div class="summary-tooltip">
-                    This AI analysis reveals customer behavior patterns, transaction trends, and purchasing habits to help optimize your sales strategy.
-                  </div>
-                </div>
-              </div>
-              <p class="ai-summary-content" id="behavior-summary-text">Loading AI insights...</p>
-            </div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Behavior Metrics</h3>
@@ -4982,6 +4936,8 @@ body {
               <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Value</span>
               <span id="avgValue" style="font-size:1rem; font-weight:800;">₱0</span>
             </div>
+          
+          
           </div>
         </div>
       </div>
@@ -4992,66 +4948,25 @@ body {
           <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Revenue Impact Analysis</h3>
             <canvas id="revenueChart" height="240"></canvas>
-            
-            <!-- AI Summary Container for Revenue -->
-            <div id="revenue-ai-summary" class="ai-chart-summary-container" style="display:none;">
-              <div class="ai-summary-header">
-                <div class="ai-summary-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                  </svg>
-                  AI-Powered Insights
-                </div>
-                <div class="summary-info-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                  </svg>
-                  <div class="summary-tooltip">
-                    AI-driven revenue analysis identifies financial trends, growth opportunities, and potential risks affecting your bottom line.
-                  </div>
-                </div>
-              </div>
-              <p class="ai-summary-content" id="revenue-summary-text">Loading AI insights...</p>
-            </div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
+          
+        
+             
+      
+            
+           
           </div>
         </div>
       </div>
 
+     
       <!-- Trends -->
       <div class="tab-content" id="trends-tab" style="display:none;">
         <div class="trends-container">
           <div class="chart-container full-width" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">30-Day Churn Risk Trend</h3>
             <canvas id="trendsChart" height="250"></canvas>
-            
-            <!-- AI Summary Container for Trends -->
-            <div id="trends-ai-summary" class="ai-chart-summary-container" style="display:none;">
-              <div class="ai-summary-header">
-                <div class="ai-summary-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                  </svg>
-                  AI-Powered Insights
-                </div>
-                <div class="summary-info-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                  </svg>
-                  <div class="summary-tooltip">
-                    This AI assessment evaluates 30-day risk trends to highlight concerning patterns and suggest proactive retention strategies.
-                  </div>
-                </div>
-              </div>
-              <p class="ai-summary-content" id="trends-summary-text">Loading AI insights...</p>
-            </div>
           </div>
           <div class="comparison-table" style="margin-top:1.25rem;">
             <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
@@ -5071,6 +4986,9 @@ body {
         </div>
       </div>
     </div>
+
+
+   
 
     <!-- Modal -->
     <div class="modal" id="drillDownModal" style="
@@ -5155,11 +5073,8 @@ body {
         </div>
       </div>
     </div>
-    
-    <script src="churn-report.js"></script>
+ <script src="churn-report.js"></script>
   </div>
-</div>
-
   <!-- Print Styles -->
   <style>
     @media print {
