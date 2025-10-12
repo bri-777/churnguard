@@ -8,36 +8,42 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/errors.log');
 
-// Load environment variables
-if (file_exists(__DIR__ . '/.env')) {
-    $envVars = parse_ini_file(__DIR__ . '/.env');
-    foreach ($envVars as $key => $value) {
-        $_ENV[$key] = $value;
-        putenv("$key=$value");
+// ==================== LOAD .ENV FILE ====================
+function loadEnv(string $filePath): void {
+    if (!file_exists($filePath)) {
+        error_log("[OpenAI] .env file not found at: $filePath");
+        return;
     }
+    
+    $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        // Skip comments
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+        
+        // Parse key=value
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+            
+            // Remove quotes if present
+            $value = trim($value, '"\'');
+            
+            $_ENV[$key] = $value;
+            putenv("$key=$value");
+        }
+    }
+    error_log("[OpenAI] .env file loaded successfully");
 }
+
+// Load .env file
+loadEnv(__DIR__ . '/.env');
 
 // ==================== CORS & HEADERS ====================
 if (isset($_SERVER['HTTP_ORIGIN'])) {
-    $origin = $_SERVER['HTTP_ORIGIN'];
-    $allowedOrigins = [
-        'http://localhost',
-        'http://127.0.0.1',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000'
-    ];
-    
-    $isAllowed = false;
-    foreach ($allowedOrigins as $allowed) {
-        if (strpos($origin, $allowed) === 0) {
-            $isAllowed = true;
-            break;
-        }
-    }
-    
-    if ($isAllowed) {
-        header("Access-Control-Allow-Origin: $origin");
-    }
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
 }
 
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -102,6 +108,8 @@ if (!isset($_SESSION['user_id'])) {
     jsonError('Authentication required. Please log in.', 401);
 }
 
+$currentUserId = (int)$_SESSION['user_id'];
+
 // ==================== VALIDATE REQUEST METHOD ====================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonError('Method not allowed. Use POST.', 405);
@@ -110,9 +118,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // ==================== GET OPENAI API KEY ====================
 $openaiApiKey = getenv('OPENAI_API_KEY') ?: ($_ENV['OPENAI_API_KEY'] ?? null);
 
+logDebug("API Key Check", [
+    'has_key' => !empty($openaiApiKey),
+    'key_length' => $openaiApiKey ? strlen($openaiApiKey) : 0,
+    'key_prefix' => $openaiApiKey ? substr($openaiApiKey, 0, 7) : 'none'
+]);
+
 if (empty($openaiApiKey)) {
     logDebug("OpenAI API key not found in environment");
-    jsonError('OpenAI API key not configured', 503);
+    jsonError('OpenAI API key not configured. Please check .env file.', 503);
 }
 
 // ==================== PARSE REQUEST BODY ====================
@@ -136,6 +150,7 @@ if (empty($chartData) || !is_array($chartData)) {
 }
 
 logDebug("Processing chart summary request", [
+    'user_id' => $currentUserId,
     'chart_type' => $chartType,
     'data_points' => count($chartData)
 ]);
@@ -149,7 +164,8 @@ try {
     
     logDebug("OpenAI summary generated successfully", [
         'chart_type' => $chartType,
-        'summary_length' => strlen($summary)
+        'summary_length' => strlen($summary),
+        'user_id' => $currentUserId
     ]);
     
     jsonSuccess([
@@ -161,14 +177,17 @@ try {
 } catch (Exception $e) {
     logDebug("OpenAI API Error", [
         'error' => $e->getMessage(),
-        'chart_type' => $chartType
+        'chart_type' => $chartType,
+        'user_id' => $currentUserId
     ]);
     jsonError('Failed to generate summary: ' . $e->getMessage(), 500);
 }
 
 // ==================== BUILD PROMPT FUNCTION ====================
 function buildPromptForChart(string $chartType, array $chartData): string {
-    $dataJson = json_encode($chartData, JSON_PRETTY_PRINT);
+    // Limit data to last 30 points for better performance
+    $dataToAnalyze = array_slice($chartData, -30);
+    $dataJson = json_encode($dataToAnalyze, JSON_PRETTY_PRINT);
     
     $prompts = [
         'retention' => "Analyze this customer retention data and provide a concise, professional summary (3-4 sentences) highlighting key trends, retention rate patterns, and actionable insights:\n\nData:\n{$dataJson}\n\nFocus on: current retention rate, trend direction, and any significant changes.",

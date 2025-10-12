@@ -366,6 +366,8 @@ const AIChartSummary = {
         }, this.config.timeout);
 
         try {
+            console.log(`[AI] Calling API for ${chartType}...`);
+            
             const response = await fetch(this.config.apiEndpoint, {
                 method: 'POST',
                 headers: {
@@ -383,11 +385,16 @@ const AIChartSummary = {
             clearTimeout(timeoutId);
             this.activeRequests.delete(requestId);
 
+            console.log(`[AI] API response status: ${response.status}`);
+
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                const errorText = await response.text();
+                console.error('[AI] API error response:', errorText);
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
             const data = await response.json();
+            console.log('[AI] API response data:', data);
 
             if (data.status === 'error') {
                 throw new Error(data.message || 'Failed to generate summary');
@@ -400,7 +407,7 @@ const AIChartSummary = {
             this.activeRequests.delete(requestId);
 
             if (error.name === 'AbortError') {
-                throw new Error('Request timeout');
+                throw new Error('Request timeout - please try again');
             }
 
             if (retryCount < this.config.retryAttempts) {
@@ -476,6 +483,8 @@ const AIChartSummary = {
         if (chartInstance && chartInstance.data) {
             const chartData = this.prepareChartData(chartInstance);
             this.generateSummary(chartType, chartData, containerId);
+        } else {
+            console.error(`[AI] Chart instance not found for ${chartType}`);
         }
     },
 
@@ -496,12 +505,15 @@ const AIChartSummary = {
     },
 
     prepareChartData(chart) {
-        if (!chart || !chart.data) return [];
+        if (!chart || !chart.data) {
+            console.warn('[AI] Invalid chart data');
+            return [];
+        }
 
         const labels = chart.data.labels || [];
         const datasets = chart.data.datasets || [];
 
-        return labels.map((label, index) => {
+        const preparedData = labels.map((label, index) => {
             const dataPoint = { label: label };
             datasets.forEach((dataset, datasetIndex) => {
                 const value = dataset.data[index];
@@ -510,28 +522,46 @@ const AIChartSummary = {
             });
             return dataPoint;
         });
+
+        console.log('[AI] Prepared chart data:', preparedData.length, 'points');
+        return preparedData;
     },
 
     generateSummaryForChart(chartInstance, chartType, containerId) {
         if (!chartInstance || !chartInstance.data) {
-            console.warn('[AI] Invalid chart instance');
+            console.warn('[AI] Invalid chart instance for', chartType);
             return;
         }
 
         const chartData = this.prepareChartData(chartInstance);
         
         if (chartData.length === 0) {
-            console.warn('[AI] No data to analyze');
+            console.warn('[AI] No data to analyze for', chartType);
             return;
         }
 
+        console.log(`[AI] Scheduling summary generation for ${chartType} with ${chartData.length} data points`);
+        
+        // Add delay to ensure chart is fully rendered
         setTimeout(() => {
             this.generateSummary(chartType, chartData, containerId);
-        }, 500);
+        }, 800);
     }
 };
 
 // Make it globally available
 window.AIChartSummary = AIChartSummary;
 
-console.log('[AI] AI Chart Summary Module Loaded');
+console.log('[AI] AI Chart Summary Module Loaded Successfully');
+
+// Test function to verify module is working
+window.testAISummary = function() {
+    console.log('[AI] Testing AI Summary Module...');
+    console.log('[AI] Module available:', typeof AIChartSummary !== 'undefined');
+    console.log('[AI] Chart instances:', {
+        retention: typeof retentionChartInstance !== 'undefined',
+        behavior: typeof behaviorChartInstance !== 'undefined',
+        revenue: typeof revenueChartInstance !== 'undefined',
+        trends: typeof trendsChartInstance !== 'undefined'
+    });
+};

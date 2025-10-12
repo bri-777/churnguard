@@ -5482,25 +5482,52 @@ function cgx_updateCharts(trends){
 }
 
 // *** MODIFIED cgx_createChart FUNCTION - THIS IS THE KEY FIX ***
+// *** REPLACE YOUR EXISTING cgx_createChart FUNCTION WITH THIS ***
 function cgx_createChart(canvasId, config, chartType){
   const canvas = document.getElementById(canvasId);
-  if (!canvas){ cgx_log(`Canvas not found: ${canvasId}`); return; }
+  if (!canvas){ 
+    cgx_log(`Canvas not found: ${canvasId}`); 
+    return; 
+  }
   const ctx = canvas.getContext('2d');
   
   // Destroy old chart
-  if (cgx_charts[canvasId]) cgx_charts[canvasId].destroy();
+  if (cgx_charts[canvasId]) {
+    cgx_charts[canvasId].destroy();
+  }
 
   const defaults = {
     responsive:true,
     maintainAspectRatio:false,
     interaction:{ intersect:false, mode:'index' },
     plugins:{
-      legend:{ display:true, position:'top', labels:{ usePointStyle:true, padding:15, font:{ size:12, weight:'600' } } },
-      tooltip:{ backgroundColor:'rgba(0,0,0,0.8)', titleFont:{ size:13, weight:'600' }, bodyFont:{ size:12 }, padding:10, cornerRadius:6 }
+      legend:{ 
+        display:true, 
+        position:'top', 
+        labels:{ 
+          usePointStyle:true, 
+          padding:15, 
+          font:{ size:12, weight:'600' } 
+        } 
+      },
+      tooltip:{ 
+        backgroundColor:'rgba(0,0,0,0.8)', 
+        titleFont:{ size:13, weight:'600' }, 
+        bodyFont:{ size:12 }, 
+        padding:10, 
+        cornerRadius:6 
+      }
     },
     scales:{
-      y:{ beginAtZero:true, grid:{ color:'rgba(0,0,0,0.05)', drawBorder:false }, ticks:{ font:{ size:11 } } },
-      x:{ grid:{ display:false, drawBorder:false }, ticks:{ font:{ size:11 } } }
+      y:{ 
+        beginAtZero:true, 
+        grid:{ color:'rgba(0,0,0,0.05)', drawBorder:false }, 
+        ticks:{ font:{ size:11 } } 
+      },
+      x:{ 
+        grid:{ display:false, drawBorder:false }, 
+        ticks:{ font:{ size:11 } } 
+      }
     }
   };
   
@@ -5509,6 +5536,8 @@ function cgx_createChart(canvasId, config, chartType){
   // Create chart
   const chartInstance = new Chart(ctx, config);
   cgx_charts[canvasId] = chartInstance;
+  
+  cgx_log(`Chart created: ${canvasId}`, { type: chartType || 'unknown' });
   
   // *** KEY FIX: Store chart in global scope for AI module ***
   if (chartType) {
@@ -5519,14 +5548,19 @@ function cgx_createChart(canvasId, config, chartType){
     if (typeof AIChartSummary !== 'undefined') {
       setTimeout(() => {
         cgx_log(`Triggering AI summary for: ${chartType}`);
-        AIChartSummary.generateSummaryForChart(
-          chartInstance,
-          chartType,
-          `${chartType}-ai-summary`
-        );
-      }, 800);
+        const container = document.getElementById(`${chartType}-ai-summary`);
+        if (container) {
+          AIChartSummary.generateSummaryForChart(
+            chartInstance,
+            chartType,
+            `${chartType}-ai-summary`
+          );
+        } else {
+          cgx_log(`AI summary container not found: ${chartType}-ai-summary`);
+        }
+      }, 1000);
     } else {
-      cgx_log('AIChartSummary module not found');
+      cgx_log('AIChartSummary module not loaded yet');
     }
   }
 }
