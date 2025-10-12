@@ -279,9 +279,9 @@ function analyze_business_factors(array $data, array $rollups): array {
     if ($historicalTrend === 'declining' && $rollups['avgRc'] > 0) {
       $declinePct = (($rollups['avgRc'] - $rc) / $rollups['avgRc']) * 100;
       if ($declinePct > 30) {
-        $criticalFactors[] = "📊 Historical trend: severely declining";
+        $criticalFactors[] = "";
       } elseif ($declinePct > 15) {
-        $warningFactors[] = "📊 Historical trend: declining";
+        $warningFactors[] = "";
       }
     } elseif ($historicalTrend === 'improving') {
       $positiveFactors[] = "📊 Historical trend: improving";
