@@ -104,7 +104,7 @@ if (!$me) {
       
 
         <a href="#" class="menu-item" onclick="showPage('recommendations')">
-          <i class="fas fa-lightbulb"></i> <span>Stratigic Recommendations</span>
+          <i class="fas fa-lightbulb"></i> <span>AI Recommendations</span>
         </a>
       </div>
 
