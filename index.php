@@ -1757,7 +1757,7 @@ function doLogout() {
                 <label for="swingSalesVolume"> Swing Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
                 </label>
-                <input type="number" id="swingSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required>
+                <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
                 <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
