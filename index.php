@@ -5953,7 +5953,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   </main>
 </div>
 
-
+<script src = "traffic.js"></script>
 
 <script>
 /* ============================================================
@@ -6771,7 +6771,7 @@ function v(id) { return document.getElementById(id)?.value || $('#' + id)?.value
 
 
 // Enhanced traffic loading with 14-day support
-<script src = "traffic.js"></script>
+
 
 async function loadChurnDistribution() {
   try {
