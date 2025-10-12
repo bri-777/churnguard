@@ -159,67 +159,262 @@ const AIChartSummary = (function() {
   }
 
   /**
-   * Display AI summary in container
+   * Display AI summary in container - ENHANCED PROFESSIONAL DESIGN
    */
   function displaySummary(container, summary, chartType) {
     container.innerHTML = `
       <div class="ai-summary-content" style="
-        padding: 1rem 1.25rem;
-        background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
-        border-left: 4px solid #5E72E4;
-        border-radius: 0.5rem;
         position: relative;
-        animation: fadeIn 0.4s ease-in;
-      ">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem;">
-          <div style="flex: 1;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E72E4" stroke-width="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-              <span style="font-size: 0.85rem; font-weight: 800; color: #5E72E4; text-transform: uppercase; letter-spacing: 0.5px;">
-                AI Insights
-              </span>
+        padding: 0;
+        background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
+        border-radius: 0.875rem;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(94, 114, 228, 0.12);
+        transition: all 0.3s ease;
+      " onmouseover="this.style.boxShadow='0 4px 16px rgba(94, 114, 228, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(-2px)';" 
+         onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)'; this.style.transform='translateY(0)';">
+        
+        <!-- Decorative Top Border -->
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #667EEA 0%, #5E72E4 50%, #764BA2 100%);
+          box-shadow: 0 2px 12px rgba(94, 114, 228, 0.4);
+        "></div>
+        
+        <!-- Header Section -->
+        <div style="
+          padding: 1.125rem 1.375rem 1rem 1.375rem;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(94, 114, 228, 0.05) 100%);
+          border-bottom: 1px solid rgba(94, 114, 228, 0.08);
+        ">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <!-- Left: AI Badge -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <!-- AI Icon with Glow -->
+              <div style="
+                position: relative;
+                width: 32px;
+                height: 32px;
+                border-radius: 0.5rem;
+                background: linear-gradient(135deg, #667EEA 0%, #5E72E4 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(94, 114, 228, 0.35);
+              ">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+              
+              <!-- Title -->
+              <div>
+                <div style="
+                  font-size: 0.8125rem;
+                  font-weight: 800;
+                  color: #5E72E4;
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                  line-height: 1;
+                  margin-bottom: 0.25rem;
+                ">AI Insights</div>
+                <div style="
+                  font-size: 0.6875rem;
+                  color: #9CA3AF;
+                  font-weight: 600;
+                  letter-spacing: 0.02em;
+                ">Powered by OpenAI GPT-3.5</div>
+              </div>
             </div>
-            <p style="
-              margin: 0;
-              font-size: 0.95rem;
-              line-height: 1.6;
-              color: #374151;
-              font-weight: 500;
-            ">${summary}</p>
+            
+            <!-- Right: Live Status & Tooltip -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <!-- Live Indicator -->
+              <div style="
+                display: flex;
+                align-items: center;
+                gap: 0.375rem;
+                padding: 0.375rem 0.625rem;
+                background: rgba(16, 185, 129, 0.08);
+                border-radius: 999px;
+                border: 1px solid rgba(16, 185, 129, 0.2);
+              ">
+                <div style="
+                  width: 6px;
+                  height: 6px;
+                  border-radius: 50%;
+                  background: #10B981;
+                  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+                  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+                "></div>
+                <span style="
+                  font-size: 0.6875rem;
+                  color: #059669;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                ">Live</span>
+              </div>
+              
+              <!-- Tooltip Trigger -->
+              <div class="chart-tooltip-trigger" style="
+                cursor: help;
+                position: relative;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: rgba(94, 114, 228, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+              " onmouseover="this.style.background='rgba(94, 114, 228, 0.2)'; this.style.transform='scale(1.1)';" 
+                 onmouseout="this.style.background='rgba(94, 114, 228, 0.1)'; this.style.transform='scale(1)';">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E72E4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                
+                <!-- Tooltip Content -->
+                <div class="chart-tooltip" style="
+                  position: absolute;
+                  right: 0;
+                  top: calc(100% + 0.625rem);
+                  background: linear-gradient(135deg, rgba(17, 24, 39, 0.97) 0%, rgba(31, 41, 55, 0.97) 100%);
+                  backdrop-filter: blur(12px);
+                  color: white;
+                  padding: 1rem 1.125rem;
+                  border-radius: 0.625rem;
+                  font-size: 0.8125rem;
+                  line-height: 1.6;
+                  width: 260px;
+                  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+                  z-index: 1000;
+                  opacity: 0;
+                  visibility: hidden;
+                  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                  pointer-events: none;
+                  font-weight: 500;
+                  transform: translateY(-4px);
+                ">
+                  <div style="
+                    font-weight: 700;
+                    margin-bottom: 0.375rem;
+                    color: #E0E7FF;
+                    font-size: 0.875rem;
+                  ">About This Chart</div>
+                  ${CHART_DESCRIPTIONS[chartType] || 'AI-powered chart analysis and insights.'}
+                  <div style="
+                    position: absolute;
+                    top: -4px;
+                    right: 14px;
+                    width: 8px;
+                    height: 8px;
+                    background: rgba(17, 24, 39, 0.97);
+                    transform: rotate(45deg);
+                  "></div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="chart-tooltip-trigger" style="
-            position: relative;
-            cursor: help;
-            flex-shrink: 0;
-          ">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <div class="chart-tooltip" style="
-              position: absolute;
-              right: 0;
-              top: 100%;
-              margin-top: 0.5rem;
-              background: rgba(0, 0, 0, 0.9);
-              color: white;
-              padding: 0.75rem 1rem;
-              border-radius: 0.5rem;
-              font-size: 0.85rem;
-              line-height: 1.5;
-              width: 220px;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-              z-index: 1000;
-              opacity: 0;
-              visibility: hidden;
-              transition: opacity 0.2s, visibility 0.2s;
-              pointer-events: none;
+        </div>
+        
+        <!-- Content Section -->
+        <div style="padding: 1.375rem 1.375rem 1.25rem 1.375rem;">
+          <div style="display: flex; gap: 1rem; align-items: start;">
+            <!-- Left Icon -->
+            <div style="
+              flex-shrink: 0;
+              width: 42px;
+              height: 42px;
+              border-radius: 0.625rem;
+              background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 2px 8px rgba(94, 114, 228, 0.15);
+              position: relative;
             ">
-              ${CHART_DESCRIPTIONS[chartType] || 'Chart analysis and insights.'}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E72E4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              <!-- Small pulse indicator -->
+              <div style="
+                position: absolute;
+                top: -2px;
+                right: -2px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #10B981;
+                border: 2px solid #fff;
+              "></div>
             </div>
+            
+            <!-- Summary Text -->
+            <div style="flex: 1; min-width: 0;">
+              <p style="
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.75;
+                color: #374151;
+                font-weight: 500;
+                letter-spacing: 0.005em;
+              ">${summary}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer Section -->
+        <div style="
+          padding: 0.875rem 1.375rem;
+          background: linear-gradient(to bottom, rgba(249, 250, 251, 0.5) 0%, rgba(243, 244, 246, 0.8) 100%);
+          border-top: 1px solid rgba(229, 231, 235, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        ">
+          <!-- Timestamp -->
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span style="
+              font-size: 0.75rem;
+              color: #6B7280;
+              font-weight: 600;
+            ">Updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+          
+          <!-- Confidence Badge -->
+          <div style="
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.08) 100%);
+            border-radius: 999px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+          ">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span style="
+              font-size: 0.6875rem;
+              color: #059669;
+              font-weight: 700;
+              letter-spacing: 0.02em;
+            ">High Confidence</span>
           </div>
         </div>
       </div>
@@ -233,53 +428,46 @@ const AIChartSummary = (function() {
       trigger.addEventListener('mouseenter', () => {
         tooltip.style.opacity = '1';
         tooltip.style.visibility = 'visible';
+        tooltip.style.transform = 'translateY(0)';
       });
       trigger.addEventListener('mouseleave', () => {
         tooltip.style.opacity = '0';
         tooltip.style.visibility = 'hidden';
+        tooltip.style.transform = 'translateY(-4px)';
       });
     }
-  }
 
-  /**
-   * Show loading state
-   */
-  function showLoadingState(container) {
-    container.innerHTML = `
-      <div class="ai-summary-loading" style="
-        padding: 1rem 1.25rem;
-        background: #F6F9FC;
-        border-left: 4px solid #D1D5DB;
-        border-radius: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      ">
-        <div style="
-          width: 18px;
-          height: 18px;
-          border: 3px solid #E5E7EB;
-          border-top-color: #5E72E4;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        "></div>
-        <span style="font-size: 0.9rem; color: #6b7280; font-weight: 600;">
-          Generating AI insights...
-        </span>
-      </div>
-    `;
-
-    // Add spin animation if not already added
+    // Add required animations
     if (!document.getElementById('ai-summary-styles')) {
       const style = document.createElement('style');
       style.id = 'ai-summary-styles';
       style.textContent = `
+        @keyframes fadeInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(20px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        @keyframes pulse {
+          0%, 100% { 
+            opacity: 1; 
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.8; 
+            transform: scale(1.1);
+          }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
         @keyframes spin {
           to { transform: rotate(360deg); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
         }
       `;
       document.head.appendChild(style);
@@ -287,29 +475,269 @@ const AIChartSummary = (function() {
   }
 
   /**
-   * Show error state
+   * Show loading state - ENHANCED DESIGN
+   */
+  function showLoadingState(container) {
+    container.innerHTML = `
+      <div class="ai-summary-loading" style="
+        position: relative;
+        padding: 0;
+        background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
+        border-radius: 0.875rem;
+        overflow: hidden;
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      ">
+        <!-- Top Border -->
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #9CA3AF 0%, #6B7280 50%, #9CA3AF 100%);
+          background-size: 200% 100%;
+          animation: shimmer 2s ease-in-out infinite;
+        "></div>
+        
+        <!-- Header -->
+        <div style="
+          padding: 1.125rem 1.375rem 1rem 1.375rem;
+          background: linear-gradient(135deg, rgba(156, 163, 175, 0.03) 0%, rgba(107, 114, 128, 0.05) 100%);
+          border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+        ">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <!-- Spinning Icon -->
+            <div style="
+              width: 32px;
+              height: 32px;
+              border-radius: 0.5rem;
+              background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">
+              <div style="
+                width: 16px;
+                height: 16px;
+                border: 2.5px solid #9CA3AF;
+                border-top-color: transparent;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+              "></div>
+            </div>
+            
+            <div>
+              <div style="
+                font-size: 0.8125rem;
+                font-weight: 800;
+                color: #6B7280;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                line-height: 1;
+                margin-bottom: 0.25rem;
+              ">Analyzing Data</div>
+              <div style="
+                font-size: 0.6875rem;
+                color: #9CA3AF;
+                font-weight: 600;
+              ">Generating AI insights...</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Content Skeleton -->
+        <div style="padding: 1.375rem;">
+          <div style="display: flex; gap: 1rem; align-items: start;">
+            <!-- Icon Skeleton -->
+            <div style="
+              flex-shrink: 0;
+              width: 42px;
+              height: 42px;
+              border-radius: 0.625rem;
+              background: linear-gradient(90deg, #F3F4F6 0%, #E5E7EB 50%, #F3F4F6 100%);
+              background-size: 200% 100%;
+              animation: shimmer 1.5s ease-in-out infinite;
+            "></div>
+            
+            <!-- Text Skeleton -->
+            <div style="flex: 1;">
+              <div style="
+                height: 14px;
+                background: linear-gradient(90deg, #F3F4F6 0%, #E5E7EB 50%, #F3F4F6 100%);
+                background-size: 200% 100%;
+                border-radius: 7px;
+                margin-bottom: 0.625rem;
+                animation: shimmer 1.5s ease-in-out infinite;
+              "></div>
+              <div style="
+                height: 14px;
+                background: linear-gradient(90deg, #F3F4F6 0%, #E5E7EB 50%, #F3F4F6 100%);
+                background-size: 200% 100%;
+                border-radius: 7px;
+                width: 90%;
+                margin-bottom: 0.625rem;
+                animation: shimmer 1.5s ease-in-out infinite;
+                animation-delay: 0.1s;
+              "></div>
+              <div style="
+                height: 14px;
+                background: linear-gradient(90deg, #F3F4F6 0%, #E5E7EB 50%, #F3F4F6 100%);
+                background-size: 200% 100%;
+                border-radius: 7px;
+                width: 75%;
+                animation: shimmer 1.5s ease-in-out infinite;
+                animation-delay: 0.2s;
+              "></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="
+          padding: 0.875rem 1.375rem;
+          background: linear-gradient(to bottom, rgba(249, 250, 251, 0.5) 0%, rgba(243, 244, 246, 0.8) 100%);
+          border-top: 1px solid rgba(229, 231, 235, 0.8);
+        ">
+          <div style="
+            height: 12px;
+            background: linear-gradient(90deg, #F3F4F6 0%, #E5E7EB 50%, #F3F4F6 100%);
+            background-size: 200% 100%;
+            border-radius: 6px;
+            width: 40%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            animation-delay: 0.3s;
+          "></div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Show error state - ENHANCED DESIGN
    */
   function showErrorState(container, errorMessage) {
     container.innerHTML = `
       <div class="ai-summary-error" style="
-        padding: 1rem 1.25rem;
-        background: #FEF2F2;
-        border-left: 4px solid #EF4444;
-        border-radius: 0.5rem;
+        position: relative;
+        padding: 0;
+        background: linear-gradient(to bottom, #ffffff 0%, #fef9f9 100%);
+        border-radius: 0.875rem;
+        overflow: hidden;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
       ">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <span style="font-size: 0.85rem; font-weight: 700; color: #EF4444;">
-            Unable to generate insights
-          </span>
+        <!-- Top Border -->
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%);
+        "></div>
+        
+        <!-- Header -->
+        <div style="
+          padding: 1.125rem 1.375rem 1rem 1.375rem;
+          background: linear-gradient(135deg, rgba(239, 68, 68, 0.03) 0%, rgba(220, 38, 38, 0.05) 100%);
+          border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+        ">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="
+              width: 32px;
+              height: 32px;
+              border-radius: 0.5rem;
+              background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            
+            <div>
+              <div style="
+                font-size: 0.8125rem;
+                font-weight: 800;
+                color: #DC2626;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                line-height: 1;
+                margin-bottom: 0.25rem;
+              ">Analysis Unavailable</div>
+              <div style="
+                font-size: 0.6875rem;
+                color: #EF4444;
+                font-weight: 600;
+              ">Unable to generate insights</div>
+            </div>
+          </div>
         </div>
-        <p style="margin: 0; font-size: 0.85rem; color: #991B1B;">
-          ${errorMessage || 'Please try again later'}
-        </p>
+        
+        <!-- Content -->
+        <div style="padding: 1.375rem;">
+          <div style="display: flex; gap: 1rem; align-items: start;">
+            <div style="
+              flex-shrink: 0;
+              width: 42px;
+              height: 42px;
+              border-radius: 0.625rem;
+              background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            
+            <div style="flex: 1;">
+              <p style="
+                margin: 0 0 0.625rem 0;
+                font-size: 0.9375rem;
+                font-weight: 700;
+                color: #991B1B;
+                line-height: 1.5;
+              ">Cannot Generate AI Insights</p>
+              <p style="
+                margin: 0;
+                font-size: 0.875rem;
+                color: #DC2626;
+                line-height: 1.65;
+                font-weight: 500;
+              ">${errorMessage || 'Please try refreshing the page. If the issue persists, contact support.'}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="
+          padding: 0.875rem 1.375rem;
+          background: linear-gradient(to bottom, rgba(254, 242, 242, 0.5) 0%, rgba(254, 226, 226, 0.3) 100%);
+          border-top: 1px solid rgba(239, 68, 68, 0.1);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span style="
+            font-size: 0.75rem;
+            color: #B91C1C;
+            font-weight: 600;
+          ">Error occurred at ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
       </div>
     `;
   }
