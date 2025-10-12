@@ -730,7 +730,7 @@ if ($action === 'run') {
     if ($modelConfidence < 0.5) {
       $desc .= ' (Limited data - add more transaction history for improved accuracy)';
     } elseif ($usedFallback && $modelConfidence < 0.8) {
-      $desc .= ' (Using heuristic analysis - model optimization recommended)';
+      $desc .= ' ';
     }
 
     // ===== FIX: DELETE today's previous predictions, then INSERT fresh one =====
