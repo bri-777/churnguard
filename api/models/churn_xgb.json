@@ -1,104 +1,121 @@
 {
-  "version": "1.6.0",
   "learner": {
+    "learner_model_param": {
+      "base_score": "0.45"
+    },
+    "objective": {
+      "name": "binary:logistic"
+    },
     "gradient_booster": {
       "model": {
         "trees": [
           {
-            "id": 0,
-            "depth": 4,
-            "split": {
-              "feature": "sales_volume",
-              "threshold": 30000,
-              "yes": {
-                "split": {
-                  "feature": "sales_volume",
-                  "threshold": 45000,
-                  "yes": { "leaf": 0.10 },
-                  "no": {
-                    "split": {
-                      "feature": "receipt_count",
-                      "threshold": 300,
-                      "yes": { "leaf": 0.20 },
-                      "no": { "leaf": 0.35 }
-                    }
-                  }
-                }
-              },
-              "no": {
-                "split": {
-                  "feature": "sales_volume",
-                  "threshold": 15000,
-                  "yes": {
-                    "split": {
-                      "feature": "receipt_count",
-                      "threshold": 200,
-                      "yes": { "leaf": 0.50 },
-                      "no": { "leaf": 0.70 }
-                    }
+            "nodeid": 0,
+            "depth": 0,
+            "split": "sales",
+            "split_condition": 30000.0,
+            "yes": 1,
+            "no": 2,
+            "missing": 1,
+            "children": [
+              {
+                "nodeid": 1,
+                "split": "rc",
+                "split_condition": 200.0,
+                "yes": 3,
+                "no": 4,
+                "missing": 3,
+                "children": [
+                  {
+                    "nodeid": 3,
+                    "leaf": 0.70
                   },
-                  "no": { "leaf": 0.90 }
-                }
+                  {
+                    "nodeid": 4,
+                    "leaf": 0.40
+                  }
+                ]
+              },
+              {
+                "nodeid": 2,
+                "split": "sales",
+                "split_condition": 45000.0,
+                "yes": 5,
+                "no": 6,
+                "missing": 5,
+                "children": [
+                  {
+                    "nodeid": 5,
+                    "split": "tdp",
+                    "split_condition": 25.0,
+                    "yes": 7,
+                    "no": 8,
+                    "missing": 7,
+                    "children": [
+                      {
+                        "nodeid": 7,
+                        "leaf": 0.35
+                      },
+                      {
+                        "nodeid": 8,
+                        "leaf": 0.10
+                      }
+                    ]
+                  },
+                  {
+                    "nodeid": 6,
+                    "split": "sdp",
+                    "split_condition": 35.0,
+                    "yes": 9,
+                    "no": 10,
+                    "missing": 9,
+                    "children": [
+                      {
+                        "nodeid": 9,
+                        "leaf": 0.60
+                      },
+                      {
+                        "nodeid": 10,
+                        "split": "t_drop",
+                        "split_condition": 40.0,
+                        "yes": 11,
+                        "no": 12,
+                        "missing": 11,
+                        "children": [
+                          {
+                            "nodeid": 11,
+                            "leaf": 0.75
+                          },
+                          {
+                            "nodeid": 12,
+                            "split": "imbalance",
+                            "split_condition": 50.0,
+                            "yes": 13,
+                            "no": 14,
+                            "missing": 13,
+                            "children": [
+                              {
+                                "nodeid": 13,
+                                "leaf": 0.65
+                              },
+                              {
+                                "nodeid": 14,
+                                "leaf": 0.25
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
-            }
-          },
-          {
-            "id": 1,
-            "depth": 3,
-            "split": {
-              "feature": "transaction_drop",
-              "threshold": -10,
-              "yes": { "leaf": 0.60 },
-              "no": {
-                "split": {
-                  "feature": "traffic_change",
-                  "threshold": -10,
-                  "yes": { "leaf": 0.45 },
-                  "no": { "leaf": 0.25 }
-                }
-              }
-            }
-          },
-          {
-            "id": 2,
-            "depth": 3,
-            "split": {
-              "feature": "peak_hours_revenue",
-              "threshold": 40,
-              "yes": { "leaf": 0.20 },
-              "no": {
-                "split": {
-                  "feature": "historical_trend",
-                  "threshold": 0,
-                  "yes": { "leaf": 0.40 },
-                  "no": { "leaf": 0.30 }
-                }
-              }
-            }
-          },
-          {
-            "id": 3,
-            "depth": 2,
-            "split": {
-              "feature": "transactions",
-              "threshold": 300,
-              "yes": { "leaf": 0.20 },
-              "no": { "leaf": 0.45 }
-            }
-          },
-          {
-            "id": 4,
-            "depth": 2,
-            "split": {
-              "feature": "daily_revenue",
-              "threshold": 40000,
-              "yes": { "leaf": 0.15 },
-              "no": { "leaf": 0.55 }
-            }
+            ]
           }
         ]
       }
-    }
+    },
+    "feature_names": ["rc", "sales", "ct", "tdp", "sdp", "t_drop", "imbalance"]
   },
-  "objective": "binary:logistic"
+  "version": [1, 7, 6]
 }
