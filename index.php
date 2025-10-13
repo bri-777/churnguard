@@ -4890,14 +4890,13 @@ body {
             <div id="retention-ai-summary"></div>
           </div>
           <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Average</h3>
+          
             <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Current Retention Rate</span>
-              <span id="currentRetention" style="font-size:1rem; font-weight:800;">0%</span>
+              
+              
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Churn Rate</span>
-              <span id="churnRate" style="font-size:1rem; font-weight:800;">0%</span>
+             
             </div>
           </div>
         </div>
