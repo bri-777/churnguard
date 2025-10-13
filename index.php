@@ -104,7 +104,7 @@ if (!$me) {
       
 
         <a href="#" class="menu-item" onclick="showPage('recommendations')">
-          <i class="fas fa-lightbulb"></i> <span>Stratigic Recommendations</span>
+          <i class="fas fa-lightbulb"></i> <span>AI Recommendations</span>
         </a>
       </div>
 
@@ -5853,52 +5853,9 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             <i class="fas fa-key"></i> Change Password
           </button>
         </form>
-
-      
       </div>
     </div>
 
-  <!-- Login History -->
-<div class="profile-card full-width">
-  <div class="card-header">
-    <div class="header-content">
-      <i class="fas fa-history"></i>
-      <div>
-        <h3 style="display:flex;align-items:center;gap:8px;">
-          Login History
-          <span id="onlineBadge"
-                style="display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;border:1px solid #e5e7eb;font-size:.75rem;">
-            <span id="onlineDot" style="width:8px;height:8px;border-radius:999px;background:#9ca3af;"></span>
-            <span id="onlineText" style="color:#6b7280;">Checking…</span>
-          </span>
-        </h3>
-        <p>Recent account access history</p>
-      </div>
-    </div>
-    <button class="btn-secondary" onclick="refreshLoginHistory()">
-      <i class="fas fa-sync-alt"></i> Refresh
-    </button>
-  </div>
-
-  <div class="card-body">
-    <div class="login-history-table" style="max-height:420px; overflow:auto; border:1px solid #e5e7eb; border-radius:10px;">
-      <table style="width:100%; border-collapse:collapse;">
-        <thead>
-          <tr style="background:#f9fafb;">
-            <th style="text-align:left; padding:10px; font-weight:600; border-bottom:1px solid #e5e7eb;">Date &amp; Time</th>
-            <th style="text-align:left; padding:10px; font-weight:600; border-bottom:1px solid #e5e7eb;">Location</th>
-            <th style="text-align:left; padding:10px; font-weight:600; border-bottom:1px solid #e5e7eb;">Device</th>
-            <th style="text-align:left; padding:10px; font-weight:600; border-bottom:1px solid #e5e7eb;">IP Address</th>
-            <th style="text-align:left; padding:10px; font-weight:600; border-bottom:1px solid #e5e7eb;">Status</th>
-          </tr>
-        </thead>
-        <tbody id="loginHistoryTable">
-          <!-- JS fills this -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
 
   </div>
