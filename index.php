@@ -6346,9 +6346,9 @@ async function loadTransactionLogs(customStart = null, customEnd = null) {
       
       rows += `
         <tr>
-          <td>${trans.id}</td>
+         
           <td>${dateStr}</td>
-          <td>${trans.shop_name || '-'}</td>
+       
           <td>${trans.customer_name || '-'}</td>
           <td>${trans.type_of_drink || '-'}</td>
           <td>${trans.quantity_of_drinks || 0}</td>
@@ -6356,7 +6356,7 @@ async function loadTransactionLogs(customStart = null, customEnd = null) {
           <td>${trans.time_of_day || '-'}</td>
           <td>${amountStr}</td>
           <td>${trans.payment_method || '-'}</td>
-          <td>${trans.day || '-'}</td>
+        
         </tr>
       `;
     });
