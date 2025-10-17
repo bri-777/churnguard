@@ -1852,7 +1852,12 @@ function processData(data) {
     return;
   }
   
-  // Initialize counters
+  // Initialize counters for TOTALS
+  let totalReceipts = 0;
+  let totalSales = 0;
+  let totalCustomerTraffic = 0;
+  
+  // Initialize counters for SHIFTS
   let morningReceipts = 0;
   let morningSales = 0;
   let middayReceipts = 0;
@@ -1873,7 +1878,12 @@ function processData(data) {
     // Skip empty rows
     if (!timeOfDay || totalAmount === 0) continue;
     
-    // Map to shifts
+    // Add to TOTALS
+    totalReceipts += receiptCount;
+    totalSales += totalAmount;
+    totalCustomerTraffic += 1; // Count each transaction as 1 customer
+    
+    // Map to SHIFTS
     if (timeOfDay.includes('morning')) {
       morningReceipts += receiptCount;
       morningSales += totalAmount;
@@ -1886,7 +1896,12 @@ function processData(data) {
     }
   }
   
-  // Populate input fields
+  // Populate TOTAL fields
+  document.getElementById('receiptCount').value = totalReceipts;
+  document.getElementById('salesVolume').value = totalSales.toFixed(2);
+  document.getElementById('customerTraffic').value = totalCustomerTraffic;
+  
+  // Populate SHIFT fields
   document.getElementById('morningReceiptCount').value = morningReceipts;
   document.getElementById('morningSalesVolume').value = morningSales.toFixed(2);
   document.getElementById('swingReceiptCount').value = middayReceipts;
@@ -1896,6 +1911,11 @@ function processData(data) {
   
   // Show success message
   alert('File loaded successfully!\n\n' +
+        'TOTALS:\n' +
+        'Total Receipts: ' + totalReceipts + '\n' +
+        'Total Sales: ₱' + totalSales.toFixed(2) + '\n' +
+        'Customer Traffic: ' + totalCustomerTraffic + '\n\n' +
+        'SHIFTS:\n' +
         'Morning: ' + morningReceipts + ' receipts, ₱' + morningSales.toFixed(2) + '\n' +
         'Midday: ' + middayReceipts + ' receipts, ₱' + middaySales.toFixed(2) + '\n' +
         'Evening: ' + eveningReceipts + ' receipts, ₱' + eveningSales.toFixed(2));
@@ -1904,9 +1924,6 @@ function processData(data) {
   document.getElementById('csvFileInput').value = '';
 }
 </script>
-
-
-
 
 
 
