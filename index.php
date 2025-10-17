@@ -1778,11 +1778,10 @@ function doLogout() {
 
 
       <div class="action-section">
-<!-- Add this button in the action-section, before or after existing buttons -->
 <button type="button" class="btn-primary" onclick="document.getElementById('csvFileInput').click()">
   <i class="fas fa-upload"></i> Upload CSV/Excel
 </button>
-<input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleFileUpload(event)">
+<input type="file"
 
 
         <button type="button" class="btn-primary" onclick="saveChurnData()">
@@ -1800,32 +1799,56 @@ function doLogout() {
     </div>
 
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
+  const fileName = file.name.toLowerCase();
+  const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+  
   const reader = new FileReader();
   
-  reader.onload = function(e) {
-    const text = e.target.result;
-    processCSVData(text);
-  };
-  
-  reader.readAsText(file);
+  if (isExcel) {
+    reader.onload = function(e) {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+      processData(jsonData);
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.onload = function(e) {
+      const text = e.target.result;
+      const lines = text.split('\n');
+      const jsonData = lines.map(line => line.split(',').map(cell => cell.trim()));
+      processData(jsonData);
+    };
+    reader.readAsText(file);
+  }
 }
 
-function processCSVData(csvText) {
-  // Parse CSV
-  const lines = csvText.split('\n');
-  const headers = lines[0].split(',').map(h => h.trim());
+function processData(data) {
+  if (data.length < 2) {
+    alert('No data found in file!');
+    return;
+  }
+  
+  // Get headers (first row)
+  const headers = data[0].map(h => String(h).trim().toLowerCase());
   
   // Find column indices
-  const timeOfDayIndex = headers.findIndex(h => h.toLowerCase().includes('time of day'));
-  const totalAmountIndex = headers.findIndex(h => h.toLowerCase().includes('total amount'));
-  const receiptCountIndex = headers.findIndex(h => h.toLowerCase().includes('receipt count'));
+  const receiptCountIndex = headers.findIndex(h => h.includes('receipt count'));
+  const timeOfDayIndex = headers.findIndex(h => h.includes('time of day'));
+  const totalAmountIndex = headers.findIndex(h => h.includes('total amount'));
+  
+  if (receiptCountIndex === -1 || timeOfDayIndex === -1 || totalAmountIndex === -1) {
+    alert('Required columns not found! Please ensure your file has:\n- Receipt Count\n- Time of Day\n- Total Amount (₱)');
+    return;
+  }
   
   // Initialize counters
   let morningReceipts = 0;
@@ -1835,15 +1858,20 @@ function processCSVData(csvText) {
   let eveningReceipts = 0;
   let eveningSales = 0;
   
-  // Process each data row
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
+  // Process data rows (skip header)
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row || row.length === 0) continue;
     
-    const values = lines[i].split(',').map(v => v.trim());
-    const timeOfDay = values[timeOfDayIndex]?.toLowerCase() || '';
-    const receiptCount = parseInt(values[receiptCountIndex]) || 1;
-    const totalAmount = parseFloat(values[totalAmountIndex]?.replace(/[₱,]/g, '')) || 0;
+    const receiptCount = parseInt(row[receiptCountIndex]) || 0;
+    const timeOfDay = String(row[timeOfDayIndex] || '').trim().toLowerCase();
+    const totalAmountStr = String(row[totalAmountIndex] || '').replace(/[₱,\s]/g, '');
+    const totalAmount = parseFloat(totalAmountStr) || 0;
     
+    // Skip empty rows
+    if (!timeOfDay || totalAmount === 0) continue;
+    
+    // Map to shifts
     if (timeOfDay.includes('morning')) {
       morningReceipts += receiptCount;
       morningSales += totalAmount;
@@ -1865,10 +1893,13 @@ function processCSVData(csvText) {
   document.getElementById('graveyardSalesVolume').value = eveningSales.toFixed(2);
   
   // Show success message
-  alert('CSV data loaded successfully! Receipt counts and sales volumes have been populated.');
+  alert('File loaded successfully!\n\n' +
+        'Morning: ' + morningReceipts + ' receipts, ₱' + morningSales.toFixed(2) + '\n' +
+        'Midday: ' + middayReceipts + ' receipts, ₱' + middaySales.toFixed(2) + '\n' +
+        'Evening: ' + eveningReceipts + ' receipts, ₱' + eveningSales.toFixed(2));
   
   // Reset file input
-  event.target.value = '';
+  document.getElementById('csvFileInput').value = '';
 }
 </script>
 
@@ -1891,6 +1922,8 @@ function processCSVData(csvText) {
 
 
 
+
+    
 
 
 
