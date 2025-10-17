@@ -6307,9 +6307,9 @@ async function loadTransactionLogs(customStart = null, customEnd = null) {
     // Update headers
     tableHead.innerHTML = `
       <tr>
-        <th>ID</th>
+        
         <th>Date</th>
-        <th>Shop</th>
+       
         <th>Customer</th>
         <th>Drink</th>
         <th>Qty</th>
@@ -6317,7 +6317,7 @@ async function loadTransactionLogs(customStart = null, customEnd = null) {
         <th>Time</th>
         <th>Amount</th>
         <th>Payment</th>
-        <th>Day</th>
+      
       </tr>
     `;
     
