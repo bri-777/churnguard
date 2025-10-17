@@ -5139,319 +5139,859 @@ body {
   
   
   <link href="cust-insight.css" rel="stylesheet">
-  
-  <div id = "cust-insight" class = "page">
-    <div class="ci-analytics-container">
-        <!-- Premium Header with Real-time Status -->
-        <header class="ci-dashboard-header">
-            <div class="ci-header-glow"></div>
-            <div class="ci-header-badge ci-pulse">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                </svg>
-                <span>Live Analytics</span>
-                <span class="ci-live-indicator"></span>
-            </div>
-            
-            <h1 class="ci-main-title">
-                <span class="ci-title-gradient">Customer Intelligence</span>
-                <span class="ci-title-pulse">Command Center</span>
-            </h1>
-            <p class="ci-subtitle">
-                <span class="ci-typing-animation"></span>
-            </p>
-            
-            <!-- Real-time Stats Bar -->
-            <div class="ci-stats-bar">
-                <div class="ci-stat-item" data-stat="active">
-                    <div class="ci-stat-number" id="activeUsers">
-                        <span class="ci-stat-loading">--</span>
-                    </div>
-                    <div class="ci-stat-label">Active Now</div>
-                    <div class="ci-stat-sparkline" id="activeSparkline"></div>
-                </div>
-                <div class="ci-stat-divider"></div>
-                <div class="ci-stat-item" data-stat="revenue">
-                    <div class="ci-stat-number" id="todayRevenue">
-                        <span class="ci-stat-loading">₱--</span>
-                    </div>
-                    <div class="ci-stat-label">Today's Revenue</div>
-                    <div class="ci-stat-sparkline" id="revenueSparkline"></div>
-                </div>
-                <div class="ci-stat-divider"></div>
-                <div class="ci-stat-item" data-stat="growth">
-                    <div class="ci-stat-number" id="growthRate">
-                        <span class="ci-stat-loading">--%</span>
-                    </div>
-                    <div class="ci-stat-label">Growth Rate</div>
-                    <div class="ci-stat-sparkline" id="growthSparkline"></div>
-                </div>
-            </div>
-            
-            <!-- Advanced Filter Controls -->
-            <div class="ci-filter-controls">
-                <div class="ci-filter-group">
-                    <label class="ci-filter-label">Date Range</label>
-                    <div class="ci-date-selector">
-                        <button class="ci-date-preset active" data-range="today">Today</button>
-                        <button class="ci-date-preset" data-range="week">Week</button>
-                        <button class="ci-date-preset" data-range="month">Month</button>
-                        <button class="ci-date-preset" data-range="quarter">Quarter</button>
-                        <button class="ci-date-preset" data-range="year">Year</button>
-                        <button class="ci-date-preset ci-custom" data-range="custom">
-                            <i class="fas fa-calendar-alt"></i> Custom
-                        </button>
-                    </div>
-                    <div class="ci-custom-dates" style="display: none;">
-                        <input type="date" id="ciStartDate" class="ci-date-input">
-                        <span class="ci-date-separator">→</span>
-                        <input type="date" id="ciEndDate" class="ci-date-input">
-                        <button class="ci-apply-btn" onclick="applyCustomDateRange()">Apply</button>
-                    </div>
-                </div>
-                
-                <div class="ci-filter-group">
-                    <label class="ci-filter-label">Quick Actions</label>
-                    <div class="ci-action-buttons">
-                        <button class="ci-action-btn" onclick="refreshDashboard()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                        <button class="ci-action-btn" onclick="exportReport()">
-                            <i class="fas fa-download"></i> Export
-                        </button>
-                        <button class="ci-action-btn" onclick="toggleDarkMode()">
-                            <i class="fas fa-moon"></i> Dark
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
+  <div id="custom-insight" class="page"> <div class="analytics-container"> <header class="dashboard-header"> <div class="header-glow"></div> <div class="header-badge"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <path d="M22 12h-4l-3 9L9 3l-3 9H2"/> </svg> <span>Live Analytics</span> </div> <h1 class="main-title"> <span class="title-gradient">Customer Analytics</span> <span class="title-pulse">Intelligence Hub</span> </h1> <p class="subtitle">Real-time insights for exceptional business intelligence</p> <div class="stats-bar"> <div class="stat-item"> <div class="stat-number">1,247</div> <div class="stat-label">Active Users</div> </div> <div class="stat-divider"></div> <div class="stat-item"> <div class="stat-number">₱485K</div> <div class="stat-label">Revenue</div> </div> <div class="stat-divider"></div> <div class="stat-item"> <div class="stat-number">+15.8%</div> <div class="stat-label">Growth</div> </div> </div> </header>
 
-        <!-- AI Insights Alert Bar -->
-        <div class="ci-insights-bar">
-            <div class="ci-insights-carousel">
-                <div class="ci-insight-alert ci-alert-warning active">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span id="alertMessage">Loading insights...</span>
-                    <button class="ci-alert-action" onclick="viewAlertDetails()">View</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Metrics Grid -->
-        <div class="ci-metrics-grid">
-            <!-- Loyalty & Retention Card -->
-            <div class="ci-metric-card ci-card-loyalty" data-card="loyalty">
-                <div class="ci-card-shimmer"></div>
-                <div class="ci-card-glow ci-glow-loyalty"></div>
-                <div class="ci-card-inner">
-                    <div class="ci-card-header">
-                        <div class="ci-card-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="ci-status-badge ci-status-active">Active</div>
-                    </div>
-                    
-                    <h2 class="ci-card-title">Customer Loyalty & Retention</h2>
-                    <p class="ci-card-description">Track customer loyalty patterns and retention metrics</p>
-                    
-                    <div class="ci-featured-stat">
-                        <div class="ci-featured-label">Retention Rate</div>
-                        <div class="ci-featured-value" id="retentionRateValue">
-                            <span class="ci-loading-placeholder">--</span>%
-                        </div>
-                        <div class="ci-featured-trend ci-trend-positive">
-                            <i class="fas fa-arrow-up"></i>
-                            <span id="retentionTrend">+0%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="ci-card-content">
-                        <div class="ci-insight-grid">
-                            <div class="ci-insight-item">
-                                <div class="ci-insight-icon">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
-                                <div class="ci-insight-data">
-                                    <span class="ci-insight-label">Loyal Customers</span>
-                                    <span class="ci-insight-value" id="loyalCustomers">--</span>
-                                </div>
-                            </div>
-                            <div class="ci-insight-item">
-                                <div class="ci-insight-icon ci-icon-warning">
-                                    <i class="fas fa-user-times"></i>
-                                </div>
-                                <div class="ci-insight-data">
-                                    <span class="ci-insight-label">At Risk</span>
-                                    <span class="ci-insight-value ci-value-warning" id="atRiskCustomers">--</span>
-                                </div>
-                            </div>
-                            <div class="ci-insight-item">
-                                <div class="ci-insight-icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div>
-                                <div class="ci-insight-data">
-                                    <span class="ci-insight-label">New This Month</span>
-                                    <span class="ci-insight-value" id="newCustomers">--</span>
-                                </div>
-                            </div>
-                            <div class="ci-insight-item">
-                                <div class="ci-insight-icon">
-                                    <i class="fas fa-undo"></i>
-                                </div>
-                                <div class="ci-insight-data">
-                                    <span class="ci-insight-label">Comeback Rate</span>
-                                    <span class="ci-insight-value" id="comebackRate">--%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="ci-tier-visualization">
-                        <canvas id="loyaltyChart" height="150"></canvas>
-                    </div>
-                    
-                    <div class="ci-card-footer">
-                        <button class="ci-detail-btn" onclick="viewLoyaltyDetails()">
-                            View Detailed Analysis <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Purchase Behavior Card -->
-            <div class="ci-metric-card ci-card-behavior" data-card="behavior">
-                <div class="ci-card-shimmer"></div>
-                <div class="ci-card-glow ci-glow-behavior"></div>
-                <div class="ci-card-inner">
-                    <div class="ci-card-header">
-                        <div class="ci-card-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <div class="ci-status-badge ci-status-trending">Trending</div>
-                    </div>
-                    
-                    <h2 class="ci-card-title">Purchase Behavior & Sales</h2>
-                    <p class="ci-card-description">Analyze customer buying patterns and sales trends</p>
-                    
-                    <div class="ci-dual-stats">
-                        <div class="ci-dual-stat">
-                            <div class="ci-dual-label">Avg Order Value</div>
-                            <div class="ci-dual-value" id="avgOrderValue">₱--</div>
-                        </div>
-                        <div class="ci-dual-divider"></div>
-                        <div class="ci-dual-stat">
-                            <div class="ci-dual-label">Items per Order</div>
-                            <div class="ci-dual-value" id="itemsPerOrder">--</div>
-                        </div>
-                    </div>
-                    
-                    <div class="ci-top-products">
-                        <h3 class="ci-section-title">Top Products</h3>
-                        <div class="ci-products-list" id="topProductsList">
-                            <!-- Dynamically populated -->
-                        </div>
-                    </div>
-                    
-                    <div class="ci-heatmap-container">
-                        <h3 class="ci-section-title">Peak Hours Analysis</h3>
-                        <div class="ci-heatmap-grid" id="peakHoursHeatmap">
-                            <!-- Dynamically populated -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional metric cards continue with same pattern... -->
-        </div>
-
-        <!-- Interactive Data Table -->
-        <div class="ci-table-container">
-            <div class="ci-table-header">
-                <h2 class="ci-table-title">Customer Intelligence Matrix</h2>
-                <div class="ci-table-controls">
-                    <input type="text" class="ci-search-input" placeholder="Search customers..." id="customerSearch">
-                    <button class="ci-filter-btn" onclick="toggleFilters()">
-                        <i class="fas fa-filter"></i> Filters
-                    </button>
-                    <button class="ci-export-btn" onclick="exportTableData()">
-                        <i class="fas fa-file-excel"></i> Export
-                    </button>
-                </div>
-            </div>
-            
-            <div class="ci-table-wrapper">
-                <table class="ci-data-table" id="customerDataTable">
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" class="ci-select-all"></th>
-                            <th class="ci-sortable" data-sort="id">ID <i class="fas fa-sort"></i></th>
-                            <th class="ci-sortable" data-sort="name">Customer <i class="fas fa-sort"></i></th>
-                            <th class="ci-sortable" data-sort="visits">Visits <i class="fas fa-sort"></i></th>
-                            <th class="ci-sortable" data-sort="spent">Total Spent <i class="fas fa-sort"></i></th>
-                            <th class="ci-sortable" data-sort="last_visit">Last Visit <i class="fas fa-sort"></i></th>
-                            <th class="ci-sortable" data-sort="risk">Risk Level <i class="fas fa-sort"></i></th>
-                            <th class="ci-sortable" data-sort="ltv">LTV Score <i class="fas fa-sort"></i></th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customerTableBody">
-                        <!-- Dynamically populated -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="ci-table-footer">
-                <div class="ci-pagination-info">
-                    Showing <span id="showingStart">0</span>-<span id="showingEnd">0</span> 
-                    of <span id="totalRecords">0</span> customers
-                </div>
-                <div class="ci-pagination">
-                    <button class="ci-page-btn" onclick="previousPage()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="ci-page-numbers" id="pageNumbers">
-                        <!-- Dynamically populated -->
-                    </div>
-                    <button class="ci-page-btn" onclick="nextPage()">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+<div class="metrics-grid">
+  <div class="metric-card loyalty-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-loyalty"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="status-badge status-active">Active</div>
     </div>
-    
-    <!-- Floating Action Menu -->
-    <div class="ci-fab-container">
-        <button class="ci-fab-main" onclick="toggleFabMenu()">
-            <i class="fas fa-plus"></i>
-        </button>
-        <div class="ci-fab-menu">
-            <button class="ci-fab-item" onclick="createReport()" data-tooltip="Generate Report">
-                <i class="fas fa-file-alt"></i>
-            </button>
-            <button class="ci-fab-item" onclick="scheduleAlert()" data-tooltip="Schedule Alert">
-                <i class="fas fa-bell"></i>
-            </button>
-            <button class="ci-fab-item" onclick="openAIAssistant()" data-tooltip="AI Assistant">
-                <i class="fas fa-robot"></i>
-            </button>
-        </div>
+    <h2 class="card-title">Customer Loyalty & Retention</h2>
+    <p class="card-description">Track customer loyalty patterns and retention metrics</p>
+
+    <div class="featured-stat">
+      <div class="featured-stat-label">Retention Rate</div>
+      <div class="featured-stat-value">78.5%</div>
+      <div class="featured-stat-trend positive">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        <span>+5.2%</span>
+      </div>
     </div>
-    
-    <!-- Modal Container -->
-    <div class="ci-modal" id="ciModal" style="display: none;">
-        <div class="ci-modal-content">
-            <div class="ci-modal-header">
-                <h3 class="ci-modal-title" id="modalTitle">Modal Title</h3>
-                <button class="ci-modal-close" onclick="closeModal()">×</button>
-            </div>
-            <div class="ci-modal-body" id="modalBody">
-                <!-- Dynamic content -->
-            </div>
+
+    <div class="card-content">
+      <div class="insight-row">
+        <div class="insight-item">
+          <div class="insight-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <polyline points="17 11 19 13 23 9"/>
+            </svg>
+          </div>
+          <div class="insight-details">
+            <span class="insight-label">Loyal Customers</span>
+            <span class="insight-value">248</span>
+          </div>
         </div>
+        <div class="insight-item">
+          <div class="insight-icon warning-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="insight-details">
+            <span class="insight-label">Churn Risk</span>
+            <span class="insight-value warning">34</span>
+          </div>
+        </div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-item">
+          <div class="insight-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div class="insight-details">
+            <span class="insight-label">Comeback Rate</span>
+            <span class="insight-value">12.3%</span>
+          </div>
+        </div>
+        <div class="insight-item">
+          <div class="insight-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="insight-details">
+            <span class="insight-label">Avg Lifetime</span>
+            <span class="insight-value">8.4 mo</span>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="tier-classification">
+      <div class="tier-item tier-regular">
+        <div class="tier-dot"></div>
+        <span>Regular</span>
+        <span class="tier-count">128</span>
+      </div>
+      <div class="tier-item tier-loyal">
+        <div class="tier-dot"></div>
+        <span>Loyal</span>
+        <span class="tier-count">94</span>
+      </div>
+      <div class="tier-item tier-vip">
+        <div class="tier-dot"></div>
+        <span>VIP</span>
+        <span class="tier-count">26</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-card behavior-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-behavior"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="status-badge status-trending">Trending</div>
+    </div>
+    <h2 class="card-title">Purchase Behavior & Sales</h2>
+    <p class="card-description">Analyze customer buying patterns and sales trends</p>
+
+    <div class="dual-stats">
+      <div class="dual-stat-item">
+        <div class="dual-stat-label">Avg Order Value</div>
+        <div class="dual-stat-value">₱385</div>
+      </div>
+      <div class="dual-stat-divider"></div>
+      <div class="dual-stat-item">
+        <div class="dual-stat-label">Items per Order</div>
+        <div class="dual-stat-value">2.8</div>
+      </div>
+    </div>
+
+    <div class="top-products">
+      <h3 class="section-subtitle">Top Performing Products</h3>
+      <div class="product-list">
+        <div class="product-item">
+          <div class="product-rank rank-1">1</div>
+          <div class="product-info">
+            <div class="product-name">Iced Coffee</div>
+            <div class="product-meta">487 orders</div>
+          </div>
+          <div class="product-bar">
+            <div class="product-bar-fill" style="width: 95%"></div>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-rank rank-2">2</div>
+          <div class="product-info">
+            <div class="product-name">Croissant</div>
+            <div class="product-meta">352 orders</div>
+          </div>
+          <div class="product-bar">
+            <div class="product-bar-fill" style="width: 70%"></div>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-rank rank-3">3</div>
+          <div class="product-info">
+            <div class="product-name">Cold Brew</div>
+            <div class="product-meta">298 orders</div>
+          </div>
+          <div class="product-bar">
+            <div class="product-bar-fill" style="width: 58%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-heatmap">
+      <h3 class="section-subtitle">Peak Hours</h3>
+      <div class="heatmap-grid">
+        <div class="heatmap-cell heat-low" data-hour="6AM"></div>
+        <div class="heatmap-cell heat-medium" data-hour="7AM"></div>
+        <div class="heatmap-cell heat-high" data-hour="8AM"></div>
+        <div class="heatmap-cell heat-high" data-hour="9AM"></div>
+        <div class="heatmap-cell heat-medium" data-hour="10AM"></div>
+        <div class="heatmap-cell heat-medium" data-hour="11AM"></div>
+        <div class="heatmap-cell heat-high" data-hour="12PM"></div>
+        <div class="heatmap-cell heat-medium" data-hour="1PM"></div>
+        <div class="heatmap-cell heat-low" data-hour="2PM"></div>
+        <div class="heatmap-cell heat-low" data-hour="3PM"></div>
+        <div class="heatmap-cell heat-medium" data-hour="4PM"></div>
+        <div class="heatmap-cell heat-low" data-hour="5PM"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-card segmentation-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-segment"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="status-badge status-info">Segments</div>
+    </div>
+    <h2 class="card-title">Customer Segmentation</h2>
+    <p class="card-description">Understand customer groups and behavior patterns</p>
+
+    <div class="segment-visualization">
+      <div class="segment-chart">
+        <svg viewBox="0 0 200 200" class="donut-chart">
+          <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="40"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#05dfd7" stroke-width="40"
+                  stroke-dasharray="175.93 502.65" stroke-dashoffset="0" transform="rotate(-90 100 100)" class="segment-arc"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#088395" stroke-width="40"
+                  stroke-dasharray="211.11 502.65" stroke-dashoffset="-175.93" transform="rotate(-90 100 100)" class="segment-arc"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#0a4d68" stroke-width="40"
+                  stroke-dasharray="90.48 502.65" stroke-dashoffset="-387.04" transform="rotate(-90 100 100)" class="segment-arc"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#ffb347" stroke-width="40"
+                  stroke-dasharray="25.13 502.65" stroke-dashoffset="-477.52" transform="rotate(-90 100 100)" class="segment-arc"/>
+        </svg>
+        <div class="chart-center">
+          <div class="chart-total">1,247</div>
+          <div class="chart-label">Total</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="segment-breakdown">
+      <div class="segment-row">
+        <div class="segment-indicator" style="background: #05dfd7"></div>
+        <span class="segment-name">Frequent</span>
+        <div class="segment-bar">
+          <div class="segment-fill" style="width: 35%; background: linear-gradient(90deg, #05dfd7, #0af5e3);"></div>
+        </div>
+        <span class="segment-percent">35%</span>
+      </div>
+      <div class="segment-row">
+        <div class="segment-indicator" style="background: #088395"></div>
+        <span class="segment-name">Regular</span>
+        <div class="segment-bar">
+          <div class="segment-fill" style="width: 42%; background: linear-gradient(90deg, #088395, #0a9eb0);"></div>
+        </div>
+        <span class="segment-percent">42%</span>
+      </div>
+      <div class="segment-row">
+        <div class="segment-indicator" style="background: #0a4d68"></div>
+        <span class="segment-name">Occasional</span>
+        <div class="segment-bar">
+          <div class="segment-fill" style="width: 18%; background: linear-gradient(90deg, #0a4d68, #0d5f7f);"></div>
+        </div>
+        <span class="segment-percent">18%</span>
+      </div>
+      <div class="segment-row">
+        <div class="segment-indicator" style="background: #ffb347"></div>
+        <span class="segment-name">Inactive</span>
+        <div class="segment-bar">
+          <div class="segment-fill warning-fill" style="width: 5%"></div>
+        </div>
+        <span class="segment-percent">5%</span>
+      </div>
+    </div>
+
+    <div class="ltv-display">
+      <div class="ltv-item">
+        <div class="ltv-label">High LTV</div>
+        <div class="ltv-value">249</div>
+      </div>
+      <div class="ltv-item">
+        <div class="ltv-label">Medium LTV</div>
+        <div class="ltv-value">623</div>
+      </div>
+      <div class="ltv-item">
+        <div class="ltv-label">Low LTV</div>
+        <div class="ltv-value">375</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-card engagement-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-engagement"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div class="status-badge status-success">High</div>
+    </div>
+    <h2 class="card-title">Engagement Metrics</h2>
+    <p class="card-description">Monitor customer interaction and activity levels</p>
+
+    <div class="engagement-score">
+      <div class="score-circle">
+        <svg viewBox="0 0 120 120" class="score-ring">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="url(#scoreGradient)" stroke-width="10"
+                  stroke-dasharray="314.16" stroke-dashoffset="69.11" stroke-linecap="round" transform="rotate(-90 60 60)" class="score-progress"/>
+          <defs>
+            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#05dfd7"/>
+              <stop offset="100%" style="stop-color:#088395"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="score-content">
+          <div class="score-number">78</div>
+          <div class="score-label">Score</div>
+        </div>
+      </div>
+      <div class="score-description">
+        <div class="score-status">Excellent Engagement</div>
+        <div class="score-detail">156 highly engaged customers</div>
+      </div>
+    </div>
+
+    <div class="engagement-metrics">
+      <div class="metric-box">
+        <div class="metric-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="metric-box-content">
+          <div class="metric-box-value">4.2</div>
+          <div class="metric-box-label">Avg Visit Gap (days)</div>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="metric-box-content">
+          <div class="metric-box-value">85%</div>
+          <div class="metric-box-label">Purchase Consistency</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="traffic-heatmap">
+      <h3 class="section-subtitle">Weekly Traffic Pattern</h3>
+      <div class="weekday-grid">
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 65%"></div>
+          <div class="weekday-label">Mon</div>
+        </div>
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 72%"></div>
+          <div class="weekday-label">Tue</div>
+        </div>
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 68%"></div>
+          <div class="weekday-label">Wed</div>
+        </div>
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 78%"></div>
+          <div class="weekday-label">Thu</div>
+        </div>
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 85%"></div>
+          <div class="weekday-label">Fri</div>
+        </div>
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 95%"></div>
+          <div class="weekday-label">Sat</div>
+        </div>
+        <div class="weekday-item">
+          <div class="weekday-bar" style="height: 58%"></div>
+          <div class="weekday-label">Sun</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-card performance-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-performance"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+      </div>
+      <div class="status-badge status-growth">+15.8%</div>
+    </div>
+    <h2 class="card-title">Business Performance</h2>
+    <p class="card-description">Track key performance indicators and growth</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-primary">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Monthly Active</div>
+          <div class="kpi-value">1,247</div>
+          <div class="kpi-change positive">+12.5% vs last month</div>
+        </div>
+      </div>
+      <div class="kpi-card kpi-success">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value">₱485,230</div>
+          <div class="kpi-change positive">+15.8% growth</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="revenue-breakdown">
+      <h3 class="section-subtitle">Revenue by Category</h3>
+      <div class="revenue-items">
+        <div class="revenue-item">
+          <div class="revenue-info">
+            <div class="revenue-label">Beverages</div>
+            <div class="revenue-value">₱312,450</div>
+          </div>
+          <div class="revenue-progress">
+            <div class="revenue-bar" style="width: 64%"></div>
+          </div>
+          <div class="revenue-percent">64%</div>
+        </div>
+        <div class="revenue-item">
+          <div class="revenue-info">
+            <div class="revenue-label">Food Items</div>
+            <div class="revenue-value">₱145,680</div>
+          </div>
+          <div class="revenue-progress">
+            <div class="revenue-bar" style="width: 30%"></div>
+          </div>
+          <div class="revenue-percent">30%</div>
+        </div>
+        <div class="revenue-item">
+          <div class="revenue-info">
+            <div class="revenue-label">Add-ons</div>
+            <div class="revenue-value">₱27,100</div>
+          </div>
+          <div class="revenue-progress">
+            <div class="revenue-bar" style="width: 6%"></div>
+          </div>
+          <div class="revenue-percent">6%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="growth-indicator">
+      <div class="growth-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+          <polyline points="17 6 23 6 23 12"/>
+        </svg>
+      </div>
+      <div class="growth-text">
+        <div class="growth-title">Outstanding Growth</div>
+        <div class="growth-desc">Revenue increased by ₱66,450 this month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-card traffic-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-traffic"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="status-badge status-live">Live</div>
+    </div>
+    <h2 class="card-title">Traffic & Visit Insights</h2>
+    <p class="card-description">Real-time footfall and conversion analytics</p>
+
+    <div class="traffic-stats">
+      <div class="traffic-stat-large">
+        <div class="traffic-stat-number">187</div>
+        <div class="traffic-stat-label">Daily Avg Receipts</div>
+        <div class="traffic-mini-chart">
+          <div class="mini-bar" style="height: 45%"></div>
+          <div class="mini-bar" style="height: 62%"></div>
+          <div class="mini-bar" style="height: 58%"></div>
+          <div class="mini-bar" style="height: 75%"></div>
+          <div class="mini-bar" style="height: 82%"></div>
+          <div class="mini-bar" style="height: 95%"></div>
+          <div class="mini-bar" style="height: 68%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="conversion-display">
+      <div class="conversion-ring">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#05dfd7" stroke-width="8"
+                  stroke-dasharray="282.74" stroke-dashoffset="21.49" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+        </svg>
+        <div class="conversion-center">
+          <div class="conversion-value">92.4%</div>
+          <div class="conversion-label">Conversion</div>
+        </div>
+      </div>
+      <div class="conversion-details">
+        <div class="detail-row">
+          <span class="detail-label">Peak Day</span>
+          <span class="detail-value">Saturday</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Rush Hours</span>
+          <span class="detail-value">8AM - 10AM</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Weekend Traffic</span>
+          <span class="detail-value">+28% higher</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="anomaly-detection">
+      <div class="anomaly-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span>Traffic Anomaly Detected</span>
+      </div>
+      <div class="anomaly-body">Tuesday traffic dropped 18% - Holiday impact detected</div>
+    </div>
+  </div>
+
+  <div class="metric-card predictive-card">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-predictive"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a10 10 0 0 1 7.94 16.06"/>
+          <path d="M12 2a10 10 0 0 0-7.94 16.06"/>
+          <path d="M12 12v8"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <div class="status-badge status-ai">AI Powered</div>
+    </div>
+    <h2 class="card-title">Predictive Intelligence</h2>
+    <p class="card-description">AI-driven forecasts and actionable insights</p>
+
+    <div class="ai-insights">
+      <div class="ai-card">
+        <div class="ai-card-header">
+          <div class="ai-card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="ai-card-title">Churn Risk Alert</div>
+        </div>
+        <div class="ai-card-content">
+          <div class="ai-main-stat">42 customers</div>
+          <div class="ai-description">Likely to churn in next 30 days</div>
+          <div class="ai-action">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14"/>
+              <path d="M12 5l7 7-7 7"/>
+            </svg>
+            <span>View retention strategies</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-card ai-card-success">
+        <div class="ai-card-header">
+          <div class="ai-card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="ai-card-title">Revenue Forecast</div>
+        </div>
+        <div class="ai-card-content">
+          <div class="ai-main-stat">₱512,000</div>
+          <div class="ai-description">Predicted revenue next month</div>
+          <div class="ai-confidence">
+            <span class="confidence-label">Confidence:</span>
+            <div class="confidence-bar">
+              <div class="confidence-fill" style="width: 87%"></div>
+            </div>
+            <span class="confidence-value">87%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-card">
+        <div class="ai-card-header">
+          <div class="ai-card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+          </div>
+          <div class="ai-card-title">Trending Products</div>
+        </div>
+        <div class="ai-card-content">
+          <div class="ai-main-stat">Cold Brew + Croissant</div>
+          <div class="ai-description">Most popular combo among loyal customers</div>
+          <div class="ai-trend">
+            <div class="trend-badge">+34% this week</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-queries">
+      <h3 class="section-subtitle">Ask AI Analytics</h3>
+      <div class="query-list">
+        <div class="query-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Which hours drive highest repeat visits?</span>
+        </div>
+        <div class="query-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>What bundles maximize order value?</span>
+        </div>
+        <div class="query-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Which segment shows profit growth?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-card reporting-card full-width">
+    <div class="card-shimmer"></div>
+    <div class="card-glow card-glow-report"></div>
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="status-badge status-info">Reports</div>
+    </div>
+    <h2 class="card-title">Reporting & Visualization Framework</h2>
+    <p class="card-description">Comprehensive reporting suite with export capabilities</p>
+
+    <div class="reporting-section">
+      <div class="report-column">
+        <div class="report-column-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
+          </svg>
+          <h3 class="report-column-title">Interactive Dashboards</h3>
+        </div>
+        <div class="report-items">
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Traffic Overview Dashboard</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Customer Loyalty Summary</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Product Performance Analysis</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Customer Segments Explorer</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Trends & Forecast Viewer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-column">
+        <div class="report-column-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <h3 class="report-column-title">Scheduled Reports</h3>
+        </div>
+        <div class="report-items">
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Monthly Retention & Loyalty Report</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Product Performance & Trends</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Churn Risk & Prediction Summary</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Daily/Weekly Traffic Digest</span>
+          </div>
+          <div class="report-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>LTV & Segment Profitability</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-column">
+        <div class="report-column-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <h3 class="report-column-title">Export & Share</h3>
+        </div>
+        <div class="export-options">
+          <button class="export-btn export-pdf">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span>Export as PDF</span>
+          </button>
+          <button class="export-btn export-excel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Export to Excel</span>
+          </button>
+          <button class="export-btn export-csv">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+              <polyline points="13 2 13 9 20 9"/>
+            </svg>
+            <span>Download CSV</span>
+          </button>
+          <button class="export-btn export-share">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"/>
+              <circle cx="6" cy="12" r="3"/>
+              <circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            <span>Share Dashboard</span>
+          </button>
+        </div>
+        <div class="schedule-info">
+          <div class="schedule-text">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Automated daily reports at 9:00 AM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<footer class="dashboard-footer">
+  <div class="footer-content">
+    <div class="footer-left">
+      <div class="footer-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        <span>Analytics Engine</span>
+      </div>
+      <div class="footer-text">Last updated: 2 minutes ago</div>
+    </div>
+    <div class="footer-right">
+      <button class="footer-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Refresh Data
+      </button>
+    </div>
+  </div>
+</footer>
+</div> </div>
+  
   
  
   
