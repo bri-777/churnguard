@@ -154,6 +154,78 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 <style>
+
+
+
+.data-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #3b82f6;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.toggle-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Recommendations Page Styles */
 .page-header {
   margin-bottom: 30px;
@@ -5966,20 +6038,29 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   <div class="history-section">
     <div class="history-header">
       <div class="history-title">📋Historical Data</div>
+      
+      <!-- NEW: Toggle Switch -->
+      <div class="data-view-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span id="dataViewLabel" class="toggle-label">Aggregated View</span>
+      </div>
+      
       <div class="last-updated">
          <span id="currentAnalysisDataRange"></span>
       </div>
     </div>
     <div class="history-table-container">
       <table class="history-table">
-        <thead>
+        <thead id="historyTableHead">
           <tr>
             <th>Date</th>
             <th>Customer Traffic</th>
             <th>Revenue</th>
             <th>Transactions</th>
             <th>Risk Level</th>
-          
             <th>Status</th>
           </tr>
         </thead>
@@ -5991,6 +6072,10 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       </table>
     </div>
   </div>
+  
+  
+  
+  
 </div>
 
 		 <!-- Include the monitoring JavaScript -->
@@ -6000,7 +6085,109 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
    
 
-   
+   <script>
+    // NEW: Data view mode tracking
+let currentDataView = 'aggregated'; // or 'transactions'
+
+// NEW: Toggle between aggregated and transaction logs view
+function toggleDataView() {
+  const toggle = document.getElementById('dataViewToggle');
+  const label = document.getElementById('dataViewLabel');
+  
+  if (toggle.checked) {
+    currentDataView = 'transactions';
+    label.textContent = 'Transaction Logs View';
+    loadTransactionLogs();
+  } else {
+    currentDataView = 'aggregated';
+    label.textContent = 'Aggregated View';
+    if (dashboard) {
+      dashboard.loadData(); // Reload original aggregated data
+    }
+  }
+}
+
+// NEW: Load raw transaction logs
+async function loadTransactionLogs() {
+  const tableHead = document.getElementById('historyTableHead');
+  const tableBody = document.getElementById('historicalAnalysisTableBody');
+  
+  // Show loading
+  tableBody.innerHTML = '<tr><td colspan="11" class="no-data">Loading transaction logs...</td></tr>';
+  
+  try {
+    const response = await fetch('api/get_transaction_logs.php?t=' + Date.now());
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to load transaction logs');
+    }
+    
+    // Update table headers for transaction logs
+    tableHead.innerHTML = `
+      <tr>
+        <th>ID</th>
+        <th>Date Visited</th>
+        <th>Shop Name</th>
+        <th>Customer Name</th>
+        <th>Drink Type</th>
+        <th>Quantity</th>
+        <th>Receipt Count</th>
+        <th>Time of Day</th>
+        <th>Total Amount</th>
+        <th>Payment Method</th>
+        <th>Day</th>
+      </tr>
+    `;
+    
+    // Populate table with transaction logs
+    if (data.transactions && data.transactions.length > 0) {
+      let rows = '';
+      
+      data.transactions.forEach(trans => {
+        const date = new Date(trans.date_visited);
+        const dateStr = date.toLocaleDateString('en-PH');
+        
+        rows += `
+          <tr>
+            <td>${trans.id}</td>
+            <td>${dateStr}</td>
+            <td>${trans.shop_name || '-'}</td>
+            <td>${trans.customer_name || '-'}</td>
+            <td>${trans.type_of_drink || '-'}</td>
+            <td>${trans.quantity_of_drinks || 0}</td>
+            <td>${trans.receipt_count || 0}</td>
+            <td>${trans.time_of_day || '-'}</td>
+            <td>₱${Number(trans.total_amount || 0).toLocaleString('en-PH', {minimumFractionDigits: 2})}</td>
+            <td>${trans.payment_method || '-'}</td>
+            <td>${trans.day || '-'}</td>
+          </tr>
+        `;
+      });
+      
+      tableBody.innerHTML = rows;
+      
+      // Update info label
+      const label = document.getElementById('currentAnalysisDataRange');
+      if (label) {
+        label.textContent = `Showing ${data.showing_count} of ${data.total_count} transactions`;
+      }
+    } else {
+      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transaction logs found</td></tr>';
+    }
+    
+  } catch (error) {
+    console.error('Error loading transaction logs:', error);
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="11" class="no-data" style="color: #e74c3c;">
+          Error: ${error.message}
+        </td>
+      </tr>
+    `;
+  }
+}
+    </script>
    
    
    
