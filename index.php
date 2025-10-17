@@ -6909,9 +6909,9 @@ async function loadTraffic(period) {
       const visitTotal = morning + swing + graveyard;
       if (visitTotal > 0) {
         visitPatternLabels = [
-          'Morning',
-          'Mid Day',
-          'Evening'
+          'Morning Shift',
+          'Swing Shift',
+          'Graveyard Shift'
         ];
         visitPatternValues = [
           (morning / visitTotal) * 100,
