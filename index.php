@@ -5137,8 +5137,319 @@ body {
   
   
   
-  
-  
+  <div id="customer-insight" class="ci-page">
+    <div class="ci-analytics-container">
+        <!-- Premium Header with Real-time Status -->
+        <header class="ci-dashboard-header">
+            <div class="ci-header-glow"></div>
+            <div class="ci-header-badge ci-pulse">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                <span>Live Analytics</span>
+                <span class="ci-live-indicator"></span>
+            </div>
+            
+            <h1 class="ci-main-title">
+                <span class="ci-title-gradient">Customer Intelligence</span>
+                <span class="ci-title-pulse">Command Center</span>
+            </h1>
+            <p class="ci-subtitle">
+                <span class="ci-typing-animation"></span>
+            </p>
+            
+            <!-- Real-time Stats Bar -->
+            <div class="ci-stats-bar">
+                <div class="ci-stat-item" data-stat="active">
+                    <div class="ci-stat-number" id="activeUsers">
+                        <span class="ci-stat-loading">--</span>
+                    </div>
+                    <div class="ci-stat-label">Active Now</div>
+                    <div class="ci-stat-sparkline" id="activeSparkline"></div>
+                </div>
+                <div class="ci-stat-divider"></div>
+                <div class="ci-stat-item" data-stat="revenue">
+                    <div class="ci-stat-number" id="todayRevenue">
+                        <span class="ci-stat-loading">₱--</span>
+                    </div>
+                    <div class="ci-stat-label">Today's Revenue</div>
+                    <div class="ci-stat-sparkline" id="revenueSparkline"></div>
+                </div>
+                <div class="ci-stat-divider"></div>
+                <div class="ci-stat-item" data-stat="growth">
+                    <div class="ci-stat-number" id="growthRate">
+                        <span class="ci-stat-loading">--%</span>
+                    </div>
+                    <div class="ci-stat-label">Growth Rate</div>
+                    <div class="ci-stat-sparkline" id="growthSparkline"></div>
+                </div>
+            </div>
+            
+            <!-- Advanced Filter Controls -->
+            <div class="ci-filter-controls">
+                <div class="ci-filter-group">
+                    <label class="ci-filter-label">Date Range</label>
+                    <div class="ci-date-selector">
+                        <button class="ci-date-preset active" data-range="today">Today</button>
+                        <button class="ci-date-preset" data-range="week">Week</button>
+                        <button class="ci-date-preset" data-range="month">Month</button>
+                        <button class="ci-date-preset" data-range="quarter">Quarter</button>
+                        <button class="ci-date-preset" data-range="year">Year</button>
+                        <button class="ci-date-preset ci-custom" data-range="custom">
+                            <i class="fas fa-calendar-alt"></i> Custom
+                        </button>
+                    </div>
+                    <div class="ci-custom-dates" style="display: none;">
+                        <input type="date" id="ciStartDate" class="ci-date-input">
+                        <span class="ci-date-separator">→</span>
+                        <input type="date" id="ciEndDate" class="ci-date-input">
+                        <button class="ci-apply-btn" onclick="applyCustomDateRange()">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="ci-filter-group">
+                    <label class="ci-filter-label">Quick Actions</label>
+                    <div class="ci-action-buttons">
+                        <button class="ci-action-btn" onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="ci-action-btn" onclick="exportReport()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="ci-action-btn" onclick="toggleDarkMode()">
+                            <i class="fas fa-moon"></i> Dark
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- AI Insights Alert Bar -->
+        <div class="ci-insights-bar">
+            <div class="ci-insights-carousel">
+                <div class="ci-insight-alert ci-alert-warning active">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="alertMessage">Loading insights...</span>
+                    <button class="ci-alert-action" onclick="viewAlertDetails()">View</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Metrics Grid -->
+        <div class="ci-metrics-grid">
+            <!-- Loyalty & Retention Card -->
+            <div class="ci-metric-card ci-card-loyalty" data-card="loyalty">
+                <div class="ci-card-shimmer"></div>
+                <div class="ci-card-glow ci-glow-loyalty"></div>
+                <div class="ci-card-inner">
+                    <div class="ci-card-header">
+                        <div class="ci-card-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="ci-status-badge ci-status-active">Active</div>
+                    </div>
+                    
+                    <h2 class="ci-card-title">Customer Loyalty & Retention</h2>
+                    <p class="ci-card-description">Track customer loyalty patterns and retention metrics</p>
+                    
+                    <div class="ci-featured-stat">
+                        <div class="ci-featured-label">Retention Rate</div>
+                        <div class="ci-featured-value" id="retentionRateValue">
+                            <span class="ci-loading-placeholder">--</span>%
+                        </div>
+                        <div class="ci-featured-trend ci-trend-positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="retentionTrend">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ci-card-content">
+                        <div class="ci-insight-grid">
+                            <div class="ci-insight-item">
+                                <div class="ci-insight-icon">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div class="ci-insight-data">
+                                    <span class="ci-insight-label">Loyal Customers</span>
+                                    <span class="ci-insight-value" id="loyalCustomers">--</span>
+                                </div>
+                            </div>
+                            <div class="ci-insight-item">
+                                <div class="ci-insight-icon ci-icon-warning">
+                                    <i class="fas fa-user-times"></i>
+                                </div>
+                                <div class="ci-insight-data">
+                                    <span class="ci-insight-label">At Risk</span>
+                                    <span class="ci-insight-value ci-value-warning" id="atRiskCustomers">--</span>
+                                </div>
+                            </div>
+                            <div class="ci-insight-item">
+                                <div class="ci-insight-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="ci-insight-data">
+                                    <span class="ci-insight-label">New This Month</span>
+                                    <span class="ci-insight-value" id="newCustomers">--</span>
+                                </div>
+                            </div>
+                            <div class="ci-insight-item">
+                                <div class="ci-insight-icon">
+                                    <i class="fas fa-undo"></i>
+                                </div>
+                                <div class="ci-insight-data">
+                                    <span class="ci-insight-label">Comeback Rate</span>
+                                    <span class="ci-insight-value" id="comebackRate">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ci-tier-visualization">
+                        <canvas id="loyaltyChart" height="150"></canvas>
+                    </div>
+                    
+                    <div class="ci-card-footer">
+                        <button class="ci-detail-btn" onclick="viewLoyaltyDetails()">
+                            View Detailed Analysis <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchase Behavior Card -->
+            <div class="ci-metric-card ci-card-behavior" data-card="behavior">
+                <div class="ci-card-shimmer"></div>
+                <div class="ci-card-glow ci-glow-behavior"></div>
+                <div class="ci-card-inner">
+                    <div class="ci-card-header">
+                        <div class="ci-card-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="ci-status-badge ci-status-trending">Trending</div>
+                    </div>
+                    
+                    <h2 class="ci-card-title">Purchase Behavior & Sales</h2>
+                    <p class="ci-card-description">Analyze customer buying patterns and sales trends</p>
+                    
+                    <div class="ci-dual-stats">
+                        <div class="ci-dual-stat">
+                            <div class="ci-dual-label">Avg Order Value</div>
+                            <div class="ci-dual-value" id="avgOrderValue">₱--</div>
+                        </div>
+                        <div class="ci-dual-divider"></div>
+                        <div class="ci-dual-stat">
+                            <div class="ci-dual-label">Items per Order</div>
+                            <div class="ci-dual-value" id="itemsPerOrder">--</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ci-top-products">
+                        <h3 class="ci-section-title">Top Products</h3>
+                        <div class="ci-products-list" id="topProductsList">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                    
+                    <div class="ci-heatmap-container">
+                        <h3 class="ci-section-title">Peak Hours Analysis</h3>
+                        <div class="ci-heatmap-grid" id="peakHoursHeatmap">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional metric cards continue with same pattern... -->
+        </div>
+
+        <!-- Interactive Data Table -->
+        <div class="ci-table-container">
+            <div class="ci-table-header">
+                <h2 class="ci-table-title">Customer Intelligence Matrix</h2>
+                <div class="ci-table-controls">
+                    <input type="text" class="ci-search-input" placeholder="Search customers..." id="customerSearch">
+                    <button class="ci-filter-btn" onclick="toggleFilters()">
+                        <i class="fas fa-filter"></i> Filters
+                    </button>
+                    <button class="ci-export-btn" onclick="exportTableData()">
+                        <i class="fas fa-file-excel"></i> Export
+                    </button>
+                </div>
+            </div>
+            
+            <div class="ci-table-wrapper">
+                <table class="ci-data-table" id="customerDataTable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="ci-select-all"></th>
+                            <th class="ci-sortable" data-sort="id">ID <i class="fas fa-sort"></i></th>
+                            <th class="ci-sortable" data-sort="name">Customer <i class="fas fa-sort"></i></th>
+                            <th class="ci-sortable" data-sort="visits">Visits <i class="fas fa-sort"></i></th>
+                            <th class="ci-sortable" data-sort="spent">Total Spent <i class="fas fa-sort"></i></th>
+                            <th class="ci-sortable" data-sort="last_visit">Last Visit <i class="fas fa-sort"></i></th>
+                            <th class="ci-sortable" data-sort="risk">Risk Level <i class="fas fa-sort"></i></th>
+                            <th class="ci-sortable" data-sort="ltv">LTV Score <i class="fas fa-sort"></i></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="ci-table-footer">
+                <div class="ci-pagination-info">
+                    Showing <span id="showingStart">0</span>-<span id="showingEnd">0</span> 
+                    of <span id="totalRecords">0</span> customers
+                </div>
+                <div class="ci-pagination">
+                    <button class="ci-page-btn" onclick="previousPage()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="ci-page-numbers" id="pageNumbers">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <button class="ci-page-btn" onclick="nextPage()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Action Menu -->
+    <div class="ci-fab-container">
+        <button class="ci-fab-main" onclick="toggleFabMenu()">
+            <i class="fas fa-plus"></i>
+        </button>
+        <div class="ci-fab-menu">
+            <button class="ci-fab-item" onclick="createReport()" data-tooltip="Generate Report">
+                <i class="fas fa-file-alt"></i>
+            </button>
+            <button class="ci-fab-item" onclick="scheduleAlert()" data-tooltip="Schedule Alert">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="ci-fab-item" onclick="openAIAssistant()" data-tooltip="AI Assistant">
+                <i class="fas fa-robot"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal Container -->
+    <div class="ci-modal" id="ciModal" style="display: none;">
+        <div class="ci-modal-content">
+            <div class="ci-modal-header">
+                <h3 class="ci-modal-title" id="modalTitle">Modal Title</h3>
+                <button class="ci-modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="ci-modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+</div>
+  <link rel = "stylesheet" href = "customer-insight.css">
   
   
   
