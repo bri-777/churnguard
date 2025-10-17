@@ -5981,29 +5981,9 @@ body {
   </div>
 </div>
 
-<footer class="dashboard-footer">
-  <div class="footer-content">
-    <div class="footer-left">
-      <div class="footer-logo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-        </svg>
-        <span>Analytics Engine</span>
-      </div>
-      <div class="footer-text">Last updated: 2 minutes ago</div>
-    </div>
-    <div class="footer-right">
-      <button class="footer-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="23 4 23 10 17 10"/>
-          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-        </svg>
-        Refresh Data
-      </button>
-    </div>
-  </div>
-</footer>
-</div> </div>
+
+</div> 
+</div>
   
   
  
