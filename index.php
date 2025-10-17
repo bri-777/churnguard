@@ -5139,7 +5139,20 @@ body {
   
   
   <link href="cust-insight.css" rel="stylesheet">
-  <div id="custom-insight" class="page"> <div class="analytics-container"> <header class="dashboard-header"> <div class="header-glow"></div> <div class="header-badge"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <path d="M22 12h-4l-3 9L9 3l-3 9H2"/> </svg> <span>Live Analytics</span> </div> <h1 class="main-title"> <span class="title-gradient">Customer Analytics</span> <span class="title-pulse">Intelligence Hub</span> </h1> <p class="subtitle">Real-time insights for exceptional business intelligence</p> <div class="stats-bar"> <div class="stat-item"> <div class="stat-number">1,247</div> <div class="stat-label">Active Users</div> </div> <div class="stat-divider"></div> <div class="stat-item"> <div class="stat-number">₱485K</div> <div class="stat-label">Revenue</div> </div> <div class="stat-divider"></div> <div class="stat-item"> <div class="stat-number">+15.8%</div> <div class="stat-label">Growth</div> </div> </div> </header>
+  <div id="cust-insight" class="page"> 
+    <div class="analytics-container">
+       <header class="dashboard-header">
+         <div class="header-glow"></div>
+          <div class="header-badge">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> 
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/> </svg> <span>Live Analytics</span> </div> <h1 class="main-title">
+                 <span class="title-gradient">Customer Analytics</span> 
+                 <span class="title-pulse">Intelligence Hub</span> </h1> 
+                 <p class="subtitle">Real-time insights for exceptional business intelligence</p> <div class="stats-bar">
+                   <div class="stat-item"> <div class="stat-number">1,247</div> <div class="stat-label">Active Users</div> 
+                  </div> <div class="stat-divider"></div> <div class="stat-item"> <div class="stat-number">₱485K</div>
+                   <div class="stat-label">Revenue</div> </div> <div class="stat-divider"></div> <div class="stat-item"> 
+                    <div class="stat-number">+15.8%</div> <div class="stat-label">Growth</div> </div> </div> </header>
 
 <div class="metrics-grid">
   <div class="metric-card loyalty-card">
