@@ -6052,6 +6052,24 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
          <span id="currentAnalysisDataRange"></span>
       </div>
     </div>
+    <div class="history-section">
+    <div class="history-header">
+      <div class="history-title">📋Historical Data</div>
+      
+      <!-- Toggle Switch -->
+      <div class="data-view-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span id="dataViewLabel" class="toggle-label">Aggregated View</span>
+      </div>
+      
+      <div class="last-updated">
+         <span id="currentAnalysisDataRange"></span>
+      </div>
+    </div>
+    
     <div class="history-table-container">
       <table class="history-table">
         <thead id="historyTableHead">
@@ -6066,12 +6084,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </thead>
         <tbody id="historicalAnalysisTableBody">
           <tr>
-            <td colspan="7" class="no-data">Loading 14-day historical analysis...</td>
+            <td colspan="6" class="no-data">Loading 14-day historical analysis...</td>
           </tr>
         </tbody>
       </table>
     </div>
-  </div>
+</div>
   
   
   
@@ -6086,49 +6104,83 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
    
 
    <script>
-    // NEW: Load raw transaction logs
+    // ========== TRANSACTION LOGS TOGGLE - COMPLETE CODE ==========
+
+// Data view mode tracking
+let currentDataView = 'aggregated';
+let originalTableHeaders = null;
+
+// Toggle between aggregated and transaction logs view
+function toggleDataView() {
+  const toggle = document.getElementById('dataViewToggle');
+  const label = document.getElementById('dataViewLabel');
+  
+  if (toggle.checked) {
+    currentDataView = 'transactions';
+    label.textContent = 'Transaction Logs View';
+    loadTransactionLogs();
+  } else {
+    currentDataView = 'aggregated';
+    label.textContent = 'Aggregated View';
+    restoreAggregatedView();
+  }
+}
+
+// Restore original aggregated view
+function restoreAggregatedView() {
+  const tableHead = document.getElementById('historyTableHead');
+  
+  // Restore original headers
+  tableHead.innerHTML = `
+    <tr>
+      <th>Date</th>
+      <th>Customer Traffic</th>
+      <th>Revenue</th>
+      <th>Transactions</th>
+      <th>Risk Level</th>
+      <th>Status</th>
+    </tr>
+  `;
+  
+  // Reload dashboard data
+  if (dashboard) {
+    dashboard.loadData();
+  }
+}
+
+// Load raw transaction logs
 async function loadTransactionLogs() {
   const tableHead = document.getElementById('historyTableHead');
   const tableBody = document.getElementById('historicalAnalysisTableBody');
+  
+  console.log('=== LOADING TRANSACTION LOGS ===');
   
   // Show loading
   tableBody.innerHTML = '<tr><td colspan="11" class="no-data">Loading transaction logs...</td></tr>';
   
   try {
-    console.log('Fetching transaction logs...');
-    
     const response = await fetch('api/get_transaction_logs.php?t=' + Date.now(), {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Accept': 'application/json'
       },
       credentials: 'same-origin'
     });
     
     console.log('Response status:', response.status);
-    console.log('Response OK:', response.ok);
     
-    // Get response as text first to see what we're getting
-    const textResponse = await response.text();
-    console.log('Raw response:', textResponse.substring(0, 200));
-    
-    // Try to parse as JSON
-    let data;
-    try {
-      data = JSON.parse(textResponse);
-    } catch (e) {
-      console.error('JSON parse error:', e);
-      throw new Error('Server returned invalid response. Check if get_transaction_logs.php exists in api folder.');
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
-    console.log('Parsed data:', data);
+    const data = await response.json();
+    console.log('Data received:', data);
     
     if (!data.success) {
       throw new Error(data.message || 'Failed to load transaction logs');
     }
     
-    // Update table headers for transaction logs
+    // Change table headers
     tableHead.innerHTML = `
       <tr>
         <th>ID</th>
@@ -6145,49 +6197,64 @@ async function loadTransactionLogs() {
       </tr>
     `;
     
-    // Populate table with transaction logs
-    if (data.transactions && data.transactions.length > 0) {
-      let rows = '';
-      
-      data.transactions.forEach(trans => {
-        const date = new Date(trans.date_visited);
-        const dateStr = date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-        
-        rows += `
-          <tr>
-            <td>${trans.id}</td>
-            <td>${dateStr}</td>
-            <td>${trans.shop_name || '-'}</td>
-            <td>${trans.customer_name || '-'}</td>
-            <td>${trans.type_of_drink || '-'}</td>
-            <td>${trans.quantity_of_drinks || 0}</td>
-            <td>${trans.receipt_count || 0}</td>
-            <td>${trans.time_of_day || '-'}</td>
-            <td>₱${Number(trans.total_amount || 0).toLocaleString('en-PH', {minimumFractionDigits: 2})}</td>
-            <td>${trans.payment_method || '-'}</td>
-            <td>${trans.day || '-'}</td>
-          </tr>
-        `;
-      });
-      
-      tableBody.innerHTML = rows;
-      
-      // Update info label
-      const label = document.getElementById('currentAnalysisDataRange');
-      if (label) {
-        label.textContent = `Showing ${data.showing_count} of ${data.total_count} total transactions`;
-      }
-      
-      console.log('Successfully loaded', data.transactions.length, 'transactions');
-      
-    } else {
-      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transaction logs found. Upload Excel file to add transactions.</td></tr>';
+    // Check if we have data
+    if (!data.transactions || data.transactions.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transaction logs found. Upload Excel to add data.</td></tr>';
+      return;
     }
     
-  } catch (error) {
-    console.error('Error loading transaction logs:', error);
+    console.log('Building table with', data.transactions.length, 'transactions');
     
-    // Restore original table headers
+    // Build table rows
+    let rows = '';
+    data.transactions.forEach((trans, index) => {
+      console.log(`Row ${index + 1}:`, trans);
+      
+      const date = new Date(trans.date_visited);
+      const dateStr = date.toLocaleDateString('en-PH', { 
+        year: 'numeric',
+        month: 'short', 
+        day: 'numeric'
+      });
+      
+      const amount = parseFloat(trans.total_amount || 0);
+      const amountStr = '₱' + amount.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      
+      rows += `
+        <tr>
+          <td>${trans.id}</td>
+          <td>${dateStr}</td>
+          <td>${trans.shop_name || '-'}</td>
+          <td>${trans.customer_name || '-'}</td>
+          <td>${trans.type_of_drink || '-'}</td>
+          <td>${trans.quantity_of_drinks || 0}</td>
+          <td>${trans.receipt_count || 0}</td>
+          <td>${trans.time_of_day || '-'}</td>
+          <td>${amountStr}</td>
+          <td>${trans.payment_method || '-'}</td>
+          <td>${trans.day || '-'}</td>
+        </tr>
+      `;
+    });
+    
+    // Update table body
+    tableBody.innerHTML = rows;
+    
+    // Update info label
+    const label = document.getElementById('currentAnalysisDataRange');
+    if (label) {
+      label.textContent = `Showing ${data.showing_count} of ${data.total_count} total transactions`;
+    }
+    
+    console.log('✓ Transaction logs loaded successfully!');
+    
+  } catch (error) {
+    console.error('✗ Error loading transaction logs:', error);
+    
+    // Restore headers on error
     tableHead.innerHTML = `
       <tr>
         <th>Date</th>
@@ -6202,14 +6269,26 @@ async function loadTransactionLogs() {
     tableBody.innerHTML = `
       <tr>
         <td colspan="6" class="no-data" style="color: #e74c3c;">
-          <strong>Error loading transaction logs:</strong><br>
-          ${error.message}<br>
-          <small>Check browser console (F12) for details</small>
+          <strong>Error:</strong> ${error.message}<br>
+          <small>Check console for details</small>
         </td>
       </tr>
     `;
+    
+    // Turn toggle back off
+    const toggle = document.getElementById('dataViewToggle');
+    const label = document.getElementById('dataViewLabel');
+    if (toggle) toggle.checked = false;
+    if (label) label.textContent = 'Aggregated View';
+    currentDataView = 'aggregated';
   }
 }
+
+// Add this to make sure it's available globally
+window.toggleDataView = toggleDataView;
+window.loadTransactionLogs = loadTransactionLogs;
+
+console.log('✓ Transaction logs toggle functions loaded');
     </script>
    
    
