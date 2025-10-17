@@ -6095,7 +6095,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   
   
 </div>
-
+</div>
 		 <!-- Include the monitoring JavaScript -->
     <script src="customer-monitoring-dashboard.js"></script>
 	<link rel="stylesheet" href="assets/monitoring.css"><!-- use YOUR provided CSS file -->
