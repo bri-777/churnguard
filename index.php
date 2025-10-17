@@ -1776,7 +1776,7 @@ function doLogout() {
         </div>
       </div>
 
-      <!-- Action Section -->
+
       <div class="action-section">
         <button type="button" class="btn-primary" onclick="saveChurnData()">
           <i class="fas fa-save"></i> Save Churn Data
