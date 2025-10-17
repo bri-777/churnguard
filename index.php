@@ -5450,6 +5450,7 @@ body {
     </div>
 </div>
   <link rel = "stylesheet" href = "customer-insight.css">
+  <script src="customer-insight.js"></script>
   
   
   
