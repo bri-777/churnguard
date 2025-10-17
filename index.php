@@ -89,6 +89,9 @@ if (!$me) {
      <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
           <i class="fas fa-bullseye"></i> <span>Analytics Target</span>
         </a>
+        <a href="#" class="menu-item" onclick="showPage('custom-insight')">
+          <i class="fas fa-bullseye"></i> <span>Customer Insight</span>
+        </a>
       </div>
 
       <div class="menu-section">
@@ -5135,9 +5138,845 @@ body {
   
   
   
+  <div id="custom-insight" class="page">
+    <!-- Header Section -->
+    <div class="insight-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="page-title">Customer Insights</h1>
+                    <p class="page-subtitle">AI-Driven Analytics & Intelligence System</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="date-filter-wrapper">
+                        <input type="date" id="startDate" class="date-input">
+                        <span class="date-separator">to</span>
+                        <input type="date" id="endDate" class="date-input">
+                        <button class="btn-apply" onclick="applyDateFilter()">Apply Filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="container-fluid mt-4">
+        <div class="row g-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalCustomers">0</div>
+                        <div class="metric-label">Total Customers</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="customerGrowth">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalTransactions">0</div>
+                        <div class="metric-label">Total Transactions</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="transactionGrowth">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value">₱<span id="totalRevenue">0</span></div>
+                        <div class="metric-label">Total Revenue</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="revenueGrowth">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="retentionRate">0%</div>
+                        <div class="metric-label">Retention Rate</div>
+                        <div class="metric-change negative">
+                            <i class="fas fa-arrow-down"></i>
+                            <span id="retentionChange">-0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Tabs -->
+    <div class="container-fluid mt-4">
+        <div class="analytics-tabs">
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="pill" href="#loyalty">
+                        <i class="fas fa-heart"></i> Loyalty & Retention
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#behavior">
+                        <i class="fas fa-shopping-cart"></i> Purchase Behavior
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#segmentation">
+                        <i class="fas fa-layer-group"></i> Segmentation
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#engagement">
+                        <i class="fas fa-user-clock"></i> Engagement
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#performance">
+                        <i class="fas fa-tachometer-alt"></i> Performance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#traffic">
+                        <i class="fas fa-walking"></i> Traffic Insights
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content mt-4">
+            <!-- Loyalty & Retention Tab -->
+            <div class="tab-pane fade show active" id="loyalty">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Customer Retention Trend</h3>
+                                <div class="card-actions">
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="retentionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Loyalty Distribution</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="loyaltyPieChart"></canvas>
+                                <div class="loyalty-stats mt-3">
+                                    <div class="stat-item">
+                                        <span class="stat-dot loyal"></span>
+                                        <span class="stat-label">Loyal Customers</span>
+                                        <span class="stat-value" id="loyalCount">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-dot new"></span>
+                                        <span class="stat-label">New Customers</span>
+                                        <span class="stat-value" id="newCount">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-dot risk"></span>
+                                        <span class="stat-label">At Risk</span>
+                                        <span class="stat-value" id="riskCount">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Churn Risk Analysis</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="data-table" id="churnRiskTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Customer ID</th>
+                                                <th>Last Visit</th>
+                                                <th>Days Since Visit</th>
+                                                <th>Total Receipts</th>
+                                                <th>Risk Level</th>
+                                                <th>Risk Score</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchase Behavior Tab -->
+            <div class="tab-pane fade" id="behavior">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Top Selling Products</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="topProductsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Sales by Time Period</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="salesTimeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Average Metrics</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="avg-metrics">
+                                    <div class="avg-item">
+                                        <div class="avg-label">Avg Order Value</div>
+                                        <div class="avg-value">₱<span id="avgOrderValue">0</span></div>
+                                    </div>
+                                    <div class="avg-item">
+                                        <div class="avg-label">Avg Items per Order</div>
+                                        <div class="avg-value" id="avgItemsOrder">0</div>
+                                    </div>
+                                    <div class="avg-item">
+                                        <div class="avg-label">Avg Daily Revenue</div>
+                                        <div class="avg-value">₱<span id="avgDailyRevenue">0</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Purchase Pattern Analysis</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="purchasePatternChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segmentation Tab -->
+            <div class="tab-pane fade" id="segmentation">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Customer Segmentation Matrix</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="segment-card frequent">
+                                            <div class="segment-icon"><i class="fas fa-crown"></i></div>
+                                            <div class="segment-title">Frequent</div>
+                                            <div class="segment-count" id="frequentCount">0</div>
+                                            <div class="segment-revenue">₱<span id="frequentRevenue">0</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="segment-card regular">
+                                            <div class="segment-icon"><i class="fas fa-user"></i></div>
+                                            <div class="segment-title">Regular</div>
+                                            <div class="segment-count" id="regularCount">0</div>
+                                            <div class="segment-revenue">₱<span id="regularRevenue">0</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="segment-card occasional">
+                                            <div class="segment-icon"><i class="fas fa-user-clock"></i></div>
+                                            <div class="segment-title">Occasional</div>
+                                            <div class="segment-count" id="occasionalCount">0</div>
+                                            <div class="segment-revenue">₱<span id="occasionalRevenue">0</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="segment-card inactive">
+                                            <div class="segment-icon"><i class="fas fa-user-slash"></i></div>
+                                            <div class="segment-title">Inactive</div>
+                                            <div class="segment-count" id="inactiveCount">0</div>
+                                            <div class="segment-revenue">₱<span id="inactiveRevenue">0</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Segment Performance Over Time</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="segmentTimeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="insight-card">
+                            <div class="card-header">
+                                <h3>Lifetime Value Distribution</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="ltvChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Remaining tabs continue... -->
+        </div>
+    </div>
+</div>
   
   
-  
+
+<style>
+  <style>
+/* Root Variables - Single Color Theme (Indigo) */
+:root {
+    --primary-color: #4F46E5;
+    --primary-dark: #3730A3;
+    --primary-light: #6366F1;
+    --primary-pale: #E0E7FF;
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F9FAFB;
+    --bg-tertiary: #F3F4F6;
+    --border-color: #E5E7EB;
+    --success-color: #10B981;
+    --danger-color: #EF4444;
+    --warning-color: #F59E0B;
+}
+
+/* Base Styles */
+#customer-insight {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* Header Section */
+.insight-header {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+}
+
+/* Date Filter */
+.date-filter-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.date-input {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    transition: all 0.2s;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-pale);
+}
+
+.date-separator {
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.btn-apply {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-apply:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Metric Cards */
+.metric-card {
+    background: var(--bg-primary);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s;
+}
+
+.metric-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
+}
+
+.metric-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: var(--primary-pale);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.metric-icon i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.metric-content {
+    flex: 1;
+}
+
+.metric-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.metric-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.metric-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.metric-change.positive {
+    color: var(--success-color);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.metric-change.negative {
+    color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.metric-change i {
+    font-size: 0.625rem;
+}
+
+/* Analytics Tabs */
+.analytics-tabs {
+    background: var(--bg-primary);
+    border-radius: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.analytics-tabs .nav-pills {
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.analytics-tabs .nav-link {
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.analytics-tabs .nav-link:hover {
+    background: var(--bg-tertiary);
+}
+
+.analytics-tabs .nav-link.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.analytics-tabs .nav-link i {
+    font-size: 1rem;
+}
+
+/* Insight Cards */
+.insight-card {
+    background: var(--bg-primary);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary-color);
+}
+
+.btn-icon i {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Data Tables */
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.data-table thead th {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table tbody td {
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table tbody tr:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Risk Badges */
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.risk-badge.low {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.risk-badge.medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.risk-badge.high {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+/* Segment Cards */
+.segment-card {
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.segment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.segment-card.frequent {
+    border-color: var(--primary-color);
+}
+
+.segment-card.regular {
+    border-color: var(--primary-light);
+}
+
+.segment-card.occasional {
+    border-color: var(--warning-color);
+}
+
+.segment-card.inactive {
+    border-color: var(--danger-color);
+}
+
+.segment-icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+    background: var(--primary-pale);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.segment-icon i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.segment-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.segment-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.segment-revenue {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Loyalty Stats */
+.loyalty-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stat-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.stat-dot.loyal {
+    background: var(--success-color);
+}
+
+.stat-dot.new {
+    background: var(--primary-color);
+}
+
+.stat-dot.risk {
+    background: var(--danger-color);
+}
+
+.stat-label {
+    flex: 1;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Average Metrics */
+.avg-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.avg-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: 0.5rem;
+}
+
+.avg-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.avg-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .date-filter-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .analytics-tabs .nav-pills {
+        flex-direction: column;
+    }
+    
+    .metric-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+  </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   
   
