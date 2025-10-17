@@ -5138,7 +5138,7 @@ body {
   
   
   
-  
+  <link href="cust-insight.css" rel="stylesheet">
   
   <div id = "cust-insight" class = "page">
     <div class="ci-analytics-container">
