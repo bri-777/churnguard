@@ -1786,6 +1786,7 @@ function doLogout() {
 
 
 
+
         <button type="button" class="btn-primary" onclick="saveChurnData()">
           <i class="fas fa-save"></i> Save Churn Data
         </button>
@@ -1801,6 +1802,7 @@ function doLogout() {
     </div>
 
 
+<!-- SheetJS Library for Excel support -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
@@ -1843,14 +1845,24 @@ function processData(data) {
   const headers = data[0].map(h => String(h).trim().toLowerCase());
   
   // Find column indices
+  const shopNameIndex = headers.findIndex(h => h.includes('shop name'));
   const receiptCountIndex = headers.findIndex(h => h.includes('receipt count'));
+  const customerNameIndex = headers.findIndex(h => h.includes('customer name'));
+  const quantityIndex = headers.findIndex(h => h.includes('quantity'));
+  const drinkTypeIndex = headers.findIndex(h => h.includes('type of drink'));
+  const dateIndex = headers.findIndex(h => h.includes('date'));
+  const dayIndex = headers.findIndex(h => h.includes('day'));
   const timeOfDayIndex = headers.findIndex(h => h.includes('time of day'));
   const totalAmountIndex = headers.findIndex(h => h.includes('total amount'));
+  const paymentMethodIndex = headers.findIndex(h => h.includes('payment method'));
   
   if (receiptCountIndex === -1 || timeOfDayIndex === -1 || totalAmountIndex === -1) {
     alert('Required columns not found! Please ensure your file has:\n- Receipt Count\n- Time of Day\n- Total Amount (₱)');
     return;
   }
+  
+  // Arrays to store transactions for database
+  const transactions = [];
   
   // Initialize counters for TOTALS
   let totalReceipts = 0;
@@ -1878,10 +1890,27 @@ function processData(data) {
     // Skip empty rows
     if (!timeOfDay || totalAmount === 0) continue;
     
+    // Prepare transaction object for database
+    const dateStr = String(row[dateIndex] || '').trim();
+    const dateVisited = parseExcelDate(dateStr);
+    
+    transactions.push({
+      shop_name: String(row[shopNameIndex] || '').trim(),
+      receipt_count: receiptCount,
+      customer_name: String(row[customerNameIndex] || '').trim(),
+      quantity_of_drinks: parseInt(row[quantityIndex]) || 0,
+      type_of_drink: String(row[drinkTypeIndex] || '').trim(),
+      date_visited: dateVisited,
+      day: String(row[dayIndex] || '').trim(),
+      time_of_day: String(row[timeOfDayIndex] || '').trim(),
+      total_amount: totalAmount,
+      payment_method: String(row[paymentMethodIndex] || '').trim()
+    });
+    
     // Add to TOTALS
     totalReceipts += receiptCount;
     totalSales += totalAmount;
-    totalCustomerTraffic += 1; // Count each transaction as 1 customer
+    totalCustomerTraffic += 1;
     
     // Map to SHIFTS
     if (timeOfDay.includes('morning')) {
@@ -1895,6 +1924,9 @@ function processData(data) {
       eveningSales += totalAmount;
     }
   }
+  
+  // Save to database
+  saveToDatabase(transactions);
   
   // Populate TOTAL fields
   document.getElementById('receiptCount').value = totalReceipts;
@@ -1922,6 +1954,47 @@ function processData(data) {
   
   // Reset file input
   document.getElementById('csvFileInput').value = '';
+}
+
+function parseExcelDate(dateStr) {
+  // Handle Excel serial date numbers
+  if (!isNaN(dateStr) && dateStr.length > 4) {
+    const excelEpoch = new Date(1899, 11, 30);
+    const date = new Date(excelEpoch.getTime() + parseInt(dateStr) * 86400000);
+    return date.toISOString().split('T')[0];
+  }
+  
+  // Handle regular date strings
+  if (dateStr.includes('/') || dateStr.includes('-')) {
+    const date = new Date(dateStr);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().split('T')[0];
+    }
+  }
+  
+  // Return current date if parsing fails
+  return new Date().toISOString().split('T')[0];
+}
+
+function saveToDatabase(transactions) {
+  fetch('upload_transactions.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ transactions: transactions })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Transactions saved to database:', data.count);
+    } else {
+      console.error('Error saving to database:', data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
 }
 </script>
 
