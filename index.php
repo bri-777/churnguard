@@ -155,6 +155,67 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <style>
 
+.date-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filter-select {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.date-filter-select:hover {
+  border-color: #3b82f6;
+}
+
+.date-filter-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-input {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.date-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-apply-filter {
+  padding: 6px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-apply-filter:hover {
+  background: #2563eb;
+}
+
+#customDateInputs {
+  display: flex;
+  align-items: center;
+}
+
+
 
 
 .data-view-toggle {
@@ -6039,19 +6100,39 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     <div class="history-header">
       <div class="history-title">📋Historical Data</div>
       
-      <!-- NEW: Toggle Switch -->
+      <!-- Toggle Switch -->
       <div class="data-view-toggle">
-  <label class="toggle-switch">
-    <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
-    <span class="toggle-slider"></span>
-  </label>
-  <span id="dataViewLabel" class="toggle-label">Transaction Logs View</span>
-</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span id="dataViewLabel" class="toggle-label">Transaction Logs View</span>
+      </div>
+      
+      <!-- NEW: Date Filter Dropdown (only shows for transaction logs) -->
+      <div id="transactionDateFilter" class="date-filter-container" style="display: none;">
+        <select id="dateFilterSelect" class="date-filter-select" onchange="applyDateFilter()">
+          <option value="all">All Time</option>
+          <option value="7">Past 7 Days</option>
+          <option value="14">Past 14 Days</option>
+          <option value="30" selected>Past 30 Days</option>
+          <option value="custom">Custom Range</option>
+        </select>
+        
+        <!-- Custom date inputs (hidden by default) -->
+        <div id="customDateInputs" style="display: none; margin-left: 10px;">
+          <input type="date" id="startDate" class="date-input">
+          <span style="margin: 0 5px;">to</span>
+          <input type="date" id="endDate" class="date-input">
+          <button onclick="applyCustomDateFilter()" class="btn-apply-filter">Apply</button>
+        </div>
+      </div>
       
       <div class="last-updated">
          <span id="currentAnalysisDataRange"></span>
       </div>
     </div>
+    
     <div class="history-table-container">
       <table class="history-table">
         <thead id="historyTableHead">
@@ -6066,13 +6147,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </thead>
         <tbody id="historicalAnalysisTableBody">
           <tr>
-            <td colspan="7" class="no-data">Loading 14-day historical analysis...</td>
+            <td colspan="6" class="no-data">Loading...</td>
           </tr>
         </tbody>
       </table>
     </div>
-  </div>
-  
+</div>
   
   
 </div>
@@ -6086,39 +6166,82 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
    
 
    
-   <script>
-// ========== TRANSACTION LOGS TOGGLE - COMPLETE CODE ==========
+  <script>
+// ========== TRANSACTION LOGS WITH DATE FILTER ==========
 
-// Data view mode tracking - START WITH TRANSACTIONS
 let currentDataView = 'transactions';
 let originalTableHeaders = null;
+let currentDateFilter = '30'; // Default: Past 30 days
 
-// Toggle between aggregated and transaction logs view (REVERSED LOGIC)
+// Toggle between views
 function toggleDataView() {
   const toggle = document.getElementById('dataViewToggle');
   const label = document.getElementById('dataViewLabel');
+  const filterContainer = document.getElementById('transactionDateFilter');
   
   if (toggle.checked) {
-    // Toggle ON = Aggregated View
+    // Aggregated View
     currentDataView = 'aggregated';
     label.textContent = 'Aggregated View';
+    filterContainer.style.display = 'none'; // Hide filter
     restoreAggregatedView();
   } else {
-    // Toggle OFF = Transaction Logs View (DEFAULT)
+    // Transaction Logs View
     currentDataView = 'transactions';
     label.textContent = 'Transaction Logs View';
+    filterContainer.style.display = 'flex'; // Show filter
     loadTransactionLogs();
   }
 }
 
-// Restore original aggregated view
+// Apply date filter
+function applyDateFilter() {
+  const select = document.getElementById('dateFilterSelect');
+  const customInputs = document.getElementById('customDateInputs');
+  
+  currentDateFilter = select.value;
+  
+  if (currentDateFilter === 'custom') {
+    // Show custom date inputs
+    customInputs.style.display = 'flex';
+    
+    // Set default dates
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    
+    document.getElementById('endDate').valueAsDate = endDate;
+    document.getElementById('startDate').valueAsDate = startDate;
+  } else {
+    // Hide custom inputs and reload
+    customInputs.style.display = 'none';
+    loadTransactionLogs();
+  }
+}
+
+// Apply custom date filter
+function applyCustomDateFilter() {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  
+  if (!startDate || !endDate) {
+    alert('Please select both start and end dates');
+    return;
+  }
+  
+  if (new Date(startDate) > new Date(endDate)) {
+    alert('Start date must be before end date');
+    return;
+  }
+  
+  loadTransactionLogs(startDate, endDate);
+}
+
+// Restore aggregated view
 function restoreAggregatedView() {
   const tableHead = document.getElementById('historyTableHead');
   const tableBody = document.getElementById('historicalAnalysisTableBody');
   
-  console.log('Switching to aggregated view');
-  
-  // Restore original headers
   tableHead.innerHTML = `
     <tr>
       <th>Date</th>
@@ -6130,54 +6253,58 @@ function restoreAggregatedView() {
     </tr>
   `;
   
-  // Show loading
-  tableBody.innerHTML = '<tr><td colspan="6" class="no-data">Loading aggregated data...</td></tr>';
+  tableBody.innerHTML = '<tr><td colspan="6" class="no-data">Loading...</td></tr>';
   
-  // Reload dashboard data
   if (dashboard) {
     dashboard.startAutoRefresh();
     dashboard.loadData();
   }
 }
 
-// Load raw transaction logs
-async function loadTransactionLogs() {
+// Load transaction logs with filter
+async function loadTransactionLogs(customStart = null, customEnd = null) {
   const tableHead = document.getElementById('historyTableHead');
   const tableBody = document.getElementById('historicalAnalysisTableBody');
   
   console.log('=== LOADING TRANSACTION LOGS ===');
+  console.log('Filter:', currentDateFilter);
   
-  // Stop dashboard auto-refresh
   if (dashboard) {
     dashboard.stopAutoRefresh();
   }
   
-  // Show loading
   tableBody.innerHTML = '<tr><td colspan="11" class="no-data">Loading transaction logs...</td></tr>';
   
   try {
-    const response = await fetch('api/get_transaction_logs.php?t=' + Date.now(), {
+    // Build URL with filter parameters
+    let url = 'api/get_transaction_logs.php?t=' + Date.now();
+    
+    if (customStart && customEnd) {
+      url += `&filter=custom&start_date=${customStart}&end_date=${customEnd}`;
+    } else {
+      url += `&filter=${currentDateFilter}`;
+    }
+    
+    console.log('Fetching:', url);
+    
+    const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json'
-      },
+      headers: { 'Accept': 'application/json' },
       credentials: 'same-origin'
     });
     
-    console.log('Response status:', response.status);
-    
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}`);
     }
     
     const data = await response.json();
     console.log('Data received:', data);
     
     if (!data.success) {
-      throw new Error(data.message || 'Failed to load transaction logs');
+      throw new Error(data.message || 'Failed to load');
     }
     
-    // Change table headers
+    // Update headers
     tableHead.innerHTML = `
       <tr>
         <th>ID</th>
@@ -6194,26 +6321,23 @@ async function loadTransactionLogs() {
       </tr>
     `;
     
-    // Check if we have data
     if (!data.transactions || data.transactions.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transaction logs found. Upload Excel to add data.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transactions found for selected date range</td></tr>';
+      
+      const label = document.getElementById('currentAnalysisDataRange');
+      if (label) {
+        label.textContent = `${data.date_range_text || 'No data'}`;
+      }
       return;
     }
     
-    console.log('Building table with', data.transactions.length, 'transactions');
-    
-    // Build table rows
+    // Build rows
     let rows = '';
-    data.transactions.forEach((trans, index) => {
-      console.log(`Row ${index + 1}:`, trans);
-      
+    data.transactions.forEach(trans => {
       const date = new Date(trans.date_visited);
       const dateStr = date.toLocaleDateString('en-PH', { 
-        year: 'numeric',
-        month: 'short', 
-        day: 'numeric'
+        year: 'numeric', month: 'short', day: 'numeric'
       });
-      
       const amount = parseFloat(trans.total_amount || 0);
       const amountStr = '₱' + amount.toLocaleString('en-PH', {
         minimumFractionDigits: 2,
@@ -6237,21 +6361,19 @@ async function loadTransactionLogs() {
       `;
     });
     
-    // Update table body
     tableBody.innerHTML = rows;
     
-    // Update info label
+    // Update count label
     const label = document.getElementById('currentAnalysisDataRange');
     if (label) {
-      label.textContent = `Showing ${data.showing_count} of ${data.total_count} total transactions`;
+      label.textContent = `${data.date_range_text} - ${data.showing_count} of ${data.total_count} transactions`;
     }
     
-    console.log('✓ Transaction logs loaded successfully!');
+    console.log('✓ Loaded', data.transactions.length, 'transactions');
     
   } catch (error) {
-    console.error('✗ Error loading transaction logs:', error);
+    console.error('✗ Error:', error);
     
-    // Restore headers on error
     tableHead.innerHTML = `
       <tr>
         <th>Date</th>
@@ -6266,43 +6388,34 @@ async function loadTransactionLogs() {
     tableBody.innerHTML = `
       <tr>
         <td colspan="6" class="no-data" style="color: #e74c3c;">
-          <strong>Error:</strong> ${error.message}<br>
-          <small>Check console for details</small>
+          Error: ${error.message}
         </td>
       </tr>
     `;
-    
-    // Turn toggle back off (which now means transaction view)
-    const toggle = document.getElementById('dataViewToggle');
-    const label = document.getElementById('dataViewLabel');
-    if (toggle) toggle.checked = false;
-    if (label) label.textContent = 'Transaction Logs View';
-    currentDataView = 'transactions';
   }
 }
 
-// Load transaction logs on page load
+// Auto-load transaction logs on page load
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Page loaded - initializing transaction logs view');
+  console.log('Page loaded - initializing transaction logs');
   
-  // Wait a moment for dashboard to initialize, then load transaction logs
   setTimeout(() => {
-    console.log('Auto-loading transaction logs...');
+    const filterContainer = document.getElementById('transactionDateFilter');
+    if (filterContainer) {
+      filterContainer.style.display = 'flex'; // Show filter
+    }
     loadTransactionLogs();
   }, 1500);
 });
 
-// Add this to make sure it's available globally
 window.toggleDataView = toggleDataView;
+window.applyDateFilter = applyDateFilter;
+window.applyCustomDateFilter = applyCustomDateFilter;
 window.loadTransactionLogs = loadTransactionLogs;
 window.currentDataView = currentDataView;
 
-console.log('✓ Transaction logs toggle functions loaded (Default: Transaction Logs)');
+console.log('✓ Transaction logs with date filter loaded');
 </script>
-   
-   
-   
-
 
   
 
