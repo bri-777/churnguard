@@ -6041,12 +6041,12 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       
       <!-- NEW: Toggle Switch -->
       <div class="data-view-toggle">
-        <label class="toggle-switch">
-          <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
-          <span class="toggle-slider"></span>
-        </label>
-        <span id="dataViewLabel" class="toggle-label">Aggregated View</span>
-      </div>
+  <label class="toggle-switch">
+    <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
+    <span class="toggle-slider"></span>
+  </label>
+  <span id="dataViewLabel" class="toggle-label">Transaction Logs View</span>
+</div>
       
       <div class="last-updated">
          <span id="currentAnalysisDataRange"></span>
@@ -6085,32 +6085,38 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
    
 
+   
    <script>
-    // ========== TRANSACTION LOGS TOGGLE - COMPLETE CODE ==========
+// ========== TRANSACTION LOGS TOGGLE - COMPLETE CODE ==========
 
-// Data view mode tracking
-let currentDataView = 'aggregated';
+// Data view mode tracking - START WITH TRANSACTIONS
+let currentDataView = 'transactions';
 let originalTableHeaders = null;
 
-// Toggle between aggregated and transaction logs view
+// Toggle between aggregated and transaction logs view (REVERSED LOGIC)
 function toggleDataView() {
   const toggle = document.getElementById('dataViewToggle');
   const label = document.getElementById('dataViewLabel');
   
   if (toggle.checked) {
-    currentDataView = 'transactions';
-    label.textContent = 'Transaction Logs View';
-    loadTransactionLogs();
-  } else {
+    // Toggle ON = Aggregated View
     currentDataView = 'aggregated';
     label.textContent = 'Aggregated View';
     restoreAggregatedView();
+  } else {
+    // Toggle OFF = Transaction Logs View (DEFAULT)
+    currentDataView = 'transactions';
+    label.textContent = 'Transaction Logs View';
+    loadTransactionLogs();
   }
 }
 
 // Restore original aggregated view
 function restoreAggregatedView() {
   const tableHead = document.getElementById('historyTableHead');
+  const tableBody = document.getElementById('historicalAnalysisTableBody');
+  
+  console.log('Switching to aggregated view');
   
   // Restore original headers
   tableHead.innerHTML = `
@@ -6124,8 +6130,12 @@ function restoreAggregatedView() {
     </tr>
   `;
   
+  // Show loading
+  tableBody.innerHTML = '<tr><td colspan="6" class="no-data">Loading aggregated data...</td></tr>';
+  
   // Reload dashboard data
   if (dashboard) {
+    dashboard.startAutoRefresh();
     dashboard.loadData();
   }
 }
@@ -6136,6 +6146,11 @@ async function loadTransactionLogs() {
   const tableBody = document.getElementById('historicalAnalysisTableBody');
   
   console.log('=== LOADING TRANSACTION LOGS ===');
+  
+  // Stop dashboard auto-refresh
+  if (dashboard) {
+    dashboard.stopAutoRefresh();
+  }
   
   // Show loading
   tableBody.innerHTML = '<tr><td colspan="11" class="no-data">Loading transaction logs...</td></tr>';
@@ -6257,24 +6272,33 @@ async function loadTransactionLogs() {
       </tr>
     `;
     
-    // Turn toggle back off
+    // Turn toggle back off (which now means transaction view)
     const toggle = document.getElementById('dataViewToggle');
     const label = document.getElementById('dataViewLabel');
     if (toggle) toggle.checked = false;
-    if (label) label.textContent = 'Aggregated View';
-    currentDataView = 'aggregated';
+    if (label) label.textContent = 'Transaction Logs View';
+    currentDataView = 'transactions';
   }
 }
+
+// Load transaction logs on page load
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Page loaded - initializing transaction logs view');
+  
+  // Wait a moment for dashboard to initialize, then load transaction logs
+  setTimeout(() => {
+    console.log('Auto-loading transaction logs...');
+    loadTransactionLogs();
+  }, 1500);
+});
 
 // Add this to make sure it's available globally
 window.toggleDataView = toggleDataView;
 window.loadTransactionLogs = loadTransactionLogs;
+window.currentDataView = currentDataView;
 
-console.log('✓ Transaction logs toggle functions loaded');
-    </script>
-   
-   
-   
+console.log('✓ Transaction logs toggle functions loaded (Default: Transaction Logs)');
+</script>
    
    
    
