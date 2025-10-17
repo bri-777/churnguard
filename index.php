@@ -1778,6 +1778,13 @@ function doLogout() {
 
 
       <div class="action-section">
+<!-- Add this button in the action-section, before or after existing buttons -->
+<button type="button" class="btn-primary" onclick="document.getElementById('csvFileInput').click()">
+  <i class="fas fa-upload"></i> Upload CSV/Excel
+</button>
+<input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleFileUpload(event)">
+
+
         <button type="button" class="btn-primary" onclick="saveChurnData()">
           <i class="fas fa-save"></i> Save Churn Data
         </button>
@@ -1794,7 +1801,98 @@ function doLogout() {
 
 
 
+
+<script>
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    const text = e.target.result;
+    processCSVData(text);
+  };
+  
+  reader.readAsText(file);
+}
+
+function processCSVData(csvText) {
+  // Parse CSV
+  const lines = csvText.split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  
+  // Find column indices
+  const timeOfDayIndex = headers.findIndex(h => h.toLowerCase().includes('time of day'));
+  const totalAmountIndex = headers.findIndex(h => h.toLowerCase().includes('total amount'));
+  const receiptCountIndex = headers.findIndex(h => h.toLowerCase().includes('receipt count'));
+  
+  // Initialize counters
+  let morningReceipts = 0;
+  let morningSales = 0;
+  let middayReceipts = 0;
+  let middaySales = 0;
+  let eveningReceipts = 0;
+  let eveningSales = 0;
+  
+  // Process each data row
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
     
+    const values = lines[i].split(',').map(v => v.trim());
+    const timeOfDay = values[timeOfDayIndex]?.toLowerCase() || '';
+    const receiptCount = parseInt(values[receiptCountIndex]) || 1;
+    const totalAmount = parseFloat(values[totalAmountIndex]?.replace(/[₱,]/g, '')) || 0;
+    
+    if (timeOfDay.includes('morning')) {
+      morningReceipts += receiptCount;
+      morningSales += totalAmount;
+    } else if (timeOfDay.includes('lunch') || timeOfDay.includes('midday')) {
+      middayReceipts += receiptCount;
+      middaySales += totalAmount;
+    } else if (timeOfDay.includes('evening') || timeOfDay.includes('night')) {
+      eveningReceipts += receiptCount;
+      eveningSales += totalAmount;
+    }
+  }
+  
+  // Populate input fields
+  document.getElementById('morningReceiptCount').value = morningReceipts;
+  document.getElementById('morningSalesVolume').value = morningSales.toFixed(2);
+  document.getElementById('swingReceiptCount').value = middayReceipts;
+  document.getElementById('swingSalesVolume').value = middaySales.toFixed(2);
+  document.getElementById('graveyardReceiptCount').value = eveningReceipts;
+  document.getElementById('graveyardSalesVolume').value = eveningSales.toFixed(2);
+  
+  // Show success message
+  alert('CSV data loaded successfully! Receipt counts and sales volumes have been populated.');
+  
+  // Reset file input
+  event.target.value = '';
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Churn Prediction Page -->
     <div id="churn-prediction" class="page">
