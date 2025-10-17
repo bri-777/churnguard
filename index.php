@@ -6052,24 +6052,6 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
          <span id="currentAnalysisDataRange"></span>
       </div>
     </div>
-    <div class="history-section">
-    <div class="history-header">
-      <div class="history-title">📋Historical Data</div>
-      
-      <!-- Toggle Switch -->
-      <div class="data-view-toggle">
-        <label class="toggle-switch">
-          <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()">
-          <span class="toggle-slider"></span>
-        </label>
-        <span id="dataViewLabel" class="toggle-label">Aggregated View</span>
-      </div>
-      
-      <div class="last-updated">
-         <span id="currentAnalysisDataRange"></span>
-      </div>
-    </div>
-    
     <div class="history-table-container">
       <table class="history-table">
         <thead id="historyTableHead">
@@ -6084,18 +6066,18 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </thead>
         <tbody id="historicalAnalysisTableBody">
           <tr>
-            <td colspan="6" class="no-data">Loading 14-day historical analysis...</td>
+            <td colspan="7" class="no-data">Loading 14-day historical analysis...</td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
+  
+  
+  
 </div>
-  
-  
-  
-  
 </div>
-</div>
+
 		 <!-- Include the monitoring JavaScript -->
     <script src="customer-monitoring-dashboard.js"></script>
 	<link rel="stylesheet" href="assets/monitoring.css"><!-- use YOUR provided CSS file -->
