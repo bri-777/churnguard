@@ -6086,28 +6086,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
    
 
    <script>
-    // NEW: Data view mode tracking
-let currentDataView = 'aggregated'; // or 'transactions'
-
-// NEW: Toggle between aggregated and transaction logs view
-function toggleDataView() {
-  const toggle = document.getElementById('dataViewToggle');
-  const label = document.getElementById('dataViewLabel');
-  
-  if (toggle.checked) {
-    currentDataView = 'transactions';
-    label.textContent = 'Transaction Logs View';
-    loadTransactionLogs();
-  } else {
-    currentDataView = 'aggregated';
-    label.textContent = 'Aggregated View';
-    if (dashboard) {
-      dashboard.loadData(); // Reload original aggregated data
-    }
-  }
-}
-
-// NEW: Load raw transaction logs
+    // NEW: Load raw transaction logs
 async function loadTransactionLogs() {
   const tableHead = document.getElementById('historyTableHead');
   const tableBody = document.getElementById('historicalAnalysisTableBody');
@@ -6116,8 +6095,34 @@ async function loadTransactionLogs() {
   tableBody.innerHTML = '<tr><td colspan="11" class="no-data">Loading transaction logs...</td></tr>';
   
   try {
-    const response = await fetch('api/get_transaction_logs.php?t=' + Date.now());
-    const data = await response.json();
+    console.log('Fetching transaction logs...');
+    
+    const response = await fetch('api/get_transaction_logs.php?t=' + Date.now(), {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'same-origin'
+    });
+    
+    console.log('Response status:', response.status);
+    console.log('Response OK:', response.ok);
+    
+    // Get response as text first to see what we're getting
+    const textResponse = await response.text();
+    console.log('Raw response:', textResponse.substring(0, 200));
+    
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(textResponse);
+    } catch (e) {
+      console.error('JSON parse error:', e);
+      throw new Error('Server returned invalid response. Check if get_transaction_logs.php exists in api folder.');
+    }
+    
+    console.log('Parsed data:', data);
     
     if (!data.success) {
       throw new Error(data.message || 'Failed to load transaction logs');
@@ -6127,15 +6132,15 @@ async function loadTransactionLogs() {
     tableHead.innerHTML = `
       <tr>
         <th>ID</th>
-        <th>Date Visited</th>
-        <th>Shop Name</th>
-        <th>Customer Name</th>
-        <th>Drink Type</th>
-        <th>Quantity</th>
-        <th>Receipt Count</th>
-        <th>Time of Day</th>
-        <th>Total Amount</th>
-        <th>Payment Method</th>
+        <th>Date</th>
+        <th>Shop</th>
+        <th>Customer</th>
+        <th>Drink</th>
+        <th>Qty</th>
+        <th>Receipts</th>
+        <th>Time</th>
+        <th>Amount</th>
+        <th>Payment</th>
         <th>Day</th>
       </tr>
     `;
@@ -6146,7 +6151,7 @@ async function loadTransactionLogs() {
       
       data.transactions.forEach(trans => {
         const date = new Date(trans.date_visited);
-        const dateStr = date.toLocaleDateString('en-PH');
+        const dateStr = date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
         
         rows += `
           <tr>
@@ -6170,18 +6175,36 @@ async function loadTransactionLogs() {
       // Update info label
       const label = document.getElementById('currentAnalysisDataRange');
       if (label) {
-        label.textContent = `Showing ${data.showing_count} of ${data.total_count} transactions`;
+        label.textContent = `Showing ${data.showing_count} of ${data.total_count} total transactions`;
       }
+      
+      console.log('Successfully loaded', data.transactions.length, 'transactions');
+      
     } else {
-      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transaction logs found</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="11" class="no-data">No transaction logs found. Upload Excel file to add transactions.</td></tr>';
     }
     
   } catch (error) {
     console.error('Error loading transaction logs:', error);
+    
+    // Restore original table headers
+    tableHead.innerHTML = `
+      <tr>
+        <th>Date</th>
+        <th>Customer Traffic</th>
+        <th>Revenue</th>
+        <th>Transactions</th>
+        <th>Risk Level</th>
+        <th>Status</th>
+      </tr>
+    `;
+    
     tableBody.innerHTML = `
       <tr>
-        <td colspan="11" class="no-data" style="color: #e74c3c;">
-          Error: ${error.message}
+        <td colspan="6" class="no-data" style="color: #e74c3c;">
+          <strong>Error loading transaction logs:</strong><br>
+          ${error.message}<br>
+          <small>Check browser console (F12) for details</small>
         </td>
       </tr>
     `;

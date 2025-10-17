@@ -1,6 +1,14 @@
 <?php
+// Clean any output before JSON
+ob_start();
+
 session_start();
-header('Content-Type: application/json');
+
+// Clear output buffer
+ob_clean();
+
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, must-revalidate');
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -10,21 +18,23 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Database connection - Hostinger
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'u393812660_churnguard');
-define('DB_USER', 'u393812660_churnguard');
-define('DB_PASS', '102202Brian_');
+// Database connection - Use your Hostinger config
+if (!defined('DB_HOST')) {
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'u393812660_churnguard');
+    define('DB_USER', 'u393812660_churnguard');
+    define('DB_PASS', '102202Brian_');
+}
 
 try {
     $pdo = new PDO(
         "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
         DB_USER,
-        DB_PASS
+        DB_PASS,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Get all transaction logs for this user (excluding created_at and updated_at)
+    // Get all transaction logs for this user
     $sql = "SELECT 
                 id,
                 shop_name,
@@ -52,23 +62,32 @@ try {
     $countStmt->execute([$user_id]);
     $totalCount = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
     
-    echo json_encode([
+    $response = [
         'success' => true,
         'transactions' => $transactions,
-        'total_count' => $totalCount,
+        'total_count' => intval($totalCount),
         'showing_count' => count($transactions),
         'timestamp' => date('Y-m-d H:i:s')
-    ]);
+    ];
+    
+    // Final clean and output
+    ob_clean();
+    echo json_encode($response);
+    exit;
     
 } catch (PDOException $e) {
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Database error: ' . $e->getMessage()
     ]);
+    exit;
 } catch (Exception $e) {
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Error: ' . $e->getMessage()
     ]);
+    exit;
 }
 ?>
