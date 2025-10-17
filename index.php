@@ -1978,9 +1978,16 @@ function parseExcelDate(dateStr) {
 
 function saveToDatabase(transactions) {
   console.log('=== SAVING TO DATABASE ===');
-  console.log('Transactions:', transactions.length);
-  console.log('First transaction:', transactions[0]);
+  console.log('Total transactions:', transactions.length);
   
+  if (transactions.length === 0) {
+    alert('No transactions to save!');
+    return;
+  }
+  
+  console.log('Sample transaction:', transactions[0]);
+  
+  // Send to PHP
   fetch('upload_transactions.php', {
     method: 'POST',
     headers: {
@@ -1989,7 +1996,8 @@ function saveToDatabase(transactions) {
     body: JSON.stringify({ transactions: transactions })
   })
   .then(response => {
-    console.log('Status:', response.status);
+    console.log('Response status:', response.status);
+    console.log('Response OK:', response.ok);
     return response.text();
   })
   .then(text => {
@@ -1997,19 +2005,25 @@ function saveToDatabase(transactions) {
     console.log(text);
     console.log('===================');
     
-    const data = JSON.parse(text);
-    
-    if (data.success) {
-      console.log('✓ SUCCESS! Saved:', data.count);
-      alert('✓ Saved ' + data.count + ' transactions to database!');
-    } else {
-      console.error('✗ Error:', data.message);
-      alert('✗ Error: ' + data.message);
+    try {
+      const data = JSON.parse(text);
+      console.log('Parsed:', data);
+      
+      if (data.success) {
+        alert('✓ SUCCESS! Saved ' + data.count + ' transactions to database!');
+        console.log('✓ Saved:', data.count);
+      } else {
+        alert('✗ ERROR: ' + data.message);
+        console.error('Error:', data.message);
+      }
+    } catch (e) {
+      console.error('JSON parse failed:', e);
+      alert('Server error. Check console.');
     }
   })
   .catch(error => {
-    console.error('✗ Error:', error);
-    alert('✗ Error: ' + error.message);
+    console.error('Fetch error:', error);
+    alert('Network error: ' + error.message);
   });
 }
 </script>

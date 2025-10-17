@@ -1,113 +1,88 @@
 <?php
-ob_start();
+// Clean output buffer
+while (ob_get_level()) {
+    ob_end_clean();
+}
+
 session_start();
+header('Content-Type: application/json');
 
-// Clear any previous output
-ob_clean();
-
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
-
-// Disable error output to prevent breaking JSON
-ini_set('display_errors', 0);
-error_reporting(0);
+// Database credentials - Hostinger
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'u393812660_churnguard');
+define('DB_USER', 'u393812660_churnguard');
+define('DB_PASS', '102202Brian_');
 
 try {
     // Check session
     if (!isset($_SESSION['user_id'])) {
-        throw new Exception('User not logged in');
+        echo json_encode(['success' => false, 'message' => 'Not logged in. Session: ' . session_id()]);
+        exit;
     }
     
     $user_id = $_SESSION['user_id'];
     
-    // Database connection
-    if (!defined('DB_HOST')) {
-        require_once 'config.php';
-    }
-    
+    // Connect to database
     $pdo = new PDO(
         "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
         DB_USER,
-        DB_PASS,
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+        DB_PASS
     );
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Get JSON input
-    $rawData = file_get_contents('php://input');
+    // Get POST data
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
     
-    if (empty($rawData)) {
-        throw new Exception('No data received');
-    }
-    
-    $data = json_decode($rawData, true);
-    
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('Invalid JSON: ' . json_last_error_msg());
-    }
-    
-    if (!isset($data['transactions']) || !is_array($data['transactions'])) {
-        throw new Exception('Transactions array not found');
+    if (!$data || !isset($data['transactions'])) {
+        echo json_encode(['success' => false, 'message' => 'No transactions data']);
+        exit;
     }
     
     $transactions = $data['transactions'];
     
-    if (count($transactions) === 0) {
-        throw new Exception('No transactions to save');
-    }
-    
-    // Insert into database
-    $pdo->beginTransaction();
-    
+    // Insert each transaction
     $sql = "INSERT INTO transaction_logs 
             (user_id, shop_name, receipt_count, customer_name, quantity_of_drinks, 
              type_of_drink, date_visited, day, time_of_day, total_amount, payment_method) 
             VALUES 
-            (:user_id, :shop_name, :receipt_count, :customer_name, :quantity_of_drinks, 
-             :type_of_drink, :date_visited, :day, :time_of_day, :total_amount, :payment_method)";
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $pdo->prepare($sql);
+    $count = 0;
     
-    $insertedCount = 0;
-    foreach ($transactions as $transaction) {
+    foreach ($transactions as $t) {
         $stmt->execute([
-            ':user_id' => $user_id,
-            ':shop_name' => $transaction['shop_name'] ?? '',
-            ':receipt_count' => intval($transaction['receipt_count'] ?? 0),
-            ':customer_name' => $transaction['customer_name'] ?? '',
-            ':quantity_of_drinks' => intval($transaction['quantity_of_drinks'] ?? 0),
-            ':type_of_drink' => $transaction['type_of_drink'] ?? '',
-            ':date_visited' => $transaction['date_visited'] ?? date('Y-m-d'),
-            ':day' => $transaction['day'] ?? '',
-            ':time_of_day' => $transaction['time_of_day'] ?? '',
-            ':total_amount' => floatval($transaction['total_amount'] ?? 0),
-            ':payment_method' => $transaction['payment_method'] ?? ''
+            $user_id,
+            $t['shop_name'] ?? '',
+            $t['receipt_count'] ?? 0,
+            $t['customer_name'] ?? '',
+            $t['quantity_of_drinks'] ?? 0,
+            $t['type_of_drink'] ?? '',
+            $t['date_visited'] ?? date('Y-m-d'),
+            $t['day'] ?? '',
+            $t['time_of_day'] ?? '',
+            $t['total_amount'] ?? 0,
+            $t['payment_method'] ?? ''
         ]);
-        $insertedCount++;
+        $count++;
     }
     
-    $pdo->commit();
-    
-    $response = [
+    echo json_encode([
         'success' => true,
-        'message' => 'Transactions saved successfully',
-        'count' => $insertedCount
-    ];
+        'count' => $count,
+        'message' => "Saved $count transactions"
+    ]);
     
-} catch (Exception $e) {
-    if (isset($pdo) && $pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    
-    $response = [
+} catch (PDOException $e) {
+    echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
-    ];
+        'message' => 'Database error: ' . $e->getMessage()
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error: ' . $e->getMessage()
+    ]);
 }
-
-// Clear any output buffer and send only JSON
-ob_clean();
-echo json_encode($response);
-exit;
 ?>
