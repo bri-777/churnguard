@@ -6881,8 +6881,8 @@ html {
     </style>
   
   <link href="cust-insight.css" rel="stylesheet">
-  <div id="customer-insight-pro" class="enterprise-analytics-platform">
-  <div class="analytics-ecosystem">
+  <div id="cust-insight" class="page">
+
     
     <!-- Enhanced Header with Real-time Monitoring -->
     <header class="executive-dashboard-header">
@@ -8200,7 +8200,7 @@ html {
 
   </div>
 </div>
-  
+</div>
  
   
   
