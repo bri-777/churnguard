@@ -1748,25 +1748,25 @@ function doLogout() {
                 <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
-                <label for="swingReceiptCount"> Swing Receipt Count <span class="required">*</span>
+                <label for="swingReceiptCount"> Midday Receipt Count <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count"></i>
                 </label>
                 <input type="number" id="swingReceiptCount" placeholder="e.g., 130" min="0" required>
               </div>
 			      <div class="form-group">
-                <label for="swingSalesVolume"> Swing Sales Volume (₱) <span class="required">*</span>
+                <label for="swingSalesVolume"> Midday Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
                 </label>
                 <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required>
               </div>
               <div class="form-group">
-                <label for="graveyardReceiptCount"> Graveyard Receipt Count <span class="required">*</span>
+                <label for="graveyardReceiptCount"> Evening Receipt Count <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count"></i>
                 </label>
                 <input type="number" id="graveyardReceiptCount" placeholder="e.g., 95" min="0" required>
               </div>
               <div class="form-group">
-                <label for="graveyardSalesVolume"> Graveyard Sales Volume (₱) <span class="required">*</span>
+                <label for="graveyardSalesVolume"> Evening Sales Volume (₱) <span class="required">*</span>
                   <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
                 </label>
                 <input type="number" id="graveyardSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required>
@@ -1791,6 +1791,10 @@ function doLogout() {
 
       </div>
     </div>
+
+
+
+    
 
     <!-- Churn Prediction Page -->
     <div id="churn-prediction" class="page">
