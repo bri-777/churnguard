@@ -1978,63 +1978,38 @@ function parseExcelDate(dateStr) {
 
 function saveToDatabase(transactions) {
   console.log('=== SAVING TO DATABASE ===');
-  console.log('Transactions count:', transactions.length);
-  console.log('Sample transaction:', transactions[0]);
-  
-  if (transactions.length === 0) {
-    console.error('ERROR: No transactions to save!');
-    alert('No transactions to save!');
-    return;
-  }
-  
-  const payload = { transactions: transactions };
-  console.log('Sending to: upload_transactions.php');
-  console.log('Payload size:', JSON.stringify(payload).length, 'bytes');
+  console.log('Transactions:', transactions.length);
+  console.log('First transaction:', transactions[0]);
   
   fetch('upload_transactions.php', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Content-Type': 'application/json'
     },
-    credentials: 'same-origin',
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ transactions: transactions })
   })
   .then(response => {
-    console.log('=== RESPONSE ===');
     console.log('Status:', response.status);
-    console.log('OK:', response.ok);
-    
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-    }
-    
     return response.text();
   })
   .then(text => {
-    console.log('Raw response:', text);
+    console.log('=== RAW RESPONSE ===');
+    console.log(text);
+    console.log('===================');
     
-    try {
-      const data = JSON.parse(text);
-      console.log('Parsed data:', data);
-      
-      if (data.success) {
-        console.log('✓ SUCCESS! Saved', data.count, 'transactions');
-        alert('✓ Successfully saved ' + data.count + ' transactions to database!');
-      } else {
-        console.error('✗ Error:', data.message);
-        alert('✗ Error: ' + data.message);
-      }
-    } catch (e) {
-      console.error('✗ JSON parse error:', e);
-      console.error('Response was:', text);
-      alert('✗ Server returned invalid JSON. Check console.');
+    const data = JSON.parse(text);
+    
+    if (data.success) {
+      console.log('✓ SUCCESS! Saved:', data.count);
+      alert('✓ Saved ' + data.count + ' transactions to database!');
+    } else {
+      console.error('✗ Error:', data.message);
+      alert('✗ Error: ' + data.message);
     }
   })
   .catch(error => {
-    console.error('=== FETCH ERROR ===');
-    console.error('Error:', error);
-    alert('✗ Network Error: ' + error.message);
+    console.error('✗ Error:', error);
+    alert('✗ Error: ' + error.message);
   });
 }
 </script>
