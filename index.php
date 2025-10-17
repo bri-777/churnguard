@@ -6899,7 +6899,7 @@ async function loadTraffic(period) {
       const other = Math.max(0, totalCustomerTraffic - totalShiftReceipts);
       
       // For today's bar chart
-      labels = ['Morning', 'Swing', 'Graveyard'];
+      labels = ['Morning', 'Mid Day', 'Evening'];
       values = [morning, swing, graveyard, other];
       totalToday = totalCustomerTraffic;
       peakTraffic = Math.max(morning, swing, graveyard);
