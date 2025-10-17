@@ -1778,10 +1778,12 @@ function doLogout() {
 
 
       <div class="action-section">
+<!-- Add this button in the action-section, before or after existing buttons -->
 <button type="button" class="btn-primary" onclick="document.getElementById('csvFileInput').click()">
   <i class="fas fa-upload"></i> Upload CSV/Excel
 </button>
-<input type="file"
+<input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleFileUpload(event)">
+
 
 
         <button type="button" class="btn-primary" onclick="saveChurnData()">
