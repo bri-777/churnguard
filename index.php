@@ -6868,7 +6868,541 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   
   
 </div>
-<link rel = "stylesheet" href = "moni.css">
+<style>
+/* Customer Monitoring Dashboard - Ultra Unique Scoped Styles */
+
+#customer-monitoring {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #ffffff;
+  min-height: 100vh;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+/* Alert Banner */
+#customer-monitoring #riskAlertBanner {
+  background: #fff8f0;
+  border-left: 4px solid #ff9500;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+#customer-monitoring #riskAlertBanner .alert-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+#customer-monitoring #riskAlertMessage {
+  flex: 1;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+#customer-monitoring #riskAlertBanner .alert-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+#customer-monitoring #riskAlertBanner .alert-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Dashboard Header */
+#customer-monitoring .dashboard-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 24px 20px;
+}
+
+#customer-monitoring .dashboard-header .header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#customer-monitoring .dashboard-header .header-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#customer-monitoring .dashboard-header .header-icon {
+  font-size: 32px;
+}
+
+#customer-monitoring .dashboard-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+#customer-monitoring .dashboard-header .header-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+#customer-monitoring .dashboard-header .header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#customer-monitoring .dashboard-header .status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border-radius: 20px;
+}
+
+#customer-monitoring .dashboard-header .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34c759;
+  animation: pulse-cm-dashboard-status 2s infinite;
+}
+
+@keyframes pulse-cm-dashboard-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Main Content */
+#customer-monitoring .main-content {
+  padding: 20px;
+}
+
+/* Chart Section */
+#customer-monitoring .main-content .chart-section {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+#customer-monitoring .chart-section .chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+#customer-monitoring .chart-section .chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+#customer-monitoring .chart-header .date-picker-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+#customer-monitoring .date-picker-container .date-picker {
+  position: relative;
+}
+
+#customer-monitoring .date-picker .date-picker-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1a1a1a;
+  transition: all 0.2s;
+}
+
+#customer-monitoring .date-picker .date-picker-input:hover {
+  background: #ececec;
+  border-color: #d0d0d0;
+}
+
+#customer-monitoring .date-picker-input #selectedChartDateRange {
+  display: inline;
+}
+
+#customer-monitoring .date-picker #chartDatePickerDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 220px;
+  display: none;
+  z-index: 100;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option:last-child {
+  border-bottom: none;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option:hover {
+  background: #f9f9f9;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option.active {
+  background: #f0f7ff;
+  color: #007aff;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option span:first-child {
+  display: block;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option.active span:first-child {
+  color: #007aff;
+}
+
+#customer-monitoring #chartDatePickerDropdown .date-option-range {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-top: 2px;
+}
+
+#customer-monitoring .date-picker-container .refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1a1a1a;
+  transition: all 0.2s;
+}
+
+#customer-monitoring .date-picker-container .refresh-btn:hover {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+#customer-monitoring .chart-section .chart-container {
+  position: relative;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 400px;
+}
+
+#customer-monitoring .chart-container #chartLoadingIndicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+#customer-monitoring #chartLoadingIndicator .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e5e5;
+  border-top-color: #007aff;
+  border-radius: 50%;
+  animation: spin-cm-chart-loader 0.8s linear infinite;
+}
+
+@keyframes spin-cm-chart-loader {
+  to { transform: rotate(360deg); }
+}
+
+#customer-monitoring .chart-container .chart-canvas {
+  position: relative;
+}
+
+#customer-monitoring .chart-canvas #trafficChurnChart {
+  max-width: 100%;
+  height: auto;
+}
+
+#customer-monitoring .chart-canvas #chartTooltipDisplay {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 20;
+  white-space: nowrap;
+}
+
+/* History Section */
+#customer-monitoring .history-section {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+#customer-monitoring .history-section .history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+#customer-monitoring .history-header .history-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+#customer-monitoring .history-header .data-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#customer-monitoring .data-view-toggle .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+#customer-monitoring .toggle-switch #dataViewToggle {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#customer-monitoring .toggle-switch .toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e5e5e5;
+  transition: 0.3s;
+  border-radius: 26px;
+}
+
+#customer-monitoring .toggle-switch .toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+#customer-monitoring .toggle-switch #dataViewToggle:checked + .toggle-slider {
+  background-color: #007aff;
+}
+
+#customer-monitoring .toggle-switch #dataViewToggle:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+
+#customer-monitoring .data-view-toggle #dataViewLabel {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+#customer-monitoring .history-header #transactionDateFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#customer-monitoring #transactionDateFilter #dateFilterSelect {
+  padding: 8px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #1a1a1a;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#customer-monitoring #transactionDateFilter #dateFilterSelect:hover {
+  background: #ececec;
+  border-color: #d0d0d0;
+}
+
+#customer-monitoring #transactionDateFilter #customDateInputs {
+  display: flex;
+  align-items: center;
+}
+
+#customer-monitoring #customDateInputs #startDate,
+#customer-monitoring #customDateInputs #endDate {
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+#customer-monitoring #customDateInputs .btn-apply-filter {
+  padding: 8px 16px;
+  background: #007aff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#customer-monitoring #customDateInputs .btn-apply-filter:hover {
+  background: #0051d5;
+}
+
+#customer-monitoring .history-header .last-updated {
+  font-size: 13px;
+  color: #666;
+}
+
+#customer-monitoring .history-header #currentAnalysisDataRange {
+  display: inline;
+}
+
+/* Table Styles */
+#customer-monitoring .history-section .history-table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+#customer-monitoring .history-table-container .history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+#customer-monitoring .history-table #historyTableHead {
+  background: #f9f9f9;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+#customer-monitoring .history-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#customer-monitoring .history-table #historicalAnalysisTableBody td {
+  padding: 16px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+#customer-monitoring .history-table tbody tr:hover {
+  background: #fafafa;
+}
+
+#customer-monitoring .history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+#customer-monitoring .history-table .no-data {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 40px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #customer-monitoring .dashboard-header {
+    padding: 16px;
+  }
+  
+  #customer-monitoring .dashboard-header .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  #customer-monitoring .chart-section .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  #customer-monitoring .history-section .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  #customer-monitoring .history-table-container .history-table {
+    font-size: 13px;
+  }
+  
+  #customer-monitoring .history-table th,
+  #customer-monitoring .history-table td {
+    padding: 12px;
+  }
+}
+
+
+</style>
 		 <!-- Include the monitoring JavaScript -->
     <script src="customer-monitoring-dashboard.js"></script>
 
