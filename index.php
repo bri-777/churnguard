@@ -1833,30 +1833,6 @@ function doLogout() {
   pointer-events: none;
 }
 
-.page-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: var(--space-sm);
-  letter-spacing: -0.025em;
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.page-header h1 i {
-  font-size: 2rem;
-  opacity: 0.9;
-}
-
-.page-header p {
-  font-size: 1.125rem;
-  opacity: 0.9;
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.025em;
-}
 
 /* === KPI GRID === */
 .kpi-grid {
