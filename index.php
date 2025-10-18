@@ -7669,8 +7669,6 @@ button:focus,
   
   
   <div id="cust-insight" class="page">
-
-    
     <!-- Enhanced Header with Real-time Monitoring -->
     <header class="executive-dashboard-header">
       <div class="header-matrix"></div>
@@ -8986,9 +8984,7 @@ button:focus,
     </div>
 
   </div>
-</div>
-</div>
-</div>
+
  
   
   
