@@ -5197,18 +5197,14 @@ body {
               <div class="profile-avatar">MC</div>
               <div class="profile-details">
                 <div class="profile-name">Maria Chen</div>
-                <div class="profile-id">ID: #CUS-48271</div>
+              
                 <div class="profile-tags">
-                  <span class="tag vip">VIP Diamond</span>
-                  <span class="tag loyal">5+ Years</span>
+                  
                 </div>
               </div>
             </div>
             <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱487,250</span>
-              </div>
+             
               <div class="metric-item">
                 <span class="label">Monthly Avg</span>
                 <span class="value">₱8,450</span>
@@ -5219,7 +5215,7 @@ body {
               </div>
               <div class="metric-item">
                 <span class="label">Last Visit</span>
-                <span class="value">2 hours ago</span>
+                <span class="value">Oct 15 2025</span>
               </div>
             </div>
             <div class="profile-behavior">
@@ -5229,10 +5225,7 @@ body {
                             fill="none" stroke="#05dfd7" stroke-width="2"/>
                 </svg>
               </div>
-              <div class="behavior-score">
-                <span class="score-value">98</span>
-                <span class="score-label">Engagement</span>
-              </div>
+              
             </div>
             <div class="profile-actions">
               <button class="btn-icon" title="View Details">
@@ -5258,18 +5251,12 @@ body {
               <div class="profile-avatar">JR</div>
               <div class="profile-details">
                 <div class="profile-name">Jonathan Rodriguez</div>
-                <div class="profile-id">ID: #CUS-39482</div>
-                <div class="profile-tags">
-                  <span class="tag vip">VIP Platinum</span>
-                  <span class="tag loyal">3+ Years</span>
-                </div>
+               
+               
               </div>
             </div>
             <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱398,420</span>
-              </div>
+             
               <div class="metric-item">
                 <span class="label">Monthly Avg</span>
                 <span class="value">₱6,820</span>
@@ -5290,10 +5277,7 @@ body {
                             fill="none" stroke="#088395" stroke-width="2"/>
                 </svg>
               </div>
-              <div class="behavior-score">
-                <span class="score-value">95</span>
-                <span class="score-label">Engagement</span>
-              </div>
+             
             </div>
             <div class="profile-actions">
               <button class="btn-icon" title="View Details">
@@ -5319,18 +5303,14 @@ body {
               <div class="profile-avatar">SL</div>
               <div class="profile-details">
                 <div class="profile-name">Sarah Lim</div>
-                <div class="profile-id">ID: #CUS-52819</div>
+               
                 <div class="profile-tags">
-                  <span class="tag gold">Gold Member</span>
-                  <span class="tag">Rising Star</span>
+                 
                 </div>
               </div>
             </div>
             <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱287,150</span>
-              </div>
+            
               <div class="metric-item">
                 <span class="label">Monthly Avg</span>
                 <span class="value">₱4,250</span>
@@ -5351,10 +5331,7 @@ body {
                             fill="none" stroke="#0a4d68" stroke-width="2"/>
                 </svg>
               </div>
-              <div class="behavior-score">
-                <span class="score-value">88</span>
-                <span class="score-label">Engagement</span>
-              </div>
+           
             </div>
             <div class="profile-actions">
               <button class="btn-icon" title="View Details">
@@ -5363,134 +5340,14 @@ body {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
+           
             </div>
           </div>
 
-          <div class="customer-profile-item">
-            <div class="profile-rank">
-              <div class="rank-badge">4</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">DT</div>
-              <div class="profile-details">
-                <div class="profile-name">David Tan</div>
-                <div class="profile-id">ID: #CUS-61923</div>
-                <div class="profile-tags">
-                  <span class="tag gold">Gold Member</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱198,320</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱3,150</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">12x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">Today</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,30 10,28 20,25 30,22 40,20 50,18 60,15 70,18 80,12 90,10 100,8" 
-                            fill="none" stroke="#05dfd7" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">82</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+          
 
-          <div class="customer-profile-item">
-            <div class="profile-rank">
-              <div class="rank-badge">5</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">AR</div>
-              <div class="profile-details">
-                <div class="profile-name">Angela Reyes</div>
-                <div class="profile-id">ID: #CUS-71834</div>
-                <div class="profile-tags">
-                  <span class="tag silver">Silver Member</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱156,890</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱2,840</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">10x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">5 days ago</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,35 10,32 20,30 30,28 40,25 50,22 60,20 70,22 80,18 90,15 100,12" 
-                            fill="none" stroke="#088395" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">75</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+       
+		  
         </div>
       </div>
 
@@ -5543,8 +5400,7 @@ body {
                   <span>94.2%</span>
                 </div>
                 <div class="detail-row">
-                  <span>NPS Score</span>
-                  <span>78</span>
+                 
                 </div>
               </div>
             </div>
@@ -5611,8 +5467,8 @@ body {
                     <div class="customer-meta">LTV: ₱124,500 | Last: 18 days ago</div>
                   </div>
                 </div>
-                <div class="risk-level high">87% Risk</div>
-                <button class="action-button">Engage</button>
+             
+            
               </div>
               <div class="risk-customer">
                 <div class="customer-info">
@@ -5622,8 +5478,8 @@ body {
                     <div class="customer-meta">LTV: ₱98,200 | Last: 22 days ago</div>
                   </div>
                 </div>
-                <div class="risk-level high">82% Risk</div>
-                <button class="action-button">Engage</button>
+               
+               
               </div>
               <div class="risk-customer">
                 <div class="customer-info">
@@ -5633,8 +5489,8 @@ body {
                     <div class="customer-meta">LTV: ₱87,600 | Last: 25 days ago</div>
                   </div>
                 </div>
-                <div class="risk-level medium">68% Risk</div>
-                <button class="action-button">Engage</button>
+              
+             
               </div>
             </div>
           </div>
@@ -5784,549 +5640,15 @@ body {
         </div>
       </div>
 
-      <!-- Advanced Segmentation Engine -->
-      <div class="intelligence-card segmentation-engine-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                <line x1="2" y1="12" x2="22" y2="12"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Dynamic Customer Segmentation</h2>
-          </div>
-          <div class="segment-controls">
-            <button class="control-btn active">Behavioral</button>
-            <button class="control-btn">Value-Based</button>
-            <button class="control-btn">Lifecycle</button>
-          </div>
-        </div>
-        
-        <div class="segmentation-analysis">
-          <div class="segment-distribution">
-            <svg viewBox="0 0 400 300" class="distribution-chart">
-              <!-- Champions Segment -->
-              <rect x="20" y="220" width="60" height="60" rx="4" fill="#05dfd7" opacity="0.8"/>
-              <text x="50" y="245" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Champions</text>
-              <text x="50" y="260" text-anchor="middle" fill="white" font-size="8">487 (12.6%)</text>
-              
-              <!-- Loyal Customers -->
-              <rect x="90" y="180" width="60" height="100" rx="4" fill="#088395" opacity="0.8"/>
-              <text x="120" y="225" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Loyal</text>
-              <text x="120" y="240" text-anchor="middle" fill="white" font-size="8">892 (23.2%)</text>
-              
-              <!-- Potential Loyalists -->
-              <rect x="160" y="150" width="60" height="130" rx="4" fill="#0a4d68" opacity="0.8"/>
-              <text x="190" y="210" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Potential</text>
-              <text x="190" y="225" text-anchor="middle" fill="white" font-size="8">1,245 (32.3%)</text>
-              
-              <!-- New Customers -->
-              <rect x="230" y="200" width="60" height="80" rx="4" fill="#05dfd7" opacity="0.6"/>
-              <text x="260" y="235" text-anchor="middle" fill="white" font-size="10" font-weight="bold">New</text>
-              <text x="260" y="250" text-anchor="middle" fill="white" font-size="8">674 (17.5%)</text>
-              
-              <!-- At Risk -->
-              <rect x="300" y="210" width="60" height="70" rx="4" fill="#ffb347" opacity="0.8"/>
-              <text x="330" y="240" text-anchor="middle" fill="black" font-size="10" font-weight="bold">At Risk</text>
-              <text x="330" y="255" text-anchor="middle" fill="black" font-size="8">549 (14.3%)</text>
-            </svg>
-          </div>
-          
-          <div class="segment-insights">
-            <div class="insight-card">
-              <div class="insight-header">
-                <span class="insight-icon">💎</span>
-                <span class="insight-title">Champions</span>
-              </div>
-              <div class="insight-metrics">
-                <div class="metric-row">
-                  <span>Avg LTV</span>
-                  <span class="value">₱285,400</span>
-                </div>
-                <div class="metric-row">
-                  <span>Purchase Freq</span>
-                  <span class="value">24x/month</span>
-                </div>
-                <div class="metric-row">
-                  <span>Retention</span>
-                  <span class="value">98.2%</span>
-                </div>
-              </div>
-              <div class="insight-action">
-                <button>VIP Program →</button>
-              </div>
-            </div>
-            
-            <div class="insight-card">
-              <div class="insight-header">
-                <span class="insight-icon">⭐</span>
-                <span class="insight-title">Loyal Customers</span>
-              </div>
-              <div class="insight-metrics">
-                <div class="metric-row">
-                  <span>Avg LTV</span>
-                  <span class="value">₱148,200</span>
-                </div>
-                <div class="metric-row">
-                  <span>Purchase Freq</span>
-                  <span class="value">18x/month</span>
-                </div>
-                <div class="metric-row">
-                  <span>Retention</span>
-                  <span class="value">92.5%</span>
-                </div>
-              </div>
-              <div class="insight-action">
-                <button>Upsell Campaign →</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+     
 
-      <!-- Customer Journey Mapping -->
-      <div class="intelligence-card journey-mapping-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Customer Journey Analytics</h2>
-          </div>
-        </div>
-        
-        <div class="journey-visualization">
-          <div class="journey-stages">
-            <div class="stage active">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">Discovery</div>
-                <div class="stage-stats">
-                  <span class="stat">8,472 visitors</span>
-                  <span class="conversion">42% → </span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="stage-connector"></div>
-            
-            <div class="stage">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">First Purchase</div>
-                <div class="stage-stats">
-                  <span class="stat">3,558 customers</span>
-                  <span class="conversion">68% →</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="stage-connector"></div>
-            
-            <div class="stage">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">Repeat Customer</div>
-                <div class="stage-stats">
-                  <span class="stat">2,419 customers</span>
-                  <span class="conversion">52% →</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="stage-connector"></div>
-            
-            <div class="stage">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">Loyal Advocate</div>
-                <div class="stage-stats">
-                  <span class="stat">1,258 customers</span>
-                  <span class="conversion">Success</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="touchpoint-analysis">
-            <h3>Key Touchpoints Performance</h3>
-            <div class="touchpoint-grid">
-              <div class="touchpoint">
-                <span class="touchpoint-channel">In-Store</span>
-                <span class="touchpoint-value">78%</span>
-              </div>
-              <div class="touchpoint">
-                <span class="touchpoint-channel">Mobile App</span>
-                <span class="touchpoint-value">15%</span>
-              </div>
-              <div class="touchpoint">
-                <span class="touchpoint-channel">Website</span>
-                <span class="touchpoint-value">5%</span>
-              </div>
-              <div class="touchpoint">
-                <span class="touchpoint-channel">Social Media</span>
-                <span class="touchpoint-value">2%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    
 
-      <!-- AI-Powered Predictive Analytics -->
-      <div class="intelligence-card ai-predictive-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper ai">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/>
-                <path d="M12 8v8"/>
-                <path d="M8 12h8"/>
-                <circle cx="12" cy="12" r="2"/>
-              </svg>
-            </div>
-            <h2 class="card-title">AI-Powered Predictions & Insights</h2>
-          </div>
-          <div class="ai-status">
-            <span class="status-dot active"></span>
-            <span>ML Models Active</span>
-          </div>
-        </div>
-        
-        <div class="ai-predictions">
-          <div class="prediction-panel">
-            <div class="prediction-header">
-              <h3>Next 30 Days Forecast</h3>
-              <div class="confidence-badge">94% Confidence</div>
-            </div>
-            
-            <div class="prediction-cards">
-              <div class="pred-card">
-                <div class="pred-icon revenue">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                  </svg>
-                </div>
-                <div class="pred-content">
-                  <div class="pred-label">Expected Revenue</div>
-                  <div class="pred-value">₱2.84M</div>
-                  <div class="pred-change positive">+16.2% growth</div>
-                </div>
-              </div>
-              
-              <div class="pred-card">
-                <div class="pred-icon customers">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                </div>
-                <div class="pred-content">
-                  <div class="pred-label">New Customers</div>
-                  <div class="pred-value">428</div>
-                  <div class="pred-change positive">+12.4% acquisition</div>
-                </div>
-              </div>
-              
-              <div class="pred-card">
-                <div class="pred-icon warning">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                  </svg>
-                </div>
-                <div class="pred-content">
-                  <div class="pred-label">Churn Risk</div>
-                  <div class="pred-value">87</div>
-                  <div class="pred-change negative">High probability</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="ai-recommendations">
-            <h3>AI Recommendations</h3>
-            <div class="recommendation-list">
-              <div class="recommendation urgent">
-                <div class="rec-priority">Urgent</div>
-                <div class="rec-content">
-                  <div class="rec-title">Launch retention campaign for 87 high-value customers</div>
-                  <div class="rec-impact">Potential save: ₱384,000 in revenue</div>
-                </div>
-                <button class="rec-action">Execute</button>
-              </div>
-              
-              <div class="recommendation high">
-                <div class="rec-priority">High</div>
-                <div class="rec-content">
-                  <div class="rec-title">Optimize Saturday peak hours staffing (8-10 AM)</div>
-                  <div class="rec-impact">Reduce wait time by 35%, increase sales by ₱42K</div>
-                </div>
-                <button class="rec-action">Review</button>
-              </div>
-              
-              <div class="recommendation medium">
-                <div class="rec-priority">Medium</div>
-                <div class="rec-content">
-                  <div class="rec-title">Introduce combo deal for top 3 product pairs</div>
-                  <div class="rec-impact">Projected increase: ₱127K monthly revenue</div>
-                </div>
-                <button class="rec-action">Analyze</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="anomaly-alerts">
-            <h3>Detected Anomalies</h3>
-            <div class="anomaly-list">
-              <div class="anomaly-item">
-                <div class="anomaly-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                </div>
-                <span>Unusual 32% drop in Tuesday afternoon traffic vs. historical average</span>
-              </div>
-              <div class="anomaly-item">
-                <div class="anomaly-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                  </svg>
-                </div>
-                <span>Matcha Latte sales spike 145% above normal - potential viral trend</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
-      <!-- Engagement & Activity Heatmap -->
-      <div class="intelligence-card engagement-heatmap-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Engagement Activity Matrix</h2>
-          </div>
-        </div>
-        
-        <div class="heatmap-container">
-          <div class="time-heatmap-advanced">
-            <h3>Weekly Activity Pattern</h3>
-            <div class="heatmap-grid">
-              <div class="heatmap-labels-y">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-              </div>
-              <div class="heatmap-content">
-                <!-- Monday -->
-                <div class="heatmap-row">
-                  <div class="heat-cell" data-value="12"></div>
-                  <div class="heat-cell" data-value="18"></div>
-                  <div class="heat-cell" data-value="24"></div>
-                  <div class="heat-cell" data-value="32"></div>
-                  <div class="heat-cell" data-value="45"></div>
-                  <div class="heat-cell" data-value="58"></div>
-                  <div class="heat-cell" data-value="72" class="high"></div>
-                  <div class="heat-cell" data-value="85" class="high"></div>
-                  <div class="heat-cell" data-value="78" class="high"></div>
-                  <div class="heat-cell" data-value="65"></div>
-                  <div class="heat-cell" data-value="52"></div>
-                  <div class="heat-cell" data-value="48"></div>
-                  <div class="heat-cell" data-value="42"></div>
-                  <div class="heat-cell" data-value="38"></div>
-                  <div class="heat-cell" data-value="32"></div>
-                  <div class="heat-cell" data-value="28"></div>
-                  <div class="heat-cell" data-value="24"></div>
-                  <div class="heat-cell" data-value="18"></div>
-                </div>
-                <!-- Additional rows for other days would follow similar pattern -->
-              </div>
-              <div class="heatmap-labels-x">
-                <span>6AM</span>
-                <span>9AM</span>
-                <span>12PM</span>
-                <span>3PM</span>
-                <span>6PM</span>
-                <span>9PM</span>
-              </div>
-            </div>
-            <div class="heatmap-legend">
-              <span>Low</span>
-              <div class="legend-gradient"></div>
-              <span>High</span>
-            </div>
-          </div>
-          
-          <div class="engagement-metrics">
-            <div class="engagement-score-card">
-              <div class="score-ring-container">
-                <svg viewBox="0 0 200 200" class="engagement-ring">
-                  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
-                  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#engagementGradient)" stroke-width="12"
-                          stroke-dasharray="565.49" stroke-dashoffset="113.1" stroke-linecap="round" 
-                          transform="rotate(-90 100 100)"/>
-                  <defs>
-                    <linearGradient id="engagementGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style="stop-color:#05dfd7"/>
-                      <stop offset="100%" style="stop-color:#088395"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <div class="score-display">
-                  <div class="score-number">82</div>
-                  <div class="score-label">Overall Score</div>
-                </div>
-              </div>
-              
-              <div class="engagement-breakdown">
-                <div class="breakdown-item">
-                  <span class="breakdown-label">Daily Active</span>
-                  <div class="breakdown-bar">
-                    <div class="bar-fill" style="width: 78%"></div>
-                  </div>
-                  <span class="breakdown-value">1,247</span>
-                </div>
-                <div class="breakdown-item">
-                  <span class="breakdown-label">Weekly Active</span>
-                  <div class="breakdown-bar">
-                    <div class="bar-fill" style="width: 85%"></div>
-                  </div>
-                  <span class="breakdown-value">2,854</span>
-                </div>
-                <div class="breakdown-item">
-                  <span class="breakdown-label">Monthly Active</span>
-                  <div class="breakdown-bar">
-                    <div class="bar-fill" style="width: 92%"></div>
-                  </div>
-                  <span class="breakdown-value">3,542</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
-      <!-- Recent Activity Feed -->
-      <div class="intelligence-card activity-feed-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Real-Time Activity Feed</h2>
-          </div>
-          <div class="feed-status">
-            <span class="pulse"></span>
-            <span>Live</span>
-          </div>
-        </div>
-        
-        <div class="activity-feed">
-          <div class="feed-item new">
-            <div class="feed-time">Just now</div>
-            <div class="feed-content">
-              <div class="feed-icon purchase">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="customer-name">Carlos Santos</span> completed purchase - 
-                <span class="amount">₱485</span> (Matcha Latte Bundle)
-              </div>
-            </div>
-          </div>
-          
-          <div class="feed-item">
-            <div class="feed-time">2 min ago</div>
-            <div class="feed-content">
-              <div class="feed-icon milestone">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="customer-name">Jennifer Wu</span> reached VIP Platinum status - 
-                <span class="achievement">100th purchase milestone</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="feed-item">
-            <div class="feed-time">5 min ago</div>
-            <div class="feed-content">
-              <div class="feed-icon alert">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="alert-type">Churn Alert:</span>
-                <span class="customer-name">Patricia Lee</span> - No activity for 21 days
-              </div>
-            </div>
-          </div>
-          
-          <div class="feed-item">
-            <div class="feed-time">8 min ago</div>
-            <div class="feed-content">
-              <div class="feed-icon review">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="customer-name">Mark Rivera</span> left 5-star review - 
-                <span class="review">"Best coffee in town!"</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+   
 
     </div>
 
