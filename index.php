@@ -9111,99 +9111,131 @@ button:focus,
   
   
 
-<!-- Customer Insights - Left-aligned, cleaned layout -->
+
+      <!-- Revenue -->
+      <div class="tab-content" id="revenue-tab" style="display:none; animation:fadeIn 0.4s ease-in-out;">
+        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:2rem;">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="chart-container" style="background:linear-gradient(135deg, rgba(10,77,104,0.02) 0%, rgba(255,255,255,1) 100%); padding:2rem; border-radius:1.125rem; border:1px solid rgba(10,77,104,0.08); box-shadow:0 8px 16px -4px rgba(10,77,104,0.08); position:relative; overflow:hidden;">
+              <div style="position:absolute; top:0; right:0; width:200px; height:200px; background:radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%); pointer-events:none;"></div>
+              <h3 style="font-size:1.25rem; font-weight:800; margin:0 0 1.5rem 0; color:#1f2937; position:relative; z-index:1; display:flex; align-items:center; gap:0.75rem;"><i class="fas fa-coins" style="color:#10b981; font-size:1.125rem;"></i> Revenue Impact Analysis</h3>
+              <canvas id="revenueChart" height="240"></canvas>
+            </div>
+            <!-- *** NEW: AI SUMMARY CONTAINER *** -->
+            <div id="revenue-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.06) 0%, rgba(5,223,215,0.04) 100%); border:2px solid rgba(8,131,149,0.2); border-radius:1.125rem; padding:2rem; position:relative; overflow:hidden; box-shadow:0 8px 20px -6px rgba(10,77,104,0.15);">
+              <div style="position:absolute; top:-50px; right:-50px; width:150px; height:150px; background:radial-gradient(circle, rgba(5,223,215,0.15) 0%, transparent 70%); pointer-events:none; border-radius:50%;"></div>
+              <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; position:relative; z-index:1;">
+                <div style="width:56px; height:56px; display:flex;<!-- Customer Insights - Left-aligned, cleaned layout -->
 <div id="customer-insights" class="page main-content cgx-scope" aria-labelledby="ci-title" data-module="customer-insights" style="
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#f6f9fc; color:#1f2937; line-height:1.6;
-  min-height:100vh; padding:1.5rem 2rem; margin:0;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:linear-gradient(135deg, #f6f9fc 0%, #ffffff 100%); color:#1f2937; line-height:1.65;
+  min-height:100vh; padding:2rem 2.5rem; margin:0; position:relative;
 ">
   <!-- LEFT-ALIGNED CONTAINER -->
-  <div style="width:100%; max-width:1800px; margin:0;">
+  <div style="width:100%; max-width:1920px; margin:0 auto; position:relative; z-index:1;">
 
     <!-- Header -->
     <div class="report-header" style="
-      display:flex; justify-content:space-between; align-items:center; gap:1rem;
+      display:flex; justify-content:space-between; align-items:center; gap:1.5rem;
       flex-wrap:wrap;
-      margin:0 0 2rem 0; padding:2rem; background:linear-gradient(135deg, #083c52 0%, #0a4d68 50%, #088395 100%); border-radius:1.25rem;
-      box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); position:relative; overflow:hidden; color:#ffffff;
+      margin:0 0 2rem 0; padding:2.5rem 2rem; background:linear-gradient(135deg, #083c52 0%, #0a4d68 40%, #088395 80%, #05dfd7 100%); border-radius:1.5rem;
+      box-shadow:0 25px 50px -12px rgba(10,77,104,0.25), 0 0 0 1px rgba(255,255,255,0.1); position:relative; overflow:hidden; color:#ffffff;
+      backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.1);
     ">
-      <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 40px, rgba(255,255,255,0.03) 41px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 40px, rgba(255,255,255,0.03) 41px); pointer-events:none;"></div>
-      <div class="header-left" style="flex:1; min-width:260px; position:relative; z-index:1;">
-        <h1 class="page-title" id="ci-title" style="font-size:2.5rem; font-weight:700; letter-spacing:-0.025em; margin:0 0 0.25rem 0;">
+      <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 50px, rgba(255,255,255,0.04) 51px), repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 50px, rgba(255,255,255,0.04) 51px); pointer-events:none; opacity:0.6;"></div>
+      <div class="header-left" style="flex:1; min-width:280px; position:relative; z-index:1;">
+        <h1 class="page-title" id="ci-title" style="font-size:2.75rem; font-weight:800; letter-spacing:-0.03em; margin:0 0 0.5rem 0; text-shadow:0 2px 10px rgba(0,0,0,0.2); background:linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
           Churn Analysis Report
         </h1>
-        <p class="last-updated" style="font-size:1rem; font-weight:400; opacity:0.9; letter-spacing:0.05em; margin:0;">
-          Last updated: <span id="lastUpdated" style="color:#05dfd7; font-weight:700;">Loading...</span>
+        <p class="last-updated" style="font-size:1rem; font-weight:500; opacity:0.95; letter-spacing:0.02em; margin:0; display:flex; align-items:center; gap:0.5rem;">
+          <span style="display:inline-flex; align-items:center; gap:0.5rem;"><i class="fas fa-clock" style="font-size:0.9rem; opacity:0.8;"></i> Last updated:</span> <span id="lastUpdated" style="color:#05dfd7; font-weight:700; text-shadow:0 0 20px rgba(5,223,215,0.5);">Loading...</span>
         </p>
       </div>
-      <div class="header-right" style="display:flex; gap:0.5rem; align-items:center; position:relative; z-index:1;">
+      <div class="header-right" style="display:flex; gap:0.75rem; align-items:center; position:relative; z-index:1;">
         <button class="btn-action" onclick="refreshReports()" style="
-          padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; font-size:0.9rem; font-weight:600; cursor:pointer;
-          display:inline-flex; align-items:center; gap:0.5rem; letter-spacing:0.025em;
-          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)';">
-          <i class="fas fa-sync-alt"></i> Refresh
+          padding:0.875rem 1.75rem; border:none; border-radius:0.75rem; font-size:0.95rem; font-weight:700; cursor:pointer;
+          display:inline-flex; align-items:center; gap:0.625rem; letter-spacing:0.015em;
+          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 8px 16px -4px rgba(94,114,228,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); position:relative; overflow:hidden;
+        " onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 12px 24px -4px rgba(94,114,228,0.5), 0 0 0 1px rgba(255,255,255,0.2) inset';"
+           onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 16px -4px rgba(94,114,228,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset';">
+          <i class="fas fa-sync-alt" style="font-size:1rem;"></i> <span style="font-weight:700;">Refresh</span>
         </button>
         <button class="btn-action" onclick="showExportModal()" style="
-          padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; font-size:0.9rem; font-weight:600; cursor:pointer;
-          display:inline-flex; align-items:center; gap:0.5rem; letter-spacing:0.025em;
-          background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)';">
-          <i class="fas fa-download"></i> Export
+          padding:0.875rem 1.75rem; border:none; border-radius:0.75rem; font-size:0.95rem; font-weight:700; cursor:pointer;
+          display:inline-flex; align-items:center; gap:0.625rem; letter-spacing:0.015em;
+          background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 8px 16px -4px rgba(16,185,129,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); position:relative; overflow:hidden;
+        " onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 12px 24px -4px rgba(16,185,129,0.5), 0 0 0 1px rgba(255,255,255,0.2) inset';"
+           onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 16px -4px rgba(16,185,129,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset';">
+          <i class="fas fa-download" style="font-size:1rem;"></i> <span style="font-weight:700;">Export</span>
         </button>
       </div>
     </div>
 
     <!-- Date Range Selector -->
     <div class="date-controls" style="
-      margin:0 0 1.5rem 0; padding:1.5rem; background:#fff; border-radius:1rem;
-      box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); border:1px solid #f0f1f3;
+      margin:0 0 2rem 0; padding:1.75rem 2rem; background:#ffffff; border-radius:1.25rem;
+      box-shadow:0 10px 25px -5px rgba(10,77,104,0.08), 0 8px 10px -6px rgba(10,77,104,0.04); border:1px solid rgba(10,77,104,0.06);
+      backdrop-filter:blur(10px); position:relative; overflow:hidden;
     ">
-      <div class="date-range-selector" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin:0 0 1rem 0;">
+      <div style="position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg, #667EEA 0%, #5E72E4 50%, #10B981 100%); opacity:0.3;"></div>
+      <div class="date-range-selector" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin:0 0 1.25rem 0;">
         <button class="date-btn active" data-range="today" style="
-          padding:0.5rem 1rem; border:2px solid transparent; border-radius:0.5rem; font-size:0.9rem; font-weight:600; cursor:pointer;
-          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; letter-spacing:0.025em;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+          padding:0.75rem 1.5rem; border:2px solid transparent; border-radius:0.75rem; font-size:0.95rem; font-weight:700; cursor:pointer;
+          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 4px 12px -2px rgba(94,114,228,0.3), 0 0 0 1px rgba(255,255,255,0.1) inset;
+          position:relative; overflow:hidden;
         ">Today</button>
         <button class="date-btn" data-range="yesterday" style="
-          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
-          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
-           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Yesterday</button>
+          padding:0.75rem 1.5rem; border:2px solid rgba(10,77,104,0.12); background:#ffffff; border-radius:0.75rem;
+          font-size:0.95rem; font-weight:700; color:#4b5563; cursor:pointer; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);
+          position:relative; overflow:hidden;
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px -4px rgba(10,77,104,0.15)';"
+           onmouseout="this.style.borderColor='rgba(10,77,104,0.12)'; this.style.color='#4b5563'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px -2px rgba(10,77,104,0.08)';">Yesterday</button>
         <button class="date-btn" data-range="7days" style="
-          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
-          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
-           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Last 7 Days</button>
+          padding:0.75rem 1.5rem; border:2px solid rgba(10,77,104,0.12); background:#ffffff; border-radius:0.75rem;
+          font-size:0.95rem; font-weight:700; color:#4b5563; cursor:pointer; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);
+          position:relative; overflow:hidden;
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px -4px rgba(10,77,104,0.15)';"
+           onmouseout="this.style.borderColor='rgba(10,77,104,0.12)'; this.style.color='#4b5563'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px -2px rgba(10,77,104,0.08)';">Last 7 Days</button>
         <button class="date-btn" data-range="14days" style="
-          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
-          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
-           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Last 14 Days</button>
+          padding:0.75rem 1.5rem; border:2px solid rgba(10,77,104,0.12); background:#ffffff; border-radius:0.75rem;
+          font-size:0.95rem; font-weight:700; color:#4b5563; cursor:pointer; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);
+          position:relative; overflow:hidden;
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px -4px rgba(10,77,104,0.15)';"
+           onmouseout="this.style.borderColor='rgba(10,77,104,0.12)'; this.style.color='#4b5563'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px -2px rgba(10,77,104,0.08)';">Last 14 Days</button>
         <button class="date-btn" data-range="30days" style="
-          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
-          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
-           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Last 30 Days</button>
+          padding:0.75rem 1.5rem; border:2px solid rgba(10,77,104,0.12); background:#ffffff; border-radius:0.75rem;
+          font-size:0.95rem; font-weight:700; color:#4b5563; cursor:pointer; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);
+          position:relative; overflow:hidden;
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px -4px rgba(10,77,104,0.15)';"
+           onmouseout="this.style.borderColor='rgba(10,77,104,0.12)'; this.style.color='#4b5563'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px -2px rgba(10,77,104,0.08)';">Last 30 Days</button>
         <button class="date-btn" data-range="custom" style="
-          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
-          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
-           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Custom Range</button>
+          padding:0.75rem 1.5rem; border:2px solid rgba(10,77,104,0.12); background:#ffffff; border-radius:0.75rem;
+          font-size:0.95rem; font-weight:700; color:#4b5563; cursor:pointer; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);
+          position:relative; overflow:hidden;
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px -4px rgba(10,77,104,0.15)';"
+           onmouseout="this.style.borderColor='rgba(10,77,104,0.12)'; this.style.color='#4b5563'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px -2px rgba(10,77,104,0.08)';">Custom Range</button>
       </div>
       <div class="custom-date-inputs" style="
-        display:none; align-items:center; gap:1rem; padding:1rem; background:#f3f4f6; border-radius:0.5rem;
+        display:none; align-items:center; gap:1.25rem; padding:1.5rem; background:linear-gradient(135deg, rgba(10,77,104,0.03) 0%, rgba(5,223,215,0.03) 100%); border-radius:0.875rem;
+        border:2px dashed rgba(10,77,104,0.15);
       ">
-        <input type="date" id="startDate" class="date-input" style="padding:0.5rem 0.75rem; border:2px solid #e5e7eb; border-radius:0.5rem; font-size:0.9rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;">
+        <input type="date" id="startDate" class="date-input" style="padding:0.75rem 1rem; border:2px solid rgba(10,77,104,0.12); border-radius:0.75rem; font-size:0.95rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:#ffffff; color:#1f2937; font-weight:600; transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);">
+        <span style="color:#6b7280; font-weight:600; font-size:0.95rem;">to</span>
+        <input type="date" id="endDate" class="date-input" style="padding:0.75rem 1rem; border:2px solid rgba(10,77,104,0.12); border-radius:0.75rem; font-size:0.95rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:#ffffff; color:#1f2937; font-weight:600; transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 2px 8px -2px rgba(10,77,104,0.08);">
+        <button class="btn-apply" onclick="applyCustomRange()" style="
+          padding:0.75rem 1.75rem; background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%);
+          color:#fff; border:none; border-radius:0.75rem; font-weight:700; cursor:pointer; letter-spacing:0.015em;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 4px 12px -2px rgba(94,114,228,0.3); font-size:0.95rem;
+        ">Apply</button>
+      </div>:0.9rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;">
         <span style="color:#6b7280;">to</span>
         <input type="date" id="endDate" class="date-input" style="padding:0.5rem 0.75rem; border:2px solid #e5e7eb; border-radius:0.5rem; font-size:0.9rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;">
         <button class="btn-apply" onclick="applyCustomRange()" style="
@@ -9218,100 +9250,114 @@ button:focus,
 
     <!-- Tabs + Content -->
     <div class="report-section" style="
-      background:#fff; border-radius:1rem; padding:1.5rem; margin:0 0 1.5rem 0;
-      box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); border:1px solid #f0f1f3;
+      background:#ffffff; border-radius:1.25rem; padding:2rem; margin:0 0 2rem 0;
+      box-shadow:0 10px 25px -5px rgba(10,77,104,0.08), 0 8px 10px -6px rgba(10,77,104,0.04); border:1px solid rgba(10,77,104,0.06);
+      backdrop-filter:blur(10px); position:relative; overflow:hidden;
     ">
+      <div style="position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg, #667EEA 0%, #5E72E4 33%, #10B981 66%, #05dfd7 100%); opacity:0.3;"></div>
       <div class="tabs" style="
-        display:flex; flex-wrap:wrap; gap:0.5rem; margin:0 0 1.5rem 0; border-bottom:2px solid #f0f1f3; padding-bottom:0.5rem;
+        display:flex; flex-wrap:wrap; gap:0.5rem; margin:0 0 2rem 0; border-bottom:3px solid rgba(10,77,104,0.08); padding-bottom:0.75rem;
       ">
         <button class="tab-btn active" onclick="switchTab('retention')" style="
-          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer;
-          color:#0a4d68; border-bottom:3px solid #0a4d68; margin-bottom:-2px; font-size:0.95rem;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+          padding:1rem 1.75rem; background:none; border:none; font-weight:700; cursor:pointer;
+          color:#0a4d68; border-bottom:4px solid #0a4d68; margin-bottom:-3px; font-size:1rem;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); letter-spacing:0.01em; position:relative;
+          border-radius:0.75rem 0.75rem 0 0; background:linear-gradient(180deg, rgba(10,77,104,0.05) 0%, transparent 100%);
         ">Retention Analysis</button>
         <button class="tab-btn" onclick="switchTab('behavior')" style="
-          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer; color:#6b7280;
-          border-bottom:3px solid transparent; margin-bottom:-2px; font-size:0.95rem;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.color='#0a4d68';" onmouseout="this.style.color='#6b7280';">Customer Behavior</button>
+          padding:1rem 1.75rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
+          border-bottom:4px solid transparent; margin-bottom:-3px; font-size:1rem;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); letter-spacing:0.01em; position:relative;
+          border-radius:0.75rem 0.75rem 0 0;
+        " onmouseover="this.style.color='#0a4d68'; this.style.background='linear-gradient(180deg, rgba(10,77,104,0.03) 0%, transparent 100%)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.color='#6b7280'; this.style.background='none'; this.style.transform='translateY(0)';">Customer Behavior</button>
         <button class="tab-btn" onclick="switchTab('revenue')" style="
-          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer; color:#6b7280;
-          border-bottom:3px solid transparent; margin-bottom:-2px; font-size:0.95rem;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.color='#0a4d68';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
+          padding:1rem 1.75rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
+          border-bottom:4px solid transparent; margin-bottom:-3px; font-size:1rem;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); letter-spacing:0.01em; position:relative;
+          border-radius:0.75rem 0.75rem 0 0;
+        " onmouseover="this.style.color='#0a4d68'; this.style.background='linear-gradient(180deg, rgba(10,77,104,0.03) 0%, transparent 100%)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.color='#6b7280'; this.style.background='none'; this.style.transform='translateY(0)';">Revenue Impact</button>
       
         <button class="tab-btn" onclick="switchTab('trends')" style="
-          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer; color:#6b7280;
-          border-bottom:3px solid transparent; margin-bottom:-2px; font-size:0.95rem;
-          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
-        " onmouseover="this.style.color='#0a4d68';" onmouseout="this.style.color='#6b7280';">Risk Level Trends</button>
+          padding:1rem 1.75rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
+          border-bottom:4px solid transparent; margin-bottom:-3px; font-size:1rem;
+          transition:all 200ms cubic-bezier(0.34,1.56,0.64,1); letter-spacing:0.01em; position:relative;
+          border-radius:0.75rem 0.75rem 0 0;
+        " onmouseover="this.style.color='#0a4d68'; this.style.background='linear-gradient(180deg, rgba(10,77,104,0.03) 0%, transparent 100%)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.color='#6b7280'; this.style.background='none'; this.style.transform='translateY(0)';">Risk Level Trends</button>
       </div>
 
       <!-- Retention -->
-      <div class="tab-content active" id="retention-tab" style="display:block;">
-        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; align-items:start;">
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="chart-container" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
-              <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Retention Trend</h3>
+      <div class="tab-content active" id="retention-tab" style="display:block; animation:fadeIn 0.4s ease-in-out;">
+        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:2rem; align-items:start;">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="chart-container" style="background:linear-gradient(135deg, rgba(10,77,104,0.02) 0%, rgba(255,255,255,1) 100%); padding:2rem; border-radius:1.125rem; border:1px solid rgba(10,77,104,0.08); box-shadow:0 8px 16px -4px rgba(10,77,104,0.08); position:relative; overflow:hidden;">
+              <div style="position:absolute; top:0; right:0; width:200px; height:200px; background:radial-gradient(circle, rgba(5,223,215,0.08) 0%, transparent 70%); pointer-events:none;"></div>
+              <h3 style="font-size:1.25rem; font-weight:800; margin:0 0 1.5rem 0; color:#1f2937; position:relative; z-index:1; display:flex; align-items:center; gap:0.75rem;"><i class="fas fa-chart-line" style="color:#0a4d68; font-size:1.125rem;"></i> Retention Trend</h3>
               <canvas id="retentionChart" height="240"></canvas>
             </div>
             <!-- *** NEW: AI SUMMARY CONTAINER *** -->
-            <div id="retention-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.05) 0%, transparent 100%); border:2px solid #088395; border-radius:0.75rem; padding:1.5rem;">
-              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
-                <div style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7, #088395); border-radius:0.5rem; color:#fff;">
-                  <i class="fas fa-brain"></i>
+            <div id="retention-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.06) 0%, rgba(5,223,215,0.04) 100%); border:2px solid rgba(8,131,149,0.2); border-radius:1.125rem; padding:2rem; position:relative; overflow:hidden; box-shadow:0 8px 20px -6px rgba(10,77,104,0.15);">
+              <div style="position:absolute; top:-50px; right:-50px; width:150px; height:150px; background:radial-gradient(circle, rgba(5,223,215,0.15) 0%, transparent 70%); pointer-events:none; border-radius:50%;"></div>
+              <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; position:relative; z-index:1;">
+                <div style="width:56px; height:56px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7 0%, #088395 100%); border-radius:0.875rem; color:#fff; box-shadow:0 8px 16px -4px rgba(5,223,215,0.4); position:relative;">
+                  <i class="fas fa-brain" style="font-size:1.5rem;"></i>
+                  <div style="position:absolute; inset:-2px; background:linear-gradient(135deg, #05dfd7 0%, #088395 100%); border-radius:0.875rem; opacity:0.3; filter:blur(8px); z-index:-1;"></div>
                 </div>
-                <h4 style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0;">AI Insights</h4>
+                <h4 style="font-size:1.25rem; font-weight:800; color:#1f2937; margin:0; letter-spacing:-0.01em;">AI Insights</h4>
               </div>
-              <div style="font-size:0.95rem; line-height:1.7; color:#6b7280;">
+              <div style="font-size:1rem; line-height:1.75; color:#374151; position:relative; z-index:1; font-weight:500;">
                 <p style="margin:0;">Analysis shows a 12% improvement in retention over the last 30 days. Key drivers include increased engagement in loyalty programs and personalized communication strategies.</p>
               </div>
             </div>
           </div>
-          <div class="metrics-panel" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
-            <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Key Metrics</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0; border-bottom:1px solid #f0f1f3;">
-              <span style="font-size:0.9rem; color:#6b7280;">Retention Rate</span>
-              <span style="font-size:1.125rem; font-weight:700; color:#1f2937;">87.5%</span>
+          <div class="metrics-panel" style="background:linear-gradient(135deg, rgba(10,77,104,0.02) 0%, rgba(255,255,255,1) 100%); padding:2rem; border-radius:1.125rem; border:1px solid rgba(10,77,104,0.08); box-shadow:0 8px 16px -4px rgba(10,77,104,0.08); position:relative; overflow:hidden;">
+            <div style="position:absolute; bottom:-30px; left:-30px; width:120px; height:120px; background:radial-gradient(circle, rgba(5,223,215,0.08) 0%, transparent 70%); pointer-events:none; border-radius:50%;"></div>
+            <h3 style="font-size:1.25rem; font-weight:800; margin:0 0 1.5rem 0; color:#1f2937; position:relative; z-index:1; display:flex; align-items:center; gap:0.75rem;"><i class="fas fa-tachometer-alt" style="color:#0a4d68; font-size:1.125rem;"></i> Key Metrics</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:2px solid rgba(10,77,104,0.08); position:relative; z-index:1;">
+              <span style="font-size:0.95rem; color:#6b7280; font-weight:600;">Retention Rate</span>
+              <span style="font-size:1.5rem; font-weight:800; color:#10b981; text-shadow:0 2px 8px rgba(16,185,129,0.2);">87.5%</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0;">
-              <span style="font-size:0.9rem; color:#6b7280;">Churn Rate</span>
-              <span style="font-size:1.125rem; font-weight:700; color:#1f2937;">12.5%</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; position:relative; z-index:1;">
+              <span style="font-size:0.95rem; color:#6b7280; font-weight:600;">Churn Rate</span>
+              <span style="font-size:1.5rem; font-weight:800; color:#ef4444; text-shadow:0 2px 8px rgba(239,68,68,0.2);">12.5%</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Behavior -->
-      <div class="tab-content" id="behavior-tab" style="display:none;">
-        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.5rem;">
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="chart-container" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
-              <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Transaction Patterns</h3>
+      <div class="tab-content" id="behavior-tab" style="display:none; animation:fadeIn 0.4s ease-in-out;">
+        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:2rem;">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="chart-container" style="background:linear-gradient(135deg, rgba(10,77,104,0.02) 0%, rgba(255,255,255,1) 100%); padding:2rem; border-radius:1.125rem; border:1px solid rgba(10,77,104,0.08); box-shadow:0 8px 16px -4px rgba(10,77,104,0.08); position:relative; overflow:hidden;">
+              <div style="position:absolute; top:0; right:0; width:200px; height:200px; background:radial-gradient(circle, rgba(102,126,234,0.08) 0%, transparent 70%); pointer-events:none;"></div>
+              <h3 style="font-size:1.25rem; font-weight:800; margin:0 0 1.5rem 0; color:#1f2937; position:relative; z-index:1; display:flex; align-items:center; gap:0.75rem;"><i class="fas fa-chart-bar" style="color:#0a4d68; font-size:1.125rem;"></i> Transaction Patterns</h3>
               <canvas id="behaviorChart" height="240"></canvas>
             </div>
             <!-- *** NEW: AI SUMMARY CONTAINER *** -->
-            <div id="behavior-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.05) 0%, transparent 100%); border:2px solid #088395; border-radius:0.75rem; padding:1.5rem;">
-              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
-                <div style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7, #088395); border-radius:0.5rem; color:#fff;">
-                  <i class="fas fa-brain"></i>
+            <div id="behavior-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.06) 0%, rgba(5,223,215,0.04) 100%); border:2px solid rgba(8,131,149,0.2); border-radius:1.125rem; padding:2rem; position:relative; overflow:hidden; box-shadow:0 8px 20px -6px rgba(10,77,104,0.15);">
+              <div style="position:absolute; top:-50px; right:-50px; width:150px; height:150px; background:radial-gradient(circle, rgba(5,223,215,0.15) 0%, transparent 70%); pointer-events:none; border-radius:50%;"></div>
+              <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; position:relative; z-index:1;">
+                <div style="width:56px; height:56px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7 0%, #088395 100%); border-radius:0.875rem; color:#fff; box-shadow:0 8px 16px -4px rgba(5,223,215,0.4); position:relative;">
+                  <i class="fas fa-brain" style="font-size:1.5rem;"></i>
+                  <div style="position:absolute; inset:-2px; background:linear-gradient(135deg, #05dfd7 0%, #088395 100%); border-radius:0.875rem; opacity:0.3; filter:blur(8px); z-index:-1;"></div>
                 </div>
-                <h4 style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0;">AI Insights</h4>
+                <h4 style="font-size:1.25rem; font-weight:800; color:#1f2937; margin:0; letter-spacing:-0.01em;">AI Insights</h4>
               </div>
-              <div style="font-size:0.95rem; line-height:1.7; color:#6b7280;">
+              <div style="font-size:1rem; line-height:1.75; color:#374151; position:relative; z-index:1; font-weight:500;">
                 <p style="margin:0;">Customer transaction frequency has increased by 18% this month. Peak activity occurs during weekends. Consider targeted promotions during high-engagement periods.</p>
               </div>
             </div>
           </div>
-          <div class="metrics-panel" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
-            <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Behavior Metrics</h3>
-            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid #f0f1f3;">
-              <span style="font-size:0.9rem; color:#6b7280;">Avg Transaction Frequency</span>
-              <span id="avgFrequency" style="font-size:1.125rem; font-weight:700; color:#1f2937;">4.2/week</span>
+          <div class="metrics-panel" style="background:linear-gradient(135deg, rgba(10,77,104,0.02) 0%, rgba(255,255,255,1) 100%); padding:2rem; border-radius:1.125rem; border:1px solid rgba(10,77,104,0.08); box-shadow:0 8px 16px -4px rgba(10,77,104,0.08); position:relative; overflow:hidden;">
+            <div style="position:absolute; bottom:-30px; left:-30px; width:120px; height:120px; background:radial-gradient(circle, rgba(102,126,234,0.08) 0%, transparent 70%); pointer-events:none; border-radius:50%;"></div>
+            <h3 style="font-size:1.25rem; font-weight:800; margin:0 0 1.5rem 0; color:#1f2937; position:relative; z-index:1; display:flex; align-items:center; gap:0.75rem;"><i class="fas fa-chart-pie" style="color:#0a4d68; font-size:1.125rem;"></i> Behavior Metrics</h3>
+            <div style="display:flex; justify-content:space-between; padding:1rem 0; border-bottom:2px solid rgba(10,77,104,0.08); position:relative; z-index:1;">
+              <span style="font-size:0.95rem; color:#6b7280; font-weight:600;">Avg Transaction Frequency</span>
+              <span id="avgFrequency" style="font-size:1.5rem; font-weight:800; color:#0a4d68; text-shadow:0 2px 8px rgba(10,77,104,0.2);">4.2/week</span>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:0.75rem 0;">
-              <span style="font-size:0.9rem; color:#6b7280;">Avg Transaction Value</span>
-              <span id="avgValue" style="font-size:1.125rem; font-weight:700; color:#1f2937;">₱1,250</span>
+            <div style="display:flex; justify-content:space-between; padding:1rem 0; position:relative; z-index:1;">
+              <span style="font-size:0.95rem; color:#6b7280; font-weight:600;">Avg Transaction Value</span>
+              <span id="avgValue" style="font-size:1.5rem; font-weight:800; color:#0a4d68; text-shadow:0 2px 8px rgba(10,77,104,0.2);">₱1,250</span>
             </div>
           </div>
         </div>
@@ -9496,8 +9542,7 @@ button:focus,
       </div>
     </div>
   </div>
-
-
+</div>
 
     <!-- Required Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
