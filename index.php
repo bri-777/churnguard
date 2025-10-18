@@ -83,7 +83,7 @@ if (!$me) {
       </div>
 	  
 	   <div class="menu-section">
-		  <div class="menu-title">Analytic</div>
+		  <div class="menu-title">Analytics</div>
 		<a href="#" class="menu-item" onclick="showPage('churn-prediction')">
           <i class="fas fa-brain"></i> <span>Churn Prediction</span>
         </a>
