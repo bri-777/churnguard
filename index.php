@@ -1611,26 +1611,45 @@ html, body {
 .compact-list { margin:.25rem 0 0; padding-left:1rem }
 
 
-.page-header{
-  
-background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.03) 0px,
-    transparent 1px,
-    transparent 40px,
-    rgba(255, 255, 255, 0.03) 41px
-  ),
-  repeating-linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.03) 0px,
-    transparent 1px,
-    transparent 40px,
-    rgba(255, 255, 255, 0.03) 41px
-  );
-  pointer-events: none;
-  
+.page-header {
+  background: linear-gradient(135deg, #0a4d68 0%, #088395 50%, #05dfd7 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-2xl);
+  position: relative;
+  overflow: hidden;
 }
 
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      transparent 1px,
+      transparent 40px,
+      rgba(255, 255, 255, 0.03) 41px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      transparent 1px,
+      transparent 40px,
+      rgba(255, 255, 255, 0.03) 41px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-header h1,
+.page-header p {
+  position: relative;
+  z-index: 1;
+}
 
 </style>
 
