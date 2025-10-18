@@ -6796,7 +6796,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
           </button>
         </div>
       </div>
-      <div class="chart-container" style="position: relative; top:500px; background: #f9fafb; border-radius: 12px; padding: 2rem; border: 1px solid #e5e7eb;">
+      <div class="chart-container" style="position: relative; background: #f9fafb; border-radius: 12px; padding: 2rem; border: 1px solid #e5e7eb;">
         <div class="chart-loading" id="chartLoadingIndicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;">
           <div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
         </div>
