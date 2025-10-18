@@ -1718,7 +1718,7 @@ html, body {
 
 
 
-.kpi-card revenue{
+.1b{
 
 background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
 
@@ -1771,7 +1771,7 @@ function doLogout() {
 <div class="kpi-grid">
 
   <!-- Total Revenue -->
-  <div class="kpi-card revenue">
+  <div class="kpi-card revenue" id = "1b">
     <div class="kpi-icon"><i class="fas fa-peso-sign"></i></div>
     <div class="kpi-content">
       <div class="kpi-value" id="totalRevenue">₱0</div>
