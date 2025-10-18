@@ -116,25 +116,8 @@ body {
 }
 
 /* === EXECUTIVE DASHBOARD HEADER === */
-.executive-dashboard-header {
-
-  border-radius: var(--radius-2xl);
-  padding: var(--space-2xl);
-  margin-bottom: var(--space-2xl);
-  box-shadow: var(--shadow-xl);
-  position: relative;
-  overflow: hidden;
-  color: var(--color-text-inverse);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.header-matrix {
-  position: absolute;
-  inset: 0;
 
     
-  pointer-events: none;
-}
 
 .platform-identifier {
   display: flex;
