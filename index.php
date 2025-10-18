@@ -6738,44 +6738,44 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
  
 
 
-<div id="customer-monitoring" class="page" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #ffffff; min-height: 100vh; padding: 1.5rem; box-sizing: border-box;">
-  <div class="alert-banner" id="riskAlertBanner" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f); color: white; padding: 1rem 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15); animation: slideDown 0.3s ease-out; max-width: 1400px; margin-left: auto; margin-right: auto;">
-    <div class="alert-icon" style="font-size: 1.5rem; line-height: 1;">⚠️</div>
+<div id="customer-monitoring" class="page" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #ffffff; min-height: 100vh; padding: 1.5rem; box-sizing: border-box; line-height: 1.5;">
+  <div class="alert-banner" id="riskAlertBanner" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: #ffffff; padding: 1rem 1.5rem; border-radius: 10px; margin: 0 auto 1.5rem auto; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15); animation: slideDown 0.3s ease-out; max-width: 1400px;">
+    <div class="alert-icon" style="font-size: 1.5rem; line-height: 1; flex-shrink: 0;">⚠️</div>
     <span id="riskAlertMessage" style="flex: 1; font-weight: 500; font-size: 0.9375rem; line-height: 1.5;">High churn risk detected! Immediate action recommended.</span>
-    <button class="alert-close" onclick="dismissRiskAlert()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; backdrop-filter: blur(10px); flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='scale(1)'">×</button>
+    <button class="alert-close" onclick="dismissRiskAlert()" style="background: rgba(255, 255, 255, 0.2); border: none; color: #ffffff; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; backdrop-filter: blur(10px); flex-shrink: 0; padding: 0;" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='scale(1)'">×</button>
   </div>
 
-  <div class="dashboard-header" style="background: #ffffff; border-radius: 12px; padding: 1.75rem 2rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; max-width: 1400px; margin-left: auto; margin-right: auto;">
+  <div class="dashboard-header" style="background: #ffffff; border-radius: 12px; padding: 1.75rem 2rem; margin: 0 auto 1.5rem auto; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb; max-width: 1400px;">
     <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div>
+      <div style="flex: 1; min-width: 280px;">
         <div class="header-title" style="display: flex; align-items: center; gap: 1rem;">
-          <div class="header-icon" style="font-size: 2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.65rem; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2); line-height: 1;">📊</div>
+          <div class="header-icon" style="font-size: 2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.65rem; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2); line-height: 1; flex-shrink: 0;">📊</div>
           <div>
             <h1 style="margin: 0; font-size: 1.625rem; font-weight: 700; color: #111827; letter-spacing: -0.025em; line-height: 1.2;">Customer Monitoring Dashboard</h1>
             <div class="header-subtitle" style="margin-top: 0.375rem; color: #6b7280; font-size: 0.875rem; font-weight: 400; line-height: 1.4;">Real-time churn prediction and customer retention analytics</div>
           </div>
         </div>
       </div>
-      <div class="header-controls">
-        <div class="status-indicator" style="display: flex; align-items: center; gap: 0.5rem; background: #ecfdf5; padding: 0.625rem 1rem; border-radius: 8px; border: 1px solid #a7f3d0;">
-          <div class="status-dot" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); animation: pulse 2s infinite;"></div>
-          <span style="color: #065f46; font-weight: 600; font-size: 0.8125rem;">Live</span>
+      <div class="header-controls" style="flex-shrink: 0;">
+        <div class="status-indicator" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #ecfdf5; padding: 0.625rem 1rem; border-radius: 8px; border: 1px solid #a7f3d0;">
+          <div class="status-dot" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); animation: pulse 2s infinite; flex-shrink: 0;"></div>
+          <span style="color: #065f46; font-weight: 600; font-size: 0.8125rem; line-height: 1;">Live</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="main-content" style="display: block; max-width: 1400px; margin: 0 auto; padding: 0;">
-    <div class="chart-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; position: absolute;">
+  <div class="main-content" style="display: block; max-width: 1400px; margin: 0 auto;">
+    <div class="chart-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
       <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <div class="chart-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3;"></div>
+        <div class="chart-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3; flex-shrink: 0;">📈 Customer Traffic & Churn Analytics</div>
         <div class="date-picker-container" style="display: flex; gap: 0.625rem; align-items: center; flex-wrap: wrap;">
-          <div class="date-picker" style="position: absolute;">
-            <div class="date-picker-input" onclick="toggleChartDatePicker()" style="background: #f9fafb; border: 1px solid #d1d5db; padding: 0.5625rem 0.875rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.625rem; min-width: 150px; transition: all 0.2s ease; font-size: 0.8125rem; color: #374151; font-weight: 500; line-height: 1.4;" onmouseover="this.style.borderColor='#667eea'; this.style.background='#f3f4f6'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'" onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f9fafb'; this.style.boxShadow='none'">
+          <div class="date-picker" style="position: relative; flex-shrink: 0;">
+            <div class="date-picker-input" onclick="toggleChartDatePicker()" style="background: #f9fafb; border: 1px solid #d1d5db; padding: 0.5625rem 0.875rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.625rem; min-width: 150px; transition: all 0.2s ease; font-size: 0.8125rem; color: #374151; font-weight: 500; line-height: 1.4;" onmouseover="this.style.borderColor='#667eea'; this.style.background='#f3f4f6'; this.style.boxShadow='0 1px 2px rgba(0, 0, 0, 0.05)'" onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f9fafb'; this.style.boxShadow='none'">
               <span id="selectedChartDateRange" style="flex: 1;">Last 14 Days</span>
-              <span style="color: #9ca3af; font-size: 0.625rem;">▼</span>
+              <span style="color: #9ca3af; font-size: 0.625rem; line-height: 1;">▼</span>
             </div>
-            <div class="date-picker-dropdown" id="chartDatePickerDropdown" style="position: absolute; top: calc(100% + 0.375rem); right: 0; background: white; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05); padding: 0.375rem; min-width: 200px; z-index: 1000; display: none;">
+            <div class="date-picker-dropdown" id="chartDatePickerDropdown" style="position: absolute; top: calc(100% + 0.375rem); right: 0; background: #ffffff; border-radius: 10px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05); padding: 0.375rem; min-width: 200px; z-index: 1000; display: none;">
               <div class="date-option" data-value="today" style="padding: 0.625rem 0.875rem; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; display: flex; flex-direction: column; gap: 0.125rem;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
                 <span style="font-weight: 500; color: #111827; font-size: 0.8125rem; line-height: 1.4;">Today</span>
                 <span class="date-option-range" style="font-size: 0.6875rem; color: #9ca3af; line-height: 1.3;">Current day</span>
@@ -6784,13 +6784,13 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
                 <span style="font-weight: 500; color: #111827; font-size: 0.8125rem; line-height: 1.4;">Last 7 Days</span>
                 <span class="date-option-range" style="font-size: 0.6875rem; color: #9ca3af; line-height: 1.3;">Week overview</span>
               </div>
-              <div class="date-option active" data-value="14days" style="padding: 0.625rem 0.875rem; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; display: flex; flex-direction: column; gap: 0.125rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;" onmouseover="this.style.opacity='0.92'" onmouseout="this.style.opacity='1'">
+              <div class="date-option active" data-value="14days" style="padding: 0.625rem 0.875rem; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; display: flex; flex-direction: column; gap: 0.125rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff;" onmouseover="this.style.opacity='0.92'" onmouseout="this.style.opacity='1'">
                 <span style="font-weight: 600; font-size: 0.8125rem; line-height: 1.4;">Last 14 Days</span>
                 <span class="date-option-range" style="font-size: 0.6875rem; opacity: 0.9; line-height: 1.3;">2-week trend</span>
               </div>
             </div>
           </div>
-          <button class="refresh-btn" onclick="refreshDashboardData()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.5625rem 1.125rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; font-size: 0.8125rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2); line-height: 1.4;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(102, 126, 234, 0.2)'">
+          <button class="refresh-btn" onclick="refreshDashboardData()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; border: none; padding: 0.5625rem 1.125rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; font-size: 0.8125rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2); line-height: 1.4; flex-shrink: 0;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(102, 126, 234, 0.2)'">
             <span style="line-height: 1;">🔄</span>
             <span>Refresh</span>
           </button>
@@ -6802,21 +6802,21 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
         </div>
         <div class="chart-canvas" style="position: relative;">
           <canvas id="trafficChurnChart" width="800" height="400" style="max-width: 100%; height: auto; display: block;"></canvas>
-          <div class="chart-tooltip" id="chartTooltipDisplay" style="position: absolute; background: rgba(17, 24, 39, 0.96); color: white; padding: 0.625rem 0.875rem; border-radius: 6px; font-size: 0.8125rem; pointer-events: none; display: none; backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0,0,0,0.25); line-height: 1.4; white-space: nowrap; z-index: 100;"></div>
+          <div class="chart-tooltip" id="chartTooltipDisplay" style="position: absolute; background: rgba(17, 24, 39, 0.96); color: #ffffff; padding: 0.625rem 0.875rem; border-radius: 6px; font-size: 0.8125rem; pointer-events: none; display: none; backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); line-height: 1.4; white-space: nowrap; z-index: 100;"></div>
         </div>
       </div>
     </div>
   
-    <div class="history-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
-      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5.5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.875rem; border-bottom: 1px solid #e5e7eb;">
-        <div class="history-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3;">📋 Historical Data</div>
+    <div class="history-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.875rem; border-bottom: 1px solid #e5e7eb;">
+        <div class="history-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3; flex-shrink: 0;">📋 Historical Data</div>
         
         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
           <!-- Toggle Switch -->
-          <div class="data-view-toggle" style="display: flex; align-items: center; gap: 0.625rem;">
+          <div class="data-view-toggle" style="display: flex; align-items: center; gap: 0.625rem; flex-shrink: 0;">
             <label class="toggle-switch" style="position: relative; display: inline-block; width: 48px; height: 26px; cursor: pointer;">
-              <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()" style="opacity: 0; width: 0; height: 0;">
-              <span class="toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #d1d5db; border-radius: 26px; transition: all 0.25s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);"></span>
+              <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()" style="opacity: 0; width: 0; height: 0; position: absolute;">
+              <span class="toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #d1d5db; border-radius: 26px; transition: all 0.25s ease; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);"></span>
             </label>
             <span id="dataViewLabel" class="toggle-label" style="font-size: 0.8125rem; font-weight: 500; color: #4b5563; line-height: 1.4;">Transaction Logs View</span>
           </div>
@@ -6834,28 +6834,28 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
             <!-- Custom date inputs -->
             <div id="customDateInputs" style="display: none; margin-left: 0.625rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
               <input type="date" id="startDate" class="date-input" style="background: #f9fafb; border: 1px solid #d1d5db; padding: 0.4375rem 0.625rem; border-radius: 8px; font-size: 0.8125rem; color: #374151; font-weight: 500; transition: all 0.2s ease; line-height: 1.4;" onfocus="this.style.borderColor='#667eea'; this.style.outline='none'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
-              <span style="margin: 0 0.25rem; color: #9ca3af; font-weight: 500; font-size: 0.8125rem;">to</span>
+              <span style="color: #9ca3af; font-weight: 500; font-size: 0.8125rem; line-height: 1; flex-shrink: 0;">to</span>
               <input type="date" id="endDate" class="date-input" style="background: #f9fafb; border: 1px solid #d1d5db; padding: 0.4375rem 0.625rem; border-radius: 8px; font-size: 0.8125rem; color: #374151; font-weight: 500; transition: all 0.2s ease; line-height: 1.4;" onfocus="this.style.borderColor='#667eea'; this.style.outline='none'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
-              <button onclick="applyCustomDateFilter()" class="btn-apply-filter" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.4375rem 0.875rem; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.8125rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2); line-height: 1.4;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(102, 126, 234, 0.2)'">Apply</button>
+              <button onclick="applyCustomDateFilter()" class="btn-apply-filter" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; border: none; padding: 0.4375rem 0.875rem; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.8125rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2); line-height: 1.4; flex-shrink: 0;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(102, 126, 234, 0.2)'">Apply</button>
             </div>
           </div>
           
-          <div class="last-updated" style="font-size: 0.75rem; color: #9ca3af; padding: 0.4375rem 0.625rem; background: #f9fafb; border-radius: 6px; font-weight: 500; border: 1px solid #e5e7eb; line-height: 1.4;">
+          <div class="last-updated" style="font-size: 0.75rem; color: #9ca3af; padding: 0.4375rem 0.625rem; background: #f9fafb; border-radius: 6px; font-weight: 500; border: 1px solid #e5e7eb; line-height: 1.4; flex-shrink: 0;">
              <span id="currentAnalysisDataRange"></span>
           </div>
         </div>
       </div>
       
-      <div class="history-table-container" style="overflow-x: auto; border-radius: 10px; border: 1px solid #e5e7eb; background: white;">
-        <table class="history-table" style="width: 100%; border-collapse: collapse; background: white;">
-          <thead id="historyTableHead" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="history-table-container" style="overflow-x: auto; border-radius: 10px; border: 1px solid #e5e7eb; background: #ffffff;">
+        <table class="history-table" style="width: 100%; border-collapse: collapse; background: #ffffff;">
+          <thead id="historyTableHead" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff;">
             <tr>
-              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; line-height: 1.4;">Date</th>
-              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; line-height: 1.4;">Customer Traffic</th>
-              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; line-height: 1.4;">Revenue</th>
-              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; line-height: 1.4;">Transactions</th>
-              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; line-height: 1.4;">Risk Level</th>
-              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; line-height: 1.4;">Status</th>
+              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; line-height: 1.4;">Date</th>
+              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; line-height: 1.4;">Customer Traffic</th>
+              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; line-height: 1.4;">Revenue</th>
+              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; line-height: 1.4;">Transactions</th>
+              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; line-height: 1.4;">Risk Level</th>
+              <th style="padding: 0.875rem 1.125rem; text-align: left; font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.025em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; line-height: 1.4;">Status</th>
             </tr>
           </thead>
           <tbody id="historicalAnalysisTableBody">
@@ -6916,10 +6916,10 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
       width: 18px;
       left: 4px;
       bottom: 4px;
-      background-color: white;
+      background-color: #ffffff;
       border-radius: 50%;
       transition: all 0.25s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
     
     .history-table tbody tr {
@@ -6927,7 +6927,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     }
     
     .history-table tbody tr:hover {
-      background: #f9fafb !important;
+      background-color: #f9fafb !important;
     }
     
     .history-table tbody td {
