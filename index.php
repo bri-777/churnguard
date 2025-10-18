@@ -6739,12 +6739,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 <div id="customer-monitoring" class="page" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #ffffff; min-height: 100vh; padding: 1.5rem; box-sizing: border-box; line-height: 1.5;">
-  <div class="alert-banner" id="riskAlertBanner" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: #ffffff; padding: 1rem 1.5rem; border-radius: 10px; margin: 0 auto 1.5rem auto; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15); animation: slideDown 0.3s ease-out; max-width: 1400px;">
-    <div class="alert-icon" style="font-size: 1.5rem; line-height: 1; flex-shrink: 0;">⚠️</div>
-    <span id="riskAlertMessage" style="flex: 1; font-weight: 500; font-size: 0.9375rem; line-height: 1.5;">High churn risk detected! Immediate action recommended.</span>
-    <button class="alert-close" onclick="dismissRiskAlert()" style="background: rgba(255, 255, 255, 0.2); border: none; color: #ffffff; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; backdrop-filter: blur(10px); flex-shrink: 0; padding: 0;" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='scale(1)'">×</button>
-  </div>
-
+  
   <div class="dashboard-header" style="background: #ffffff; border-radius: 12px; padding: 1.75rem 2rem; margin: 0 auto 1.5rem auto; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb; max-width: 1400px;">
     <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <div style="flex: 1; min-width: 280px;">
