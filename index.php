@@ -6766,7 +6766,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   </div>
 
   <div class="main-content" style="display: block; max-width: 1400px; margin: 0 auto; padding: 0;">
-    <div class="chart-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; position: relative;">
+    <div class="chart-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; position: absolute;">
       <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div class="chart-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3;"></div>
         <div class="date-picker-container" style="display: flex; gap: 0.625rem; align-items: center; flex-wrap: wrap;">
