@@ -1718,12 +1718,12 @@ html, body {
 
 
 
-.design-kpi {
+.kpi-card customers {
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
   position: relative;
   z-index: 1;
 }
-.design-kpi::before {
+.kpi-card customers::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1792,7 +1792,7 @@ function doLogout() {
   </div>
 
   <!-- Customers Today -->
-   <div class = "design-kpi">
+
   <div class="kpi-card customers">
     <div class="kpi-icon"><i class="fas fa-users"></i></div>
     <div class="kpi-content">
@@ -1806,7 +1806,7 @@ function doLogout() {
       <div class="kpi-change positive" id="customersChange"><i class="fas fa-arrow-up"></i> 0%</div>
     </div>
   </div>
-</div>
+
 
   <!-- Retention Rate -->
   <div class="kpi-card retention">
