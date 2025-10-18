@@ -73,27 +73,32 @@ if (!$me) {
 
     <nav class="sidebar-menu">
       <div class="menu-section">
-        <div class="menu-title">Analytics Dashboard</div>
+        <div class="menu-title">Dashboard</div>
         <a href="#" class="menu-item active" onclick="showPage('dashboard')">
           <i class="fas fa-chart-line"></i> <span>Analytics Overview</span>
         </a>
-        <a href="#" class="menu-item" onclick="showPage('churn-prediction')">
+		 <a href="#" class="menu-item" onclick="showPage('customer-monitoring')">
+          <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
+        </a>
+      </div>
+	  
+		  <div class="menu-title">Analytics</div>
+		<a href="#" class="menu-item" onclick="showPage('churn-prediction')">
           <i class="fas fa-brain"></i> <span>Churn Prediction</span>
         </a>
         <a href="#" class="menu-item" onclick="showPage('customer-insights')">
           <i class="fas fa-users-cog"></i> <span>Churn Analysis</span>
         </a>
-		 
-		 <a href="#" class="menu-item" onclick="showPage('customer-monitoring')">
-          <i class="fas fa-eye"></i> <span>Customer Monitoring</span>
-        </a>
-     <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
+		 <a href="#" class="menu-item" onclick="showPage('dashboard-container')">
           <i class="fas fa-bullseye"></i> <span>Analytics Target</span>
         </a>
          <a href="#" class="menu-item" onclick="showPage('cust-insight')">
           <i class="fas fa-bullseye"></i> <span>Custmer Insight</span>
         </a>
-      </div>
+		 </div>
+
+
+
 
       <div class="menu-section">
         <div class="menu-title">Data Management</div>
