@@ -1645,11 +1645,74 @@ html, body {
   z-index: 0;
 }
 
+
+
 .page-header h1,
 .page-header p {
   position: relative;
   z-index: 1;
 }
+/* Page Header Text Styling - Pure White */
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-header h1 i {
+  font-size: 2rem;
+  color: #ffffff;
+  opacity: 1;
+  filter: drop-shadow(0 2px 8px rgba(5, 223, 215, 0.4));
+}
+
+.page-header p {
+  font-size: 1.125rem;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.025em;
+  font-weight: 400;
+  color: #ffffff;
+  opacity: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 1.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .page-header h1 i {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 0.875rem;
+  }
+}
+
 
 </style>
 
