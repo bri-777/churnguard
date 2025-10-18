@@ -5156,19 +5156,13 @@ body {
     
       
       <h1 class="platform-title">
-        <span class="title-primary">Customer Intelligence Platform</span>
+        <span class="title-primary">Customer Insight</span>
       
       </h1>
       
      
       
       <div class="data-freshness">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-        
-      
       </div>
     </header>
 
