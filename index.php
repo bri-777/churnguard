@@ -1610,6 +1610,28 @@ html, body {
 .delta.neg { color:#991b1b }
 .compact-list { margin:.25rem 0 0; padding-left:1rem }
 
+
+.page-header{
+  
+background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 40px,
+    rgba(255, 255, 255, 0.03) 41px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 40px,
+    rgba(255, 255, 255, 0.03) 41px
+  );
+  pointer-events: none;
+  
+}
+
+
 </style>
 
 
