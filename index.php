@@ -5156,29 +5156,20 @@ body {
 
 
 <link rel = "stylesheet" href = "cust-insight.css">
-  <div id="cust-insight" class="page">
-    <!-- Enhanced Header with Real-time Monitoring -->
+ <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
       <div class="header-matrix" style="background-color: white; padding: 12px 20px; border-bottom: 1px solid #ddd; display: inline-block; width: 100%;"></div>
-
-    
       
       <h1 class="platform-title">
       <span class="title-primary" style="color: black; font-weight: 500;">Customer Insight</span>
-
-      
       </h1>
-      
-     
       
       <div class="data-freshness">
       </div>
     </header>
 
-    <!-- Premium Customer List Section -->
     <div class="analytics-grid-advanced">
       
-      <!-- VIP Customer Intelligence Panel -->
       <div class="intelligence-card customer-profiles-card">
         <div class="card-matrix-overlay"></div>
         <div class="card-header-advanced">
@@ -5197,7 +5188,6 @@ body {
         </div>
         
         <div class="customer-intelligence-grid">
-          <!-- Top Customers with Detailed Profiles -->
           <div class="customer-profile-item vip">
             <div class="profile-rank">
               <div class="rank-badge gold">1</div>
@@ -5206,14 +5196,11 @@ body {
               <div class="profile-avatar">MC</div>
               <div class="profile-details">
                 <div class="profile-name">Maria Chen</div>
-              
                 <div class="profile-tags">
-                  
                 </div>
               </div>
             </div>
             <div class="profile-metrics">
-             
               <div class="metric-item">
                 <span class="label">Monthly Avg</span>
                 <span class="value">₱8,450</span>
@@ -5234,7 +5221,6 @@ body {
                             fill="none" stroke="#05dfd7" stroke-width="2"/>
                 </svg>
               </div>
-              
             </div>
             <div class="profile-actions">
               <button class="btn-icon" title="View Details">
@@ -5243,7 +5229,6 @@ body {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </button>
-            
             </div>
           </div>
 
@@ -5255,12 +5240,9 @@ body {
               <div class="profile-avatar">JR</div>
               <div class="profile-details">
                 <div class="profile-name">Jonathan Rodriguez</div>
-               
-               
               </div>
             </div>
             <div class="profile-metrics">
-             
               <div class="metric-item">
                 <span class="label">Monthly Avg</span>
                 <span class="value">₱6,820</span>
@@ -5281,7 +5263,6 @@ body {
                             fill="none" stroke="#088395" stroke-width="2"/>
                 </svg>
               </div>
-             
             </div>
             <div class="profile-actions">
               <button class="btn-icon" title="View Details">
@@ -5290,7 +5271,6 @@ body {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </button>
-             
             </div>
           </div>
 
@@ -5302,14 +5282,11 @@ body {
               <div class="profile-avatar">SL</div>
               <div class="profile-details">
                 <div class="profile-name">Sarah Lim</div>
-               
                 <div class="profile-tags">
-                 
                 </div>
               </div>
             </div>
             <div class="profile-metrics">
-            
               <div class="metric-item">
                 <span class="label">Monthly Avg</span>
                 <span class="value">₱4,250</span>
@@ -5330,7 +5307,6 @@ body {
                             fill="none" stroke="#0a4d68" stroke-width="2"/>
                 </svg>
               </div>
-           
             </div>
             <div class="profile-actions">
               <button class="btn-icon" title="View Details">
@@ -5339,18 +5315,11 @@ body {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </button>
-           
             </div>
           </div>
-
-          
-
-       
-		  
         </div>
       </div>
 
-      <!-- Advanced Retention & Churn Analytics -->
       <div class="intelligence-card retention-analytics-card">
         <div class="card-header-advanced">
           <div class="header-group">
@@ -5371,6 +5340,66 @@ body {
         </div>
         
         <div class="retention-matrix">
+          <div class="matrix-header">
+            <h3>At-Risk Segment Monitor</h3>
+            <div class="matrix-legend">
+              <span class="legend-item at-risk">This Week</span>
+              <span class="legend-item critical">This Month</span>
+            </div>
+          </div>
+          
+          <div class="health-segments">
+            <div class="segment-card at-risk">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span class="segment-title">Dropped Visits This Week</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value">143</div>
+                <div class="stat-percentage">Customers</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Avg Drop Rate</span>
+                  <span>-32%</span>
+                </div>
+                <div class="detail-row">
+                  <span>Revenue Impact</span>
+                  <span>₱84,200</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card critical">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span class="segment-title">Dropped Visits This Month</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value">487</div>
+                <div class="stat-percentage">Customers</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Avg Drop Rate</span>
+                  <span>-45%</span>
+                </div>
+                <div class="detail-row">
+                  <span>Revenue Impact</span>
+                  <span>₱312,500</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div class="matrix-header">
             <h3>Customer Health Matrix</h3>
             <div class="matrix-legend">
@@ -5399,7 +5428,6 @@ body {
                   <span>94.2%</span>
                 </div>
                 <div class="detail-row">
-                 
                 </div>
               </div>
             </div>
@@ -5466,8 +5494,6 @@ body {
                     <div class="customer-meta">LTV: ₱124,500 | Last: 18 days ago</div>
                   </div>
                 </div>
-             
-            
               </div>
               <div class="risk-customer">
                 <div class="customer-info">
@@ -5477,8 +5503,6 @@ body {
                     <div class="customer-meta">LTV: ₱98,200 | Last: 22 days ago</div>
                   </div>
                 </div>
-               
-               
               </div>
               <div class="risk-customer">
                 <div class="customer-info">
@@ -5488,15 +5512,12 @@ body {
                     <div class="customer-meta">LTV: ₱87,600 | Last: 25 days ago</div>
                   </div>
                 </div>
-              
-             
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Purchase Behavior Deep Dive -->
       <div class="intelligence-card purchase-intelligence-card">
         <div class="card-header-advanced">
           <div class="header-group">
@@ -5508,6 +5529,10 @@ body {
               </svg>
             </div>
             <h2 class="card-title">Purchase Intelligence & Patterns</h2>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn" onclick="exportInsights('pdf')">Export PDF</button>
+            <button class="action-btn primary" onclick="exportInsights('excel')">Export Excel</button>
           </div>
         </div>
         
@@ -5564,8 +5589,6 @@ body {
                 <div class="combo-rank">1</div>
                 <div class="combo-products">
                   <span class="product">Iced Americano</span>
-                  
-                 
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">847 orders</span>
@@ -5576,8 +5599,6 @@ body {
                 <div class="combo-rank">2</div>
                 <div class="combo-products">
                   <span class="product">Cappuccino</span>
-                 
-                 
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">692 orders</span>
@@ -5588,11 +5609,82 @@ body {
                 <div class="combo-rank">3</div>
                 <div class="combo-products">
                   <span class="product">Matcha Latte</span>
-                 
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">534 orders</span>
                   <span class="revenue">₱85,440</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="product-performance">
+            <h3>Top-Selling vs. Declining Products</h3>
+            <div class="combo-list">
+              <div class="combo-item">
+                <div class="combo-rank">▼</div>
+                <div class="combo-products">
+                  <span class="product">Vanilla Latte</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">312 orders</span>
+                  <span class="revenue" style="color: #dc2626;">-24%</span>
+                </div>
+              </div>
+              <div class="combo-item">
+                <div class="combo-rank">▼</div>
+                <div class="combo-products">
+                  <span class="product">Caramel Macchiato</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">245 orders</span>
+                  <span class="revenue" style="color: #dc2626;">-18%</span>
+                </div>
+              </div>
+              <div class="combo-item">
+                <div class="combo-rank">▼</div>
+                <div class="combo-products">
+                  <span class="product">Hot Chocolate</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">189 orders</span>
+                  <span class="revenue" style="color: #dc2626;">-31%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="product-performance">
+            <h3>Repeat Purchase Rate by Product</h3>
+            <div class="combo-list">
+              <div class="combo-item">
+                <div class="combo-rank">1</div>
+                <div class="combo-products">
+                  <span class="product">Iced Americano</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">Repeat Rate: 78%</span>
+                  <span class="revenue">654 returning</span>
+                </div>
+              </div>
+              <div class="combo-item">
+                <div class="combo-rank">2</div>
+                <div class="combo-products">
+                  <span class="product">Matcha Latte</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">Repeat Rate: 71%</span>
+                  <span class="revenue">379 returning</span>
+                </div>
+              </div>
+              <div class="combo-item">
+                <div class="combo-rank">3</div>
+                <div class="combo-products">
+                  <span class="product">Cappuccino</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">Repeat Rate: 68%</span>
+                  <span class="revenue">471 returning</span>
                 </div>
               </div>
             </div>
@@ -5617,31 +5709,107 @@ body {
                   <div class="metric-trend positive">+22%</div>
                 </div>
               </div>
-            
-          
             </div>
           </div>
         </div>
       </div>
 
-     
-
-    
-
-      
-
-      
-
-   
+      <div class="intelligence-card retention-analytics-card">
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Churn Rate by Segment</h2>
+          </div>
+        </div>
+        
+        <div class="retention-matrix">
+          <div class="health-segments">
+            <div class="segment-card">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                <span class="segment-title">By Gender</span>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Male</span>
+                  <span style="color: #dc2626;">8.4% churn</span>
+                </div>
+                <div class="detail-row">
+                  <span>Female</span>
+                  <span style="color: #dc2626;">6.2% churn</span>
+                </div>
+                <div class="detail-row">
+                  <span>Other/Not Specified</span>
+                  <span style="color: #dc2626;">7.1% churn</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+                <span class="segment-title">By Category</span>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Hot Beverages</span>
+                  <span style="color: #dc2626;">5.8% churn</span>
+                </div>
+                <div class="detail-row">
+                  <span>Cold Beverages</span>
+                  <span style="color: #dc2626;">7.3% churn</span>
+                </div>
+                <div class="detail-row">
+                  <span>Food Items</span>
+                  <span style="color: #dc2626;">9.1% churn</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span class="segment-title">By Loyalty Tier</span>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>VIP/Gold</span>
+                  <span style="color: #10b981;">2.1% churn</span>
+                </div>
+                <div class="detail-row">
+                  <span>Silver</span>
+                  <span style="color: #f59e0b;">4.8% churn</span>
+                </div>
+                <div class="detail-row">
+                  <span>Regular</span>
+                  <span style="color: #dc2626;">12.3% churn</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
 
-    <!-- Executive Summary Dashboard -->
     <div class="executive-summary">
       <h2 class="summary-title">Executive Performance Summary</h2>
       <div class="summary-grid">
-       
-        
         <div class="summary-card">
           <div class="summary-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5668,13 +5836,20 @@ body {
             <div class="summary-change positive">+428 this month</div>
           </div>
         </div>
-        
-   
       </div>
     </div>
 
   </div>
 
+<script>
+function exportInsights(format) {
+  if (format === 'pdf') {
+    alert('Exporting Customer Insights Report as PDF...\n\nReport includes:\n- Loyal Customer Analysis\n- Retention & Risk Metrics\n- Purchase Intelligence\n- Churn Rate by Segment\n- Top-Selling vs Declining Products\n- Repeat Purchase Rates');
+  } else if (format === 'excel') {
+    alert('Exporting Customer Insights Report as Excel...\n\nSpreadsheet will include:\n- Customer Lists & Metrics\n- Segment Analysis Data\n- Product Performance Data\n- Churn Analysis Tables');
+  }
+}
+</script>
  
   
   
