@@ -6869,204 +6869,683 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   
 </div>
 <style>
-<div id="customer-monitoring" class="page" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #ffffff; min-height: 100vh; padding: 2rem; box-sizing: border-box;">
-  <div class="alert-banner" id="riskAlertBanner" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f); color: white; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 12px rgba(255, 107, 107, 0.2); animation: slideDown 0.3s ease-out; max-width: 1400px; margin-left: auto; margin-right: auto;">
-    <div class="alert-icon" style="font-size: 1.5rem;">⚠️</div>
-    <span id="riskAlertMessage" style="flex: 1; font-weight: 500; font-size: 0.95rem;">High churn risk detected! Immediate action recommended.</span>
-    <button class="alert-close" onclick="dismissRiskAlert()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
-  </div>
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  <div class="dashboard-header" style="background: #ffffff; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; max-width: 1400px; margin-left: auto; margin-right: auto; margin-bottom: 2rem;">
-    <div class="header-content" style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <div class="header-title" style="display: flex; align-items: center; gap: 1rem;">
-          <div class="header-icon" style="font-size: 2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.75rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(102, 126, 234, 0.2);">📊</div>
-          <div>
-            <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: #111827; letter-spacing: -0.5px;">Customer Monitoring Dashboard</h1>
-            <div class="header-subtitle" style="margin-top: 0.5rem; color: #6b7280; font-size: 0.9rem; font-weight: 400;">Real-time churn prediction and customer retention analytics</div>
-          </div>
-        </div>
-      </div>
-      <div class="header-controls">
-        <div class="status-indicator" style="display: flex; align-items: center; gap: 0.5rem; background: #ecfdf5; padding: 0.75rem 1.25rem; border-radius: 10px; border: 1px solid #a7f3d0;">
-          <div class="status-dot" style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); animation: pulse 2s infinite;"></div>
-          <span style="color: #065f46; font-weight: 600; font-size: 0.875rem;">Live</span>
-        </div>
-      </div>
-    </div>
-  </div>
+#customer-monitoring {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #ffffff;
+  min-height: 100vh;
+  padding: 1.5rem;
+  line-height: 1.5;
+}
 
-  <div class="main-content" style="display:block; max-width:1400px; margin:0 auto; padding:0;">
-    <div class="chart-section" style="background: #ffffff; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e5e7eb;">
-      <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <div class="chart-title" style="font-size: 1.125rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem;">📈 Customer Traffic & Churn Analytics</div>
-        <div class="date-picker-container" style="display: flex; gap: 0.75rem; align-items: center;">
-          <div class="date-picker" style="position: relative;">
-            <div class="date-picker-input" onclick="toggleChartDatePicker()" style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.625rem 1rem; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; min-width: 160px; transition: all 0.2s; font-size: 0.875rem; color: #374151; font-weight: 500;" onmouseover="this.style.borderColor='#667eea'; this.style.background='#f3f4f6'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#f9fafb'">
-              <span id="selectedChartDateRange" style="flex: 1;">Last 14 Days</span>
-              <span style="color: #9ca3af; font-size: 0.75rem;">▼</span>
-            </div>
-            <div class="date-picker-dropdown" id="chartDatePickerDropdown" style="position: absolute; top: calc(100% + 0.5rem); right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; padding: 0.5rem; min-width: 220px; z-index: 100; display: none;">
-              <div class="date-option" data-value="today" style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 0.25rem;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
-                <span style="font-weight: 500; color: #111827; font-size: 0.875rem;">Today</span>
-                <span class="date-option-range" style="font-size: 0.75rem; color: #9ca3af;">Current day</span>
-              </div>
-              <div class="date-option" data-value="7days" style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 0.25rem;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
-                <span style="font-weight: 500; color: #111827; font-size: 0.875rem;">Last 7 Days</span>
-                <span class="date-option-range" style="font-size: 0.75rem; color: #9ca3af;">Week overview</span>
-              </div>
-              <div class="date-option active" data-value="14days" style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 0.25rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                <span style="font-weight: 600; font-size: 0.875rem;">Last 14 Days</span>
-                <span class="date-option-range" style="font-size: 0.75rem; opacity: 0.9;">2-week trend</span>
-              </div>
-            </div>
-          </div>
-          <button class="refresh-btn" onclick="refreshDashboardData()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.625rem 1.25rem; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.25)'">
-            <span>🔄</span>
-            <span>Refresh</span>
-          </button>
-        </div>
-      </div>
-      <div class="chart-container" style="position: relative; background: #f9fafb; border-radius: 12px; padding: 2rem; border: 1px solid #e5e7eb;">
-        <div class="chart-loading" id="chartLoadingIndicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;">
-          <div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-        </div>
-        <div class="chart-canvas" style="position: relative;">
-          <canvas id="trafficChurnChart" width="800" height="400" style="max-width: 100%; height: auto;"></canvas>
-          <div class="chart-tooltip" id="chartTooltipDisplay" style="position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; pointer-events: none; display: none; backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>
-        </div>
-      </div>
-    </div>
+/* Alert Banner */
+.alert-banner {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin: 0 auto 1.5rem auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15);
+  animation: slideDown 0.3s ease-out;
+  max-width: 1400px;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+#riskAlertMessage {
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.alert-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #ffffff;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.alert-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  margin: 0 auto 1.5rem auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  max-width: 1400px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.65rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  margin-top: 0.375rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ecfdf5;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #a7f3d0;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+.status-indicator span {
+  color: #065f46;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+/* Main Content */
+.main-content {
+  display: block;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.25rem 1.25rem;
+}
+
+/* Chart Section */
+.chart-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.75rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.chart-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.date-picker-container {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.date-picker {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.date-picker-input {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  padding: 0.5625rem 0.875rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 150px;
+  transition: all 0.2s ease;
+  font-size: 0.8125rem;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.date-picker-input:hover {
+  border-color: #667eea;
+  background: #f3f4f6;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.date-picker-input span:last-child {
+  color: #9ca3af;
+  font-size: 0.625rem;
+  line-height: 1;
+}
+
+.date-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  right: 0;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 0.375rem;
+  min-width: 200px;
+  z-index: 1000;
+  display: none;
+}
+
+.date-option {
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.date-option:hover {
+  background: #f3f4f6;
+}
+
+.date-option.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.date-option.active:hover {
+  opacity: 0.92;
+}
+
+.date-option span:first-child {
+  font-weight: 500;
+  color: #111827;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.date-option.active span:first-child {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.date-option-range {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  line-height: 1.3;
+}
+
+.date-option.active .date-option-range {
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.refresh-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.5625rem 1.125rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.refresh-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.refresh-btn span:first-child {
+  line-height: 1;
+}
+
+.chart-container {
+  position: relative;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.chart-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 10;
+}
+
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.chart-canvas {
+  position: relative;
+}
+
+#trafficChurnChart {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-tooltip {
+  position: absolute;
+  background: rgba(17, 24, 39, 0.96);
+  color: #ffffff;
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  pointer-events: none;
+  display: none;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  line-height: 1.4;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* History Section */
+.history-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.history-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.history-header > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Toggle Switch */
+.data-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #d1d5db;
+  border-radius: 26px;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider:before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#dataViewToggle:checked + .toggle-slider {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#dataViewToggle:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+
+.toggle-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+/* Date Filter */
+.date-filter-container {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.date-filter-select {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  padding: 0.4375rem 1.875rem 0.4375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg width=%2712%27 height=%277%27 viewBox=%270 0 12 7%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M1 1L6 6L11 1%27 stroke=%27%239ca3af%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3e%3c/svg%3e');
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.date-filter-select:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#customDateInputs {
+  display: none;
+  margin-left: 0.625rem;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.date-input {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  padding: 0.4375rem 0.625rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.date-input:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#customDateInputs span {
+  color: #9ca3af;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.btn-apply-filter {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.btn-apply-filter:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.last-updated {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  padding: 0.4375rem 0.625rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+/* History Table */
+.history-table-container {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+.history-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.history-table th {
+  padding: 0.875rem 1.125rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.history-table tbody tr {
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.history-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.history-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.history-table tbody td {
+  padding: 0.875rem 1.125rem;
+  font-size: 0.8125rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.no-data {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-content,
+  .chart-header,
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
   
-    <div class="history-section" style="background: #ffffff; border-radius: 16px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e5e7eb;">
-      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
-        <div class="history-title" style="font-size: 1.125rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem;">📋 Historical Data</div>
-        
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-          <!-- Toggle Switch -->
-          <div class="data-view-toggle" style="display: flex; align-items: center; gap: 0.75rem;">
-            <label class="toggle-switch" style="position: relative; display: inline-block; width: 52px; height: 28px; cursor: pointer;">
-              <input type="checkbox" id="dataViewToggle" onchange="toggleDataView()" style="opacity: 0; width: 0; height: 0;">
-              <span class="toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #d1d5db; border-radius: 28px; transition: all 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);"></span>
-            </label>
-            <span id="dataViewLabel" class="toggle-label" style="font-size: 0.875rem; font-weight: 500; color: #4b5563;">Transaction Logs View</span>
-          </div>
-          
-          <!-- Date Filter Dropdown -->
-          <div id="transactionDateFilter" class="date-filter-container" style="display: none; align-items: center; gap: 0.5rem;">
-            <select id="dateFilterSelect" class="date-filter-select" onchange="applyDateFilter()" style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.5rem 2rem 0.5rem 0.75rem; border-radius: 8px; font-size: 0.875rem; color: #374151; font-weight: 500; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg width=%2712%27 height=%277%27 viewBox=%270 0 12 7%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M1 1L6 6L11 1%27 stroke=%27%239ca3af%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.5rem center; transition: all 0.2s;" onfocus="this.style.borderColor='#667eea'; this.style.outline='none'" onblur="this.style.borderColor='#e5e7eb'">
-              <option value="all">All Time</option>
-              <option value="7">Past 7 Days</option>
-              <option value="14">Past 14 Days</option>
-              <option value="30" selected>Past 30 Days</option>
-              <option value="custom">Custom Range</option>
-            </select>
-            
-            <!-- Custom date inputs -->
-            <div id="customDateInputs" style="display: none; margin-left: 10px; display: flex; align-items: center; gap: 0.5rem;">
-              <input type="date" id="startDate" class="date-input" style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.875rem; color: #374151; font-weight: 500; transition: all 0.2s;" onfocus="this.style.borderColor='#667eea'; this.style.outline='none'" onblur="this.style.borderColor='#e5e7eb'">
-              <span style="margin: 0 5px; color: #9ca3af; font-weight: 500;">to</span>
-              <input type="date" id="endDate" class="date-input" style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.875rem; color: #374151; font-weight: 500; transition: all 0.2s;" onfocus="this.style.borderColor='#667eea'; this.style.outline='none'" onblur="this.style.borderColor='#e5e7eb'">
-              <button onclick="applyCustomDateFilter()" class="btn-apply-filter" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.25)'">Apply</button>
-            </div>
-          </div>
-          
-          <div class="last-updated" style="font-size: 0.8rem; color: #9ca3af; padding: 0.5rem 0.75rem; background: #f9fafb; border-radius: 8px; font-weight: 500; border: 1px solid #e5e7eb;">
-             <span id="currentAnalysisDataRange"></span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="history-table-container" style="overflow-x: auto; border-radius: 12px; border: 1px solid #e5e7eb;">
-        <table class="history-table" style="width: 100%; border-collapse: collapse; background: white;">
-          <thead id="historyTableHead" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <tr>
-              <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.3px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2);">Date</th>
-              <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.3px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2);">Customer Traffic</th>
-              <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.3px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2);">Revenue</th>
-              <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.3px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2);">Transactions</th>
-              <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.3px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2);">Risk Level</th>
-              <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.3px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2);">Status</th>
-            </tr>
-          </thead>
-          <tbody id="historicalAnalysisTableBody">
-            <tr style="border-bottom: 1px solid #f3f4f6;">
-              <td colspan="6" class="no-data" style="padding: 3rem; text-align: center; color: #9ca3af; font-size: 0.9rem; font-weight: 500;">Loading...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  .date-picker-container {
+    width: 100%;
+  }
   
-  <style>
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
-    }
-    
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    
-    #dataViewToggle:checked + .toggle-slider {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    }
-    
-    #dataViewToggle:checked + .toggle-slider:before {
-      transform: translateX(24px);
-    }
-    
-    .toggle-slider:before {
-      content: "";
-      position: absolute;
-      height: 20px;
-      width: 20px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      border-radius: 50%;
-      transition: all 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    
-    .history-table tbody tr:hover {
-      background: #f9fafb !important;
-      transition: all 0.2s;
-    }
-    
-    .history-table tbody td {
-      padding: 1rem 1.25rem;
-      font-size: 0.875rem;
-      color: #374151;
-      border-bottom: 1px solid #f3f4f6;
-      font-weight: 500;
-    }
-    
-    .history-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-    
-  
-  </style>
-</div>
+  .history-table-container {
+    overflow-x: scroll;
+  }
+}
 
   
 </style>
