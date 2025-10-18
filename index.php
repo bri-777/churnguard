@@ -165,17 +165,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <style>
 
-
-.history-section {
-    position: absolute;
-    top: 2555px;
-    left: 60%;
-    transform: translateX(-50%);
-    width: 80%;
-}
-
-
-
 .date-filter-container {
   display: flex;
   align-items: center;
@@ -4078,7 +4067,7 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
 <style>
 .history-section {
   position: absolute;
-  top: 655px;
+  top: 955px;
   left: 60%;
   transform: translateX(-50%);
   width: 80%; /* wide, but still leaves some margin */
