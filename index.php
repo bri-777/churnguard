@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 .history-section {
     position: absolute;
-    top: 1555px;
+    top: 2555px;
     left: 60%;
     transform: translateX(-50%);
     width: 80%;
