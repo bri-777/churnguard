@@ -1710,15 +1710,6 @@ function doLogout() {
 .delta.neg { color:#991b1b }
 .compact-list { margin:.25rem 0 0; padding-left:1rem }
 
-
-
-
-
-
-
-
-
-
 </style>
 
 
@@ -8996,7 +8987,7 @@ button:focus,
 
   </div>
 </div>
-</div>
+
  
   
   
