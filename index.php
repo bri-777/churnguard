@@ -6768,7 +6768,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   <div class="main-content" style="display: block; max-width: 1400px; margin: 0 auto; padding: 0;">
     <div class="chart-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; position: relative;">
       <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <div class="chart-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3;">📈 Customer Traffic & Churn Analytics</div>
+        <div class="chart-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3;"></div>
         <div class="date-picker-container" style="display: flex; gap: 0.625rem; align-items: center; flex-wrap: wrap;">
           <div class="date-picker" style="position: relative;">
             <div class="date-picker-input" onclick="toggleChartDatePicker()" style="background: #f9fafb; border: 1px solid #d1d5db; padding: 0.5625rem 0.875rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.625rem; min-width: 150px; transition: all 0.2s ease; font-size: 0.8125rem; color: #374151; font-weight: 500; line-height: 1.4;" onmouseover="this.style.borderColor='#667eea'; this.style.background='#f3f4f6'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'" onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f9fafb'; this.style.boxShadow='none'">
