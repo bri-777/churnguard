@@ -4063,1141 +4063,65 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
 
 
 
-  /* ==================== PROFESSIONAL SALES ANALYTICS DASHBOARD CSS ==================== */
 
-/* CSS Variables */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ========================================
+   CUSTOMER INTELLIGENCE PLATFORM v3.0
+   Premium Dashboard Design System
+   ======================================== */
+
+/* === DESIGN SYSTEM FOUNDATION === */
 :root {
-    /* Primary Colors - Professional Blue/Indigo Palette */
-    --primary-50: #eef2ff;
-    --primary-100: #e0e7ff;
-    --primary-200: #c7d2fe;
-    --primary-300: #a5b4fc;
-    --primary-400: #818cf8;
-    --primary-500: #6366f1;
-    --primary-600: #4f46e5;
-    --primary-700: #4338ca;
-    --primary-800: #3730a3;
-    --primary-900: #312e81;
-    
-    /* Success Colors */
-    --success-50: #ecfdf5;
-    --success-100: #d1fae5;
-    --success-500: #10b981;
-    --success-600: #059669;
-    --success-700: #047857;
-    
-    /* Warning Colors */
-    --warning-50: #fffbeb;
-    --warning-100: #fef3c7;
-    --warning-500: #f59e0b;
-    --warning-600: #d97706;
-    
-    /* Danger Colors */
-    --danger-50: #fef2f2;
-    --danger-100: #fee2e2;
-    --danger-500: #ef4444;
-    --danger-600: #dc2626;
-    
-    /* Neutral Colors */
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    
-    /* Background */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    
-    /* Shadows */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    
-    /* Border Radius */
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-2xl: 24px;
-    
-    /* Transitions */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Reset & Base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    background: var(--bg-secondary);
-    color: var(--gray-900);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Dashboard Wrapper */
-.dashboard-wrapper {
-    min-height: 100vh;
-    background: var(--bg-secondary);
-}
-
-/* Top Navigation Bar */
-.top-navbar {
-  background: #ffffff;
-  border-bottom: 1px solid #f1f1f1;
-  padding: 28px 60px; /* increased padding */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
-}
-
-/* Brand Title (Left Section) */
-.navbar-left .brand-title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 26px; /* larger font */
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: 0.6px;
-}
-
-.navbar-left .brand-title svg {
-  width: 30px;
-  height: 30px;
-
-}
-
-/* Date Display (Center Section) */
-.navbar-center .date-display {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
-  border-radius: 10px;
-  padding: 10px 22px; /* bigger size */
-  font-size: 16px;
-  color: #374151;
-  font-weight: 600;
-}
-
-.navbar-center .date-display svg {
-  width: 22px;
-  height: 22px;
-  color: #f59e0b;
-}
-
-/* Right Section (Icons / Profile Buttons) */
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-/* Circular Icon Buttons */
-.navbar-right .icon-btn {
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
-  border-radius: 50%;
-  width: 46px; /* larger buttons */
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  color: #6b7280;
-  font-size: 18px;
-}
-
-.navbar-right .icon-btn:hover {
-  background: #f59e0b;
-  color: #fff;
-  border-color: #f59e0b;
-  transform: translateY(-2px);
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .top-navbar {
-    padding: 18px 24px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
-
-  .navbar-left .brand-title {
-    font-size: 22px;
-  }
-
-  .navbar-center .date-display {
-    font-size: 14px;
-    padding: 8px 16px;
-  }
-
-  .navbar-right {
-    justify-content: flex-end;
-    width: 100%;
-  }
-}
-
-
-.icon-btn {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
-    background: var(--bg-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.icon-btn:hover {
-    background: var(--gray-50);
-    border-color: var(--primary-300);
-}
-
-.notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--danger-500);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-primary-small {
-    padding: 8px 16px;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all var(--transition-base);
-}
-
-.btn-primary-small:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-/* Main Content */
-.dashboard-content {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 32px;
-}
-
-/* Section Titles */
-.section-title-main {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: 20px;
-}
-
-/* KPI Section */
-.kpi-section {
-  margin-bottom: 40px;
-}
-
-/* Grid Layout */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-}
-
-/* KPI Card */
-.kpi-card-pro {
-  background: #fff;
-  border-radius: 16px;
-  padding: 28px 24px;
-  border: 1px solid #f1f1f1;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.kpi-card-pro:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  border-color: #f59e0b; /* matches your orange theme */
-}
-
-/* KPI Header */
-.kpi-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-/* KPI Icon */
-.kpi-icon-pro {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f59e0b;
-  color: #fff;
-  font-size: 22px;
-  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);
-}
-
-/* KPI Title & Value */
-.kpi-title {
-  font-size: 15px;
-  color: #6b7280;
-  font-weight: 500;
-  margin-bottom: 6px;
-}
-
-.kpi-value {
-  font-size: 26px;
-  font-weight: 700;
-  color: #111827;
-}
-
-/* Optional subtle growth text */
-.kpi-change {
-  font-size: 13px;
-  color: #10b981; /* green for positive change */
-  margin-top: 4px;
-}
-
-.kpi-change.negative {
-  color: #ef4444; /* red for negative change */
-}
-
-
-.sales-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.customers-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.transactions-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.target-gradient { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-
-.kpi-trend-badge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-trend-badge.down {
-    background: var(--danger-50);
-    color: var(--danger-700);
-}
-
-.kpi-trend-badge.down svg {
-    transform: rotate(180deg);
-}
-
-.kpi-trend-badge.success {
-    background: var(--success-50);
-    color: var(--success-700);
-}
-
-.kpi-body {
-    margin-top: 16px;
-}
-
-.kpi-label-pro {
-    display: block;
-    font-size: 13px;
-    color: var(--gray-500);
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.kpi-value-pro {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-    line-height: 1;
-}
-
-.kpi-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-}
-
-.kpi-comparison {
-    font-size: 12px;
-    color: var(--gray-500);
-}
-
-.kpi-sparkline {
-    font-size: 8px;
-    color: var(--primary-400);
-    letter-spacing: 2px;
-}
-
-.mini-progress {
-    width: 100%;
-    height: 4px;
-    background: var(--gray-200);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 8px;
-}
-
-.mini-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-    transition: width var(--transition-slow);
-}
-
-/* Charts Section */
-.charts-section {
-    margin-bottom: 32px;
-}
-
-.chart-container-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 24px;
-}
-
-.chart-card {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-sm);
-}
-
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-}
-
-.chart-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-}
-
-.chart-subtitle {
-    font-size: 13px;
-    color: var(--gray-500);
-    margin: 0;
-}
-
-.chart-select {
-    padding: 6px 12px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    background: white;
-    color: var(--gray-700);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.chart-select:hover {
-    border-color: var(--primary-400);
-}
-
-.chart-select:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.chart-body {
-    position: relative;
-}
-
-/* Comparison Section */
-.comparison-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    margin-bottom: 32px;
-}
-
-.section-header-pro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.btn-outline-small {
-    padding: 6px 12px;
-    border: 1px solid var(--gray-300);
-    background: transparent;
-    color: var(--gray-700);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-outline-small:hover {
-    background: var(--gray-50);
-    border-color: var(--gray-400);
-}
-
-.comparison-controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.control-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-}
-
-.form-select-pro,
-.form-input-pro {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    background: white;
-    color: var(--gray-900);
-    transition: all var(--transition-base);
-}
-
-.form-select-pro:focus,
-.form-input-pro:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.btn-primary-pro {
-    width: 100%;
-    padding: 10px 20px;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all var(--transition-base);
-    margin-top: 24px;
-}
-
-.btn-primary-pro:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.comparison-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-}
-
-.comparison-metric-card {
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-}
-
-.metric-name {
-    font-size: 13px;
-    color: var(--gray-600);
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.metric-values {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-}
-
-.metric-current {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-}
-
-.metric-previous {
-    font-size: 14px;
-    color: var(--gray-500);
-}
-
-.metric-change {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.metric-change.positive {
-    color: var(--success-600);
-}
-
-.metric-change.negative {
-    color: var(--danger-600);
-}
-
-/* Targets Section */
-.targets-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    border: 1px solid var(--gray-200);
-    margin-bottom: 32px;
-}
-
-.filter-controls {
-    display: flex;
-    gap: 12px;
-}
-
-.targets-grid {
-    display: grid;
-    gap: 16px;
-}
-
-.target-card-pro {
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    transition: all var(--transition-base);
-}
-
-.target-card-pro:hover {
-    border-color: var(--primary-300);
-    box-shadow: var(--shadow-md);
-}
-
-.target-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-}
-
-.target-name-pro {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0 0 4px 0;
-}
-
-.target-type-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    background: var(--primary-100);
-    color: var(--primary-700);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.target-progress-section {
-    margin-bottom: 16px;
-}
-
-.progress-bar-container {
-    height: 8px;
-    background: var(--gray-200);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    transition: width var(--transition-slow);
-}
-
-.progress-bar-fill.achieved {
-    background: linear-gradient(90deg, var(--success-500), var(--success-600));
-}
-
-.progress-bar-fill.near {
-    background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
-}
-
-.progress-bar-fill.below {
-    background: linear-gradient(90deg, var(--danger-400), var(--danger-500));
-}
-
-.progress-stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-}
-
-.progress-percentage {
-    font-weight: 700;
-    color: var(--gray-900);
-}
-
-.progress-values {
-    color: var(--gray-600);
-}
-
-.target-footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.target-dates {
-    font-size: 12px;
-    color: var(--gray-500);
-}
-
-.target-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-icon-small {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-300);
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.btn-icon-small:hover {
-    background: var(--gray-50);
-    border-color: var(--primary-400);
-}
-
-.btn-icon-small.delete:hover {
-    background: var(--danger-50);
-    border-color: var(--danger-400);
-    color: var(--danger-600);
-}
-
-/* Tables Section */
-.tables-section-pro {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--gray-200);
-    overflow: hidden;
-}
-
-.table-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--gray-200);
-    background: var(--gray-50);
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 16px;
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-600);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition-base);
-}
-
-.tab-btn:hover {
-    background: var(--gray-100);
-}
-
-.tab-btn.active {
-    color: var(--primary-600);
-    border-bottom-color: var(--primary-600);
-    background: white;
-}
-
-.tab-content {
-    display: none;
-    padding: 24px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.table-wrapper-pro {
-    overflow-x: auto;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
-}
-
-.data-table-pro {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-}
-
-.data-table-pro thead {
-    background: var(--gray-50);
-}
-
-.data-table-pro th {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gray-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--gray-200);
-}
-
-.data-table-pro td {
-    padding: 14px 16px;
-    border-top: 1px solid var(--gray-200);
-    font-size: 14px;
-    color: var(--gray-700);
-}
-
-.data-table-pro tbody tr:hover {
-    background: var(--gray-50);
-}
-
-.loading-cell {
-    text-align: center;
-    padding: 40px;
-    color: var(--gray-400);
-    font-style: italic;
-}
-
-.status-badge-pro {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.status-badge-pro.achieved {
-    background: var(--success-100);
-    color: var(--success-700);
-}
-
-.status-badge-pro.near {
-    background: var(--warning-100);
-    color: var(--warning-700);
-}
-
-.status-badge-pro.below {
-    background: var(--danger-100);
-    color: var(--danger-600);
-}
-
-/* Modal */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity var(--transition-base);
-}
-
-.modal-overlay.active {
-    display: flex;
-    opacity: 1;
-}
-
-.modal-container {
-    background: white;
-    border-radius: var(--radius-2xl);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-2xl);
-    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.modal-header-pro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 32px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.modal-header-pro h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin: 0;
-}
-
-.modal-close-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    border: none;
-    background: var(--gray-100);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.modal-close-btn:hover {
-    background: var(--gray-200);
-    transform: rotate(90deg);
-}
-
-.modal-body-pro {
-    padding: 24px 32px;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-group-pro {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group-pro.full-width {
-    grid-column: 1 / -1;
-}
-
-.form-group-pro label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-700);
-}
-
-.modal-footer-pro {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 24px 32px;
-    border-top: 1px solid var(--gray-200);
-}
-
-.btn-secondary-pro {
-    padding: 10px 20px;
-    border: 1px solid var(--gray-300);
-    background: white;
-    color: var(--gray-700);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-secondary-pro:hover {
-    background: var(--gray-50);
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .chart-container-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-content {
-        padding: 20px;
-    }
-    
-    .top-navbar {
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 16px;
-    }
-    
-    .navbar-center {
-        order: 3;
-        width: 100%;
-    }
-    
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .comparison-controls {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .table-tabs {
-        overflow-x: auto;
-    }
-}
-  </style>
-
-
-  
-  
-  <style>
-    /* ============================================
-   PROFESSIONAL CUSTOMER ANALYTICS DASHBOARD
-   Minimalist Design System with Single Color Theme
-   ============================================ */
-
-/* === CSS Variables === */
-:root {
-  /* Primary Color Palette - Professional Blue */
-  --primary-50: #f0f9ff;
-  --primary-100: #e0f2fe;
-  --primary-200: #bae6fd;
-  --primary-300: #7dd3fc;
-  --primary-400: #38bdf8;
-  --primary-500: #0ea5e9;
-  --primary-600: #0284c7;
-  --primary-700: #0369a1;
-  --primary-800: #075985;
-  --primary-900: #0c4a6e;
+  /* Primary Color Palette - Deep Ocean Blue Theme */
+  --color-primary: #0a4d68;
+  --color-primary-light: #088395;
+  --color-primary-dark: #05364d;
+  --color-accent: #05dfd7;
+  --color-accent-glow: rgba(5, 223, 215, 0.3);
   
   /* Neutral Palette */
-  --neutral-50: #fafafa;
-  --neutral-100: #f5f5f5;
-  --neutral-200: #e5e5e5;
-  --neutral-300: #d4d4d4;
-  --neutral-400: #a3a3a3;
-  --neutral-500: #737373;
-  --neutral-600: #525252;
-  --neutral-700: #404040;
-  --neutral-800: #262626;
-  --neutral-900: #171717;
-  
-  /* Semantic Colors */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: var(--primary-500);
-  
-  /* Background & Surface */
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
-  --bg-tertiary: #f5f5f5;
-  --surface: #ffffff;
-  --surface-elevated: #ffffff;
+  --color-bg-main: #f8fafc;
+  --color-bg-card: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-surface: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
   
   /* Text Colors */
-  --text-primary: #171717;
-  --text-secondary: #525252;
-  --text-tertiary: #a3a3a3;
-  --text-inverse: #ffffff;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-text-inverse: #ffffff;
   
-  /* Border & Divider */
-  --border-color: #e5e5e5;
-  --divider: #f5f5f5;
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-success-bg: #d1fae5;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fef3c7;
+  --color-danger: #ef4444;
+  --color-danger-bg: #fee2e2;
+  --color-info: #3b82f6;
   
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  /* Tier Colors */
+  --color-gold: #fbbf24;
+  --color-silver: #94a3b8;
+  --color-platinum: #a78bfa;
   
-  /* Spacing Scale */
+  /* Spacing System */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -5211,11 +4135,18 @@ body {
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --radius-full: 9999px;
+  --radius-2xl: 1.5rem;
+  
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
   
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -5223,7 +4154,7 @@ body {
   --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* === Base Reset === */
+/* === GLOBAL RESET === */
 * {
   margin: 0;
   padding: 0;
@@ -5232,675 +4163,1692 @@ body {
 
 body {
   font-family: var(--font-sans);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--color-bg-main);
+  color: var(--color-text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* === Page Container === */
+/* === CONTAINER === */
 .page {
-  min-height: 100vh;
-  padding: var(--space-xl);
-  max-width: 1600px;
+  max-width: 1800px;
   margin: 0 auto;
+  padding: var(--space-xl);
+  min-height: 100vh;
 }
 
-/* === Analytics Container === */
-.analytics-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
-
-/* === Header Styles === */
-.dashboard-header {
-  position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+/* === EXECUTIVE DASHBOARD HEADER === */
+.executive-dashboard-header {
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
+  border-radius: var(--radius-2xl);
   padding: var(--space-2xl);
-  text-align: center;
+  margin-bottom: var(--space-2xl);
+  box-shadow: var(--shadow-xl);
+  position: relative;
   overflow: hidden;
+  color: var(--color-text-inverse);
 }
 
-.header-glow {
-  display: none;
+.header-matrix {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 40px,
+    rgba(255, 255, 255, 0.03) 41px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 40px,
+    rgba(255, 255, 255, 0.03) 41px
+  );
+  pointer-events: none;
 }
 
-.header-badge {
-  display: inline-flex;
+.platform-identifier {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.platform-logo svg {
+  filter: drop-shadow(0 2px 8px var(--color-accent-glow));
+}
+
+.platform-status {
+  display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--primary-50);
-  color: var(--primary-700);
-  border-radius: var(--radius-full);
   font-size: 0.875rem;
   font-weight: 500;
-  margin-bottom: var(--space-lg);
+  letter-spacing: 0.025em;
 }
 
-.header-badge svg {
-  width: 18px;
-  height: 18px;
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px var(--color-accent);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.main-title {
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.platform-title {
+  margin-bottom: var(--space-xl);
+  position: relative;
+  z-index: 1;
+}
+
+.title-primary {
+  display: block;
   font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: var(--space-sm);
-  color: var(--text-primary);
-}
-
-.title-gradient,
-.title-pulse {
-  display: inline;
-}
-
-.title-gradient {
-  color: var(--primary-600);
-}
-
-.subtitle {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-xl);
-}
-
-.stats-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-xl);
-  margin-top: var(--space-xl);
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-number {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: var(--primary-600);
+  letter-spacing: -0.025em;
   margin-bottom: var(--space-xs);
 }
 
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
+.title-secondary {
+  display: block;
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.9;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border-color);
-}
-
-/* === Metrics Grid === */
-.metrics-grid {
+/* === GLOBAL METRICS BAR === */
+.global-metrics-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: var(--space-xl);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  position: relative;
+  z-index: 1;
 }
 
-/* === Metric Cards === */
-.metric-card {
-  position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
+.metric-block {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: var(--space-lg);
   border-radius: var(--radius-lg);
-  padding: var(--space-xl);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all var(--transition-base);
 }
 
-.metric-card:hover {
+.metric-block:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.metric-data {
+  flex: 1;
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-bottom: var(--space-xs);
+}
+
+.metric-delta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.metric-delta.positive {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.metric-delta.negative {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.data-freshness {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.75rem;
+  opacity: 0.8;
+  position: relative;
+  z-index: 1;
+}
+
+.separator {
+  opacity: 0.5;
+}
+
+/* === ANALYTICS GRID === */
+.analytics-grid-advanced {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-xl);
+}
+
+/* === INTELLIGENCE CARD BASE === */
+.intelligence-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.intelligence-card:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
-.card-shimmer,
-.card-glow,
-.card-glow-loyalty,
-.card-glow-behavior,
-.card-glow-segment,
-.card-glow-engagement,
-.card-glow-performance,
-.card-glow-traffic,
-.card-glow-predictive,
-.card-glow-report {
-  display: none;
+.card-matrix-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, var(--color-surface) 0%, transparent 100%);
+  pointer-events: none;
+  opacity: 0.5;
 }
 
-.card-header {
+/* === CARD LAYOUTS === */
+.customer-profiles-card {
+  grid-column: span 12;
+}
+
+.retention-analytics-card {
+  grid-column: span 12;
+}
+
+.purchase-intelligence-card {
+  grid-column: span 12;
+}
+
+.segmentation-engine-card {
+  grid-column: span 12;
+}
+
+.journey-mapping-card {
+  grid-column: span 6;
+}
+
+.ai-predictive-card {
+  grid-column: span 6;
+}
+
+.engagement-heatmap-card {
+  grid-column: span 12;
+}
+
+.activity-feed-card {
+  grid-column: span 12;
+}
+
+/* === CARD HEADER === */
+.card-header-advanced {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  justify-content: space-between;
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-bg-elevated);
 }
 
-.card-icon {
-  width: 56px;
-  height: 56px;
+.header-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.header-icon-wrapper {
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-50);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   border-radius: var(--radius-md);
-  color: var(--primary-600);
-}
-
-.status-badge {
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.status-active {
-  background: var(--success);
   color: white;
+  flex-shrink: 0;
 }
 
-.status-trending {
-  background: var(--primary-500);
-  color: white;
+.header-icon-wrapper.critical {
+  background: linear-gradient(135deg, var(--color-danger), #dc2626);
 }
 
-.status-info {
-  background: var(--info);
-  color: white;
-}
-
-.status-success {
-  background: var(--success);
-  color: white;
-}
-
-.status-live {
-  background: var(--error);
-  color: white;
-}
-
-.status-ai {
-  background: var(--primary-700);
-  color: white;
-}
-
-.status-growth {
-  background: var(--success);
-  color: white;
+.header-icon-wrapper.ai {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-primary-light));
 }
 
 .card-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
 }
 
-.card-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-xl);
+/* === ACTION BUTTONS === */
+.header-actions {
+  display: flex;
+  gap: var(--space-sm);
 }
 
-/* === Featured Statistics === */
-.featured-stat {
-  background: var(--bg-tertiary);
+.action-btn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--color-border);
+  background: white;
+  color: var(--color-text-secondary);
   border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
-}
-
-.featured-stat-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
-}
-
-.featured-stat-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--primary-600);
-  margin-bottom: var(--space-sm);
-}
-
-.featured-stat-trend {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-.featured-stat-trend.positive {
-  color: var(--success);
+.action-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
-.featured-stat-trend svg {
-  width: 16px;
-  height: 16px;
+.action-btn.primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
 }
 
-/* === Card Content === */
-.card-content {
+.action-btn.primary:hover {
+  background: var(--color-primary-dark);
+}
+
+/* === CUSTOMER PROFILES === */
+.customer-intelligence-grid {
+  padding: var(--space-xl);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  gap: var(--space-lg);
 }
 
-.insight-row {
+.customer-profile-item {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  grid-template-columns: auto 1fr auto auto auto;
+  gap: var(--space-xl);
+  align-items: center;
+  padding: var(--space-xl);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
 }
 
-.insight-item {
+.customer-profile-item:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.customer-profile-item.vip {
+  background: linear-gradient(135deg, rgba(10, 77, 104, 0.05) 0%, transparent 100%);
+  border-color: var(--color-primary-light);
+}
+
+/* Profile Rank */
+.profile-rank {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
 }
 
-.insight-icon {
+.rank-badge {
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-100);
-  color: var(--primary-600);
   border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 1.125rem;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.rank-badge.gold {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.rank-badge.silver {
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  color: var(--color-text-primary);
+}
+
+/* Profile Identity */
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
   flex-shrink: 0;
 }
 
-.warning-icon {
-  background: #fef3c7;
-  color: var(--warning);
+.profile-details {
+  flex: 1;
 }
 
-.insight-details {
+.profile-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.profile-id {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  margin-bottom: var(--space-sm);
+}
+
+.profile-tags {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 2px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.tag.vip {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+}
+
+.tag.loyal {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.tag.gold {
+  background: rgba(251, 191, 36, 0.15);
+  color: #f59e0b;
+}
+
+.tag.silver {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+}
+
+/* Profile Metrics */
+.profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md) var(--space-xl);
+  min-width: 320px;
+}
+
+.metric-item {
   display: flex;
   flex-direction: column;
+  gap: var(--space-xs);
 }
 
-.insight-label {
+.metric-item .label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.insight-value {
-  font-size: 1.25rem;
+.metric-item .value {
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
-.insight-value.warning {
-  color: var(--warning);
-}
-
-/* === Tier Classification === */
-.tier-classification {
+/* Profile Behavior */
+.profile-behavior {
   display: flex;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-color);
+  align-items: center;
+  gap: var(--space-lg);
+  min-width: 200px;
 }
 
-.tier-item {
+.behavior-chart {
+  flex: 1;
+  height: 40px;
+}
+
+.mini-chart {
+  width: 100%;
+  height: 100%;
+}
+
+.behavior-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.score-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.score-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text-secondary);
+}
+
+.btn-icon:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* === RETENTION ANALYTICS === */
+.retention-matrix {
+  padding: var(--space-xl);
+}
+
+.matrix-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+}
+
+.matrix-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.matrix-legend {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.legend-item {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
-.tier-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.legend-item::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
 }
 
-.tier-regular .tier-dot {
-  background: var(--neutral-400);
+.legend-item.healthy::before {
+  background: var(--color-success);
 }
 
-.tier-loyal .tier-dot {
-  background: var(--primary-500);
+.legend-item.at-risk::before {
+  background: var(--color-warning);
 }
 
-.tier-vip .tier-dot {
-  background: var(--warning);
+.legend-item.critical::before {
+  background: var(--color-danger);
 }
 
-.tier-count {
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* === Dual Stats === */
-.dual-stats {
+/* Health Segments */
+.health-segments {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-lg);
-  padding: var(--space-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-2xl);
 }
 
-.dual-stat-item {
-  text-align: center;
+.segment-card {
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border-light);
+  transition: all var(--transition-base);
 }
 
-.dual-stat-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
+.segment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
-.dual-stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-600);
+.segment-card.healthy {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
+  border-color: var(--color-success);
 }
 
-.dual-stat-divider {
-  width: 1px;
-  background: var(--border-color);
+.segment-card.at-risk {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, transparent 100%);
+  border-color: var(--color-warning);
 }
 
-/* === Section Subtitle === */
-.section-subtitle {
-  font-size: 0.875rem;
+.segment-card.critical {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
+  border-color: var(--color-danger);
+}
+
+.segment-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.segment-title {
   font-weight: 600;
-  color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
 }
 
-/* === Top Products === */
-.top-products {
-  margin-bottom: var(--space-xl);
+.segment-stats {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
-.product-list {
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.stat-percentage {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.segment-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.detail-row span:last-child {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* At Risk Customers */
+.at-risk-customers h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.risk-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.product-item {
+.risk-customer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.risk-customer:hover {
+  border-color: var(--color-warning);
+  box-shadow: var(--shadow-md);
+}
+
+.customer-info {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  flex: 1;
 }
 
-.product-rank {
+.customer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.customer-details {
+  flex: 1;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.customer-meta {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.risk-level {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.risk-level.high {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.risk-level.medium {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.action-button {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.action-button:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+/* === PURCHASE INTELLIGENCE === */
+.purchase-analytics {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.purchase-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.overview-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.overview-stat:hover {
+  background: white;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  border-radius: var(--radius-md);
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.stat-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.stat-change.positive {
+  color: var(--color-success);
+}
+
+/* Product Performance */
+.product-performance h3,
+.category-breakdown h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.combo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.combo-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-lg);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.combo-item:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.combo-rank {
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-100);
-  color: var(--primary-600);
+  background: var(--color-primary);
+  color: white;
   border-radius: var(--radius-md);
   font-weight: 700;
+}
+
+.combo-products {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 0.9375rem;
+}
+
+.combo-products .product {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.combo-products .plus {
+  color: var(--color-text-muted);
+  font-weight: 300;
+}
+
+.combo-stats {
+  display: flex;
+  gap: var(--space-xl);
   font-size: 0.875rem;
+}
+
+.combo-stats .frequency {
+  color: var(--color-text-secondary);
+}
+
+.combo-stats .revenue {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Category Grid */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+}
+
+.category-cell {
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  transition: all var(--transition-base);
+}
+
+.category-cell:hover {
+  background: white;
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.category-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.category-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.category-metrics .metric {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.category-metrics .metric-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-metrics .metric-trend {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.category-metrics .metric-trend.positive {
+  color: var(--color-success);
+}
+
+/* === SEGMENTATION ENGINE === */
+.segment-controls {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.control-btn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--color-border);
+  background: white;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.control-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.control-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.segmentation-analysis {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.segment-distribution {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+
+.distribution-chart {
+  width: 100%;
+  height: auto;
+}
+
+.segment-insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.insight-card {
+  padding: var(--space-xl);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.insight-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.insight-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.insight-icon {
+  font-size: 1.5rem;
+}
+
+.insight-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.insight-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.metric-row .value {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.insight-action button {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.insight-action button:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.02);
+}
+
+/* === JOURNEY MAPPING === */
+.journey-visualization {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.journey-stages {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: var(--space-lg) 0;
+}
+
+.stage {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.stage:hover {
+  background: white;
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+
+.stage.active {
+  background: linear-gradient(135deg, rgba(10, 77, 104, 0.05) 0%, transparent 100%);
+  border-color: var(--color-primary);
+}
+
+.stage-connector {
+  width: 40px;
+  height: 2px;
+  background: var(--color-border);
+  position: relative;
   flex-shrink: 0;
 }
 
-.product-info {
+.stage-connector::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -4px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid var(--color-border);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.stage-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  border-radius: var(--radius-md);
+  color: white;
+  margin-bottom: var(--space-md);
+}
+
+.stage-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.stage-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.stage-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: 0.875rem;
+}
+
+.stage-stats .stat {
+  color: var(--color-text-secondary);
+}
+
+.stage-stats .conversion {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Touchpoint Analysis */
+.touchpoint-analysis h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.touchpoint-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-lg);
+}
+
+.touchpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.touchpoint:hover {
+  background: white;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.touchpoint-channel {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.touchpoint-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* === AI PREDICTIVE ANALYTICS === */
+.ai-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+  animation: pulse 2s infinite;
+}
+
+.ai-predictions {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.prediction-panel {
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+}
+
+.prediction-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+}
+
+.prediction-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.confidence-badge {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.prediction-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+}
+
+.pred-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-base);
+}
+
+.pred-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.pred-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.pred-icon.revenue {
+  background: linear-gradient(135deg, var(--color-success), #059669);
+  color: white;
+}
+
+.pred-icon.customers {
+  background: linear-gradient(135deg, var(--color-info), #2563eb);
+  color: white;
+}
+
+.pred-icon.warning {
+  background: linear-gradient(135deg, var(--color-warning), #d97706);
+  color: white;
+}
+
+.pred-content {
   flex: 1;
 }
 
-.product-name {
+.pred-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.pred-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.pred-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.pred-change.positive {
+  color: var(--color-success);
+}
+
+.pred-change.negative {
+  color: var(--color-danger);
+}
+
+/* AI Recommendations */
+.ai-recommendations h3 {
+  font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
 }
 
-.product-meta {
+.recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recommendation {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-lg);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-light);
+  border-left: 4px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.recommendation:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.recommendation.urgent {
+  border-left-color: var(--color-danger);
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
+}
+
+.recommendation.high {
+  border-left-color: var(--color-warning);
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, transparent 100%);
+}
+
+.recommendation.medium {
+  border-left-color: var(--color-info);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+}
+
+.rec-priority {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.product-bar {
-  flex: 2;
-  height: 8px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-full);
-  overflow: hidden;
+.recommendation.urgent .rec-priority {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
-.product-bar-fill {
-  height: 100%;
-  background: var(--primary-500);
-  border-radius: var(--radius-full);
-  transition: width var(--transition-slow);
+.recommendation.high .rec-priority {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
-/* === Time Heatmap === */
-.time-heatmap {
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-color);
+.recommendation.medium .rec-priority {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-info);
+}
+
+.rec-content {
+  flex: 1;
+}
+
+.rec-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.rec-impact {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.rec-action {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rec-action:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+/* Anomaly Alerts */
+.anomaly-alerts h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.anomaly-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.anomaly-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.anomaly-icon {
+  flex-shrink: 0;
+  color: var(--color-warning);
+}
+
+/* === ENGAGEMENT HEATMAP === */
+.heatmap-container {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.time-heatmap-advanced h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
 }
 
 .heatmap-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--space-xs);
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  gap: var(--space-md);
 }
 
-.heatmap-cell {
-  aspect-ratio: 1;
-  border-radius: var(--radius-sm);
-  position: relative;
-  cursor: pointer;
-  transition: transform var(--transition-fast);
-}
-
-.heatmap-cell:hover {
-  transform: scale(1.1);
-}
-
-.heat-low {
-  background: var(--primary-100);
-}
-
-.heat-medium {
-  background: var(--primary-300);
-}
-
-.heat-high {
-  background: var(--primary-500);
-}
-
-.heatmap-cell::after {
-  content: attr(data-hour);
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.625rem;
-  color: var(--text-tertiary);
-  white-space: nowrap;
-}
-
-/* === Segment Visualization === */
-.segment-visualization {
+.heatmap-labels-y {
   display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-xl);
+  flex-direction: column;
+  justify-content: space-around;
+  gap: var(--space-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  padding-right: var(--space-md);
 }
 
-.segment-chart {
+.heatmap-labels-y span {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.heatmap-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.heatmap-row {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.heat-cell {
+  width: 100%;
+  height: 40px;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  position: relative;
+}
+
+.heat-cell:hover::after {
+  content: attr(data-value) '%';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.heat-cell[data-value="12"],
+.heat-cell[data-value="18"],
+.heat-cell[data-value="24"] {
+  background: rgba(10, 77, 104, 0.1);
+}
+
+.heat-cell[data-value="28"],
+.heat-cell[data-value="32"],
+.heat-cell[data-value="38"] {
+  background: rgba(10, 77, 104, 0.2);
+}
+
+.heat-cell[data-value="42"],
+.heat-cell[data-value="45"],
+.heat-cell[data-value="48"] {
+  background: rgba(10, 77, 104, 0.3);
+}
+
+.heat-cell[data-value="52"],
+.heat-cell[data-value="58"] {
+  background: rgba(10, 77, 104, 0.5);
+}
+
+.heat-cell[data-value="65"] {
+  background: rgba(10, 77, 104, 0.6);
+}
+
+.heat-cell.high,
+.heat-cell[data-value="72"],
+.heat-cell[data-value="78"],
+.heat-cell[data-value="85"] {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+}
+
+.heatmap-labels-x {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  padding-top: var(--space-sm);
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.legend-gradient {
+  flex: 1;
+  height: 12px;
+  background: linear-gradient(90deg, 
+    rgba(10, 77, 104, 0.1) 0%, 
+    rgba(10, 77, 104, 0.3) 25%,
+    rgba(10, 77, 104, 0.5) 50%,
+    rgba(10, 77, 104, 0.7) 75%,
+    var(--color-primary) 100%
+  );
+  border-radius: var(--radius-sm);
+}
+
+/* Engagement Metrics */
+.engagement-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+}
+
+.engagement-score-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2xl);
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+}
+
+.score-ring-container {
   position: relative;
   width: 200px;
   height: 200px;
 }
 
-.donut-chart {
+.engagement-ring {
   width: 100%;
   height: 100%;
 }
 
-.segment-arc {
-  transition: stroke-dashoffset var(--transition-slow);
-}
-
-.chart-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.chart-total {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-600);
-}
-
-.chart-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* === Segment Breakdown === */
-.segment-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
-}
-
-.segment-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.segment-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.segment-name {
-  width: 80px;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-
-.segment-bar {
-  flex: 1;
-  height: 8px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.segment-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  transition: width var(--transition-slow);
-}
-
-.warning-fill {
-  background: linear-gradient(90deg, var(--warning), #fbbf24) !important;
-}
-
-.segment-percent {
-  width: 40px;
-  text-align: right;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-  flex-shrink: 0;
-}
-
-/* === LTV Display === */
-.ltv-display {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-color);
-}
-
-.ltv-item {
-  text-align: center;
-  padding: var(--space-md);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-}
-
-.ltv-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
-}
-
-.ltv-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-600);
-}
-
-/* === Engagement Score === */
-.engagement-score {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xl);
-  padding: var(--space-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-xl);
-}
-
-.score-circle {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  flex-shrink: 0;
-}
-
-.score-ring {
-  width: 100%;
-  height: 100%;
-}
-
-.score-progress {
-  transition: stroke-dashoffset var(--transition-slow);
-}
-
-.score-content {
+.score-display {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -5909,748 +5857,380 @@ body {
 }
 
 .score-number {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 700;
-  color: var(--primary-600);
+  color: var(--color-primary);
+  line-height: 1;
 }
 
 .score-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.score-description {
-  flex: 1;
-}
-
-.score-status {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-xs);
-}
-
-.score-detail {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-sm);
 }
 
-/* === Engagement Metrics === */
-.engagement-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
-}
-
-.metric-box {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-}
-
-.metric-box-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-100);
-  color: var(--primary-600);
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-}
-
-.metric-box-content {
-  flex: 1;
-}
-
-.metric-box-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-600);
-  margin-bottom: var(--space-xs);
-}
-
-.metric-box-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-/* === Traffic Heatmap === */
-.traffic-heatmap {
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-color);
-}
-
-.weekday-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--space-md);
-}
-
-.weekday-item {
+.engagement-breakdown {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
+  justify-content: center;
+  gap: var(--space-xl);
 }
 
-.weekday-bar {
-  width: 100%;
-  background: var(--primary-500);
+.breakdown-item {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.breakdown-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.breakdown-bar {
+  height: 12px;
+  background: var(--color-border-light);
   border-radius: var(--radius-sm);
-  transition: height var(--transition-base);
-}
-
-.weekday-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-/* === KPI Grid === */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
-}
-
-.kpi-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-}
-
-.kpi-icon {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-100);
-  color: var(--primary-600);
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-}
-
-.kpi-content {
-  flex: 1;
-}
-
-.kpi-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-xs);
-}
-
-.kpi-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--primary-600);
-  margin-bottom: var(--space-xs);
-}
-
-.kpi-change {
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.kpi-change.positive {
-  color: var(--success);
-}
-
-/* === Revenue Breakdown === */
-.revenue-breakdown {
-  margin-bottom: var(--space-xl);
-}
-
-.revenue-items {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.revenue-item {
-  display: grid;
-  grid-template-columns: 1fr 2fr auto;
-  gap: var(--space-md);
-  align-items: center;
-}
-
-.revenue-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.revenue-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-xs);
-}
-
-.revenue-value {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.revenue-progress {
-  height: 8px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
-.revenue-bar {
+.bar-fill {
   height: 100%;
-  background: var(--primary-500);
-  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  border-radius: var(--radius-sm);
   transition: width var(--transition-slow);
 }
 
-.revenue-percent {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
+.breakdown-value {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  min-width: 60px;
   text-align: right;
-  width: 40px;
 }
 
-/* === Growth Indicator === */
-.growth-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border-radius: var(--radius-md);
-  border: 1px solid #a7f3d0;
-}
-
-.growth-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  color: var(--success);
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-}
-
-.growth-text {
-  flex: 1;
-}
-
-.growth-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--success);
-  margin-bottom: var(--space-xs);
-}
-
-.growth-desc {
-  font-size: 0.875rem;
-  color: #047857;
-}
-
-/* === Traffic Stats === */
-.traffic-stats {
-  margin-bottom: var(--space-xl);
-}
-
-.traffic-stat-large {
-  padding: var(--space-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  text-align: center;
-}
-
-.traffic-stat-number {
-  font-size: 3rem;
-  font-weight: 700;
-  color: var(--primary-600);
-  margin-bottom: var(--space-xs);
-}
-
-.traffic-stat-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
-}
-
-.traffic-mini-chart {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: var(--space-xs);
-  height: 40px;
-}
-
-.mini-bar {
-  width: 8px;
-  background: var(--primary-500);
-  border-radius: var(--radius-sm);
-  transition: height var(--transition-base);
-}
-
-/* === Conversion Display === */
-.conversion-display {
-  display: flex;
-  gap: var(--space-xl);
-  margin-bottom: var(--space-xl);
-}
-
-.conversion-ring {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-}
-
-.conversion-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.conversion-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary-600);
-}
-
-.conversion-label {
-  font-size: 0.625rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.conversion-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--space-md);
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.detail-row:last-child {
-  border-bottom: none;
-}
-
-.detail-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.detail-value {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* === Anomaly Detection === */
-.anomaly-detection {
-  padding: var(--space-lg);
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-radius: var(--radius-md);
-  border: 1px solid #fcd34d;
-}
-
-.anomaly-header {
+/* === ACTIVITY FEED === */
+.feed-status {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-weight: 600;
-  color: #92400e;
-  margin-bottom: var(--space-sm);
-}
-
-.anomaly-header svg {
-  width: 18px;
-  height: 18px;
-  color: var(--warning);
-}
-
-.anomaly-body {
   font-size: 0.875rem;
-  color: #78350f;
+  font-weight: 500;
+  color: var(--color-danger);
 }
 
-/* === AI Insights === */
-.ai-insights {
+.pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  box-shadow: 0 0 0 0 var(--color-danger);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.activity-feed {
+  padding: var(--space-xl);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  max-height: 600px;
+  overflow-y: auto;
 }
 
-.ai-card {
+.feed-item {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: var(--space-lg);
   padding: var(--space-lg);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
   transition: all var(--transition-base);
 }
 
-.ai-card:hover {
-  box-shadow: var(--shadow-md);
+.feed-item:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
   transform: translateX(4px);
 }
 
-.ai-card-success {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border-color: #a7f3d0;
+.feed-item.new {
+  background: linear-gradient(90deg, rgba(5, 223, 215, 0.05) 0%, transparent 100%);
+  border-color: var(--color-accent);
 }
 
-.ai-card-header {
+.feed-time {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.feed-content {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  align-items: flex-start;
+  gap: var(--space-md);
 }
 
-.ai-card-icon {
+.feed-icon {
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  color: var(--primary-600);
   border-radius: var(--radius-md);
   flex-shrink: 0;
 }
 
-.ai-card-success .ai-card-icon {
-  color: var(--success);
+.feed-icon.purchase {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-success);
 }
 
-.ai-card-title {
+.feed-icon.milestone {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--color-gold);
+}
+
+.feed-icon.alert {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
+}
+
+.feed-icon.review {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-info);
+}
+
+.feed-details {
+  flex: 1;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.feed-details .customer-name {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
-.ai-card-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+.feed-details .amount {
+  font-weight: 700;
+  color: var(--color-primary);
 }
 
-.ai-main-stat {
+.feed-details .achievement {
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.feed-details .alert-type {
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.feed-details .review {
+  font-style: italic;
+  color: var(--color-text-primary);
+}
+
+/* === EXECUTIVE SUMMARY === */
+.executive-summary {
+  margin-top: var(--space-2xl);
+  padding: var(--space-2xl);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-light);
+}
+
+.summary-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary-600);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xl);
+  letter-spacing: -0.025em;
 }
 
-.ai-card-success .ai-main-stat {
-  color: var(--success);
-}
-
-.ai-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.ai-action {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--primary-600);
-  margin-top: var(--space-sm);
-  cursor: pointer;
-  transition: gap var(--transition-fast);
-}
-
-.ai-action:hover {
-  gap: var(--space-sm);
-}
-
-.ai-action svg {
-  width: 16px;
-  height: 16px;
-}
-
-.ai-confidence {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-sm);
-}
-
-.confidence-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.confidence-bar {
-  flex: 1;
-  height: 6px;
-  background: white;
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.confidence-fill {
-  height: 100%;
-  background: var(--success);
-  border-radius: var(--radius-full);
-  transition: width var(--transition-slow);
-}
-
-.confidence-value {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--success);
-  white-space: nowrap;
-}
-
-.ai-trend {
-  margin-top: var(--space-sm);
-}
-
-.trend-badge {
-  display: inline-block;
-  padding: var(--space-xs) var(--space-md);
-  background: var(--success);
-  color: white;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-/* === Prediction Queries === */
-.prediction-queries {
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-color);
-}
-
-.query-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.query-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.query-item:hover {
-  background: var(--primary-50);
-  color: var(--primary-600);
-  transform: translateX(4px);
-}
-
-.query-item svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-/* === Reporting Card === */
-.full-width {
-  grid-column: 1 / -1;
-}
-
-.reporting-section {
+.summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--space-xl);
 }
 
-.report-column {
+.summary-card {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  align-items: flex-start;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  transition: all var(--transition-base);
 }
 
-.report-column-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 2px solid var(--primary-500);
-}
-
-.report-column-header svg {
-  width: 20px;
-  height: 20px;
-  color: var(--primary-600);
-}
-
-.report-column-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.report-items {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.report-link {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.report-link:hover {
-  background: var(--primary-50);
-  color: var(--primary-600);
-  transform: translateX(4px);
-}
-
-.report-link svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  color: var(--primary-500);
-}
-
-/* === Export Options === */
-.export-options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-}
-
-.export-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
-  background: var(--primary-500);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.export-btn:hover {
-  background: var(--primary-600);
-  transform: translateY(-2px);
+.summary-card:hover {
+  background: white;
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
 
-.export-btn:active {
-  transform: translateY(0);
-}
-
-.export-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.export-pdf {
-  background: #dc2626;
-}
-
-.export-pdf:hover {
-  background: #b91c1c;
-}
-
-.export-excel {
-  background: #16a34a;
-}
-
-.export-excel:hover {
-  background: #15803d;
-}
-
-.export-csv {
-  background: var(--warning);
-}
-
-.export-csv:hover {
-  background: #d97706;
-}
-
-.export-share {
-  background: var(--primary-500);
-}
-
-.export-share:hover {
-  background: var(--primary-600);
-}
-
-.schedule-info {
-  padding: var(--space-md);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  border-left: 3px solid var(--primary-500);
-}
-
-.schedule-text {
+.summary-icon {
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.schedule-text svg {
-  width: 16px;
-  height: 16px;
-  color: var(--primary-500);
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  border-radius: var(--radius-lg);
+  color: white;
   flex-shrink: 0;
 }
 
-/* === Responsive Design === */
-@media (max-width: 1200px) {
-  .metrics-grid {
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+.summary-content {
+  flex: 1;
+}
+
+.summary-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+  line-height: 1;
+}
+
+.summary-change {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.summary-change.positive {
+  color: var(--color-success);
+}
+
+/* === RISK INDICATOR === */
+.risk-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-danger-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger);
+}
+
+.indicator-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.indicator-value {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.indicator-value.critical {
+  color: var(--color-danger);
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 1400px) {
+  .analytics-grid-advanced {
+    grid-template-columns: repeat(6, 1fr);
   }
   
-  .reporting-section {
-    grid-template-columns: repeat(2, 1fr);
+  .customer-profiles-card,
+  .retention-analytics-card,
+  .purchase-intelligence-card,
+  .segmentation-engine-card,
+  .engagement-heatmap-card,
+  .activity-feed-card {
+    grid-column: span 6;
+  }
+  
+  .journey-mapping-card,
+  .ai-predictive-card {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 1024px) {
+  .page {
+    padding: var(--space-lg);
+  }
+  
+  .title-primary {
+    font-size: 2rem;
+  }
+  
+  .global-metrics-bar {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  
+  .customer-profile-item {
+    grid-template-columns: auto 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .profile-metrics {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .profile-behavior {
+    grid-column: 1 / -1;
+  }
+  
+  .profile-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+  
+  .journey-stages {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .stage-connector {
+    width: 2px;
+    height: 40px;
+    align-self: center;
+  }
+  
+  .stage-connector::after {
+    right: -5px;
+    top: auto;
+    bottom: -6px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--color-border);
+  }
+  
+  .engagement-score-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 }
 
@@ -6659,104 +6239,338 @@ body {
     padding: var(--space-md);
   }
   
-  .main-title {
-    font-size: 1.875rem;
+  .executive-dashboard-header {
+    padding: var(--space-xl) var(--space-lg);
   }
   
-  .stats-bar {
+  .title-primary {
+    font-size: 1.75rem;
+  }
+  
+  .title-secondary {
+    font-size: 0.875rem;
+  }
+  
+  .global-metrics-bar {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-block {
+    padding: var(--space-md);
+  }
+  
+  .analytics-grid-advanced {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .customer-profiles-card,
+  .retention-analytics-card,
+  .purchase-intelligence-card,
+  .segmentation-engine-card,
+  .journey-mapping-card,
+  .ai-predictive-card,
+  .engagement-heatmap-card,
+  .activity-feed-card {
+    grid-column: span 1;
+  }
+  
+  .card-header-advanced {
     flex-direction: column;
+    align-items: flex-start;
     gap: var(--space-md);
+    padding: var(--space-lg);
   }
   
-  .stat-divider {
-    display: none;
-  }
-  
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .insight-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .dual-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .dual-stat-divider {
-    display: none;
-  }
-  
-  .engagement-score {
+  .header-actions {
+    width: 100%;
     flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
     text-align: center;
   }
   
-  .engagement-metrics,
-  .kpi-grid {
+  .customer-profile-item {
+    grid-template-columns: 1fr;
+    padding: var(--space-lg);
+  }
+  
+  .profile-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .health-segments {
     grid-template-columns: 1fr;
   }
   
-  .conversion-display {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .reporting-section {
+  .purchase-overview {
     grid-template-columns: 1fr;
   }
   
-  .revenue-item {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .segment-insights {
+    grid-template-columns: 1fr;
+  }
+  
+  .prediction-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendation {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  .rec-action {
+    width: 100%;
+  }
+  
+  .heatmap-grid {
+    overflow-x: auto;
+  }
+  
+  .heatmap-content {
+    min-width: 600px;
+  }
+  
+  .touchpoint-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .feed-item {
     grid-template-columns: 1fr;
     gap: var(--space-sm);
-  }
-  
-  .revenue-percent {
-    text-align: left;
-  }
-  
-  .ltv-display {
-    grid-template-columns: 1fr;
-  }
-  
-  .tier-classification {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 
 @media (max-width: 480px) {
-  .main-title {
+  .title-primary {
     font-size: 1.5rem;
   }
   
-  .subtitle {
-    font-size: 1rem;
+  .metric-value {
+    font-size: 1.5rem;
   }
   
   .card-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
   
-  .dashboard-header {
-    padding: var(--space-lg);
+  .profile-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
   }
   
-  .metric-card {
-    padding: var(--space-lg);
+  .profile-name {
+    font-size: 1rem;
   }
   
-  .heatmap-grid {
-    grid-template-columns: repeat(6, 1fr);
+  .profile-metrics {
+    grid-template-columns: 1fr;
   }
   
-  .weekday-grid {
+  .stat-value {
+    font-size: 1.75rem;
+  }
+  
+  .summary-value {
+    font-size: 1.5rem;
+  }
+  
+  .combo-item {
+    grid-template-columns: 1fr;
+  }
+  
+  .combo-products {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .combo-stats {
+    flex-direction: column;
     gap: var(--space-sm);
+  }
+  
+  .segment-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .control-btn {
+    width: 100%;
+  }
+  
+  .touchpoint-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .breakdown-item {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+  
+  .breakdown-value {
+    text-align: left;
   }
 }
 
-/* === Animations === */
+/* === UTILITY CLASSES === */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.mt-1 { margin-top: var(--space-sm); }
+.mt-2 { margin-top: var(--space-md); }
+.mt-3 { margin-top: var(--space-lg); }
+.mt-4 { margin-top: var(--space-xl); }
+
+.mb-1 { margin-bottom: var(--space-sm); }
+.mb-2 { margin-bottom: var(--space-md); }
+.mb-3 { margin-bottom: var(--space-lg); }
+.mb-4 { margin-bottom: var(--space-xl); }
+
+.p-1 { padding: var(--space-sm); }
+.p-2 { padding: var(--space-md); }
+.p-3 { padding: var(--space-lg); }
+.p-4 { padding: var(--space-xl); }
+
+/* === SCROLLBAR STYLING === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-light);
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .page {
+    padding: 0;
+  }
+  
+  .header-actions,
+  .action-btn,
+  .btn-icon,
+  .action-button,
+  .rec-action {
+    display: none;
+  }
+  
+  .intelligence-card {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+  }
+  
+  .executive-dashboard-header {
+    background: white;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+  }
+  
+  .platform-logo svg,
+  .header-icon-wrapper {
+    color: var(--color-primary);
+  }
+}
+
+/* === FOCUS STYLES FOR ACCESSIBILITY === */
+button:focus,
+.action-btn:focus,
+.btn-icon:focus,
+.action-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* === LOADING STATES === */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-border-light) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* === DARK MODE SUPPORT (Optional) === */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-main: #0f172a;
+    --color-bg-card: #1e293b;
+    --color-bg-elevated: #1e293b;
+    --color-surface: #334155;
+    --color-border: #475569;
+    --color-border-light: #334155;
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+  }
+  
+  .executive-dashboard-header {
+    background: linear-gradient(135deg, #0c3a4f 0%, #0a4d68 50%, #088395 100%);
+  }
+  
+  .intelligence-card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  }
+  
+  .heat-cell:hover {
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
+}
+
+/* === ANIMATION UTILITIES === */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -6768,1444 +6582,47 @@ body {
   }
 }
 
-.metric-card {
-  animation: fadeIn 0.5s ease-out;
+.fade-in {
+  animation: fadeIn var(--transition-base) ease-out;
 }
 
-.metric-card:nth-child(1) { animation-delay: 0.1s; }
-.metric-card:nth-child(2) { animation-delay: 0.2s; }
-.metric-card:nth-child(3) { animation-delay: 0.3s; }
-.metric-card:nth-child(4) { animation-delay: 0.4s; }
-.metric-card:nth-child(5) { animation-delay: 0.5s; }
-.metric-card:nth-child(6) { animation-delay: 0.6s; }
-.metric-card:nth-child(7) { animation-delay: 0.7s; }
-.metric-card:nth-child(8) { animation-delay: 0.8s; }
-
-/* === Print Styles === */
-@media print {
-  .page {
-    padding: 0;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
   }
-  
-  .metric-card {
-    page-break-inside: avoid;
-    box-shadow: none;
-    border: 1px solid var(--border-color);
-  }
-  
-  .export-btn {
-    display: none;
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-/* === Utility Classes (Bootstrap-inspired) === */
-.d-flex { display: flex; }
-.d-none { display: none; }
-.d-block { display: block; }
-.d-inline-block { display: inline-block; }
-
-.justify-content-center { justify-content: center; }
-.justify-content-between { justify-content: space-between; }
-.align-items-center { align-items: center; }
-.flex-column { flex-direction: column; }
-.flex-wrap { flex-wrap: wrap; }
-
-.gap-1 { gap: var(--space-xs); }
-.gap-2 { gap: var(--space-sm); }
-.gap-3 { gap: var(--space-md); }
-.gap-4 { gap: var(--space-lg); }
-
-.p-1 { padding: var(--space-xs); }
-.p-2 { padding: var(--space-sm); }
-.p-3 { padding: var(--space-md); }
-.p-4 { padding: var(--space-lg); }
-
-.m-1 { margin: var(--space-xs); }
-.m-2 { margin: var(--space-sm); }
-.m-3 { margin: var(--space-md); }
-.m-4 { margin: var(--space-lg); }
-
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.fw-normal { font-weight: 400; }
-.fw-medium { font-weight: 500; }
-.fw-semibold { font-weight: 600; }
-.fw-bold { font-weight: 700; }
-
-.text-primary { color: var(--primary-600); }
-.text-secondary { color: var(--text-secondary); }
-.text-success { color: var(--success); }
-.text-warning { color: var(--warning); }
-.text-danger { color: var(--error); }
-
-.bg-primary { background: var(--primary-500); }
-.bg-secondary { background: var(--bg-secondary); }
-.bg-light { background: var(--bg-tertiary); }
-
-.rounded { border-radius: var(--radius-md); }
-.rounded-sm { border-radius: var(--radius-sm); }
-.rounded-lg { border-radius: var(--radius-lg); }
-.rounded-full { border-radius: var(--radius-full); }
-
-.shadow-sm { box-shadow: var(--shadow-sm); }
-.shadow { box-shadow: var(--shadow-md); }
-.shadow-lg { box-shadow: var(--shadow-lg); }
-
-.w-100 { width: 100%; }
-.h-100 { height: 100%; }
-
-.opacity-50 { opacity: 0.5; }
-.opacity-75 { opacity: 0.75; }
-
-/* === Focus States for Accessibility === */
-button:focus,
-.export-btn:focus,
-.query-item:focus,
-.report-link:focus {
-  outline: 2px solid var(--primary-500);
-  outline-offset: 2px;
+.slide-in {
+  animation: slideIn var(--transition-base) ease-out;
 }
 
-/* === Smooth Scrolling === */
-html {
-  scroll-behavior: smooth;
+/* === PERFORMANCE OPTIMIZATIONS === */
+.intelligence-card,
+.customer-profile-item,
+.segment-card {
+  will-change: transform;
 }
 
-/* === Selection Color === */
-::selection {
-  background: var(--primary-200);
-  color: var(--primary-900);
-}
-    </style>
+/* === END OF STYLESHEET === */
+
+
+
+
+
+
+
+  </style>
+
+
   
-  <link href="cust-insight.css" rel="stylesheet">
-  <div id="cust-insight" class="page">
-
-    
-    <!-- Enhanced Header with Real-time Monitoring -->
-    <header class="executive-dashboard-header">
-      <div class="header-matrix"></div>
-      <div class="platform-identifier">
-        <div class="platform-logo">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-            <circle cx="12" cy="12" r="10" opacity="0.3"/>
-          </svg>
-        </div>
-        <div class="platform-status">
-          <span class="status-indicator live"></span>
-          <span>Real-Time Analytics Engine</span>
-        </div>
-      </div>
-      
-      <h1 class="platform-title">
-        <span class="title-primary">Customer Intelligence Platform</span>
-        <span class="title-secondary">Enterprise Analytics Suite v3.0</span>
-      </h1>
-      
-      <div class="global-metrics-bar">
-        <div class="metric-block">
-          <div class="metric-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-            </svg>
-          </div>
-          <div class="metric-data">
-            <div class="metric-value">3,847</div>
-            <div class="metric-label">Total Customers</div>
-            <div class="metric-delta positive">+18.2%</div>
-          </div>
-        </div>
-        
-        <div class="metric-block">
-          <div class="metric-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="1" x2="12" y2="23"/>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-          <div class="metric-data">
-            <div class="metric-value">₱2.48M</div>
-            <div class="metric-label">Monthly Revenue</div>
-            <div class="metric-delta positive">+24.5%</div>
-          </div>
-        </div>
-        
-        <div class="metric-block">
-          <div class="metric-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </div>
-          <div class="metric-data">
-            <div class="metric-value">₱645</div>
-            <div class="metric-label">Avg Transaction</div>
-            <div class="metric-delta positive">+8.7%</div>
-          </div>
-        </div>
-        
-        <div class="metric-block">
-          <div class="metric-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <div class="metric-data">
-            <div class="metric-value">92.8%</div>
-            <div class="metric-label">Satisfaction Score</div>
-            <div class="metric-delta positive">+3.4%</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="data-freshness">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-        <span>Last Updated: 2 seconds ago</span>
-        <span class="separator">|</span>
-        <span>Next Refresh: 58s</span>
-      </div>
-    </header>
-
-    <!-- Premium Customer List Section -->
-    <div class="analytics-grid-advanced">
-      
-      <!-- VIP Customer Intelligence Panel -->
-      <div class="intelligence-card customer-profiles-card">
-        <div class="card-matrix-overlay"></div>
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Premium Customer Profiles</h2>
-          </div>
-          <div class="header-actions">
-            <button class="action-btn">Export List</button>
-            <button class="action-btn primary">Manage Segments</button>
-          </div>
-        </div>
-        
-        <div class="customer-intelligence-grid">
-          <!-- Top Customers with Detailed Profiles -->
-          <div class="customer-profile-item vip">
-            <div class="profile-rank">
-              <div class="rank-badge gold">1</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">MC</div>
-              <div class="profile-details">
-                <div class="profile-name">Maria Chen</div>
-                <div class="profile-id">ID: #CUS-48271</div>
-                <div class="profile-tags">
-                  <span class="tag vip">VIP Diamond</span>
-                  <span class="tag loyal">5+ Years</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱487,250</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱8,450</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">18x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">2 hours ago</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,35 10,30 20,25 30,20 40,18 50,15 60,12 70,10 80,8 90,5 100,3" 
-                            fill="none" stroke="#05dfd7" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">98</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="customer-profile-item vip">
-            <div class="profile-rank">
-              <div class="rank-badge gold">2</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">JR</div>
-              <div class="profile-details">
-                <div class="profile-name">Jonathan Rodriguez</div>
-                <div class="profile-id">ID: #CUS-39482</div>
-                <div class="profile-tags">
-                  <span class="tag vip">VIP Platinum</span>
-                  <span class="tag loyal">3+ Years</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱398,420</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱6,820</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">22x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">Yesterday</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,30 15,28 25,22 35,25 45,20 55,18 65,15 75,12 85,10 95,8 100,5" 
-                            fill="none" stroke="#088395" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">95</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="customer-profile-item">
-            <div class="profile-rank">
-              <div class="rank-badge silver">3</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">SL</div>
-              <div class="profile-details">
-                <div class="profile-name">Sarah Lim</div>
-                <div class="profile-id">ID: #CUS-52819</div>
-                <div class="profile-tags">
-                  <span class="tag gold">Gold Member</span>
-                  <span class="tag">Rising Star</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱287,150</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱4,250</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">15x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">3 days ago</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,25 10,22 20,20 30,18 40,20 50,15 60,12 70,10 80,12 90,8 100,5" 
-                            fill="none" stroke="#0a4d68" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">88</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="customer-profile-item">
-            <div class="profile-rank">
-              <div class="rank-badge">4</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">DT</div>
-              <div class="profile-details">
-                <div class="profile-name">David Tan</div>
-                <div class="profile-id">ID: #CUS-61923</div>
-                <div class="profile-tags">
-                  <span class="tag gold">Gold Member</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱198,320</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱3,150</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">12x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">Today</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,30 10,28 20,25 30,22 40,20 50,18 60,15 70,18 80,12 90,10 100,8" 
-                            fill="none" stroke="#05dfd7" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">82</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="customer-profile-item">
-            <div class="profile-rank">
-              <div class="rank-badge">5</div>
-            </div>
-            <div class="profile-identity">
-              <div class="profile-avatar">AR</div>
-              <div class="profile-details">
-                <div class="profile-name">Angela Reyes</div>
-                <div class="profile-id">ID: #CUS-71834</div>
-                <div class="profile-tags">
-                  <span class="tag silver">Silver Member</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-metrics">
-              <div class="metric-item">
-                <span class="label">Lifetime Value</span>
-                <span class="value">₱156,890</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Monthly Avg</span>
-                <span class="value">₱2,840</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Visit Frequency</span>
-                <span class="value">10x/month</span>
-              </div>
-              <div class="metric-item">
-                <span class="label">Last Visit</span>
-                <span class="value">5 days ago</span>
-              </div>
-            </div>
-            <div class="profile-behavior">
-              <div class="behavior-chart">
-                <svg viewBox="0 0 100 40" class="mini-chart">
-                  <polyline points="0,35 10,32 20,30 30,28 40,25 50,22 60,20 70,22 80,18 90,15 100,12" 
-                            fill="none" stroke="#088395" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="behavior-score">
-                <span class="score-value">75</span>
-                <span class="score-label">Engagement</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-icon" title="View Details">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Advanced Retention & Churn Analytics -->
-      <div class="intelligence-card retention-analytics-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper critical">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="8.5" cy="7" r="4"/>
-                <line x1="20" y1="8" x2="20" y2="14"/>
-                <line x1="23" y1="11" x2="17" y2="11"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Retention & Risk Analytics</h2>
-          </div>
-          <div class="risk-indicator">
-            <span class="indicator-label">System Alert</span>
-            <span class="indicator-value critical">47 At Risk</span>
-          </div>
-        </div>
-        
-        <div class="retention-matrix">
-          <div class="matrix-header">
-            <h3>Customer Health Matrix</h3>
-            <div class="matrix-legend">
-              <span class="legend-item healthy">Healthy</span>
-              <span class="legend-item at-risk">At Risk</span>
-              <span class="legend-item critical">Critical</span>
-            </div>
-          </div>
-          
-          <div class="health-segments">
-            <div class="segment-card healthy">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                <span class="segment-title">Healthy Customers</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value">2,847</div>
-                <div class="stat-percentage">74%</div>
-              </div>
-              <div class="segment-details">
-                <div class="detail-row">
-                  <span>Avg Retention</span>
-                  <span>94.2%</span>
-                </div>
-                <div class="detail-row">
-                  <span>NPS Score</span>
-                  <span>78</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="segment-card at-risk">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                  <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span class="segment-title">At Risk</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value">758</div>
-                <div class="stat-percentage">20%</div>
-              </div>
-              <div class="segment-details">
-                <div class="detail-row">
-                  <span>Churn Probability</span>
-                  <span>42%</span>
-                </div>
-                <div class="detail-row">
-                  <span>Last Active</span>
-                  <span>15+ days</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="segment-card critical">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="16"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span class="segment-title">Critical</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value">242</div>
-                <div class="stat-percentage">6%</div>
-              </div>
-              <div class="segment-details">
-                <div class="detail-row">
-                  <span>Churn Probability</span>
-                  <span>87%</span>
-                </div>
-                <div class="detail-row">
-                  <span>Immediate Action</span>
-                  <span>Required</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="at-risk-customers">
-            <h3>High-Value Customers at Risk</h3>
-            <div class="risk-list">
-              <div class="risk-customer">
-                <div class="customer-info">
-                  <div class="customer-avatar">RG</div>
-                  <div class="customer-details">
-                    <div class="customer-name">Robert Garcia</div>
-                    <div class="customer-meta">LTV: ₱124,500 | Last: 18 days ago</div>
-                  </div>
-                </div>
-                <div class="risk-level high">87% Risk</div>
-                <button class="action-button">Engage</button>
-              </div>
-              <div class="risk-customer">
-                <div class="customer-info">
-                  <div class="customer-avatar">LP</div>
-                  <div class="customer-details">
-                    <div class="customer-name">Lisa Park</div>
-                    <div class="customer-meta">LTV: ₱98,200 | Last: 22 days ago</div>
-                  </div>
-                </div>
-                <div class="risk-level high">82% Risk</div>
-                <button class="action-button">Engage</button>
-              </div>
-              <div class="risk-customer">
-                <div class="customer-info">
-                  <div class="customer-avatar">MK</div>
-                  <div class="customer-details">
-                    <div class="customer-name">Michael King</div>
-                    <div class="customer-meta">LTV: ₱87,600 | Last: 25 days ago</div>
-                  </div>
-                </div>
-                <div class="risk-level medium">68% Risk</div>
-                <button class="action-button">Engage</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Purchase Behavior Deep Dive -->
-      <div class="intelligence-card purchase-intelligence-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Purchase Intelligence & Patterns</h2>
-          </div>
-        </div>
-        
-        <div class="purchase-analytics">
-          <div class="purchase-overview">
-            <div class="overview-stat">
-              <div class="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="12" y1="8" x2="12" y2="16"/>
-                  <line x1="8" y1="12" x2="16" y2="12"/>
-                </svg>
-              </div>
-              <div class="stat-content">
-                <div class="stat-label">Avg Basket Size</div>
-                <div class="stat-value">4.8 items</div>
-                <div class="stat-change positive">+12% vs last month</div>
-              </div>
-            </div>
-            
-            <div class="overview-stat">
-              <div class="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="1" x2="12" y2="23"/>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                </svg>
-              </div>
-              <div class="stat-content">
-                <div class="stat-label">Avg Transaction</div>
-                <div class="stat-value">₱645</div>
-                <div class="stat-change positive">+8.7% vs last month</div>
-              </div>
-            </div>
-            
-            <div class="overview-stat">
-              <div class="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                  <line x1="7" y1="7" x2="7.01" y2="7"/>
-                </svg>
-              </div>
-              <div class="stat-content">
-                <div class="stat-label">Upsell Rate</div>
-                <div class="stat-value">34.2%</div>
-                <div class="stat-change positive">+5.4% vs last month</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="product-performance">
-            <h3>Top Product Combinations</h3>
-            <div class="combo-list">
-              <div class="combo-item">
-                <div class="combo-rank">1</div>
-                <div class="combo-products">
-                  <span class="product">Iced Americano</span>
-                  <span class="plus">+</span>
-                  <span class="product">Chocolate Croissant</span>
-                </div>
-                <div class="combo-stats">
-                  <span class="frequency">847 orders</span>
-                  <span class="revenue">₱127,050</span>
-                </div>
-              </div>
-              <div class="combo-item">
-                <div class="combo-rank">2</div>
-                <div class="combo-products">
-                  <span class="product">Cappuccino</span>
-                  <span class="plus">+</span>
-                  <span class="product">Blueberry Muffin</span>
-                </div>
-                <div class="combo-stats">
-                  <span class="frequency">692 orders</span>
-                  <span class="revenue">₱96,880</span>
-                </div>
-              </div>
-              <div class="combo-item">
-                <div class="combo-rank">3</div>
-                <div class="combo-products">
-                  <span class="product">Matcha Latte</span>
-                  <span class="plus">+</span>
-                  <span class="product">Cheese Danish</span>
-                </div>
-                <div class="combo-stats">
-                  <span class="frequency">534 orders</span>
-                  <span class="revenue">₱85,440</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="category-breakdown">
-            <h3>Category Performance Matrix</h3>
-            <div class="category-grid">
-              <div class="category-cell">
-                <div class="category-name">Hot Beverages</div>
-                <div class="category-metrics">
-                  <div class="metric">₱842K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+18%</div>
-                </div>
-              </div>
-              <div class="category-cell">
-                <div class="category-name">Cold Beverages</div>
-                <div class="category-metrics">
-                  <div class="metric">₱756K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+22%</div>
-                </div>
-              </div>
-              <div class="category-cell">
-                <div class="category-name">Pastries</div>
-                <div class="category-metrics">
-                  <div class="metric">₱524K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+15%</div>
-                </div>
-              </div>
-              <div class="category-cell">
-                <div class="category-name">Sandwiches</div>
-                <div class="category-metrics">
-                  <div class="metric">₱358K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+8%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Advanced Segmentation Engine -->
-      <div class="intelligence-card segmentation-engine-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                <line x1="2" y1="12" x2="22" y2="12"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Dynamic Customer Segmentation</h2>
-          </div>
-          <div class="segment-controls">
-            <button class="control-btn active">Behavioral</button>
-            <button class="control-btn">Value-Based</button>
-            <button class="control-btn">Lifecycle</button>
-          </div>
-        </div>
-        
-        <div class="segmentation-analysis">
-          <div class="segment-distribution">
-            <svg viewBox="0 0 400 300" class="distribution-chart">
-              <!-- Champions Segment -->
-              <rect x="20" y="220" width="60" height="60" rx="4" fill="#05dfd7" opacity="0.8"/>
-              <text x="50" y="245" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Champions</text>
-              <text x="50" y="260" text-anchor="middle" fill="white" font-size="8">487 (12.6%)</text>
-              
-              <!-- Loyal Customers -->
-              <rect x="90" y="180" width="60" height="100" rx="4" fill="#088395" opacity="0.8"/>
-              <text x="120" y="225" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Loyal</text>
-              <text x="120" y="240" text-anchor="middle" fill="white" font-size="8">892 (23.2%)</text>
-              
-              <!-- Potential Loyalists -->
-              <rect x="160" y="150" width="60" height="130" rx="4" fill="#0a4d68" opacity="0.8"/>
-              <text x="190" y="210" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Potential</text>
-              <text x="190" y="225" text-anchor="middle" fill="white" font-size="8">1,245 (32.3%)</text>
-              
-              <!-- New Customers -->
-              <rect x="230" y="200" width="60" height="80" rx="4" fill="#05dfd7" opacity="0.6"/>
-              <text x="260" y="235" text-anchor="middle" fill="white" font-size="10" font-weight="bold">New</text>
-              <text x="260" y="250" text-anchor="middle" fill="white" font-size="8">674 (17.5%)</text>
-              
-              <!-- At Risk -->
-              <rect x="300" y="210" width="60" height="70" rx="4" fill="#ffb347" opacity="0.8"/>
-              <text x="330" y="240" text-anchor="middle" fill="black" font-size="10" font-weight="bold">At Risk</text>
-              <text x="330" y="255" text-anchor="middle" fill="black" font-size="8">549 (14.3%)</text>
-            </svg>
-          </div>
-          
-          <div class="segment-insights">
-            <div class="insight-card">
-              <div class="insight-header">
-                <span class="insight-icon">💎</span>
-                <span class="insight-title">Champions</span>
-              </div>
-              <div class="insight-metrics">
-                <div class="metric-row">
-                  <span>Avg LTV</span>
-                  <span class="value">₱285,400</span>
-                </div>
-                <div class="metric-row">
-                  <span>Purchase Freq</span>
-                  <span class="value">24x/month</span>
-                </div>
-                <div class="metric-row">
-                  <span>Retention</span>
-                  <span class="value">98.2%</span>
-                </div>
-              </div>
-              <div class="insight-action">
-                <button>VIP Program →</button>
-              </div>
-            </div>
-            
-            <div class="insight-card">
-              <div class="insight-header">
-                <span class="insight-icon">⭐</span>
-                <span class="insight-title">Loyal Customers</span>
-              </div>
-              <div class="insight-metrics">
-                <div class="metric-row">
-                  <span>Avg LTV</span>
-                  <span class="value">₱148,200</span>
-                </div>
-                <div class="metric-row">
-                  <span>Purchase Freq</span>
-                  <span class="value">18x/month</span>
-                </div>
-                <div class="metric-row">
-                  <span>Retention</span>
-                  <span class="value">92.5%</span>
-                </div>
-              </div>
-              <div class="insight-action">
-                <button>Upsell Campaign →</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Customer Journey Mapping -->
-      <div class="intelligence-card journey-mapping-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Customer Journey Analytics</h2>
-          </div>
-        </div>
-        
-        <div class="journey-visualization">
-          <div class="journey-stages">
-            <div class="stage active">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">Discovery</div>
-                <div class="stage-stats">
-                  <span class="stat">8,472 visitors</span>
-                  <span class="conversion">42% → </span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="stage-connector"></div>
-            
-            <div class="stage">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">First Purchase</div>
-                <div class="stage-stats">
-                  <span class="stat">3,558 customers</span>
-                  <span class="conversion">68% →</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="stage-connector"></div>
-            
-            <div class="stage">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">Repeat Customer</div>
-                <div class="stage-stats">
-                  <span class="stat">2,419 customers</span>
-                  <span class="conversion">52% →</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="stage-connector"></div>
-            
-            <div class="stage">
-              <div class="stage-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">Loyal Advocate</div>
-                <div class="stage-stats">
-                  <span class="stat">1,258 customers</span>
-                  <span class="conversion">Success</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="touchpoint-analysis">
-            <h3>Key Touchpoints Performance</h3>
-            <div class="touchpoint-grid">
-              <div class="touchpoint">
-                <span class="touchpoint-channel">In-Store</span>
-                <span class="touchpoint-value">78%</span>
-              </div>
-              <div class="touchpoint">
-                <span class="touchpoint-channel">Mobile App</span>
-                <span class="touchpoint-value">15%</span>
-              </div>
-              <div class="touchpoint">
-                <span class="touchpoint-channel">Website</span>
-                <span class="touchpoint-value">5%</span>
-              </div>
-              <div class="touchpoint">
-                <span class="touchpoint-channel">Social Media</span>
-                <span class="touchpoint-value">2%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI-Powered Predictive Analytics -->
-      <div class="intelligence-card ai-predictive-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper ai">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/>
-                <path d="M12 8v8"/>
-                <path d="M8 12h8"/>
-                <circle cx="12" cy="12" r="2"/>
-              </svg>
-            </div>
-            <h2 class="card-title">AI-Powered Predictions & Insights</h2>
-          </div>
-          <div class="ai-status">
-            <span class="status-dot active"></span>
-            <span>ML Models Active</span>
-          </div>
-        </div>
-        
-        <div class="ai-predictions">
-          <div class="prediction-panel">
-            <div class="prediction-header">
-              <h3>Next 30 Days Forecast</h3>
-              <div class="confidence-badge">94% Confidence</div>
-            </div>
-            
-            <div class="prediction-cards">
-              <div class="pred-card">
-                <div class="pred-icon revenue">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                  </svg>
-                </div>
-                <div class="pred-content">
-                  <div class="pred-label">Expected Revenue</div>
-                  <div class="pred-value">₱2.84M</div>
-                  <div class="pred-change positive">+16.2% growth</div>
-                </div>
-              </div>
-              
-              <div class="pred-card">
-                <div class="pred-icon customers">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                </div>
-                <div class="pred-content">
-                  <div class="pred-label">New Customers</div>
-                  <div class="pred-value">428</div>
-                  <div class="pred-change positive">+12.4% acquisition</div>
-                </div>
-              </div>
-              
-              <div class="pred-card">
-                <div class="pred-icon warning">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                  </svg>
-                </div>
-                <div class="pred-content">
-                  <div class="pred-label">Churn Risk</div>
-                  <div class="pred-value">87</div>
-                  <div class="pred-change negative">High probability</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="ai-recommendations">
-            <h3>AI Recommendations</h3>
-            <div class="recommendation-list">
-              <div class="recommendation urgent">
-                <div class="rec-priority">Urgent</div>
-                <div class="rec-content">
-                  <div class="rec-title">Launch retention campaign for 87 high-value customers</div>
-                  <div class="rec-impact">Potential save: ₱384,000 in revenue</div>
-                </div>
-                <button class="rec-action">Execute</button>
-              </div>
-              
-              <div class="recommendation high">
-                <div class="rec-priority">High</div>
-                <div class="rec-content">
-                  <div class="rec-title">Optimize Saturday peak hours staffing (8-10 AM)</div>
-                  <div class="rec-impact">Reduce wait time by 35%, increase sales by ₱42K</div>
-                </div>
-                <button class="rec-action">Review</button>
-              </div>
-              
-              <div class="recommendation medium">
-                <div class="rec-priority">Medium</div>
-                <div class="rec-content">
-                  <div class="rec-title">Introduce combo deal for top 3 product pairs</div>
-                  <div class="rec-impact">Projected increase: ₱127K monthly revenue</div>
-                </div>
-                <button class="rec-action">Analyze</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="anomaly-alerts">
-            <h3>Detected Anomalies</h3>
-            <div class="anomaly-list">
-              <div class="anomaly-item">
-                <div class="anomaly-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                </div>
-                <span>Unusual 32% drop in Tuesday afternoon traffic vs. historical average</span>
-              </div>
-              <div class="anomaly-item">
-                <div class="anomaly-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                  </svg>
-                </div>
-                <span>Matcha Latte sales spike 145% above normal - potential viral trend</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Engagement & Activity Heatmap -->
-      <div class="intelligence-card engagement-heatmap-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Engagement Activity Matrix</h2>
-          </div>
-        </div>
-        
-        <div class="heatmap-container">
-          <div class="time-heatmap-advanced">
-            <h3>Weekly Activity Pattern</h3>
-            <div class="heatmap-grid">
-              <div class="heatmap-labels-y">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-              </div>
-              <div class="heatmap-content">
-                <!-- Monday -->
-                <div class="heatmap-row">
-                  <div class="heat-cell" data-value="12"></div>
-                  <div class="heat-cell" data-value="18"></div>
-                  <div class="heat-cell" data-value="24"></div>
-                  <div class="heat-cell" data-value="32"></div>
-                  <div class="heat-cell" data-value="45"></div>
-                  <div class="heat-cell" data-value="58"></div>
-                  <div class="heat-cell" data-value="72" class="high"></div>
-                  <div class="heat-cell" data-value="85" class="high"></div>
-                  <div class="heat-cell" data-value="78" class="high"></div>
-                  <div class="heat-cell" data-value="65"></div>
-                  <div class="heat-cell" data-value="52"></div>
-                  <div class="heat-cell" data-value="48"></div>
-                  <div class="heat-cell" data-value="42"></div>
-                  <div class="heat-cell" data-value="38"></div>
-                  <div class="heat-cell" data-value="32"></div>
-                  <div class="heat-cell" data-value="28"></div>
-                  <div class="heat-cell" data-value="24"></div>
-                  <div class="heat-cell" data-value="18"></div>
-                </div>
-                <!-- Additional rows for other days would follow similar pattern -->
-              </div>
-              <div class="heatmap-labels-x">
-                <span>6AM</span>
-                <span>9AM</span>
-                <span>12PM</span>
-                <span>3PM</span>
-                <span>6PM</span>
-                <span>9PM</span>
-              </div>
-            </div>
-            <div class="heatmap-legend">
-              <span>Low</span>
-              <div class="legend-gradient"></div>
-              <span>High</span>
-            </div>
-          </div>
-          
-          <div class="engagement-metrics">
-            <div class="engagement-score-card">
-              <div class="score-ring-container">
-                <svg viewBox="0 0 200 200" class="engagement-ring">
-                  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
-                  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#engagementGradient)" stroke-width="12"
-                          stroke-dasharray="565.49" stroke-dashoffset="113.1" stroke-linecap="round" 
-                          transform="rotate(-90 100 100)"/>
-                  <defs>
-                    <linearGradient id="engagementGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style="stop-color:#05dfd7"/>
-                      <stop offset="100%" style="stop-color:#088395"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <div class="score-display">
-                  <div class="score-number">82</div>
-                  <div class="score-label">Overall Score</div>
-                </div>
-              </div>
-              
-              <div class="engagement-breakdown">
-                <div class="breakdown-item">
-                  <span class="breakdown-label">Daily Active</span>
-                  <div class="breakdown-bar">
-                    <div class="bar-fill" style="width: 78%"></div>
-                  </div>
-                  <span class="breakdown-value">1,247</span>
-                </div>
-                <div class="breakdown-item">
-                  <span class="breakdown-label">Weekly Active</span>
-                  <div class="breakdown-bar">
-                    <div class="bar-fill" style="width: 85%"></div>
-                  </div>
-                  <span class="breakdown-value">2,854</span>
-                </div>
-                <div class="breakdown-item">
-                  <span class="breakdown-label">Monthly Active</span>
-                  <div class="breakdown-bar">
-                    <div class="bar-fill" style="width: 92%"></div>
-                  </div>
-                  <span class="breakdown-value">3,542</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Activity Feed -->
-      <div class="intelligence-card activity-feed-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Real-Time Activity Feed</h2>
-          </div>
-          <div class="feed-status">
-            <span class="pulse"></span>
-            <span>Live</span>
-          </div>
-        </div>
-        
-        <div class="activity-feed">
-          <div class="feed-item new">
-            <div class="feed-time">Just now</div>
-            <div class="feed-content">
-              <div class="feed-icon purchase">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="customer-name">Carlos Santos</span> completed purchase - 
-                <span class="amount">₱485</span> (Matcha Latte Bundle)
-              </div>
-            </div>
-          </div>
-          
-          <div class="feed-item">
-            <div class="feed-time">2 min ago</div>
-            <div class="feed-content">
-              <div class="feed-icon milestone">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="customer-name">Jennifer Wu</span> reached VIP Platinum status - 
-                <span class="achievement">100th purchase milestone</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="feed-item">
-            <div class="feed-time">5 min ago</div>
-            <div class="feed-content">
-              <div class="feed-icon alert">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="alert-type">Churn Alert:</span>
-                <span class="customer-name">Patricia Lee</span> - No activity for 21 days
-              </div>
-            </div>
-          </div>
-          
-          <div class="feed-item">
-            <div class="feed-time">8 min ago</div>
-            <div class="feed-content">
-              <div class="feed-icon review">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-                </svg>
-              </div>
-              <div class="feed-details">
-                <span class="customer-name">Mark Rivera</span> left 5-star review - 
-                <span class="review">"Best coffee in town!"</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Executive Summary Dashboard -->
-    <div class="executive-summary">
-      <h2 class="summary-title">Executive Performance Summary</h2>
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <line x1="3" y1="9" x2="21" y2="9"/>
-              <line x1="9" y1="21" x2="9" y2="9"/>
-            </svg>
-          </div>
-          <div class="summary-content">
-            <div class="summary-label">Month to Date</div>
-            <div class="summary-value">₱1.82M</div>
-            <div class="summary-change positive">+22.4% vs target</div>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <div class="summary-content">
-            <div class="summary-label">Customer Satisfaction</div>
-            <div class="summary-value">4.8/5.0</div>
-            <div class="summary-change positive">+0.3 pts</div>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-            </svg>
-          </div>
-          <div class="summary-content">
-            <div class="summary-label">Active Members</div>
-            <div class="summary-value">3,847</div>
-            <div class="summary-change positive">+428 this month</div>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-              <polyline points="17 6 23 6 23 12"/>
-            </svg>
-          </div>
-          <div class="summary-content">
-            <div class="summary-label">Growth Rate</div>
-            <div class="summary-value">24.5%</div>
-            <div class="summary-change positive">Above industry avg</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-</div>
+  
+  
  
-  
-  
-  
-  
   
   
   
