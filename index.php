@@ -5179,7 +5179,7 @@ body {
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </div>
-            <h2 class="card-title">Premium Customer Profiles</h2>
+            <h2 class="card-title">Loyal Customer</h2>
           </div>
           <div class="header-actions">
             <button class="action-btn">Export List</button>
@@ -5234,12 +5234,7 @@ body {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
+            
             </div>
           </div>
 
@@ -5286,12 +5281,7 @@ body {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               </button>
-              <button class="btn-icon" title="Contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </button>
+             
             </div>
           </div>
 
@@ -5619,22 +5609,8 @@ body {
                   <div class="metric-trend positive">+22%</div>
                 </div>
               </div>
-              <div class="category-cell">
-                <div class="category-name">Pastries</div>
-                <div class="category-metrics">
-                  <div class="metric">₱524K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+15%</div>
-                </div>
-              </div>
-              <div class="category-cell">
-                <div class="category-name">Sandwiches</div>
-                <div class="category-metrics">
-                  <div class="metric">₱358K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+8%</div>
-                </div>
-              </div>
+            
+          
             </div>
           </div>
         </div>
@@ -5678,7 +5654,7 @@ body {
             </svg>
           </div>
           <div class="summary-content">
-            <div class="summary-label">Customer Satisfaction</div>
+            <div class="summary-label">Monthly Sales Revenue</div>
             <div class="summary-value">4.8/5.0</div>
             <div class="summary-change positive">+0.3 pts</div>
           </div>
@@ -5692,7 +5668,7 @@ body {
             </svg>
           </div>
           <div class="summary-content">
-            <div class="summary-label">Active Members</div>
+            <div class="summary-label">Customer Traffic</div>
             <div class="summary-value">3,847</div>
             <div class="summary-change positive">+428 this month</div>
           </div>
@@ -5705,11 +5681,7 @@ body {
               <polyline points="17 6 23 6 23 12"/>
             </svg>
           </div>
-          <div class="summary-content">
-            <div class="summary-label">Growth Rate</div>
-            <div class="summary-value">24.5%</div>
-            <div class="summary-change positive">Above industry avg</div>
-          </div>
+          
         </div>
       </div>
     </div>
