@@ -1725,467 +1725,7 @@ html, body {
 
 
 
-/* === KPI CARDS === */
-.kpi-card {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  box-shadow: var(--shadow-lg);
-  border: 2px solid transparent;
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  position: relative;
-  overflow: hidden;
-  transition: all var(--transition-base);
-}
 
-.kpi-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  opacity: 0.6;
-  pointer-events: none;
-  transition: opacity var(--transition-base);
-}
-
-.kpi-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.kpi-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-2xl);
-}
-
-.kpi-card:hover::before {
-  opacity: 0.8;
-}
-
-.kpi-card:hover::after {
-  opacity: 1;
-}
-
-/* KPI Card Variants */
-.kpi-card.revenue {
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border-color: #6ee7b7;
-}
-
-.kpi-card.revenue::before {
-  background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.15), transparent 70%);
-}
-
-.kpi-card.revenue::after {
-  background: linear-gradient(90deg, transparent, #10b981, transparent);
-}
-
-.kpi-card.customers {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border-color: #93c5fd;
-}
-
-.kpi-card.customers::before {
-  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 70%);
-}
-
-.kpi-card.customers::after {
-  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-}
-
-.kpi-card.retention {
-  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
-  border-color: #c4b5fd;
-}
-
-.kpi-card.retention::before {
-  background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 70%);
-}
-
-.kpi-card.retention::after {
-  background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
-}
-
-.kpi-card.risk {
-  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
-  border-color: #fca5a5;
-}
-
-.kpi-card.risk::before {
-  background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.15), transparent 70%);
-}
-
-.kpi-card.risk::after {
-  background: linear-gradient(90deg, transparent, #ef4444, transparent);
-}
-
-/* === KPI ICON === */
-.kpi-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  flex-shrink: 0;
-  position: relative;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
-}
-
-.kpi-card:hover .kpi-icon {
-  transform: scale(1.1) rotate(5deg);
-}
-
-.kpi-card.revenue .kpi-icon {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-}
-
-.kpi-card.customers .kpi-icon {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-}
-
-.kpi-card.retention .kpi-icon {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
-}
-
-.kpi-card.risk .kpi-icon {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-}
-
-/* === KPI CONTENT === */
-.kpi-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  z-index: 1;
-}
-
-.kpi-value {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: #1e293b;
-  line-height: 1;
-  letter-spacing: -0.025em;
-}
-
-.kpi-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.kpi-change {
-  font-size: 0.875rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 1rem;
-  border-radius: 0.5rem;
-  width: fit-content;
-}
-
-.kpi-change.positive {
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #d1fae5;
-}
-
-.kpi-change.negative {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fee2e2;
-}
-
-.kpi-change i {
-  font-size: 0.75rem;
-}
-
-/* === KPI TOOLTIP === */
-.kpi-tooltip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background: #f1f5f9;
-  border-radius: 50%;
-  color: #94a3b8;
-  cursor: help;
-  position: relative;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.kpi-tooltip:hover {
-  background: #0a4d68;
-  color: white;
-  transform: scale(1.15);
-}
-
-.kpi-tooltip i {
-  font-size: 0.75rem;
-}
-
-.kpi-tooltip[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-10px);
-  background: #1e293b;
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
-  font-size: 0.8125rem;
-  white-space: normal;
-  max-width: 300px;
-  width: max-content;
-  z-index: 1000;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  line-height: 1.5;
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: normal;
-  pointer-events: none;
-}
-
-.kpi-tooltip[title]:hover::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-4px);
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid #1e293b;
-  z-index: 1000;
-}
-
-/* === CHARTS GRID === */
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 2rem;
-}
-
-/* === CHART CARDS === */
-.chart-card {
-  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  border: 2px solid #e2e8f0;
-  padding: 2rem;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.chart-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 150px;
-  background: linear-gradient(180deg, rgba(10, 77, 104, 0.03) 0%, transparent 100%);
-  pointer-events: none;
-}
-
-.chart-card::after {
-  content: '';
-  position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(5, 223, 215, 0.05) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.chart-card:hover {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-4px);
-  border-color: #088395;
-}
-
-.chart-card.large {
-  grid-column: span 12;
-}
-
-.chart-card.medium {
-  grid-column: span 6;
-}
-
-/* === CHART HEADER === */
-.chart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 1;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.chart-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  letter-spacing: -0.025em;
-}
-
-.chart-header h3 i.fa-chart-area,
-.chart-header h3 i.fa-chart-pie,
-.chart-header h3 i.fa-chart-bar {
-  color: #0a4d68;
-  font-size: 1.125rem;
-}
-
-.chart-header .tooltip {
-  width: 22px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f1f5f9;
-  border-radius: 50%;
-  color: #94a3b8;
-  font-size: 0.75rem;
-  cursor: help;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-left: 0.25rem;
-  border: 1px solid #e2e8f0;
-}
-
-.chart-header .tooltip:hover {
-  background: #0a4d68;
-  color: white;
-  transform: scale(1.15);
-  border-color: #0a4d68;
-  box-shadow: 0 4px 12px rgba(10, 77, 104, 0.3);
-}
-
-/* === CHART CONTROLS === */
-.chart-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.traffic-period-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0a4d68;
-  background: linear-gradient(135deg, rgba(10, 77, 104, 0.08), rgba(5, 223, 215, 0.08));
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.75rem;
-  border: 2px solid rgba(10, 77, 104, 0.15);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.traffic-period-title:hover {
-  background: linear-gradient(135deg, rgba(10, 77, 104, 0.12), rgba(5, 223, 215, 0.12));
-  border-color: rgba(10, 77, 104, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.traffic-period-title::before {
-  content: '●';
-  color: #05dfd7;
-  font-size: 0.875rem;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-/* === CHART CONTAINER === */
-.chart-container {
-  position: relative;
-  height: 400px;
-  width: 100%;
-  padding: 1rem 0;
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.5) 0%, transparent 100%);
-  border-radius: 0.75rem;
-  z-index: 1;
-}
-
-.chart-card.large .chart-container {
-  height: 450px;
-}
-
-.chart-card.medium .chart-container {
-  height: 350px;
-}
-
-.chart-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* === CHART STATS === */
-.chart-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-  border-top: 2px solid #e2e8f0;
-  background: linear-gradient(135deg, 
-    rgba(10, 77, 104, 0.04) 0%, 
-    rgba(8, 131, 149, 0.04) 50%,
-    rgba(5, 223, 215, 0.04) 100%
-  );
-  border-radius: 0.75rem;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 1;
-}
 </style>
 
 
@@ -9570,47 +9110,49 @@ button:focus,
   
   
   
+
 <!-- Customer Insights - Left-aligned, cleaned layout -->
 <div id="customer-insights" class="page main-content cgx-scope" aria-labelledby="ci-title" data-module="customer-insights" style="
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#F6F9FC; color:#32325D; line-height:1.6;
+  background:#f6f9fc; color:#1f2937; line-height:1.6;
   min-height:100vh; padding:1.5rem 2rem; margin:0;
 ">
   <!-- LEFT-ALIGNED CONTAINER -->
-  <div style="width:100%; max-width:1280px; margin:0;">
+  <div style="width:100%; max-width:1800px; margin:0;">
 
     <!-- Header -->
     <div class="report-header" style="
       display:flex; justify-content:space-between; align-items:center; gap:1rem;
       flex-wrap:wrap;
-      margin:0 0 1.5rem 0; padding:1.25rem 1.25rem; background:#fff; border-radius:12px;
-      box-shadow:0 6px 20px rgba(94,114,228,.12);
+      margin:0 0 2rem 0; padding:2rem; background:linear-gradient(135deg, #083c52 0%, #0a4d68 50%, #088395 100%); border-radius:1.25rem;
+      box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); position:relative; overflow:hidden; color:#ffffff;
     ">
-      <div class="header-left" style="flex:1; min-width:260px;">
-        <h1 class="page-title" id="ci-title" style="font-size:1.875rem; font-weight:800; letter-spacing:.2px; margin:0 0 .25rem 0;">
+      <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 40px, rgba(255,255,255,0.03) 41px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 40px, rgba(255,255,255,0.03) 41px); pointer-events:none;"></div>
+      <div class="header-left" style="flex:1; min-width:260px; position:relative; z-index:1;">
+        <h1 class="page-title" id="ci-title" style="font-size:2.5rem; font-weight:700; letter-spacing:-0.025em; margin:0 0 0.25rem 0;">
           Churn Analysis Report
         </h1>
-        <p class="last-updated" style="font-size:.92rem; color:#6b7280; margin:0;">
-          Last updated: <span id="lastUpdated" style="color:#5E72E4; font-weight:700;">Loading...</span>
+        <p class="last-updated" style="font-size:1rem; font-weight:400; opacity:0.9; letter-spacing:0.05em; margin:0;">
+          Last updated: <span id="lastUpdated" style="color:#05dfd7; font-weight:700;">Loading...</span>
         </p>
       </div>
-      <div class="header-right" style="display:flex; gap:.6rem; align-items:center;">
+      <div class="header-right" style="display:flex; gap:0.5rem; align-items:center; position:relative; z-index:1;">
         <button class="btn-action" onclick="refreshReports()" style="
-          padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
-          display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
-          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 14px rgba(94,114,228,.35);
-          transition:transform .15s ease, box-shadow .15s ease;
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(94,114,228,.4)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(94,114,228,.35)';">
+          padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; font-size:0.9rem; font-weight:600; cursor:pointer;
+          display:inline-flex; align-items:center; gap:0.5rem; letter-spacing:0.025em;
+          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)';">
           <i class="fas fa-sync-alt"></i> Refresh
         </button>
         <button class="btn-action" onclick="showExportModal()" style="
-          padding:.7rem 1.1rem; border:none; border-radius:.65rem; font-size:.92rem; font-weight:800; cursor:pointer;
-          display:inline-flex; align-items:center; gap:.5rem; letter-spacing:.2px;
-          background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,.35);
-          transition:transform .15s ease, box-shadow .15s ease;
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 18px rgba(16,185,129,.4)';"
-           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 14px rgba(16,185,129,.35)';">
+          padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; font-size:0.9rem; font-weight:600; cursor:pointer;
+          display:inline-flex; align-items:center; gap:0.5rem; letter-spacing:0.025em;
+          background:linear-gradient(135deg,#10B981 0%,#059669 100%); color:#fff; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)';"
+           onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)';">
           <i class="fas fa-download"></i> Export
         </button>
       </div>
@@ -9618,49 +9160,56 @@ button:focus,
 
     <!-- Date Range Selector -->
     <div class="date-controls" style="
-      margin:0 0 1.5rem 0; padding:1.1rem 1.25rem; background:#fff; border-radius:12px;
-      box-shadow:0 6px 20px rgba(94,114,228,.12);
+      margin:0 0 1.5rem 0; padding:1.5rem; background:#fff; border-radius:1rem;
+      box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); border:1px solid #f0f1f3;
     ">
-      <div class="date-range-selector" style="display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 .9rem 0;">
+      <div class="date-range-selector" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin:0 0 1rem 0;">
         <button class="date-btn active" data-range="today" style="
-          padding:.55rem 1rem; border:0; border-radius:.55rem; font-size:.9rem; font-weight:800; cursor:pointer;
-          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; letter-spacing:.2px;
+          padding:0.5rem 1rem; border:2px solid transparent; border-radius:0.5rem; font-size:0.9rem; font-weight:600; cursor:pointer;
+          background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%); color:#fff; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
         ">Today</button>
         <button class="date-btn" data-range="yesterday" style="
-          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
-          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
-           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Yesterday</button>
+          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
+          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
+           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Yesterday</button>
         <button class="date-btn" data-range="7days" style="
-          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
-          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
-           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Last 7 Days</button>
+          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
+          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
+           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Last 7 Days</button>
         <button class="date-btn" data-range="14days" style="
-          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
-          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
-           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Last 14 Days</button>
+          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
+          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
+           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Last 14 Days</button>
         <button class="date-btn" data-range="30days" style="
-          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
-          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
-           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Last 30 Days</button>
+          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
+          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
+           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Last 30 Days</button>
         <button class="date-btn" data-range="custom" style="
-          padding:.55rem 1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.55rem;
-          font-size:.9rem; font-weight:800; color:#2f3640; cursor:pointer; letter-spacing:.2px;
-        " onmouseover="this.style.borderColor='#5E72E4'; this.style.color='#5E72E4';"
-           onmouseout="this.style.borderColor='#EAF0FF'; this.style.color='#2f3640';">Custom Range</button>
+          padding:0.5rem 1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
+          font-size:0.9rem; font-weight:600; color:#6b7280; cursor:pointer; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.borderColor='#0a4d68'; this.style.color='#0a4d68';"
+           onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">Custom Range</button>
       </div>
       <div class="custom-date-inputs" style="
-        display:none; align-items:center; gap:1rem; padding:1rem; background:#F6F9FC; border-radius:.6rem;
+        display:none; align-items:center; gap:1rem; padding:1rem; background:#f3f4f6; border-radius:0.5rem;
       ">
-        <input type="date" id="startDate" class="date-input" style="padding:.55rem .7rem; border:2px solid #EAF0FF; border-radius:.55rem; font-size:.92rem;">
+        <input type="date" id="startDate" class="date-input" style="padding:0.5rem 0.75rem; border:2px solid #e5e7eb; border-radius:0.5rem; font-size:0.9rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;">
         <span style="color:#6b7280;">to</span>
-        <input type="date" id="endDate" class="date-input" style="padding:.55rem .7rem; border:2px solid #EAF0FF; border-radius:.55rem; font-size:.92rem;">
+        <input type="date" id="endDate" class="date-input" style="padding:0.5rem 0.75rem; border:2px solid #e5e7eb; border-radius:0.5rem; font-size:0.9rem; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;">
         <button class="btn-apply" onclick="applyCustomRange()" style="
-          padding:.55rem 1.2rem; background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%);
-          color:#fff; border:none; border-radius:.55rem; font-weight:800; cursor:pointer; letter-spacing:.2px;
+          padding:0.5rem 1.2rem; background:linear-gradient(135deg,#667EEA 0%,#5E72E4 100%);
+          color:#fff; border:none; border-radius:0.5rem; font-weight:600; cursor:pointer; letter-spacing:0.025em;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
         ">Apply</button>
       </div>
     </div>
@@ -9669,47 +9218,65 @@ button:focus,
 
     <!-- Tabs + Content -->
     <div class="report-section" style="
-      background:#fff; border-radius:12px; padding:1.5rem; margin:0 0 1.5rem 0;
-      box-shadow:0 6px 20px rgba(94,114,228,.12);
+      background:#fff; border-radius:1rem; padding:1.5rem; margin:0 0 1.5rem 0;
+      box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); border:1px solid #f0f1f3;
     ">
       <div class="tabs" style="
-        display:flex; flex-wrap:wrap; gap:.4rem; margin:0 0 1rem 0; border-bottom:2px solid #EEF2FF; padding-bottom:.25rem;
+        display:flex; flex-wrap:wrap; gap:0.5rem; margin:0 0 1.5rem 0; border-bottom:2px solid #f0f1f3; padding-bottom:0.5rem;
       ">
         <button class="tab-btn active" onclick="switchTab('retention')" style="
-          padding:.7rem 1rem; background:none; border:none; font-weight:800; cursor:pointer;
-          color:#5E72E4; border-bottom:3px solid #5E72E4; margin-bottom:-2px;
+          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer;
+          color:#0a4d68; border-bottom:3px solid #0a4d68; margin-bottom:-2px; font-size:0.95rem;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
         ">Retention Analysis</button>
         <button class="tab-btn" onclick="switchTab('behavior')" style="
-          padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Customer Behavior</button>
+          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer; color:#6b7280;
+          border-bottom:3px solid transparent; margin-bottom:-2px; font-size:0.95rem;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.color='#0a4d68';" onmouseout="this.style.color='#6b7280';">Customer Behavior</button>
         <button class="tab-btn" onclick="switchTab('revenue')" style="
-          padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
+          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer; color:#6b7280;
+          border-bottom:3px solid transparent; margin-bottom:-2px; font-size:0.95rem;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.color='#0a4d68';" onmouseout="this.style.color='#6b7280';">Revenue Impact</button>
       
         <button class="tab-btn" onclick="switchTab('trends')" style="
-          padding:.7rem 1rem; background:none; border:none; font-weight:700; cursor:pointer; color:#6b7280;
-        " onmouseover="this.style.color='#5E72E4';" onmouseout="this.style.color='#6b7280';">Risk Level Trends</button>
+          padding:0.75rem 1.5rem; background:none; border:none; font-weight:600; cursor:pointer; color:#6b7280;
+          border-bottom:3px solid transparent; margin-bottom:-2px; font-size:0.95rem;
+          transition:all 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.color='#0a4d68';" onmouseout="this.style.color='#6b7280';">Risk Level Trends</button>
       </div>
 
       <!-- Retention -->
       <div class="tab-content active" id="retention-tab" style="display:block;">
-        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; align-items:start;">
+        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; align-items:start;">
           <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Retention Trend</h3>
+            <div class="chart-container" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+              <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Retention Trend</h3>
               <canvas id="retentionChart" height="240"></canvas>
             </div>
             <!-- *** NEW: AI SUMMARY CONTAINER *** -->
-            <div id="retention-ai-summary"></div>
-          </div>
-          <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-          
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              
-              
+            <div id="retention-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.05) 0%, transparent 100%); border:2px solid #088395; border-radius:0.75rem; padding:1.5rem;">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                <div style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7, #088395); border-radius:0.5rem; color:#fff;">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <h4 style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0;">AI Insights</h4>
+              </div>
+              <div style="font-size:0.95rem; line-height:1.7; color:#6b7280;">
+                <p style="margin:0;">Analysis shows a 12% improvement in retention over the last 30 days. Key drivers include increased engagement in loyalty programs and personalized communication strategies.</p>
+              </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-             
+          </div>
+          <div class="metrics-panel" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+            <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Key Metrics</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0; border-bottom:1px solid #f0f1f3;">
+              <span style="font-size:0.9rem; color:#6b7280;">Retention Rate</span>
+              <span style="font-size:1.125rem; font-weight:700; color:#1f2937;">87.5%</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0;">
+              <span style="font-size:0.9rem; color:#6b7280;">Churn Rate</span>
+              <span style="font-size:1.125rem; font-weight:700; color:#1f2937;">12.5%</span>
             </div>
           </div>
         </div>
@@ -9717,24 +9284,34 @@ button:focus,
 
       <!-- Behavior -->
       <div class="tab-content" id="behavior-tab" style="display:none;">
-        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.5rem;">
           <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Transaction Patterns</h3>
+            <div class="chart-container" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+              <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Transaction Patterns</h3>
               <canvas id="behaviorChart" height="240"></canvas>
             </div>
             <!-- *** NEW: AI SUMMARY CONTAINER *** -->
-            <div id="behavior-ai-summary"></div>
-          </div>
-          <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .9rem 0;">Behavior Metrics</h3>
-            <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Frequency</span>
-              <span id="avgFrequency" style="font-size:1rem; font-weight:800;">0</span>
+            <div id="behavior-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.05) 0%, transparent 100%); border:2px solid #088395; border-radius:0.75rem; padding:1.5rem;">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                <div style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7, #088395); border-radius:0.5rem; color:#fff;">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <h4 style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0;">AI Insights</h4>
+              </div>
+              <div style="font-size:0.95rem; line-height:1.7; color:#6b7280;">
+                <p style="margin:0;">Customer transaction frequency has increased by 18% this month. Peak activity occurs during weekends. Consider targeted promotions during high-engagement periods.</p>
+              </div>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(136,152,170,.15);">
-              <span style="font-size:.92rem; color:#6b7280;">Avg Transaction Value</span>
-              <span id="avgValue" style="font-size:1rem; font-weight:800;">₱0</span>
+          </div>
+          <div class="metrics-panel" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+            <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Behavior Metrics</h3>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid #f0f1f3;">
+              <span style="font-size:0.9rem; color:#6b7280;">Avg Transaction Frequency</span>
+              <span id="avgFrequency" style="font-size:1.125rem; font-weight:700; color:#1f2937;">4.2/week</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0;">
+              <span style="font-size:0.9rem; color:#6b7280;">Avg Transaction Value</span>
+              <span id="avgValue" style="font-size:1.125rem; font-weight:700; color:#1f2937;">₱1,250</span>
             </div>
           </div>
         </div>
@@ -9742,17 +9319,35 @@ button:focus,
 
       <!-- Revenue -->
       <div class="tab-content" id="revenue-tab" style="display:none;">
-        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.25rem;">
+        <div class="analysis-grid" style="display:grid; grid-template-columns:2fr 1fr; gap:1.5rem;">
           <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="chart-container" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">Revenue Impact Analysis</h3>
+            <div class="chart-container" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+              <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Revenue Impact Analysis</h3>
               <canvas id="revenueChart" height="240"></canvas>
             </div>
             <!-- *** NEW: AI SUMMARY CONTAINER *** -->
-            <div id="revenue-ai-summary"></div>
+            <div id="revenue-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.05) 0%, transparent 100%); border:2px solid #088395; border-radius:0.75rem; padding:1.5rem;">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                <div style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7, #088395); border-radius:0.5rem; color:#fff;">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <h4 style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0;">AI Insights</h4>
+              </div>
+              <div style="font-size:0.95rem; line-height:1.7; color:#6b7280;">
+                <p style="margin:0;">Revenue from retained customers is up 24% compared to last quarter. Focus on premium segment customers showing early churn signals to protect high-value revenue streams.</p>
+              </div>
+            </div>
           </div>
-          <div class="metrics-panel" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-            <!-- Your existing metrics -->
+          <div class="metrics-panel" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+            <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Revenue Metrics</h3>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid #f0f1f3;">
+              <span style="font-size:0.9rem; color:#6b7280;">Total Revenue</span>
+              <span style="font-size:1.125rem; font-weight:700; color:#1f2937;">₱2.4M</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0;">
+              <span style="font-size:0.9rem; color:#6b7280;">At-Risk Revenue</span>
+              <span style="font-size:1.125rem; font-weight:700; color:#1f2937;">₱320K</span>
+            </div>
           </div>
         </div>
       </div>
@@ -9761,26 +9356,51 @@ button:focus,
       <div class="tab-content" id="trends-tab" style="display:none;">
         <div class="trends-container">
           <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="chart-container full-width" style="background:#F6F9FC; padding:1.1rem; border-radius:.8rem;">
-              <h3 style="font-size:1rem; font-weight:800; margin:0 0 .75rem 0;">30-Day Churn Risk Trend</h3>
+            <div class="chart-container full-width" style="background:#f3f4f6; padding:1.5rem; border-radius:0.75rem; border:1px solid #f0f1f3;">
+              <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">30-Day Churn Risk Trend</h3>
               <canvas id="trendsChart" height="250"></canvas>
             </div>
             <!-- *** NEW: AI SUMMARY CONTAINER *** -->
-            <div id="trends-ai-summary"></div>
+            <div id="trends-ai-summary" style="background:linear-gradient(135deg, rgba(10,77,104,0.05) 0%, transparent 100%); border:2px solid #088395; border-radius:0.75rem; padding:1.5rem;">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                <div style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #05dfd7, #088395); border-radius:0.5rem; color:#fff;">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <h4 style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0;">AI Insights</h4>
+              </div>
+              <div style="font-size:0.95rem; line-height:1.7; color:#6b7280;">
+                <p style="margin:0;">Risk trends show stabilization after recent retention campaign. High-risk customer count decreased by 15%. Maintain proactive engagement strategies to sustain this positive trend.</p>
+              </div>
+            </div>
           </div>
-          <div class="comparison-table" style="margin-top:1.25rem;">
-            <h3 style="font-size:1rem; font-weight:800; margin:0 0 .7rem 0;">Period Comparison</h3>
-            <table id="comparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:.6rem; overflow:hidden;">
-              <thead style="background:#F6F9FC;">
+          <div class="comparison-table" style="margin-top:1.5rem;">
+            <h3 style="font-size:1.125rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Period Comparison</h3>
+            <table id="comparisonTable" style="width:100%; border-collapse:collapse; background:#fff; border-radius:0.75rem; overflow:hidden; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);">
+              <thead style="background:#f3f4f6;">
                 <tr>
-                  <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Metric</th>
-                  <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Today</th>
-                  <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">Yesterday</th>
-                  <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">7-Day Avg</th>
-                  <th style="padding:.75rem; text-align:left; font-size:.85rem; font-weight:800; color:#6b7280; text-transform:uppercase;">30-Day Avg</th>
+                  <th style="padding:0.75rem; text-align:left; font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Metric</th>
+                  <th style="padding:0.75rem; text-align:left; font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Today</th>
+                  <th style="padding:0.75rem; text-align:left; font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">Yesterday</th>
+                  <th style="padding:0.75rem; text-align:left; font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">7-Day Avg</th>
+                  <th style="padding:0.75rem; text-align:left; font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">30-Day Avg</th>
                 </tr>
               </thead>
-              <tbody><!-- Populated by JavaScript --></tbody>
+              <tbody>
+                <tr style="border-bottom:1px solid #f0f1f3; transition:background 150ms cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.background='#f3f4f6';" onmouseout="this.style.background='';">
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">Active Customers</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">1,245</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">1,238</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">1,220</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">1,195</td>
+                </tr>
+                <tr style="transition:background 150ms cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.background='#f3f4f6';" onmouseout="this.style.background='';">
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">High Risk</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">48</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">52</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">55</td>
+                  <td style="padding:0.75rem; font-size:0.9rem; color:#1f2937;">62</td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -9797,12 +9417,13 @@ button:focus,
     ">
       <div class="modal-content" style="
         position:relative; background:#fff; margin:5% auto; padding:1.4rem; width:92%; max-width:860px;
-        border-radius:12px; box-shadow:0 0 50px rgba(0,0,0,.3);
+        border-radius:1rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
       ">
         <span class="close" onclick="closeDrillDown()" style="
-          position:absolute; right:1rem; top:1rem; font-size:2rem; font-weight:800; color:#6b7280; cursor:pointer;
-        " onmouseover="this.style.color='#111827';" onmouseout="this.style.color='#6b7280';">&times;</span>
-        <h2 id="modalTitle" style="font-size:1.35rem; font-weight:800; margin:0 0 1rem 0;">Risk Segment Details</h2>
+          position:absolute; right:1rem; top:1rem; font-size:2rem; font-weight:700; color:#9ca3af; cursor:pointer;
+          transition:color 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.color='#1f2937';" onmouseout="this.style.color='#9ca3af';">&times;</span>
+        <h2 id="modalTitle" style="font-size:1.35rem; font-weight:700; margin:0 0 1rem 0; color:#1f2937;">Risk Segment Details</h2>
         <div id="modalContent"></div>
       </div>
     </div>
@@ -9814,58 +9435,59 @@ button:focus,
     ">
       <div class="modal-content" style="
         position:relative; background:#fff; margin:8% auto; padding:2rem; width:90%; max-width:500px;
-        border-radius:12px; box-shadow:0 0 50px rgba(0,0,0,.3);
+        border-radius:1rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
       ">
         <span class="close" onclick="closeExportModal()" style="
-          position:absolute; right:1.2rem; top:1.2rem; font-size:2rem; font-weight:800; color:#6b7280; cursor:pointer;
-        " onmouseover="this.style.color='#111827';" onmouseout="this.style.color='#6b7280';">&times;</span>
-        <h2 style="font-size:1.5rem; font-weight:800; margin:0 0 1.5rem 0; color:#32325D;">Export Report</h2>
+          position:absolute; right:1.2rem; top:1.2rem; font-size:2rem; font-weight:700; color:#9ca3af; cursor:pointer;
+          transition:color 150ms cubic-bezier(0.4,0,0.2,1);
+        " onmouseover="this.style.color='#1f2937';" onmouseout="this.style.color='#9ca3af';">&times;</span>
+        <h2 style="font-size:1.5rem; font-weight:700; margin:0 0 1.5rem 0; color:#1f2937;">Export Report</h2>
         
         <div style="margin-bottom:1.5rem;">
           <label style="display:block; font-weight:700; margin-bottom:.5rem; color:#6b7280; font-size:.9rem;">Export Format</label>
-          <div style="display:flex; flex-direction:column; gap:.7rem;">
+          <div style="display:flex; flex-direction:column; gap:.75rem;">
             <button onclick="exportToPDF()" style="
-              padding:1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.65rem;
+              padding:1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
               font-size:.95rem; font-weight:700; cursor:pointer; text-align:left;
-              display:flex; align-items:center; gap:.8rem; transition:all .2s;
-            " onmouseover="this.style.borderColor='#5E72E4'; this.style.background='#F6F9FC';"
-               onmouseout="this.style.borderColor='#EAF0FF'; this.style.background='#fff';">
+              display:flex; align-items:center; gap:.8rem; transition:all 250ms cubic-bezier(0.4,0,0.2,1);
+            " onmouseover="this.style.borderColor='#0a4d68'; this.style.background='#f3f4f6';"
+               onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#fff';">
               <i class="fas fa-file-pdf" style="font-size:1.3rem; color:#DC2626;"></i>
               <div>
-                <div style="font-weight:800; color:#32325D;">PDF Document</div>
+                <div style="font-weight:700; color:#1f2937;">PDF Document</div>
                 <div style="font-size:.8rem; color:#6b7280;">Export all charts and data as PDF</div>
               </div>
             </button>
             
             <button onclick="exportToImage()" style="
-              padding:1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.65rem;
+              padding:1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
               font-size:.95rem; font-weight:700; cursor:pointer; text-align:left;
-              display:flex; align-items:center; gap:.8rem; transition:all .2s;
-            " onmouseover="this.style.borderColor='#5E72E4'; this.style.background='#F6F9FC';"
-               onmouseout="this.style.borderColor='#EAF0FF'; this.style.background='#fff';">
+              display:flex; align-items:center; gap:.8rem; transition:all 250ms cubic-bezier(0.4,0,0.2,1);
+            " onmouseover="this.style.borderColor='#0a4d68'; this.style.background='#f3f4f6';"
+               onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#fff';">
               <i class="fas fa-image" style="font-size:1.3rem; color:#10B981;"></i>
               <div>
-                <div style="font-weight:800; color:#32325D;">PNG Image</div>
+                <div style="font-weight:700; color:#1f2937;">PNG Image</div>
                 <div style="font-size:.8rem; color:#6b7280;">Export current view as image</div>
               </div>
             </button>
             
             <button onclick="printReport()" style="
-              padding:1rem; border:2px solid #EAF0FF; background:#fff; border-radius:.65rem;
+              padding:1rem; border:2px solid #e5e7eb; background:#fff; border-radius:0.5rem;
               font-size:.95rem; font-weight:700; cursor:pointer; text-align:left;
-              display:flex; align-items:center; gap:.8rem; transition:all .2s;
-            " onmouseover="this.style.borderColor='#5E72E4'; this.style.background='#F6F9FC';"
-               onmouseout="this.style.borderColor='#EAF0FF'; this.style.background='#fff';">
+              display:flex; align-items:center; gap:.8rem; transition:all 250ms cubic-bezier(0.4,0,0.2,1);
+            " onmouseover="this.style.borderColor='#0a4d68'; this.style.background='#f3f4f6';"
+               onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#fff';">
               <i class="fas fa-print" style="font-size:1.3rem; color:#5E72E4;"></i>
               <div>
-                <div style="font-weight:800; color:#32325D;">Print Report</div>
+                <div style="font-weight:700; color:#1f2937;">Print Report</div>
                 <div style="font-size:.8rem; color:#6b7280;">Print-friendly version</div>
               </div>
             </button>
           </div>
         </div>
 
-        <div style="padding-top:1rem; border-top:1px solid #EAF0FF;">
+        <div style="padding-top:1rem; border-top:1px solid #e5e7eb;">
           <label style="display:flex; align-items:center; gap:.5rem; cursor:pointer; font-size:.9rem; color:#6b7280;">
             <input type="checkbox" id="includeAllTabs" checked style="width:18px; height:18px; cursor:pointer;">
             <span>Include all tabs in export</span>
@@ -9873,6 +9495,9 @@ button:focus,
         </div>
       </div>
     </div>
+  </div>
+
+
 
     <!-- Required Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
