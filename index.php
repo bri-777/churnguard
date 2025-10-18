@@ -1718,7 +1718,7 @@ html, body {
 
 
 
-.{
+.design-kpi{
 
 background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
 
@@ -1786,6 +1786,7 @@ function doLogout() {
   </div>
 
   <!-- Customers Today -->
+   <div class = "design-kpi">
   <div class="kpi-card customers">
     <div class="kpi-icon"><i class="fas fa-users"></i></div>
     <div class="kpi-content">
@@ -1799,6 +1800,7 @@ function doLogout() {
       <div class="kpi-change positive" id="customersChange"><i class="fas fa-arrow-up"></i> 0%</div>
     </div>
   </div>
+</div>
 
   <!-- Retention Rate -->
   <div class="kpi-card retention">
@@ -5372,7 +5374,21 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 40px,
+    rgba(255, 255, 255, 0.03) 41px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 40px,
+    rgba(255, 255, 255, 0.03) 41px
+  );
+  pointer-events: none;
 }
 
 .platform-identifier {
