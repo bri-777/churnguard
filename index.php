@@ -6766,7 +6766,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   </div>
 
   <div class="main-content" style="display:block; max-width:1400px; margin:0 auto; padding:0; position: relative;">
-    <div class="chart-section" style="background: #ffffff; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; position: relative; z-index: 1;">
+    <div class="chart-section" style="background: #ffffff; border-radius: 16px; padding: 2rem; margin-bottom: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; position: relative; z-index: 1;">
       <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div class="chart-title" style="font-size: 1.125rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem;">📈 Customer Traffic & Churn Analytics</div>
         <div class="date-picker-container" style="display: flex; gap: 0.75rem; align-items: center;">
@@ -6808,7 +6808,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
   
     <div class="history-section" style="background: #ffffff; border-radius: 16px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; position: relative; z-index: 1; clear: both;">
-      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
+      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
         <div class="history-title" style="font-size: 1.125rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem;">📋 Historical Data</div>
         
         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
