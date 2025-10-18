@@ -6808,7 +6808,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
     </div>
   
     <div class="history-section" style="background: #ffffff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
-      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: -5.5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.875rem; border-bottom: 1px solid #e5e7eb;">
+      <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5.5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.875rem; border-bottom: 1px solid #e5e7eb;">
         <div class="history-title" style="font-size: 1.0625rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 0.5rem; line-height: 1.3;">📋 Historical Data</div>
         
         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
