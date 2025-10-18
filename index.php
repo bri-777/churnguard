@@ -5158,7 +5158,8 @@ body {
     
       
       <h1 class="platform-title">
-        <span class="title-primary">Customer Insight</span>
+      <span class="title-primary" style="color: black; font-weight: 500;">Customer Insight</span>
+
       
       </h1>
       
