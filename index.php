@@ -1721,7 +1721,7 @@ html, body {
 .kpi-grid{
 
 background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
- background: linear-gradient(135deg, rgba(10, 77, 104, 0.05) 0%, transparent 100%);
+ 
 }
 
 
