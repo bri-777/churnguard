@@ -33,7 +33,7 @@ if (!$me) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <link rel="stylesheet" href="recomm.css"><!-- use YOUR provided CSS file -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="assets/monitoring.css"><!-- use YOUR provided CSS file -->
+
 <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
@@ -5550,14 +5550,14 @@ body {
           </div>
           
           <div class="product-performance">
-            <h3>Top Product Combinations</h3>
+            <h3>Top Products</h3>
             <div class="combo-list">
               <div class="combo-item">
                 <div class="combo-rank">1</div>
                 <div class="combo-products">
                   <span class="product">Iced Americano</span>
-                  <span class="plus">+</span>
-                  <span class="product">Chocolate Croissant</span>
+                  
+                 
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">847 orders</span>
@@ -5568,8 +5568,8 @@ body {
                 <div class="combo-rank">2</div>
                 <div class="combo-products">
                   <span class="product">Cappuccino</span>
-                  <span class="plus">+</span>
-                  <span class="product">Blueberry Muffin</span>
+                 
+                 
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">692 orders</span>
@@ -5580,8 +5580,7 @@ body {
                 <div class="combo-rank">3</div>
                 <div class="combo-products">
                   <span class="product">Matcha Latte</span>
-                  <span class="plus">+</span>
-                  <span class="product">Cheese Danish</span>
+                 
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">534 orders</span>
@@ -5641,11 +5640,7 @@ body {
               <line x1="9" y1="21" x2="9" y2="9"/>
             </svg>
           </div>
-          <div class="summary-content">
-            <div class="summary-label">Month to Date</div>
-            <div class="summary-value">₱1.82M</div>
-            <div class="summary-change positive">+22.4% vs target</div>
-          </div>
+      
         </div>
         
         <div class="summary-card">
@@ -5675,15 +5670,7 @@ body {
           </div>
         </div>
         
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-              <polyline points="17 6 23 6 23 12"/>
-            </svg>
-          </div>
-          
-        </div>
+   
       </div>
     </div>
 
