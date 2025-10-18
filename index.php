@@ -165,6 +165,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <style>
 
+
+.history-section {
+    position: absolute;
+    top: 855px;
+    left: 60%;
+    transform: translateX(-50%);
+    width: 80%;
+}
+
+
+
 .date-filter-container {
   display: flex;
   align-items: center;
