@@ -32,6 +32,7 @@ if (!$me) {
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <link rel="stylesheet" href="recomm.css"><!-- use YOUR provided CSS file -->
+<link rel = "stylesheet" href = "moni.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Chart.js Library -->
@@ -6868,7 +6869,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   
   
 </div>
-<link rel = "stylesheet" href = "moni.css">
+
 		 <!-- Include the monitoring JavaScript -->
     <script src="customer-monitoring-dashboard.js"></script>
 
