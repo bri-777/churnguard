@@ -5372,21 +5372,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.03) 0px,
-    transparent 1px,
-    transparent 40px,
-    rgba(255, 255, 255, 0.03) 41px
-  ),
-  repeating-linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.03) 0px,
-    transparent 1px,
-    transparent 40px,
-    rgba(255, 255, 255, 0.03) 41px
-  );
-  pointer-events: none;
+  
 }
 
 .platform-identifier {
