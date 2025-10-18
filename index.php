@@ -5153,7 +5153,8 @@ body {
   <div id="cust-insight" class="page">
     <!-- Enhanced Header with Real-time Monitoring -->
     <header class="executive-dashboard-header">
-      <div class="header-matrix"></div>
+      <div class="header-matrix" style="background-color: white; padding: 12px 20px; border-bottom: 1px solid #ddd; display: inline-block; width: 100%;"></div>
+
     
       
       <h1 class="platform-title">
