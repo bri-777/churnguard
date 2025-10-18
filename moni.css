@@ -1,4 +1,4 @@
-/* Customer Monitoring Dashboard - Unique Scoped Styles */
+/* Customer Monitoring Dashboard - Ultra Unique Scoped Styles */
 
 #customer-monitoring {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -9,7 +9,7 @@
 }
 
 /* Alert Banner */
-#customer-monitoring .alert-banner {
+#customer-monitoring #riskAlertBanner {
   background: #fff8f0;
   border-left: 4px solid #ff9500;
   padding: 16px 20px;
@@ -21,18 +21,18 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-#customer-monitoring .alert-icon {
+#customer-monitoring #riskAlertBanner .alert-icon {
   font-size: 24px;
   flex-shrink: 0;
 }
 
-#customer-monitoring .alert-banner span {
+#customer-monitoring #riskAlertMessage {
   flex: 1;
   color: #1a1a1a;
   font-weight: 500;
 }
 
-#customer-monitoring .alert-close {
+#customer-monitoring #riskAlertBanner .alert-close {
   background: none;
   border: none;
   font-size: 24px;
@@ -48,7 +48,7 @@
   transition: background 0.2s;
 }
 
-#customer-monitoring .alert-close:hover {
+#customer-monitoring #riskAlertBanner .alert-close:hover {
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -59,7 +59,7 @@
   padding: 24px 20px;
 }
 
-#customer-monitoring .header-content {
+#customer-monitoring .dashboard-header .header-content {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
@@ -67,13 +67,13 @@
   align-items: center;
 }
 
-#customer-monitoring .header-title {
+#customer-monitoring .dashboard-header .header-title {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-#customer-monitoring .header-icon {
+#customer-monitoring .dashboard-header .header-icon {
   font-size: 32px;
 }
 
@@ -84,19 +84,19 @@
   color: #1a1a1a;
 }
 
-#customer-monitoring .header-subtitle {
+#customer-monitoring .dashboard-header .header-subtitle {
   font-size: 14px;
   color: #666;
   margin-top: 4px;
 }
 
-#customer-monitoring .header-controls {
+#customer-monitoring .dashboard-header .header-controls {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-#customer-monitoring .status-indicator {
+#customer-monitoring .dashboard-header .status-indicator {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -105,15 +105,15 @@
   border-radius: 20px;
 }
 
-#customer-monitoring .status-dot {
+#customer-monitoring .dashboard-header .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: #34c759;
-  animation: pulse-cm-status 2s infinite;
+  animation: pulse-cm-dashboard-status 2s infinite;
 }
 
-@keyframes pulse-cm-status {
+@keyframes pulse-cm-dashboard-status {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
@@ -124,7 +124,7 @@
 }
 
 /* Chart Section */
-#customer-monitoring .chart-section {
+#customer-monitoring .main-content .chart-section {
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 12px;
@@ -133,30 +133,30 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
-#customer-monitoring .chart-header {
+#customer-monitoring .chart-section .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
 
-#customer-monitoring .chart-title {
+#customer-monitoring .chart-section .chart-title {
   font-size: 18px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-#customer-monitoring .date-picker-container {
+#customer-monitoring .chart-header .date-picker-container {
   display: flex;
   gap: 12px;
   align-items: center;
 }
 
-#customer-monitoring .date-picker {
+#customer-monitoring .date-picker-container .date-picker {
   position: relative;
 }
 
-#customer-monitoring .date-picker-input {
+#customer-monitoring .date-picker .date-picker-input {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -170,12 +170,16 @@
   transition: all 0.2s;
 }
 
-#customer-monitoring .date-picker-input:hover {
+#customer-monitoring .date-picker .date-picker-input:hover {
   background: #ececec;
   border-color: #d0d0d0;
 }
 
-#customer-monitoring .date-picker-dropdown {
+#customer-monitoring .date-picker-input #selectedChartDateRange {
+  display: inline;
+}
+
+#customer-monitoring .date-picker #chartDatePickerDropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
@@ -188,44 +192,44 @@
   z-index: 100;
 }
 
-#customer-monitoring .date-option {
+#customer-monitoring #chartDatePickerDropdown .date-option {
   padding: 12px 16px;
   cursor: pointer;
   transition: background 0.2s;
   border-bottom: 1px solid #f5f5f5;
 }
 
-#customer-monitoring .date-option:last-child {
+#customer-monitoring #chartDatePickerDropdown .date-option:last-child {
   border-bottom: none;
 }
 
-#customer-monitoring .date-option:hover {
+#customer-monitoring #chartDatePickerDropdown .date-option:hover {
   background: #f9f9f9;
 }
 
-#customer-monitoring .date-option.active {
+#customer-monitoring #chartDatePickerDropdown .date-option.active {
   background: #f0f7ff;
   color: #007aff;
 }
 
-#customer-monitoring .date-option span:first-child {
+#customer-monitoring #chartDatePickerDropdown .date-option span:first-child {
   display: block;
   font-weight: 500;
   color: #1a1a1a;
 }
 
-#customer-monitoring .date-option.active span:first-child {
+#customer-monitoring #chartDatePickerDropdown .date-option.active span:first-child {
   color: #007aff;
 }
 
-#customer-monitoring .date-option-range {
+#customer-monitoring #chartDatePickerDropdown .date-option-range {
   font-size: 12px;
   color: #666;
   display: block;
   margin-top: 2px;
 }
 
-#customer-monitoring .refresh-btn {
+#customer-monitoring .date-picker-container .refresh-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -239,12 +243,12 @@
   transition: all 0.2s;
 }
 
-#customer-monitoring .refresh-btn:hover {
+#customer-monitoring .date-picker-container .refresh-btn:hover {
   background: #f5f5f5;
   border-color: #d0d0d0;
 }
 
-#customer-monitoring .chart-container {
+#customer-monitoring .chart-section .chart-container {
   position: relative;
   background: #fafafa;
   border-radius: 8px;
@@ -252,7 +256,7 @@
   min-height: 400px;
 }
 
-#customer-monitoring .chart-loading {
+#customer-monitoring .chart-container #chartLoadingIndicator {
   position: absolute;
   top: 0;
   left: 0;
@@ -266,24 +270,29 @@
   z-index: 10;
 }
 
-#customer-monitoring .loading-spinner {
+#customer-monitoring #chartLoadingIndicator .loading-spinner {
   width: 40px;
   height: 40px;
   border: 3px solid #e5e5e5;
   border-top-color: #007aff;
   border-radius: 50%;
-  animation: spin-cm-loader 0.8s linear infinite;
+  animation: spin-cm-chart-loader 0.8s linear infinite;
 }
 
-@keyframes spin-cm-loader {
+@keyframes spin-cm-chart-loader {
   to { transform: rotate(360deg); }
 }
 
-#customer-monitoring .chart-canvas {
+#customer-monitoring .chart-container .chart-canvas {
   position: relative;
 }
 
-#customer-monitoring .chart-tooltip {
+#customer-monitoring .chart-canvas #trafficChurnChart {
+  max-width: 100%;
+  height: auto;
+}
+
+#customer-monitoring .chart-canvas #chartTooltipDisplay {
   position: absolute;
   background: rgba(0, 0, 0, 0.85);
   color: #ffffff;
@@ -306,7 +315,7 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
-#customer-monitoring .history-header {
+#customer-monitoring .history-section .history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -315,32 +324,32 @@
   gap: 16px;
 }
 
-#customer-monitoring .history-title {
+#customer-monitoring .history-header .history-title {
   font-size: 18px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-#customer-monitoring .data-view-toggle {
+#customer-monitoring .history-header .data-view-toggle {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-#customer-monitoring .toggle-switch {
+#customer-monitoring .data-view-toggle .toggle-switch {
   position: relative;
   display: inline-block;
   width: 48px;
   height: 26px;
 }
 
-#customer-monitoring .toggle-switch input {
+#customer-monitoring .toggle-switch #dataViewToggle {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-#customer-monitoring .toggle-slider {
+#customer-monitoring .toggle-switch .toggle-slider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -352,7 +361,7 @@
   border-radius: 26px;
 }
 
-#customer-monitoring .toggle-slider:before {
+#customer-monitoring .toggle-switch .toggle-slider:before {
   position: absolute;
   content: "";
   height: 20px;
@@ -364,27 +373,27 @@
   border-radius: 50%;
 }
 
-#customer-monitoring .toggle-switch input:checked + .toggle-slider {
+#customer-monitoring .toggle-switch #dataViewToggle:checked + .toggle-slider {
   background-color: #007aff;
 }
 
-#customer-monitoring .toggle-switch input:checked + .toggle-slider:before {
+#customer-monitoring .toggle-switch #dataViewToggle:checked + .toggle-slider:before {
   transform: translateX(22px);
 }
 
-#customer-monitoring .toggle-label {
+#customer-monitoring .data-view-toggle #dataViewLabel {
   font-size: 14px;
   color: #1a1a1a;
   font-weight: 500;
 }
 
-#customer-monitoring .date-filter-container {
+#customer-monitoring .history-header #transactionDateFilter {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-#customer-monitoring .date-filter-select {
+#customer-monitoring #transactionDateFilter #dateFilterSelect {
   padding: 8px 14px;
   border: 1px solid #e5e5e5;
   border-radius: 8px;
@@ -395,12 +404,18 @@
   transition: all 0.2s;
 }
 
-#customer-monitoring .date-filter-select:hover {
+#customer-monitoring #transactionDateFilter #dateFilterSelect:hover {
   background: #ececec;
   border-color: #d0d0d0;
 }
 
-#customer-monitoring .date-input {
+#customer-monitoring #transactionDateFilter #customDateInputs {
+  display: flex;
+  align-items: center;
+}
+
+#customer-monitoring #customDateInputs #startDate,
+#customer-monitoring #customDateInputs #endDate {
   padding: 8px 12px;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
@@ -408,7 +423,7 @@
   color: #1a1a1a;
 }
 
-#customer-monitoring .btn-apply-filter {
+#customer-monitoring #customDateInputs .btn-apply-filter {
   padding: 8px 16px;
   background: #007aff;
   color: #ffffff;
@@ -419,29 +434,33 @@
   transition: background 0.2s;
 }
 
-#customer-monitoring .btn-apply-filter:hover {
+#customer-monitoring #customDateInputs .btn-apply-filter:hover {
   background: #0051d5;
 }
 
-#customer-monitoring .last-updated {
+#customer-monitoring .history-header .last-updated {
   font-size: 13px;
   color: #666;
 }
 
+#customer-monitoring .history-header #currentAnalysisDataRange {
+  display: inline;
+}
+
 /* Table Styles */
-#customer-monitoring .history-table-container {
+#customer-monitoring .history-section .history-table-container {
   overflow-x: auto;
   border-radius: 8px;
   border: 1px solid #e5e5e5;
 }
 
-#customer-monitoring .history-table {
+#customer-monitoring .history-table-container .history-table {
   width: 100%;
   border-collapse: collapse;
   background: #ffffff;
 }
 
-#customer-monitoring .history-table thead {
+#customer-monitoring .history-table #historyTableHead {
   background: #f9f9f9;
   border-bottom: 2px solid #e5e5e5;
 }
@@ -456,7 +475,7 @@
   letter-spacing: 0.5px;
 }
 
-#customer-monitoring .history-table td {
+#customer-monitoring .history-table #historicalAnalysisTableBody td {
   padding: 16px;
   border-bottom: 1px solid #f5f5f5;
   font-size: 14px;
@@ -471,7 +490,7 @@
   border-bottom: none;
 }
 
-#customer-monitoring .no-data {
+#customer-monitoring .history-table .no-data {
   text-align: center;
   color: #999;
   font-style: italic;
@@ -484,24 +503,24 @@
     padding: 16px;
   }
   
-  #customer-monitoring .header-content {
+  #customer-monitoring .dashboard-header .header-content {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
   
-  #customer-monitoring .chart-header {
+  #customer-monitoring .chart-section .chart-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
   
-  #customer-monitoring .history-header {
+  #customer-monitoring .history-section .history-header {
     flex-direction: column;
     align-items: flex-start;
   }
   
-  #customer-monitoring .history-table {
+  #customer-monitoring .history-table-container .history-table {
     font-size: 13px;
   }
   
