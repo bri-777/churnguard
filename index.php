@@ -1814,7 +1814,7 @@ function doLogout() {
 .page-header {
   margin-bottom: var(--space-2xl);
   padding: var(--space-2xl);
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
+ 
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-xl);
   color: var(--color-text-inverse);
