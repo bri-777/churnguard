@@ -1720,8 +1720,17 @@ html, body {
 
 .design-kpi {
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
+  position: relative;
+  z-index: 1;
 }
-
+.design-kpi::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
+  z-index: -1;
+  border-radius: inherit;
+}
 
 
 
