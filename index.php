@@ -5158,26 +5158,19 @@ body {
 <link rel = "stylesheet" href = "cust-insight.css">
  <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
-      <div class="header-matrix" style="background: white; padding: 24px 40px; border-radius: 16px; display: flex; align-items: center; gap: 20px; width: 100%; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06); border: 1px solid #e2e8f0;">
-  <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-    <rect width="56" height="56" rx="14" fill="#1e40af" fill-opacity="0.1"/>
-    <circle cx="28" cy="22" r="7" stroke="#1e40af" stroke-width="2.5" fill="none"/>
-    <path d="M16 40C16 35.0294 20.0294 31 25 31H31C35.9706 31 40 35.0294 40 40" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M38 24L42 20L46 24" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M42 20V28" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="42" cy="15" r="2.5" fill="#1e40af"/>
+ <div class="header-matrix" style="background: white; padding: 32px 48px; border-radius: 0; display: flex; align-items: center; gap: 16px; width: 100%; margin-bottom: 0; box-shadow: none; border: none; border-bottom: 1px solid #f1f5f9;">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+    <circle cx="20" cy="15" r="5.5" stroke="#0f172a" stroke-width="1.5" fill="none"/>
+    <path d="M10 32C10 27.5817 13.5817 24 18 24H22C26.4183 24 30 27.5817 30 32" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M28 17L31 14L34 17" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M31 14V20" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
   </svg>
   
   <h1 class="platform-title" style="margin: 0; flex: 1;">
-    <span class="title-primary" style="color: #1e40af; font-weight: 700; font-size: 36px; letter-spacing: -0.03em;">
+    <span class="title-primary" style="color: #0f172a; font-weight: 600; font-size: 32px; letter-spacing: -0.02em;">
       Customer Insight
     </span>
   </h1>
-  
-  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.4;">
-    <path d="M3 14C3 14 6.5 7 14 7C21.5 7 25 14 25 14C25 14 21.5 21 14 21C6.5 21 3 14 3 14Z" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="14" cy="14" r="4" stroke="#1e40af" stroke-width="2.5"/>
-  </svg>
 </div>
       
       <div class="data-freshness">
