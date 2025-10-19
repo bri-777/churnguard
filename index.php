@@ -6793,7 +6793,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
           </div>
           <button class="refresh-btn" onclick="refreshDashboardData()">
             <span>🔄</span>
-            <span>Refresh</span>
+         
           </button>
         </div>
       </div>
@@ -6955,15 +6955,7 @@ function dismissRiskAlert() {
   document.getElementById('riskAlertBanner').style.display = 'none';
 }
 
-function toggleChartDatePicker() {
-  const dropdown = document.getElementById('chartDatePickerDropdown');
-  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-}
 
-function refreshDashboardData() {
-  console.log('Refreshing dashboard data...');
-  // Reload your data here
-}
 
 // Close date picker when clicking outside
 document.addEventListener('click', function(event) {
