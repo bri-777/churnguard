@@ -1997,6 +1997,7 @@ function processData(data) {
   const shopNameIndex = headers.findIndex(h => h.includes('shop name'));
   const receiptCountIndex = headers.findIndex(h => h.includes('receipt count'));
   const customerNameIndex = headers.findIndex(h => h.includes('customer name'));
+  const genderIndex = headers.findIndex(h => h.includes('gender')); // NEW
   const quantityIndex = headers.findIndex(h => h.includes('quantity'));
   const drinkTypeIndex = headers.findIndex(h => h.includes('type of drink'));
   const dateIndex = headers.findIndex(h => h.includes('date'));
@@ -2043,10 +2044,23 @@ function processData(data) {
     const dateStr = String(row[dateIndex] || '').trim();
     const dateVisited = parseExcelDate(dateStr);
     
+    // Get gender value - NEW
+    let gender = null;
+    if (genderIndex !== -1) {
+      const genderValue = String(row[genderIndex] || '').trim();
+      // Normalize gender value
+      if (genderValue.toLowerCase() === 'male' || genderValue.toLowerCase() === 'm') {
+        gender = 'Male';
+      } else if (genderValue.toLowerCase() === 'female' || genderValue.toLowerCase() === 'f') {
+        gender = 'Female';
+      }
+    }
+    
     transactions.push({
       shop_name: String(row[shopNameIndex] || '').trim(),
       receipt_count: receiptCount,
       customer_name: String(row[customerNameIndex] || '').trim(),
+      gender: gender, // NEW
       quantity_of_drinks: parseInt(row[quantityIndex]) || 0,
       type_of_drink: String(row[drinkTypeIndex] || '').trim(),
       date_visited: dateVisited,

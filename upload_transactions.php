@@ -41,12 +41,12 @@ try {
     
     $transactions = $data['transactions'];
     
-    // Insert each transaction
+    // Insert each transaction - UPDATED with gender field
     $sql = "INSERT INTO transaction_logs 
-            (user_id, shop_name, receipt_count, customer_name, quantity_of_drinks, 
+            (user_id, shop_name, receipt_count, customer_name, gender, quantity_of_drinks, 
              type_of_drink, date_visited, day, time_of_day, total_amount, payment_method) 
             VALUES 
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $pdo->prepare($sql);
     $count = 0;
@@ -57,6 +57,7 @@ try {
             $t['shop_name'] ?? '',
             $t['receipt_count'] ?? 0,
             $t['customer_name'] ?? '',
+            $t['gender'] ?? null,  // NEW - gender field (will be NULL if not provided)
             $t['quantity_of_drinks'] ?? 0,
             $t['type_of_drink'] ?? '',
             $t['date_visited'] ?? date('Y-m-d'),
