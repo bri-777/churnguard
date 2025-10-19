@@ -5172,9 +5172,7 @@ body {
 <link rel = "stylesheet" href = "cust-insight.css">
 
 <div id="cust-insight" class="page">
-    <header class="executive-dashboard-header">
-
-    </header>
+  
 
     <div class="analytics-grid-advanced">
       
