@@ -5173,27 +5173,7 @@ body {
 
 <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
- <div class="header-matrix">
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
-    <circle cx="24" cy="18" r="6.5" stroke="#0f172a" stroke-width="2" fill="none"/>
-    <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="33" cy="15" r="1.5" fill="#0f172a"/>
-    <path d="M30 20L33 17L36 20" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="33" y1="17" x2="33" y2="23" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-  </svg>
-  
-  <h1 class="platform-title">
-    <span class="title-primary">Customer Insight</span>
-  </h1>
-  
-  <div class="realtime-badge">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="7" stroke="#64748b" stroke-width="1.5"/>
-      <path d="M8 4V8L11 10" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <span>Real-time</span>
-  </div>
-</div>
+
     </header>
 
     <div class="analytics-grid-advanced">
