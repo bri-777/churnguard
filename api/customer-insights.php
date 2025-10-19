@@ -172,45 +172,20 @@ function getRetentionAnalytics($pdo, $user_id) {
         }
     }
     
-    // FIXED: Find the 5 CHURNED customers (stopped returning completely)
-    // These customers had early activity but ZERO visits in last 20+ days
+    // FIXED: Get the 5 customers who stopped visiting (15+ days inactive)
     $sql_risk = "
         SELECT 
             customer_name,
             gender,
-            total_spent as ltv,
-            last_visit,
-            days_inactive,
-            early_visits,
-            recent_visits
-        FROM (
-            SELECT 
-                customer_name,
-                gender,
-                SUM(total_amount) as total_spent,
-                MAX(date_visited) as last_visit,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive,
-                -- Count visits in first 40 days of 60-day window
-                SUM(CASE 
-                    WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 20 DAY) 
-                    THEN 1 ELSE 0 
-                END) as early_visits,
-                -- Count visits in last 20 days
-                SUM(CASE 
-                    WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 20 DAY) 
-                    THEN 1 ELSE 0 
-                END) as recent_visits
-            FROM transaction_logs
-            WHERE user_id = :user_id
-              AND customer_name NOT LIKE 'Customer_%'
-              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
-            GROUP BY customer_name, gender
-        ) as customer_activity
-        WHERE early_visits >= 15
-          AND recent_visits = 0
-          AND days_inactive >= 20
-          AND total_spent >= 20000
-        ORDER BY total_spent DESC
+            SUM(total_amount) as ltv,
+            MAX(date_visited) as last_visit,
+            DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive
+        FROM transaction_logs
+        WHERE user_id = :user_id
+          AND customer_name NOT LIKE 'Customer_%'
+        GROUP BY customer_name, gender
+        HAVING days_inactive >= 15
+        ORDER BY days_inactive DESC, ltv DESC
         LIMIT 5
     ";
     
