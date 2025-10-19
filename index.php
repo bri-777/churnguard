@@ -5158,11 +5158,39 @@ body {
 <link rel = "stylesheet" href = "cust-insight.css">
  <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
-      <div class="header-matrix" style="background-color: white; padding: 12px 20px; border-bottom: 1px solid #ddd; display: inline-block; width: 100%;"></div>
-      
-      <h1 class="platform-title">
-      <span class="title-primary" style="color: black; font-weight: 500;">Customer Insight</span>
-      </h1>
+      <div class="header-matrix" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 20px 32px; border-radius: 16px; display: flex; align-items: center; gap: 20px; width: 100%; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+    <rect width="48" height="48" rx="12" fill="white" fill-opacity="0.2"/>
+    <circle cx="24" cy="18" r="6" stroke="white" stroke-width="2.5" fill="none"/>
+    <path d="M14 36C14 31.5817 17.5817 28 22 28H26C30.4183 28 34 31.5817 34 36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M33 20L36 17L39 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 17V24" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="36" cy="12" r="2" fill="#fbbf24"/>
+  </svg>
+  
+  <h1 class="platform-title" style="margin: 0; flex: 1;">
+    <span class="title-primary" style="color: white; font-weight: 700; font-size: 32px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px;">
+      Customer Insight
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.8;">
+        <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="3" stroke="white" stroke-width="2"/>
+      </svg>
+    </span>
+  </h1>
+  
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <div style="background: rgba(255, 255, 255, 0.2); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px);">
+      <span style="color: white; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live Data</span>
+    </div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="8" fill="#10b981"/>
+      <circle cx="10" cy="10" r="8" fill="#10b981" opacity="0.3">
+        <animate attributeName="r" from="8" to="12" dur="1.5s" begin="0s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" from="0.3" to="0" dur="1.5s" begin="0s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  </div>
+</div>
       
       <div class="data-freshness">
       </div>
