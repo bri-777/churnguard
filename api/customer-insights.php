@@ -80,6 +80,7 @@ function getLoyalCustomers($pdo, $user_id) {
 function getRetentionAnalytics($pdo, $user_id) {
     $analytics = [];
     
+    // Dropped visits calculations remain the same
     $sql_week = "
         SELECT COUNT(DISTINCT customer_name) as count
         FROM (
@@ -172,20 +173,39 @@ function getRetentionAnalytics($pdo, $user_id) {
         }
     }
     
+    // FIXED: Find customers who STOPPED returning (reduced frequency dramatically)
+    // These are high-value customers who were frequent visitors but dropped off
     $sql_risk = "
         SELECT 
             customer_name,
             gender,
-            SUM(total_amount) as ltv,
-            MAX(date_visited) as last_visit,
-            DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive
-        FROM transaction_logs
-        WHERE user_id = :user_id
-          AND customer_name NOT LIKE 'Customer_%'
-        GROUP BY customer_name, gender
-        HAVING days_inactive >= 15 AND ltv >= 50000
-        ORDER BY ltv DESC
-        LIMIT 3
+            total_spent as ltv,
+            last_visit,
+            DATEDIFF(CURDATE(), last_visit) as days_inactive,
+            early_visits,
+            recent_visits,
+            ROUND(((early_visits - recent_visits) / early_visits) * 100, 1) as drop_rate
+        FROM (
+            SELECT 
+                customer_name,
+                gender,
+                SUM(total_amount) as total_spent,
+                MAX(date_visited) as last_visit,
+                -- Visits in first 30 days
+                SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as early_visits,
+                -- Visits in last 30 days
+                SUM(CASE WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as recent_visits
+            FROM transaction_logs
+            WHERE user_id = :user_id
+              AND customer_name NOT LIKE 'Customer_%'
+              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
+            GROUP BY customer_name, gender
+        ) as customer_activity
+        WHERE early_visits > 0 
+          AND ((early_visits - recent_visits) / early_visits) >= 0.5
+          AND total_spent >= 30000
+        ORDER BY drop_rate DESC, total_spent DESC
+        LIMIT 5
     ";
     
     $stmt = $pdo->prepare($sql_risk);
@@ -251,45 +271,39 @@ function getPurchaseIntelligence($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $intelligence['top_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // FIXED: Correct repeat purchase calculation
+    // FIXED: Calculate actual repeat purchase rate
     $sql_repeat = "
         SELECT 
-            type_of_drink as product,
-            COUNT(DISTINCT customer_name) as unique_customers,
-            COUNT(*) as total_orders,
-            COUNT(DISTINCT customer_name) - COUNT(DISTINCT CASE WHEN purchase_count = 1 THEN customer_name END) as returning_customers,
-            ROUND(
-                ((COUNT(DISTINCT customer_name) - COUNT(DISTINCT CASE WHEN purchase_count = 1 THEN customer_name END)) / 
-                COUNT(DISTINCT customer_name)) * 100, 
-                0
-            ) as repeat_rate
+            product,
+            unique_customers,
+            returning_customers,
+            ROUND((returning_customers / unique_customers) * 100, 0) as repeat_rate
         FROM (
             SELECT 
-                type_of_drink,
-                customer_name,
-                COUNT(*) as purchase_count
-            FROM transaction_logs
-            WHERE user_id = :user_id
-              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
-              AND customer_name NOT LIKE 'Customer_%'
-            GROUP BY type_of_drink, customer_name
-        ) as customer_purchases
-        GROUP BY type_of_drink
-        HAVING unique_customers >= 3
-        ORDER BY repeat_rate DESC, total_orders DESC
+                type_of_drink as product,
+                COUNT(DISTINCT customer_name) as unique_customers,
+                SUM(CASE WHEN purchase_count > 1 THEN 1 ELSE 0 END) as returning_customers
+            FROM (
+                SELECT 
+                    type_of_drink,
+                    customer_name,
+                    COUNT(*) as purchase_count
+                FROM transaction_logs
+                WHERE user_id = :user_id
+                  AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
+                  AND customer_name NOT LIKE 'Customer_%'
+                GROUP BY type_of_drink, customer_name
+            ) as customer_purchases
+            GROUP BY type_of_drink
+        ) as product_stats
+        WHERE unique_customers >= 3
+        ORDER BY repeat_rate DESC, unique_customers DESC
         LIMIT 3
     ";
     
     $stmt = $pdo->prepare($sql_repeat);
     $stmt->execute(['user_id' => $user_id]);
-    $repeat_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Format the data
-    foreach ($repeat_products as &$product) {
-        $product['unique_customers'] = $product['returning_customers'];
-    }
-    
-    $intelligence['repeat_rate_products'] = $repeat_products;
+    $intelligence['repeat_rate_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     return $intelligence;
 }
@@ -297,30 +311,41 @@ function getPurchaseIntelligence($pdo, $user_id) {
 function getChurnSegments($pdo, $user_id) {
     $segments = [];
     
-    // FIXED: Proper churn calculation by gender
+    // FIXED: Calculate churn based on REDUCED activity (not just "inactive for 30+ days")
+    // Customers who had visits in first 30 days but significantly reduced in last 30 days
+    
     $sql_gender = "
         SELECT 
             gender,
             COUNT(DISTINCT customer_name) as total_customers,
-            SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) as churned_customers,
+            SUM(CASE WHEN activity_drop >= 0.5 THEN 1 ELSE 0 END) as churned_customers,
             ROUND(
-                (SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100,
+                (SUM(CASE WHEN activity_drop >= 0.5 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100,
                 1
             ) as churn_rate
         FROM (
             SELECT 
                 customer_name,
                 gender,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_since_last
+                SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as early_visits,
+                SUM(CASE WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as recent_visits,
+                CASE 
+                    WHEN SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) > 0 
+                    THEN (SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) - 
+                          SUM(CASE WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END)) / 
+                         SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END)
+                    ELSE 0 
+                END as activity_drop
             FROM transaction_logs
             WHERE user_id = :user_id
               AND customer_name NOT LIKE 'Customer_%'
               AND gender IS NOT NULL
               AND gender != ''
+              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
             GROUP BY customer_name, gender
+            HAVING early_visits > 0
         ) as customer_activity
         GROUP BY gender
-        HAVING total_customers > 0
         ORDER BY gender
     ";
     
@@ -328,14 +353,13 @@ function getChurnSegments($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $segments['by_gender'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // FIXED: Proper churn calculation by category
     $sql_category = "
         SELECT 
             category,
             COUNT(DISTINCT customer_name) as total_customers,
-            SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) as churned_customers,
+            SUM(CASE WHEN activity_drop >= 0.5 THEN 1 ELSE 0 END) as churned_customers,
             ROUND(
-                (SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100,
+                (SUM(CASE WHEN activity_drop >= 0.5 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100,
                 1
             ) as churn_rate
         FROM (
@@ -346,14 +370,23 @@ function getChurnSegments($pdo, $user_id) {
                     WHEN type_of_drink IN ('Frappe', 'Matcha Latte', 'Iced Tea', 'Smoothie', 'Cold Brew') THEN 'Cold Beverages'
                     ELSE 'Other'
                 END as category,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_since_last
+                SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as early_visits,
+                SUM(CASE WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as recent_visits,
+                CASE 
+                    WHEN SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) > 0 
+                    THEN (SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) - 
+                          SUM(CASE WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END)) / 
+                         SUM(CASE WHEN date_visited < DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END)
+                    ELSE 0 
+                END as activity_drop
             FROM transaction_logs
             WHERE user_id = :user_id
               AND customer_name NOT LIKE 'Customer_%'
+              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
             GROUP BY customer_name, type_of_drink
+            HAVING early_visits > 0
         ) as customer_categories
         GROUP BY category
-        HAVING total_customers > 0
         ORDER BY category
     ";
     
