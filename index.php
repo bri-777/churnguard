@@ -5167,7 +5167,7 @@ body {
   </svg>
   
   <h1 class="platform-title" style="margin: 0; flex: 1;">
-    <span class="title-primary" style="color: #0f172a; font-weight: 600; font-size: 32px; letter-spacing: -0.02em;">
+    <span class="title-primary"  font-weight: 600; font-size: 32px; letter-spacing: -0.02em;">
       Customer Insight
     </span>
   </h1>
