@@ -6869,7 +6869,7 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
   
 </div>
 <script>
-  // Show/hide transaction date filter based on toggle
+ // Show/hide transaction date filter based on toggle
 function toggleDataView() {
   const toggle = document.getElementById('dataViewToggle');
   const dateFilter = document.getElementById('transactionDateFilter');
@@ -6952,27 +6952,64 @@ function filterTransactionsByDateRange(startDate, endDate) {
 
 // Other required functions mentioned in your HTML
 function dismissRiskAlert() {
-  document.getElementById('riskAlertBanner').style.display = 'none';
+  const alert = document.getElementById('riskAlertBanner');
+  if (alert) {
+    alert.style.display = 'none';
+  }
 }
 
+// FIXED: Toggle chart date picker
+function toggleChartDatePicker() {
+  const dropdown = document.getElementById('chartDatePickerDropdown');
+  if (dropdown) {
+    const isVisible = dropdown.classList.contains('show');
+    if (isVisible) {
+      dropdown.classList.remove('show');
+    } else {
+      dropdown.classList.add('show');
+    }
+    console.log('Date picker toggled:', !isVisible);
+  } else {
+    console.error('chartDatePickerDropdown not found!');
+  }
+}
 
+// FIXED: Refresh dashboard data
+function refreshDashboardData() {
+  console.log('Refreshing dashboard data...');
+  // Use global dashboard instance if available
+  if (window.dashboard) {
+    window.dashboard.refresh();
+  } else {
+    console.warn('Dashboard instance not found');
+  }
+}
 
 // Close date picker when clicking outside
 document.addEventListener('click', function(event) {
-  const picker = document.querySelector('#customer-monitoring .date-picker');
+  const picker = document.querySelector('.date-picker');
   const dropdown = document.getElementById('chartDatePickerDropdown');
   
   if (picker && dropdown && !picker.contains(event.target)) {
-    dropdown.style.display = 'none';
+    dropdown.classList.remove('show');
   }
 });
 
 // Handle date option selection
 document.addEventListener('DOMContentLoaded', function() {
-  const dateOptions = document.querySelectorAll('#chartDatePickerDropdown .date-option');
+  console.log('Setting up date picker options...');
+  
+  const dateOptions = document.querySelectorAll('.date-option');
+  
+  if (dateOptions.length === 0) {
+    console.error('No date options found!');
+    return;
+  }
   
   dateOptions.forEach(option => {
-    option.addEventListener('click', function() {
+    option.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
       // Remove active class from all options
       dateOptions.forEach(opt => opt.classList.remove('active'));
       
@@ -6981,17 +7018,31 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Update displayed text
       const selectedText = this.querySelector('span:first-child').textContent;
-      document.getElementById('selectedChartDateRange').textContent = selectedText;
+      const displayElement = document.getElementById('selectedChartDateRange');
+      if (displayElement) {
+        displayElement.textContent = selectedText;
+      }
       
       // Close dropdown
-      document.getElementById('chartDatePickerDropdown').style.display = 'none';
+      const dropdown = document.getElementById('chartDatePickerDropdown');
+      if (dropdown) {
+        dropdown.classList.remove('show');
+      }
       
       // Apply filter based on data-value
       const value = this.getAttribute('data-value');
       console.log('Selected date range:', value);
-      // Update chart data here based on selected range
+      
+      // Update dashboard if available
+      if (window.dashboard) {
+        window.dashboard.changeDateRange(value);
+      } else {
+        console.warn('Dashboard not initialized yet');
+      }
     });
   });
+  
+  console.log('Date picker options setup complete:', dateOptions.length, 'options found');
 });
   </script>
 

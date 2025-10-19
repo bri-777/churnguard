@@ -597,7 +597,9 @@
     visibility: visible;
     transform: translateY(0);
 }
-
+.date-picker-dropdown.show {
+    display: block !important;
+}
 /* Date Options */
 .date-option {
     padding: 12px 16px;
