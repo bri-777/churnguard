@@ -1,11 +1,6 @@
 <?php
-// Start session first
 session_start();
-
-// Set headers
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Credentials: true');
 
 // Database credentials
 define('DB_HOST', 'localhost');
@@ -13,110 +8,41 @@ define('DB_NAME', 'u393812660_churnguard');
 define('DB_USER', 'u393812660_churnguard');
 define('DB_PASS', '102202Brian_');
 
-// =============================================
-// AUTHENTICATION CHECK
-// =============================================
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode([
-        'error' => 'Unauthorized',
-        'message' => 'Please log in to access customer insights.',
-        'code' => 'AUTH_REQUIRED'
-    ]);
-    exit;
-}
-
-// Get authenticated user_id from session
+// Get user_id from session (already logged in)
 $user_id = (int)$_SESSION['user_id'];
-
-// Validate user_id is a positive integer
-if ($user_id <= 0) {
-    http_response_code(400);
-    echo json_encode([
-        'error' => 'Invalid User',
-        'message' => 'Invalid user session. Please log in again.',
-        'code' => 'INVALID_USER_ID'
-    ]);
-    exit;
-}
-
-// Get action parameter
 $action = $_GET['action'] ?? '';
 
-// Validate action parameter
-$valid_actions = ['loyal_customers', 'retention_analytics', 'purchase_intelligence', 'churn_segments', 'executive_summary'];
-if (!in_array($action, $valid_actions)) {
-    http_response_code(400);
-    echo json_encode([
-        'error' => 'Invalid Action',
-        'message' => 'The requested action is not valid.',
-        'code' => 'INVALID_ACTION'
-    ]);
-    exit;
-}
-
 try {
-    // Create PDO connection
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     
-    // Route to appropriate function
     switch ($action) {
         case 'loyal_customers':
             $result = getLoyalCustomers($pdo, $user_id);
             break;
-            
         case 'retention_analytics':
             $result = getRetentionAnalytics($pdo, $user_id);
             break;
-            
         case 'purchase_intelligence':
             $result = getPurchaseIntelligence($pdo, $user_id);
             break;
-            
         case 'churn_segments':
             $result = getChurnSegments($pdo, $user_id);
             break;
-            
         case 'executive_summary':
             $result = getExecutiveSummary($pdo, $user_id);
             break;
+        default:
+            $result = ['error' => 'Invalid action'];
     }
     
-    // Return successful response
-    http_response_code(200);
-    echo json_encode([
-        'success' => true,
-        'data' => $result,
-        'user_id' => $user_id,
-        'action' => $action,
-        'timestamp' => date('Y-m-d H:i:s')
-    ]);
+    echo json_encode($result);
     
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode([
-        'error' => 'Database Error',
-        'message' => 'An error occurred while fetching data.',
-        'code' => 'DB_ERROR',
-        'details' => $e->getMessage() // Remove in production for security
-    ]);
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        'error' => 'Server Error',
-        'message' => 'An unexpected error occurred.',
-        'code' => 'SERVER_ERROR',
-        'details' => $e->getMessage() // Remove in production for security
-    ]);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 
-// =============================================
-// FUNCTION: Get Loyal Customers (Top 3)
-// =============================================
 function getLoyalCustomers($pdo, $user_id) {
-    // Get last 60 days of data - ONLY for this specific user
     $sql = "
         SELECT 
             customer_name,
@@ -142,27 +68,20 @@ function getLoyalCustomers($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Add rank and format data
     $rank = 1;
     foreach ($customers as &$customer) {
         $customer['rank'] = $rank++;
         $customer['initials'] = getInitials($customer['customer_name']);
         $customer['last_visit_formatted'] = formatDate($customer['last_visit']);
-        
-        // Generate trend data (simplified - last 10 visits)
         $customer['trend'] = generateTrendData($pdo, $user_id, $customer['customer_name']);
     }
     
     return $customers;
 }
 
-// =============================================
-// FUNCTION: Get Retention & Risk Analytics
-// =============================================
 function getRetentionAnalytics($pdo, $user_id) {
     $analytics = [];
     
-    // 1. Get customers who dropped visits this week - ONLY for this user
     $sql_week = "
         SELECT COUNT(DISTINCT customer_name) as count
         FROM (
@@ -189,7 +108,6 @@ function getRetentionAnalytics($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $analytics['dropped_this_week'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
     
-    // 2. Get customers who dropped visits this month - ONLY for this user
     $sql_month = "
         SELECT COUNT(DISTINCT customer_name) as count
         FROM (
@@ -216,7 +134,6 @@ function getRetentionAnalytics($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $analytics['dropped_this_month'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
     
-    // 3. Get health segments - ONLY for this user
     $sql_health = "
         SELECT 
             risk_level,
@@ -257,7 +174,6 @@ function getRetentionAnalytics($pdo, $user_id) {
         }
     }
     
-    // 4. Get high-value at-risk customers - ONLY for this user
     $sql_risk = "
         SELECT 
             customer_name,
@@ -285,12 +201,10 @@ function getRetentionAnalytics($pdo, $user_id) {
     
     $analytics['at_risk_customers'] = $risk_customers;
     
-    // Calculate total customers
     $total = $analytics['health_segments']['healthy'] + 
              $analytics['health_segments']['at_risk'] + 
              $analytics['health_segments']['critical'];
     
-    // Calculate percentages
     if ($total > 0) {
         $analytics['health_percentages'] = [
             'healthy' => round(($analytics['health_segments']['healthy'] / $total) * 100),
@@ -302,13 +216,9 @@ function getRetentionAnalytics($pdo, $user_id) {
     return $analytics;
 }
 
-// =============================================
-// FUNCTION: Get Purchase Intelligence
-// =============================================
 function getPurchaseIntelligence($pdo, $user_id) {
     $intelligence = [];
     
-    // 1. Overall metrics - ONLY for this user
     $sql_overview = "
         SELECT 
             AVG(quantity_of_drinks) as avg_basket_size,
@@ -326,7 +236,6 @@ function getPurchaseIntelligence($pdo, $user_id) {
     $intelligence['avg_basket_size'] = round($overview['avg_basket_size'], 1);
     $intelligence['avg_transaction'] = round($overview['avg_transaction'], 0);
     
-    // 2. Top products - ONLY for this user
     $sql_products = "
         SELECT 
             type_of_drink as product,
@@ -344,7 +253,6 @@ function getPurchaseIntelligence($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $intelligence['top_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // 3. Repeat purchase rate by product - ONLY for this user
     $sql_repeat = "
         SELECT 
             type_of_drink as product,
@@ -368,13 +276,9 @@ function getPurchaseIntelligence($pdo, $user_id) {
     return $intelligence;
 }
 
-// =============================================
-// FUNCTION: Get Churn Segments
-// =============================================
 function getChurnSegments($pdo, $user_id) {
     $segments = [];
     
-    // 1. Churn by gender - ONLY for this user
     $sql_gender = "
         SELECT 
             gender,
@@ -403,7 +307,6 @@ function getChurnSegments($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $segments['by_gender'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // 2. Churn by product category - ONLY for this user
     $sql_category = "
         SELECT 
             CASE 
@@ -441,13 +344,9 @@ function getChurnSegments($pdo, $user_id) {
     return $segments;
 }
 
-// =============================================
-// FUNCTION: Get Executive Summary
-// =============================================
 function getExecutiveSummary($pdo, $user_id) {
     $summary = [];
     
-    // Total customers - ONLY for this user
     $sql_customers = "
         SELECT COUNT(DISTINCT customer_name) as total
         FROM transaction_logs
@@ -460,7 +359,6 @@ function getExecutiveSummary($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $summary['total_customers'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
-    // Monthly revenue - ONLY for this user
     $sql_revenue = "
         SELECT SUM(sales_volume) as total
         FROM churn_data
@@ -475,9 +373,6 @@ function getExecutiveSummary($pdo, $user_id) {
     return $summary;
 }
 
-// =============================================
-// HELPER FUNCTIONS
-// =============================================
 function getInitials($name) {
     $words = explode(' ', $name);
     $initials = '';
@@ -500,7 +395,6 @@ function formatDate($date) {
 }
 
 function generateTrendData($pdo, $user_id, $customer_name) {
-    // ONLY get data for this specific user
     $sql = "
         SELECT total_amount
         FROM transaction_logs
@@ -514,7 +408,6 @@ function generateTrendData($pdo, $user_id, $customer_name) {
     $stmt->execute(['user_id' => $user_id, 'customer_name' => $customer_name]);
     $amounts = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
-    // Convert to SVG points (simplified)
     $points = [];
     $max = max($amounts) ?: 1;
     foreach (array_reverse($amounts) as $i => $amount) {

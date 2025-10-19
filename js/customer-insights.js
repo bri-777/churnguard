@@ -1,7 +1,3 @@
-// =============================================
-// CUSTOMER INSIGHTS - MAIN APPLICATION
-// =============================================
-
 class CustomerInsights {
     constructor() {
         this.apiBase = 'api/customer-insights.php';
@@ -12,19 +8,17 @@ class CustomerInsights {
         try {
             await this.loadAllData();
             this.setupEventListeners();
-            console.log('✅ Customer Insights loaded successfully');
+            console.log('✅ Customer Insights loaded');
         } catch (error) {
-            console.error('❌ Error loading Customer Insights:', error);
-            this.showError('Failed to load customer insights data');
+            console.error('❌ Error:', error);
+            this.showError('Failed to load data');
         }
     }
     
     async loadAllData() {
-        // Show loading state
         this.showLoading();
         
         try {
-            // Load all data in parallel
             const [
                 loyalCustomers,
                 retentionAnalytics,
@@ -39,7 +33,6 @@ class CustomerInsights {
                 this.fetchData('executive_summary')
             ]);
             
-            // Render each section
             this.renderLoyalCustomers(loyalCustomers);
             this.renderRetentionAnalytics(retentionAnalytics);
             this.renderPurchaseIntelligence(purchaseIntelligence);
@@ -54,53 +47,22 @@ class CustomerInsights {
     }
     
     async fetchData(action) {
-    try {
         const response = await fetch(`${this.apiBase}?action=${action}`);
-        
-        // Handle authentication errors
-        if (response.status === 401) {
-            alert('Your session has expired. Please log in again.');
-            window.location.href = '/login.php'; // Adjust to your login page
-            return null;
-        }
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        
-        // Check for success
-        if (result.success === false) {
-            throw new Error(result.message || 'Failed to fetch data');
-        }
-        
-        return result.data;
-        
-    } catch (error) {
-        console.error('Fetch error:', error);
-        throw error;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
     }
-}
     
-    // =============================================
-    // RENDER: Loyal Customers
-    // =============================================
     renderLoyalCustomers(customers) {
         const container = document.querySelector('.customer-intelligence-grid');
         if (!container || !customers || customers.length === 0) {
-            if (container) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #64748b;">No loyal customers data available</div>';
-            }
+            if (container) container.innerHTML = '<div style="text-align: center; padding: 40px; color: #64748b;">No loyal customers data</div>';
             return;
         }
         
         container.innerHTML = customers.map(customer => `
             <div class="customer-profile-item ${customer.rank <= 2 ? 'vip' : ''}">
                 <div class="profile-rank">
-                    <div class="rank-badge ${customer.rank === 1 ? 'gold' : customer.rank === 2 ? 'gold' : 'silver'}">
-                        ${customer.rank}
-                    </div>
+                    <div class="rank-badge ${customer.rank === 1 ? 'gold' : customer.rank === 2 ? 'gold' : 'silver'}">${customer.rank}</div>
                 </div>
                 <div class="profile-identity">
                     <div class="profile-avatar">${customer.initials}</div>
@@ -125,8 +87,7 @@ class CustomerInsights {
                 <div class="profile-behavior">
                     <div class="behavior-chart">
                         <svg viewBox="0 0 100 40" class="mini-chart">
-                            <polyline points="${customer.trend}" 
-                                      fill="none" stroke="${this.getChartColor(customer.rank)}" stroke-width="2"/>
+                            <polyline points="${customer.trend}" fill="none" stroke="${this.getChartColor(customer.rank)}" stroke-width="2"/>
                         </svg>
                     </div>
                 </div>
@@ -142,20 +103,14 @@ class CustomerInsights {
         `).join('');
     }
     
-    // =============================================
-    // RENDER: Retention Analytics
-    // =============================================
     renderRetentionAnalytics(analytics) {
         if (!analytics) return;
         
-        // Update dropped visits using data attributes
         const weekEl = document.querySelector('[data-dropped-week]');
         const monthEl = document.querySelector('[data-dropped-month]');
-        
         if (weekEl) weekEl.textContent = analytics.dropped_this_week || 0;
         if (monthEl) monthEl.textContent = analytics.dropped_this_month || 0;
         
-        // Update health segments using data attributes
         const healthLow = document.querySelector('[data-health-low]');
         const healthLowPct = document.querySelector('[data-health-low-pct]');
         const healthMed = document.querySelector('[data-health-medium]');
@@ -170,25 +125,25 @@ class CustomerInsights {
         if (healthHigh) healthHigh.textContent = this.formatNumber(analytics.health_segments.critical);
         if (healthHighPct) healthHighPct.textContent = (analytics.health_percentages?.critical || 0) + '%';
         
-        // Update at-risk customers list
         const riskList = document.querySelector('[data-risk-customers]');
-        if (riskList && analytics.at_risk_customers && analytics.at_risk_customers.length > 0) {
-            riskList.innerHTML = analytics.at_risk_customers.map(customer => `
-                <div class="risk-customer">
-                    <div class="customer-info">
-                        <div class="customer-avatar">${customer.initials}</div>
-                        <div class="customer-details">
-                            <div class="customer-name">${customer.customer_name}</div>
-                            <div class="customer-meta">LTV: ${customer.ltv_formatted} | Last: ${customer.days_inactive} days ago</div>
+        if (riskList) {
+            if (analytics.at_risk_customers && analytics.at_risk_customers.length > 0) {
+                riskList.innerHTML = analytics.at_risk_customers.map(customer => `
+                    <div class="risk-customer">
+                        <div class="customer-info">
+                            <div class="customer-avatar">${customer.initials}</div>
+                            <div class="customer-details">
+                                <div class="customer-name">${customer.customer_name}</div>
+                                <div class="customer-meta">LTV: ${customer.ltv_formatted} | Last: ${customer.days_inactive} days ago</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
-        } else if (riskList) {
-            riskList.innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;">No high-value at-risk customers</div>';
+                `).join('');
+            } else {
+                riskList.innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;">No high-value at-risk customers</div>';
+            }
         }
         
-        // Update total at risk indicator
         const alertValue = document.querySelector('[data-risk-total]');
         if (alertValue) {
             const totalAtRisk = analytics.health_segments.at_risk + analytics.health_segments.critical;
@@ -196,28 +151,20 @@ class CustomerInsights {
         }
     }
     
-    // =============================================
-    // RENDER: Purchase Intelligence
-    // =============================================
     renderPurchaseIntelligence(intelligence) {
         if (!intelligence) return;
         
-        // Update overview stats using data attributes
         const basketSize = document.querySelector('[data-basket-size]');
         const avgTrans = document.querySelector('[data-avg-transaction]');
-        
         if (basketSize) basketSize.textContent = intelligence.avg_basket_size + ' items';
         if (avgTrans) avgTrans.textContent = '₱' + this.formatNumber(intelligence.avg_transaction);
         
-        // Update top products
         const topProductsList = document.querySelector('[data-top-products]');
         if (topProductsList && intelligence.top_products && intelligence.top_products.length > 0) {
             topProductsList.innerHTML = intelligence.top_products.map((product, index) => `
                 <div class="combo-item">
                     <div class="combo-rank">${index + 1}</div>
-                    <div class="combo-products">
-                        <span class="product">${product.product}</span>
-                    </div>
+                    <div class="combo-products"><span class="product">${product.product}</span></div>
                     <div class="combo-stats">
                         <span class="frequency">${product.order_count} orders</span>
                         <span class="revenue">₱${this.formatNumber(product.revenue)}</span>
@@ -226,15 +173,12 @@ class CustomerInsights {
             `).join('');
         }
         
-        // Update repeat purchase rates
         const repeatList = document.querySelector('[data-repeat-products]');
         if (repeatList && intelligence.repeat_rate_products && intelligence.repeat_rate_products.length > 0) {
             repeatList.innerHTML = intelligence.repeat_rate_products.map((product, index) => `
                 <div class="combo-item">
                     <div class="combo-rank">${index + 1}</div>
-                    <div class="combo-products">
-                        <span class="product">${product.product}</span>
-                    </div>
+                    <div class="combo-products"><span class="product">${product.product}</span></div>
                     <div class="combo-stats">
                         <span class="frequency">Repeat Rate: ${product.repeat_rate}%</span>
                         <span class="revenue">${product.unique_customers} customers</span>
@@ -244,13 +188,9 @@ class CustomerInsights {
         }
     }
     
-    // =============================================
-    // RENDER: Churn Segments
-    // =============================================
     renderChurnSegments(segments) {
         if (!segments) return;
         
-        // Update gender segments
         const genderEl = document.querySelector('[data-churn-gender]');
         if (genderEl && segments.by_gender && segments.by_gender.length > 0) {
             genderEl.innerHTML = segments.by_gender.map(seg => `
@@ -261,7 +201,6 @@ class CustomerInsights {
             `).join('');
         }
         
-        // Update category segments
         const categoryEl = document.querySelector('[data-churn-category]');
         if (categoryEl && segments.by_category && segments.by_category.length > 0) {
             categoryEl.innerHTML = segments.by_category.map(seg => `
@@ -273,98 +212,49 @@ class CustomerInsights {
         }
     }
     
-    // =============================================
-    // RENDER: Executive Summary
-    // =============================================
     renderExecutiveSummary(summary) {
         if (!summary) return;
-        
         const customersEl = document.querySelector('[data-total-customers]');
         const revenueEl = document.querySelector('[data-monthly-revenue]');
-        
         if (customersEl) customersEl.textContent = this.formatNumber(summary.total_customers);
         if (revenueEl) revenueEl.textContent = '₱' + this.formatNumber(summary.monthly_revenue);
     }
     
-    // =============================================
-    // PUBLIC METHODS
-    // =============================================
     viewCustomerDetails(customerName) {
-        alert(`Viewing details for: ${customerName}\n\nThis would open a detailed customer profile modal.`);
-        // TODO: Implement modal or redirect to customer detail page
+        alert(`Viewing: ${customerName}\n\nWould open customer profile modal.`);
     }
     
     exportInsights(format) {
-        if (format === 'pdf') {
-            alert('Exporting Customer Insights Report as PDF...\n\nReport includes:\n- Loyal Customer Analysis\n- Retention & Risk Metrics\n- Purchase Intelligence\n- Churn Rate by Segment');
-        } else if (format === 'excel') {
-            alert('Exporting Customer Insights Report as Excel...\n\nSpreadsheet will include:\n- Customer Lists & Metrics\n- Segment Analysis Data\n- Product Performance Data');
-        }
-        // TODO: Implement actual export functionality using jsPDF or SheetJS
+        alert(`Exporting as ${format.toUpperCase()}...`);
     }
     
-    // =============================================
-    // HELPER METHODS
-    // =============================================
     formatNumber(num) {
         return new Intl.NumberFormat('en-PH').format(Math.round(num));
     }
     
     getChartColor(rank) {
-        const colors = {
-            1: '#05dfd7',
-            2: '#088395',
-            3: '#0a4d68'
-        };
-        return colors[rank] || '#64748b';
+        return {1: '#05dfd7', 2: '#088395', 3: '#0a4d68'}[rank] || '#64748b';
     }
     
-    showLoading() {
-        console.log('Loading data...');
-        // TODO: Add loading spinner overlay if desired
-    }
-    
-    hideLoading() {
-        console.log('Data loaded');
-    }
-    
-    showError(message) {
-        console.error(message);
-        alert('Error: ' + message);
-    }
+    showLoading() { console.log('Loading...'); }
+    hideLoading() { console.log('Loaded'); }
+    showError(msg) { alert('Error: ' + msg); }
     
     setupEventListeners() {
-        // Export buttons
         document.querySelectorAll('[data-export]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const format = e.currentTarget.getAttribute('data-export');
-                this.exportInsights(format);
+                this.exportInsights(e.currentTarget.getAttribute('data-export'));
             });
         });
-        
-        // Refresh button if exists
-        const refreshBtn = document.querySelector('[data-refresh="insights"]');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => this.loadAllData());
-        }
     }
 }
 
-// =============================================
-// INITIALIZE ON PAGE LOAD
-// =============================================
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on the customer insights page
     if (document.getElementById('cust-insight')) {
         window.customerInsights = new CustomerInsights();
     }
 });
 
-// Auto-refresh every 5 minutes
 setInterval(() => {
-    if (window.customerInsights) {
-        console.log('Auto-refreshing customer insights...');
-        window.customerInsights.loadAllData();
-    }
-}, 3000); // 5 minutes
+    if (window.customerInsights) window.customerInsights.loadAllData();
+}, 300000); // 5 minutes
