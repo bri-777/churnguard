@@ -1,6 +1,6 @@
 /**
- * Fixed Customer Monitoring Dashboard
- * Works with actual database data
+ * Complete Customer Monitoring Dashboard with Date Range Support
+ * Works with accurate database data
  */
 
 class CustomerMonitoringDashboard {
@@ -36,10 +36,13 @@ class CustomerMonitoringDashboard {
         if (this.isLoading) return;
         
         this.isLoading = true;
-        console.log('Loading data from API...');
+        console.log('Loading data from API with range:', this.dateRange);
 
         try {
-            const response = await fetch(this.apiUrl + '?t=' + Date.now(), {
+            // Add date range parameter to API call
+            const url = `${this.apiUrl}?range=${this.dateRange}&t=${Date.now()}`;
+            
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -70,6 +73,7 @@ class CustomerMonitoringDashboard {
             this.updateLastUpdateTime();
             
             console.log('Data loaded successfully, records:', this.historicalData.length);
+            console.log('Date range:', data.dateRangeLabel || this.dateRange);
             
         } catch (error) {
             console.error('Load data error:', error);
@@ -92,8 +96,8 @@ class CustomerMonitoringDashboard {
         this.setElement('atRiskCustomerCount', this.formatNumber(data.atRiskCustomers || 0));
 
         // Update trends
-        this.updateTrend('todayTrafficTrend', data.trafficTrend || 0, 'vs 14-day avg');
-        this.updateTrend('todayRevenueTrend', data.revenueTrend || 0, 'vs 14-day avg');
+        this.updateTrend('todayTrafficTrend', data.trafficTrend || 0, 'vs avg');
+        this.updateTrend('todayRevenueTrend', data.revenueTrend || 0, 'vs avg');
         
         // Update additional trend indicators
         this.updateSimpleTrend('yesterdayTrafficTrend', data.yesterdayTraffic, data.traffic14DayAvg, 'vs avg');
@@ -145,7 +149,6 @@ class CustomerMonitoringDashboard {
         }
     }
 
-    // Add new method for simple trend updates
     updateSimpleTrend(elementId, currentValue, compareValue, type) {
         const element = document.getElementById(elementId);
         if (!element) {
@@ -214,154 +217,143 @@ class CustomerMonitoringDashboard {
         }
     }
 
- // Fixed updateTable method with dynamic risk-based trends
-// SIMPLIFIED ACCURATE UPDATE TABLE - Guaranteed Medium Risk Display
-updateTable(data) {
-    const tableBody = document.getElementById('historicalAnalysisTableBody');
-    if (!tableBody) return;
+    updateTable(data) {
+        const tableBody = document.getElementById('historicalAnalysisTableBody');
+        if (!tableBody) return;
 
-    if (!this.historicalData || this.historicalData.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="7" class="no-data">No data available</td></tr>';
-        return;
-    }
+        if (!this.historicalData || this.historicalData.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="no-data">No data available for selected date range</td></tr>';
+            return;
+        }
 
-    let rows = '';
-    
-    // CRITICAL DEBUG: Log what we actually receive
-    console.log('=== FINAL ACCURATE DEBUG ===');
-    console.log('Records received:', this.historicalData.length);
-    
-   
-    
-    this.historicalData.forEach((record, index) => {
-        const date = new Date(record.date);
-        const dateStr = date.toLocaleDateString('en-PH');
+        let rows = '';
         
-        const traffic = parseInt(record.customer_traffic) || 0;
-        const revenue = parseFloat(record.sales_volume) || 0;
-        const transactions = parseInt(record.receipt_count) || 0;
+        console.log('=== TABLE UPDATE DEBUG ===');
+        console.log('Records received:', this.historicalData.length);
+        console.log('Date range:', this.dateRange);
         
-        // DIRECT risk level reading - no processing needed
-        let riskLevel = record.risk_level || 'Low';
-        let riskPercentage = parseFloat(record.risk_percentage) || 0;
-        let hasPrediction = record.has_real_prediction === true;
-        
-        // Ensure proper case
-        riskLevel = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase();
-        
-       
-        console.log(`Row ${index + 1}: ${dateStr} - ${riskLevel} (${riskPercentage}%) - ${hasPrediction ? 'REAL' : 'EST'}`);
-        
-      
-        
-        // SIMPLE trend logic
-        let trendClass = 'trend-neutral';
-        let trendText = '→ Stable';
-        
-        if (index === 0) {
-            // First row - show current status
-            if (riskLevel === 'High') {
-                trendClass = 'trend-down';
-                trendText = '🚨 High Risk';
-            } else if (riskLevel === 'Medium') {
-                trendClass = 'trend-warning';
-                trendText = '⚠️ Medium Risk';
-            } else {
-                trendClass = 'trend-up';
-                trendText = '✔️ Low Risk';
-            }
-        } else {
-            // Compare with previous record
-            const prevRecord = this.historicalData[index - 1];
-            const prevRisk = (prevRecord.risk_level || 'Low').charAt(0).toUpperCase() + (prevRecord.risk_level || 'Low').slice(1).toLowerCase();
+        this.historicalData.forEach((record, index) => {
+            const date = new Date(record.date);
+            const dateStr = date.toLocaleDateString('en-PH');
             
-            const riskValues = { 'Low': 1, 'Medium': 2, 'High': 3 };
-            const currentVal = riskValues[riskLevel] || 1;
-            const prevVal = riskValues[prevRisk] || 1;
+            const traffic = parseInt(record.customer_traffic) || 0;
+            const revenue = parseFloat(record.sales_volume) || 0;
+            const transactions = parseInt(record.receipt_count) || 0;
             
-            if (currentVal > prevVal) {
-                trendClass = 'trend-down';
-                trendText = '↗️ Risk Increased';
-            } else if (currentVal < prevVal) {
-                trendClass = 'trend-up';
-                trendText = '↘️ Risk Decreased';
-            } else {
-                // Same risk level
+            // Direct risk level reading from database
+            let riskLevel = record.risk_level || 'Low';
+            let riskPercentage = parseFloat(record.risk_percentage) || 0;
+            let hasPrediction = record.has_real_prediction === true;
+            
+            // Ensure proper case
+            riskLevel = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase();
+            
+            console.log(`Row ${index + 1}: ${dateStr} - ${riskLevel} (${riskPercentage}%) - ${hasPrediction ? 'REAL' : 'EST'}`);
+            
+            // Simple trend logic
+            let trendClass = 'trend-neutral';
+            let trendText = '→ Stable';
+            
+            if (index === 0) {
+                // First row - show current status
                 if (riskLevel === 'High') {
                     trendClass = 'trend-down';
-                    trendText = '🚨 High Risk Ongoing';
+                    trendText = '🚨 High Risk';
                 } else if (riskLevel === 'Medium') {
                     trendClass = 'trend-warning';
-                    trendText = '⚠️ Medium Risk Ongoing';
+                    trendText = '⚠️ Medium Risk';
                 } else {
                     trendClass = 'trend-up';
-                    trendText = '✔️ Low Risk Stable';
+                    trendText = '✔️ Low Risk';
+                }
+            } else {
+                // Compare with previous record
+                const prevRecord = this.historicalData[index - 1];
+                const prevRisk = (prevRecord.risk_level || 'Low').charAt(0).toUpperCase() + (prevRecord.risk_level || 'Low').slice(1).toLowerCase();
+                
+                const riskValues = { 'Low': 1, 'Medium': 2, 'High': 3 };
+                const currentVal = riskValues[riskLevel] || 1;
+                const prevVal = riskValues[prevRisk] || 1;
+                
+                if (currentVal > prevVal) {
+                    trendClass = 'trend-down';
+                    trendText = '↗️ Risk Increased';
+                } else if (currentVal < prevVal) {
+                    trendClass = 'trend-up';
+                    trendText = '↘️ Risk Decreased';
+                } else {
+                    // Same risk level
+                    if (riskLevel === 'High') {
+                        trendClass = 'trend-down';
+                        trendText = '🚨 High Risk Ongoing';
+                    } else if (riskLevel === 'Medium') {
+                        trendClass = 'trend-warning';
+                        trendText = '⚠️ Medium Risk Ongoing';
+                    } else {
+                        trendClass = 'trend-up';
+                        trendText = '✔️ Low Risk Stable';
+                    }
                 }
             }
-        }
+            
+            // Risk badge
+            const badgeClass = `status-badge status-${riskLevel.toLowerCase()}`;
+            const displayText = hasPrediction ? riskLevel : `${riskLevel}*`;
+            
+            rows += `
+                <tr class="table-row-${riskLevel.toLowerCase()}">
+                    <td>${dateStr}</td>
+                    <td>${this.formatNumber(traffic)}</td>
+                    <td>${this.formatCurrency(revenue)}</td>
+                    <td>${this.formatNumber(transactions)}</td>
+                    <td><span class="${badgeClass}">${displayText}</span></td>
+                    <td class="${trendClass}">${trendText}</td>
+                </tr>
+            `;
+        });
         
-        // Risk badge
-        const badgeClass = `status-badge status-${riskLevel.toLowerCase()}`;
-        const displayText = hasPrediction ? riskLevel : `${riskLevel}*`;
-        
-        rows += `
-            <tr class="table-row-${riskLevel.toLowerCase()}">
-                <td>${dateStr}</td>
-                <td>${this.formatNumber(traffic)}</td>
-                <td>${this.formatCurrency(revenue)}</td>
-                <td>${this.formatNumber(transactions)}</td>
-                <td><span class="${badgeClass}">${displayText}</span></td>
-             
-                <td class="${trendClass}">${trendText}</td>
-            </tr>
-        `;
-    });
-    
-    tableBody.innerHTML = rows;
-    this.addAccurateStyles();
-    
-   
-}
-
-// Add the necessary CSS
-addAccurateStyles() {
-    if (!document.getElementById('accurateRiskStyles')) {
-        const style = document.createElement('style');
-        style.id = 'accurateRiskStyles';
-        style.textContent = `
-            .status-badge {
-                padding: 4px 8px;
-                border-radius: 8px;
-                font-size: 11px;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-            .status-high {
-                background: #fee2e2;
-                color: #dc2626;
-                border: 1px solid #fca5a5;
-            }
-            .status-medium {
-                background: #fef3c7;
-                color: #d97706;
-                border: 1px solid #fcd34d;
-            }
-            .status-low {
-                background: #dcfce7;
-                color: #16a34a;
-                border: 1px solid #86efac;
-            }
-            .trend-warning { color: #d97706; font-weight: bold; }
-            .trend-down { color: #dc2626; font-weight: bold; }
-            .trend-up { color: #16a34a; font-weight: bold; }
-            .trend-neutral { color: #6b7280; }
-            .table-row-high { background: rgba(239, 68, 68, 0.05); }
-            .table-row-medium { background: rgba(245, 158, 11, 0.05); }
-            .table-row-low { background: rgba(34, 197, 94, 0.03); }
-        `;
-        document.head.appendChild(style);
+        tableBody.innerHTML = rows;
+        this.addAccurateStyles();
     }
-}
+
+    addAccurateStyles() {
+        if (!document.getElementById('accurateRiskStyles')) {
+            const style = document.createElement('style');
+            style.id = 'accurateRiskStyles';
+            style.textContent = `
+                .status-badge {
+                    padding: 4px 8px;
+                    border-radius: 8px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .status-high {
+                    background: #fee2e2;
+                    color: #dc2626;
+                    border: 1px solid #fca5a5;
+                }
+                .status-medium {
+                    background: #fef3c7;
+                    color: #d97706;
+                    border: 1px solid #fcd34d;
+                }
+                .status-low {
+                    background: #dcfce7;
+                    color: #16a34a;
+                    border: 1px solid #86efac;
+                }
+                .trend-warning { color: #d97706; font-weight: bold; }
+                .trend-down { color: #dc2626; font-weight: bold; }
+                .trend-up { color: #16a34a; font-weight: bold; }
+                .trend-neutral { color: #6b7280; }
+                .table-row-high { background: rgba(239, 68, 68, 0.05); }
+                .table-row-medium { background: rgba(245, 158, 11, 0.05); }
+                .table-row-low { background: rgba(34, 197, 94, 0.03); }
+            `;
+            document.head.appendChild(style);
+        }
+    }
 
     initChart() {
         const canvas = document.getElementById('trafficChurnChart');
@@ -442,122 +434,98 @@ addAccurateStyles() {
         });
     }
 
- getChartLabels() {
-    if (this.dateRange === 'today') {
-        // For today, show shifts instead of dates
-        return ['Morning', 'Swing', 'Graveyard'];
-    }
-    
-    if (!this.historicalData || this.historicalData.length === 0) return [];
-    
-    let days;
-    if (this.dateRange === '7days') {
-        days = 7;
-    } else {
-        days = 14;
-    }
-    
-    const dataToUse = this.historicalData.slice(-days);
-    
-    return dataToUse.map(item => {
-        const date = new Date(item.date);
-        return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
-    });
-}
-
-getTrafficData() {
-    if (this.dateRange === 'today') {
-        if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
-        
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Find today's record - try exact match first, then most recent
-        let todayRecord = this.historicalData.find(record => record.date === today);
-        
-        // If no exact match, use the most recent record (first in DESC order)
-        if (!todayRecord) {
-            todayRecord = this.historicalData[0];
-            console.warn(`No exact match for ${today}, using most recent record:`, todayRecord.date);
+    getChartLabels() {
+        if (this.dateRange === 'today') {
+            // For today, show shifts instead of dates
+            return ['Morning', 'Swing', 'Graveyard'];
         }
         
-        if (!todayRecord) return [0, 0, 0];
+        if (!this.historicalData || this.historicalData.length === 0) return [];
         
-        // Get real shift traffic data from database
-        const morningTraffic = parseInt(todayRecord.morning_receipt_count) || 0;
-        const swingTraffic = parseInt(todayRecord.swing_receipt_count) || 0;
-        const graveyardTraffic = parseInt(todayRecord.graveyard_receipt_count) || 0;
-        
-        console.log('Today shift traffic data:', {
-            searchDate: today,
-            foundDate: todayRecord.date,
-            morning: morningTraffic,
-            swing: swingTraffic,
-            graveyard: graveyardTraffic
+        return this.historicalData.map(item => {
+            const date = new Date(item.date);
+            return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
         });
-        
-        return [morningTraffic, swingTraffic, graveyardTraffic];
     }
-    
-    if (!this.historicalData || this.historicalData.length === 0) return [];
-    
-    let days;
-    if (this.dateRange === '7days') {
-        days = 7;
-    } else {
-        days = 14;
-    }
-    
-    const dataToUse = this.historicalData.slice(-days);
-    return dataToUse.map(item => parseInt(item.customer_traffic) || 0);
-}
 
-getRevenueData() {
-    if (this.dateRange === 'today') {
-        if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
-        
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Find today's record - try exact match first, then most recent
-        let todayRecord = this.historicalData.find(record => record.date === today);
-        
-        // If no exact match, use the most recent record (first in DESC order)
-        if (!todayRecord) {
-            todayRecord = this.historicalData[0];
-            console.warn(`No exact match for ${today}, using most recent record:`, todayRecord.date);
+    getTrafficData() {
+        if (this.dateRange === 'today') {
+            if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
+            
+            // Get today's date in YYYY-MM-DD format
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Find today's record - try exact match first, then most recent
+            let todayRecord = this.historicalData.find(record => record.date === today);
+            
+            // If no exact match, use the most recent record (first in DESC order)
+            if (!todayRecord) {
+                todayRecord = this.historicalData[0];
+                console.warn(`No exact match for ${today}, using most recent record:`, todayRecord.date);
+            }
+            
+            if (!todayRecord) return [0, 0, 0];
+            
+            // Get real shift traffic data from database
+            const morningTraffic = parseInt(todayRecord.morning_receipt_count) || 0;
+            const swingTraffic = parseInt(todayRecord.swing_receipt_count) || 0;
+            const graveyardTraffic = parseInt(todayRecord.graveyard_receipt_count) || 0;
+            
+            console.log('Today shift traffic data:', {
+                searchDate: today,
+                foundDate: todayRecord.date,
+                morning: morningTraffic,
+                swing: swingTraffic,
+                graveyard: graveyardTraffic
+            });
+            
+            return [morningTraffic, swingTraffic, graveyardTraffic];
         }
         
-        if (!todayRecord) return [0, 0, 0];
+        if (!this.historicalData || this.historicalData.length === 0) return [];
         
-        // Get real shift revenue data from database
-        const morningRevenue = parseFloat(todayRecord.morning_sales_volume) || 0;
-        const swingRevenue = parseFloat(todayRecord.swing_sales_volume) || 0;
-        const graveyardRevenue = parseFloat(todayRecord.graveyard_sales_volume) || 0;
-        
-        console.log('Today shift revenue data:', {
-            searchDate: today,
-            foundDate: todayRecord.date,
-            morning: morningRevenue,
-            swing: swingRevenue,
-            graveyard: graveyardRevenue
-        });
-        
-        return [morningRevenue, swingRevenue, graveyardRevenue];
+        return this.historicalData.map(item => parseInt(item.customer_traffic) || 0);
     }
-    
-    if (!this.historicalData || this.historicalData.length === 0) return [];
-    
-    let days;
-    if (this.dateRange === '7days') {
-        days = 7;
-    } else {
-        days = 14;
+
+    getRevenueData() {
+        if (this.dateRange === 'today') {
+            if (!this.historicalData || this.historicalData.length === 0) return [0, 0, 0];
+            
+            // Get today's date in YYYY-MM-DD format
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Find today's record - try exact match first, then most recent
+            let todayRecord = this.historicalData.find(record => record.date === today);
+            
+            // If no exact match, use the most recent record (first in DESC order)
+            if (!todayRecord) {
+                todayRecord = this.historicalData[0];
+                console.warn(`No exact match for ${today}, using most recent record:`, todayRecord.date);
+            }
+            
+            if (!todayRecord) return [0, 0, 0];
+            
+            // Get real shift revenue data from database
+            const morningRevenue = parseFloat(todayRecord.morning_sales_volume) || 0;
+            const swingRevenue = parseFloat(todayRecord.swing_sales_volume) || 0;
+            const graveyardRevenue = parseFloat(todayRecord.graveyard_sales_volume) || 0;
+            
+            console.log('Today shift revenue data:', {
+                searchDate: today,
+                foundDate: todayRecord.date,
+                morning: morningRevenue,
+                swing: swingRevenue,
+                graveyard: graveyardRevenue
+            });
+            
+            return [morningRevenue, swingRevenue, graveyardRevenue];
+        }
+        
+        if (!this.historicalData || this.historicalData.length === 0) return [];
+        
+        return this.historicalData.map(item => parseFloat(item.sales_volume) || 0);
     }
-    
-    const dataToUse = this.historicalData.slice(-days);
-    return dataToUse.map(item => parseFloat(item.sales_volume) || 0);
-}
+
     updateChart(data) {
         if (!this.chartInstance) return;
 
@@ -614,7 +582,7 @@ getRevenueData() {
         if (tableBody) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="no-data" style="color: #e74c3c;">
+                    <td colspan="6" class="no-data" style="color: #e74c3c;">
                         Error: ${message}<br>
                         <small>Check console for details</small>
                     </td>
@@ -663,7 +631,10 @@ getRevenueData() {
         }
 
         this.closeDatePicker();
-        this.updateChart();
+        
+        // Reload data with new range
+        console.log('Date range changed to:', newRange);
+        this.loadData();
     }
 
     closeDatePicker() {
@@ -757,18 +728,26 @@ window.addEventListener('beforeunload', function() {
 window.debugDashboard = function() {
     console.log('=== Dashboard Debug ===');
     console.log('Instance:', !!dashboard);
+    console.log('Date Range:', dashboard?.dateRange);
     console.log('Historical data:', dashboard?.historicalData?.length || 0);
     console.log('Last update:', dashboard?.lastUpdate);
     console.log('Chart:', !!dashboard?.chartInstance);
     
     if (dashboard?.historicalData?.length > 0) {
         console.log('Sample data:', dashboard.historicalData[0]);
+        console.log('All dates:', dashboard.historicalData.map(r => r.date));
     }
     
-    // Test API directly
-    fetch('api/customer_monitoring.php?t=' + Date.now())
+    // Test API directly with current range
+    const testUrl = `api/customer_monitoring.php?range=${dashboard?.dateRange || '14days'}&t=${Date.now()}`;
+    console.log('Testing API:', testUrl);
+    fetch(testUrl)
         .then(r => r.json())
-        .then(d => console.log('Direct API test:', d))
+        .then(d => {
+            console.log('Direct API test result:', d);
+            console.log('Records returned:', d.historicalData?.length || 0);
+            console.log('Date range:', d.dateRangeLabel);
+        })
         .catch(e => console.error('API test failed:', e));
 };
 

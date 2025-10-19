@@ -1,5 +1,9 @@
 <?php
-/* ULTIMATE ACCURATE SOLUTION - 100% Medium Risk Fix */
+/**
+ * Enhanced Customer Monitoring API with Date Range Support
+ * Works with the date picker: 'today', '7days', '14days'
+ */
+
 require __DIR__ . '/_bootstrap.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -18,7 +22,41 @@ function safeInt($value) { return (int)($value ?? 0); }
 function safeString($value) { return trim($value ?? ''); }
 
 try {
-    // STEP 1: Get ALL churn data first (14 days)
+    // GET DATE RANGE FROM REQUEST
+    $dateRange = isset($_GET['range']) ? safeString($_GET['range']) : '14days';
+    
+    // Validate date range
+    $validRanges = ['today', '7days', '14days'];
+    if (!in_array($dateRange, $validRanges)) {
+        $dateRange = '14days';
+    }
+    
+    // Calculate date boundaries based on range
+    $currentDate = date('Y-m-d');
+    
+    switch($dateRange) {
+        case 'today':
+            $startDate = $currentDate;
+            $endDate = $currentDate;
+            $daysBack = 0;
+            $label = 'Today';
+            break;
+        case '7days':
+            $startDate = date('Y-m-d', strtotime('-6 days'));
+            $endDate = $currentDate;
+            $daysBack = 6;
+            $label = 'Last 7 Days';
+            break;
+        case '14days':
+        default:
+            $startDate = date('Y-m-d', strtotime('-13 days'));
+            $endDate = $currentDate;
+            $daysBack = 13;
+            $label = 'Last 14 Days';
+            break;
+    }
+
+    // STEP 1: Fetch churn data for the selected date range
     $churnStmt = $pdo->prepare("
         SELECT 
             date,
@@ -33,14 +71,14 @@ try {
             graveyard_sales_volume
         FROM churn_data 
         WHERE user_id = ? 
-        AND date >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
-        AND date <= CURDATE()
+        AND date >= ?
+        AND date <= ?
         ORDER BY date DESC
     ");
-    $churnStmt->execute([$uid]);
+    $churnStmt->execute([$uid, $startDate, $endDate]);
     $churnRecords = $churnStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // STEP 2: Get ALL predictions and map them properly
+    // STEP 2: Fetch predictions for the date range
     $predStmt = $pdo->prepare("
         SELECT 
             id,
@@ -52,11 +90,11 @@ try {
             level
         FROM churn_predictions 
         WHERE user_id = ? 
-        AND for_date >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
-        AND for_date <= CURDATE()
+        AND for_date >= ?
+        AND for_date <= ?
         ORDER BY for_date DESC, created_at DESC
     ");
-    $predStmt->execute([$uid]);
+    $predStmt->execute([$uid, $startDate, $endDate]);
     $allPredictions = $predStmt->fetchAll(PDO::FETCH_ASSOC);
 
     // STEP 3: Create accurate prediction map (latest per date)
@@ -72,7 +110,7 @@ try {
             $riskLevel = safeString($pred['risk_level']);
             $riskLevel = ucfirst(strtolower($riskLevel)); // Normalize: medium -> Medium
             
-            // Use both risk_level and level columns (your schema has both)
+            // Use both risk_level and level columns
             if (empty($riskLevel) && !empty($pred['level'])) {
                 $riskLevel = safeString($pred['level']);
                 $riskLevel = ucfirst(strtolower($riskLevel));
@@ -144,14 +182,15 @@ try {
         $finalData[] = $combined;
     }
 
-    // STEP 5: Calculate metrics from accurate data
-    $todayRecord = $finalData[0] ?? null;
-    $yesterdayRecord = $finalData[1] ?? null;
-    
-    if (!$todayRecord) {
+    // STEP 5: Calculate metrics based on date range
+    if (empty($finalData)) {
         echo json_encode([
             'success' => false,
-            'message' => 'No current data available',
+            'message' => "No data available for $label",
+            'dateRange' => $dateRange,
+            'dateRangeLabel' => $label,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
             'debug' => [
                 'churn_records' => count($churnRecords),
                 'predictions' => count($allPredictions),
@@ -160,9 +199,13 @@ try {
         ]);
         exit;
     }
+
+    // Get today's record (most recent)
+    $todayRecord = $finalData[0] ?? null;
+    $yesterdayRecord = $finalData[1] ?? null;
     
-    // Calculate 14-day averages (excluding today)
-    $comparisonRecords = array_slice($finalData, 1);
+    // Calculate averages based on the selected range
+    $comparisonRecords = $dateRange === 'today' ? $finalData : array_slice($finalData, 1);
     $totalCompareDays = count($comparisonRecords);
     
     $avgTraffic = $avgRevenue = $avgTransactions = 0;
@@ -191,7 +234,7 @@ try {
     $revenueTrend = $avgRevenue > 0 ? round((($todayRevenue - $avgRevenue) / $avgRevenue) * 100, 2) : 0;
     $transactionsTrend = $avgTransactions > 0 ? round((($todayTransactions - $avgTransactions) / $avgTransactions) * 100, 2) : 0;
     
-    // STEP 6: Calculate final risk distribution
+    // Calculate final risk distribution
     $finalRiskStats = ['Low' => 0, 'Medium' => 0, 'High' => 0];
     foreach ($finalData as $record) {
         $risk = $record['risk_level'];
@@ -199,12 +242,12 @@ try {
     }
     
     // COMPREHENSIVE DEBUG LOGGING
-    error_log("=== ULTIMATE ACCURACY DEBUG ===");
+    error_log("=== DATE RANGE QUERY DEBUG ===");
     error_log("User: $uid");
+    error_log("Requested Range: $dateRange ($label)");
+    error_log("Date Filter: $startDate to $endDate");
     error_log("Churn records found: " . count($churnRecords));
     error_log("Raw predictions found: " . count($allPredictions));
-    error_log("Unique prediction dates: " . count($predictionMap));
-    error_log("Prediction stats from DB: " . json_encode($predictionStats));
     error_log("Final combined records: " . count($finalData));
     error_log("Final risk distribution: " . json_encode($finalRiskStats));
     
@@ -216,6 +259,11 @@ try {
     // Build final response
     $response = [
         'success' => true,
+        'dateRange' => $dateRange,
+        'dateRangeLabel' => $label,
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+        'daysInRange' => count($finalData),
         'todayTraffic' => $todayTraffic,
         'todayRevenue' => $todayRevenue,
         'todayTransactions' => $todayTransactions,
@@ -230,7 +278,7 @@ try {
         'riskLevel' => $todayRiskLevel,
         'atRiskCustomers' => $atRiskCustomers,
         'overallHealthScore' => $todayRiskLevel === 'High' ? 'Critical' : ($todayRiskLevel === 'Medium' ? 'Warning' : 'Good'),
-        'historicalData' => array_reverse($finalData), // Oldest to newest
+        'historicalData' => array_reverse($finalData), // Oldest to newest for charts
         'hasData' => true,
         'dataDate' => $todayRecord['date'],
         'recordCount' => count($finalData),
@@ -242,6 +290,8 @@ try {
             'final_risk_distribution' => $finalRiskStats,
             'data_quality' => $predictionStats['total'] > 0 ? 'HIGH' : 'ESTIMATED_ONLY',
             'medium_risk_count' => $finalRiskStats['Medium'],
+            'high_risk_count' => $finalRiskStats['High'],
+            'low_risk_count' => $finalRiskStats['Low'],
             'has_medium_predictions' => $finalRiskStats['Medium'] > 0 ? 'YES' : 'NO'
         ]
     ];
@@ -258,7 +308,8 @@ try {
         'debug' => [
             'error_line' => $e->getLine(),
             'error_file' => basename($e->getFile()),
-            'user_id' => $uid ?? 'unknown'
+            'user_id' => $uid ?? 'unknown',
+            'date_range' => $dateRange ?? 'unknown'
         ]
     ]);
 }
