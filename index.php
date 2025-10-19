@@ -5160,14 +5160,14 @@ body {
     <header class="executive-dashboard-header">
  <div class="header-matrix" style="background: white; padding: 32px 48px; border-radius: 0; display: flex; align-items: center; gap: 16px; width: 100%; margin-bottom: 0; box-shadow: none; border: none; border-bottom: 1px solid #f1f5f9;">
   <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-    <circle cx="20" cy="15" r="5.5" stroke="#0f172a" stroke-width="1.5" fill="none"/>
+    <circle cx="18" cy="15" r="5.5"  stroke-width="1.5" fill="none"/>
     <path d="M10 32C10 27.5817 13.5817 24 18 24H22C26.4183 24 30 27.5817 30 32" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
     <path d="M28 17L31 14L34 17" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M31 14V20" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
   </svg>
   
   <h1 class="platform-title" style="margin: 0; flex: 1;">
-    <span class="title-primary"  font-weight: 600; font-size: 32px; letter-spacing: -0.02em;">
+    <span class="title-primary" style="color: #0f172a; font-weight: 600; font-size: 32px; letter-spacing: -0.02em;">
       Customer Insight
     </span>
   </h1>
