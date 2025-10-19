@@ -690,10 +690,15 @@ function refreshDashboardData() {
     }
 }
 
-function toggleChartDatePicker() {
+function toggleChartDatePicker(event) {
+    if (event) {
+        event.stopPropagation();
+    }
     const dropdown = document.getElementById('chartDatePickerDropdown');
     if (dropdown) {
+        const isShowing = dropdown.classList.contains('show');
         dropdown.classList.toggle('show');
+        console.log('Date picker toggled:', !isShowing ? 'opened' : 'closed');
     }
 }
 

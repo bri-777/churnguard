@@ -529,3 +529,217 @@
     padding: 12px;
   }
 }
+
+/* Date Picker Styles */
+.date-picker {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.date-picker-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.2s ease;
+    min-width: 160px;
+    justify-content: space-between;
+}
+
+.date-picker-input:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.date-picker-input:active {
+    transform: scale(0.98);
+}
+
+.date-picker-input span:last-child {
+    font-size: 12px;
+    color: #666;
+    transition: transform 0.2s ease;
+}
+
+.date-picker-input:hover span:last-child {
+    color: #3b82f6;
+}
+
+/* Dropdown */
+.date-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.date-picker-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Date Options */
+.date-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-option:last-child {
+    border-bottom: none;
+}
+
+.date-option:hover {
+    background: #f8fafc;
+    padding-left: 20px;
+}
+
+.date-option.active {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+    padding-left: 13px;
+}
+
+.date-option.active:hover {
+    padding-left: 17px;
+}
+
+.date-option span:first-child {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.date-option.active span:first-child {
+    color: #3b82f6;
+}
+
+.date-option-range {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.date-option.active .date-option-range {
+    color: #2563eb;
+}
+
+/* Refresh Button */
+.refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.refresh-btn:hover {
+    background: #2563eb;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+.refresh-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.refresh-btn span:first-child {
+    font-size: 16px;
+    animation: none;
+}
+
+.refresh-btn:active span:first-child {
+    animation: spin 0.5s ease;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Loading State for Refresh Button */
+.refresh-btn.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.refresh-btn.loading span:first-child {
+    animation: spin 1s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .date-picker-input {
+        min-width: 140px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .date-picker-dropdown {
+        min-width: 200px;
+    }
+    
+    .refresh-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .refresh-btn span:last-child {
+        display: none;
+    }
+}
+
+/* Additional container styles if needed */
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* Click outside overlay (optional) */
+.date-picker-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    display: none;
+}
+
+.date-picker-overlay.active {
+    display: block;
+}
