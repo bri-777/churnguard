@@ -5158,38 +5158,26 @@ body {
 <link rel = "stylesheet" href = "cust-insight.css">
  <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
-      <div class="header-matrix" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 20px 32px; border-radius: 16px; display: flex; align-items: center; gap: 20px; width: 100%; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);">
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-    <rect width="48" height="48" rx="12" fill="white" fill-opacity="0.2"/>
-    <circle cx="24" cy="18" r="6" stroke="white" stroke-width="2.5" fill="none"/>
-    <path d="M14 36C14 31.5817 17.5817 28 22 28H26C30.4183 28 34 31.5817 34 36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M33 20L36 17L39 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M36 17V24" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="36" cy="12" r="2" fill="#fbbf24"/>
+      <div class="header-matrix" style="background: white; padding: 24px 40px; border-radius: 16px; display: flex; align-items: center; gap: 20px; width: 100%; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06); border: 1px solid #e2e8f0;">
+  <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+    <rect width="56" height="56" rx="14" fill="#1e40af" fill-opacity="0.1"/>
+    <circle cx="28" cy="22" r="7" stroke="#1e40af" stroke-width="2.5" fill="none"/>
+    <path d="M16 40C16 35.0294 20.0294 31 25 31H31C35.9706 31 40 35.0294 40 40" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M38 24L42 20L46 24" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M42 20V28" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="42" cy="15" r="2.5" fill="#1e40af"/>
   </svg>
   
   <h1 class="platform-title" style="margin: 0; flex: 1;">
-    <span class="title-primary" style="color: white; font-weight: 700; font-size: 32px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px;">
+    <span class="title-primary" style="color: #1e40af; font-weight: 700; font-size: 36px; letter-spacing: -0.03em;">
       Customer Insight
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.8;">
-        <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="12" cy="12" r="3" stroke="white" stroke-width="2"/>
-      </svg>
     </span>
   </h1>
   
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <div style="background: rgba(255, 255, 255, 0.2); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px);">
-      <span style="color: white; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live Data</span>
-    </div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="8" fill="#10b981"/>
-      <circle cx="10" cy="10" r="8" fill="#10b981" opacity="0.3">
-        <animate attributeName="r" from="8" to="12" dur="1.5s" begin="0s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" from="0.3" to="0" dur="1.5s" begin="0s" repeatCount="indefinite"/>
-      </circle>
-    </svg>
-  </div>
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.4;">
+    <path d="M3 14C3 14 6.5 7 14 7C21.5 7 25 14 25 14C25 14 21.5 21 14 21C6.5 21 3 14 3 14Z" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="14" cy="14" r="4" stroke="#1e40af" stroke-width="2.5"/>
+  </svg>
 </div>
       
       <div class="data-freshness">
