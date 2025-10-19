@@ -5158,19 +5158,28 @@ body {
 <link rel = "stylesheet" href = "cust-insight.css">
  <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
- <div class="header-matrix" style="background: white; padding: 32px 48px; border-radius: 0; display: flex; align-items: center; gap: 16px; width: 100%; margin-bottom: 0; box-shadow: none; border: none; border-bottom: 1px solid #f1f5f9;">
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-    <circle cx="18" cy="15" r="5.5"  stroke-width="1.5" fill="none"/>
-    <path d="M10 32C10 27.5817 13.5817 24 18 24H22C26.4183 24 30 27.5817 30 32" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M28 17L31 14L34 17" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M31 14V20" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+ <div class="header-matrix" style="background: white; padding: 40px 0; border-radius: 0; display: flex; align-items: center; gap: 20px; width: 100%; margin-bottom: 0; box-shadow: none; border: none; border-bottom: 2px solid #f8fafc;">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+    <circle cx="24" cy="18" r="6.5" stroke="#0f172a" stroke-width="2" fill="none"/>
+    <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="33" cy="15" r="1.5" fill="#0f172a"/>
+    <path d="M30 20L33 17L36 20" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="33" y1="17" x2="33" y2="23" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
   </svg>
   
   <h1 class="platform-title" style="margin: 0; flex: 1;">
-    <span class="title-primary" style="color: #0f172a; font-weight: 600; font-size: 32px; letter-spacing: -0.02em;">
+    <span class="title-primary" style="color: #0f172a; font-weight: 700; font-size: 38px; letter-spacing: -0.03em;">
       Customer Insight
     </span>
   </h1>
+  
+  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7" stroke="#64748b" stroke-width="1.5"/>
+      <path d="M8 4V8L11 10" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span style="color: #64748b; font-size: 13px; font-weight: 600;">Real-time</span>
+  </div>
 </div>
       
       <div class="data-freshness">
