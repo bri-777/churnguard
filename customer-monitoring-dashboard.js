@@ -496,6 +496,7 @@ getTrafficData() {
             graveyard: graveyardTraffic
         });
         
+        return [morningTraffic, swingTraffic, graveyardTraffic];
     }
     
     if (!this.historicalData || this.historicalData.length === 0) return [];

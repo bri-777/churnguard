@@ -8406,7 +8406,7 @@ async function loadTraffic(period) {
                 },
                 label: (context) => {
                   const value = context.parsed.y;
-                  const shiftNames = ['Morning', 'Swing', 'Graveyard', 'Other'];
+                  const shiftNames = ['Morning', 'Mid Day', 'Evening', 'Other'];
                   const shiftName = shiftNames[context.dataIndex] || 'Unknown';
                   return ` ${value} customers (${shiftName} shift)`;
                 }
@@ -8572,7 +8572,7 @@ function createFallbackTrafficChart() {
   charts.traffic = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Morning', 'Swing', 'Graveyard', ''],
+      labels: ['Morning', 'Mid Day', 'Evening', ''],
       datasets: [{
         label: 'Demo Traffic',
         data: [0, 0, 0, 0],
@@ -8627,7 +8627,7 @@ function createFallbackVisitPatternChart() {
   charts.visitPattern = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Morning (0%)', 'Swing (0%)', 'Graveyard (0%)'],
+      labels: ['Morning (0%)', 'Mid Day (0%)', 'Evening (0%)'],
       datasets: [{
         data: [0, 0, 0],
         backgroundColor: [
