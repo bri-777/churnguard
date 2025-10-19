@@ -2,13 +2,11 @@
 session_start();
 header('Content-Type: application/json');
 
-// Database credentials
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'u393812660_churnguard');
 define('DB_USER', 'u393812660_churnguard');
 define('DB_PASS', '102202Brian_');
 
-// Get user_id from session (already logged in)
 $user_id = (int)$_SESSION['user_id'];
 $action = $_GET['action'] ?? '';
 
@@ -253,26 +251,45 @@ function getPurchaseIntelligence($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $intelligence['top_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // FIXED: Simpler repeat purchase query
+    // FIXED: Correct repeat purchase calculation
     $sql_repeat = "
         SELECT 
             type_of_drink as product,
             COUNT(DISTINCT customer_name) as unique_customers,
-            COUNT(*) as total_purchases,
-            ROUND((COUNT(*) / COUNT(DISTINCT customer_name)) * 100, 0) as repeat_rate
-        FROM transaction_logs
-        WHERE user_id = :user_id
-          AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
-          AND customer_name NOT LIKE 'Customer_%'
+            COUNT(*) as total_orders,
+            COUNT(DISTINCT customer_name) - COUNT(DISTINCT CASE WHEN purchase_count = 1 THEN customer_name END) as returning_customers,
+            ROUND(
+                ((COUNT(DISTINCT customer_name) - COUNT(DISTINCT CASE WHEN purchase_count = 1 THEN customer_name END)) / 
+                COUNT(DISTINCT customer_name)) * 100, 
+                0
+            ) as repeat_rate
+        FROM (
+            SELECT 
+                type_of_drink,
+                customer_name,
+                COUNT(*) as purchase_count
+            FROM transaction_logs
+            WHERE user_id = :user_id
+              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
+              AND customer_name NOT LIKE 'Customer_%'
+            GROUP BY type_of_drink, customer_name
+        ) as customer_purchases
         GROUP BY type_of_drink
-        HAVING unique_customers >= 5
-        ORDER BY total_purchases DESC
+        HAVING unique_customers >= 3
+        ORDER BY repeat_rate DESC, total_orders DESC
         LIMIT 3
     ";
     
     $stmt = $pdo->prepare($sql_repeat);
     $stmt->execute(['user_id' => $user_id]);
-    $intelligence['repeat_rate_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $repeat_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Format the data
+    foreach ($repeat_products as &$product) {
+        $product['unique_customers'] = $product['returning_customers'];
+    }
+    
+    $intelligence['repeat_rate_products'] = $repeat_products;
     
     return $intelligence;
 }
@@ -280,56 +297,64 @@ function getPurchaseIntelligence($pdo, $user_id) {
 function getChurnSegments($pdo, $user_id) {
     $segments = [];
     
-    // FIXED: Simpler gender churn query
+    // FIXED: Proper churn calculation by gender
     $sql_gender = "
         SELECT 
             gender,
             COUNT(DISTINCT customer_name) as total_customers,
-            SUM(CASE WHEN days_inactive > 30 THEN 1 ELSE 0 END) as churned_customers,
-            ROUND((SUM(CASE WHEN days_inactive > 30 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100, 1) as churn_rate
+            SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) as churned_customers,
+            ROUND(
+                (SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100,
+                1
+            ) as churn_rate
         FROM (
             SELECT 
                 customer_name,
                 gender,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive
+                DATEDIFF(CURDATE(), MAX(date_visited)) as days_since_last
             FROM transaction_logs
             WHERE user_id = :user_id
               AND customer_name NOT LIKE 'Customer_%'
               AND gender IS NOT NULL
               AND gender != ''
             GROUP BY customer_name, gender
-        ) as customer_data
+        ) as customer_activity
         GROUP BY gender
         HAVING total_customers > 0
+        ORDER BY gender
     ";
     
     $stmt = $pdo->prepare($sql_gender);
     $stmt->execute(['user_id' => $user_id]);
     $segments['by_gender'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // FIXED: Simpler category churn query
+    // FIXED: Proper churn calculation by category
     $sql_category = "
         SELECT 
-            CASE 
-                WHEN type_of_drink IN ('Iced Coffee', 'Americano', 'Cappuccino', 'Latte', 'Espresso') THEN 'Hot Beverages'
-                WHEN type_of_drink IN ('Frappe', 'Matcha Latte', 'Iced Tea', 'Smoothie') THEN 'Cold Beverages'
-                ELSE 'Other'
-            END as category,
+            category,
             COUNT(DISTINCT customer_name) as total_customers,
-            SUM(CASE WHEN days_inactive > 30 THEN 1 ELSE 0 END) as churned_customers,
-            ROUND((SUM(CASE WHEN days_inactive > 30 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100, 1) as churn_rate
+            SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) as churned_customers,
+            ROUND(
+                (SUM(CASE WHEN days_since_last > 30 THEN 1 ELSE 0 END) / COUNT(DISTINCT customer_name)) * 100,
+                1
+            ) as churn_rate
         FROM (
             SELECT 
                 customer_name,
-                type_of_drink,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive
+                CASE 
+                    WHEN type_of_drink IN ('Iced Coffee', 'Americano', 'Cappuccino', 'Latte', 'Espresso', 'Mocha') THEN 'Hot Beverages'
+                    WHEN type_of_drink IN ('Frappe', 'Matcha Latte', 'Iced Tea', 'Smoothie', 'Cold Brew') THEN 'Cold Beverages'
+                    ELSE 'Other'
+                END as category,
+                DATEDIFF(CURDATE(), MAX(date_visited)) as days_since_last
             FROM transaction_logs
             WHERE user_id = :user_id
               AND customer_name NOT LIKE 'Customer_%'
             GROUP BY customer_name, type_of_drink
-        ) as customer_products
+        ) as customer_categories
         GROUP BY category
         HAVING total_customers > 0
+        ORDER BY category
     ";
     
     $stmt = $pdo->prepare($sql_category);
@@ -372,7 +397,9 @@ function getInitials($name) {
     $words = explode(' ', $name);
     $initials = '';
     foreach ($words as $word) {
-        $initials .= strtoupper(substr($word, 0, 1));
+        if (!empty($word)) {
+            $initials .= strtoupper(substr($word, 0, 1));
+        }
     }
     return substr($initials, 0, 2);
 }
@@ -403,12 +430,16 @@ function generateTrendData($pdo, $user_id, $customer_name) {
     $stmt->execute(['user_id' => $user_id, 'customer_name' => $customer_name]);
     $amounts = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
+    if (empty($amounts)) {
+        return "0,20 100,20";
+    }
+    
     $points = [];
     $max = max($amounts) ?: 1;
     foreach (array_reverse($amounts) as $i => $amount) {
-        $x = $i * 10;
+        $x = $i * (100 / (count($amounts) - 1));
         $y = 35 - (($amount / $max) * 30);
-        $points[] = "$x,$y";
+        $points[] = round($x, 2) . ',' . round($y, 2);
     }
     
     return implode(' ', $points);
