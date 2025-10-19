@@ -5170,10 +5170,11 @@ body {
 
 
 <link rel = "stylesheet" href = "cust-insight.css">
+
 <div id="cust-insight" class="page">
     <header class="executive-dashboard-header">
- <div class="header-matrix" style="background: white; padding: 40px 0; border-radius: 0; display: flex; align-items: center; gap: 20px; width: 100%; margin-bottom: 0; box-shadow: none; border: none; border-bottom: 2px solid #f8fafc;">
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+ <div class="header-matrix">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
     <circle cx="24" cy="18" r="6.5" stroke="#0f172a" stroke-width="2" fill="none"/>
     <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
     <circle cx="33" cy="15" r="1.5" fill="#0f172a"/>
@@ -5181,18 +5182,16 @@ body {
     <line x1="33" y1="17" x2="33" y2="23" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
   </svg>
   
-  <h1 class="platform-title" style="margin: 0; flex: 1;">
-    <span class="title-primary" style="color: #0f172a; font-weight: 700; font-size: 38px; letter-spacing: -0.03em;">
-      Customer Insight
-    </span>
+  <h1 class="platform-title">
+    <span class="title-primary">Customer Insight</span>
   </h1>
   
-  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div class="realtime-badge">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="8" cy="8" r="7" stroke="#64748b" stroke-width="1.5"/>
       <path d="M8 4V8L11 10" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <span style="color: #64748b; font-size: 13px; font-weight: 600;">Real-time</span>
+    <span>Real-time</span>
   </div>
 </div>
     </header>
@@ -5217,9 +5216,8 @@ body {
           </div>
         </div>
         
-        <!-- This will be populated by JavaScript -->
         <div class="customer-intelligence-grid">
-          <div style="text-align: center; padding: 40px; color: #64748b;">
+          <div class="loading-state">
             Loading loyal customers...
           </div>
         </div>
@@ -5390,7 +5388,7 @@ body {
           <div class="at-risk-customers">
             <h3>High-Value Customers at Risk</h3>
             <div class="risk-list" data-risk-customers>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
+              <div class="loading-state">
                 Loading at-risk customers...
               </div>
             </div>
@@ -5466,7 +5464,7 @@ body {
           <div class="product-performance">
             <h3>Top Products</h3>
             <div class="combo-list" data-top-products>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
+              <div class="loading-state">
                 Loading top products...
               </div>
             </div>
@@ -5482,7 +5480,7 @@ body {
                 </div>
                 <div class="combo-stats">
                   <span class="frequency">312 orders</span>
-                  <span class="revenue" style="color: #dc2626;">-24%</span>
+                  <span class="revenue declining">-24%</span>
                 </div>
               </div>
             </div>
@@ -5491,7 +5489,7 @@ body {
           <div class="product-performance">
             <h3>Repeat Purchase Rate by Product</h3>
             <div class="combo-list" data-repeat-products>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
+              <div class="loading-state">
                 Loading repeat purchase data...
               </div>
             </div>
@@ -5548,7 +5546,7 @@ body {
                 <span class="segment-title">By Gender</span>
               </div>
               <div class="segment-details" data-churn-gender>
-                <div style="text-align: center; padding: 20px; color: #64748b;">
+                <div class="loading-state">
                   Loading gender segments...
                 </div>
               </div>
@@ -5563,7 +5561,7 @@ body {
                 <span class="segment-title">By Category</span>
               </div>
               <div class="segment-details" data-churn-category>
-                <div style="text-align: center; padding: 20px; color: #64748b;">
+                <div class="loading-state">
                   Loading category segments...
                 </div>
               </div>
@@ -5608,6 +5606,7 @@ body {
     </div>
 
   </div>
+
   <script>
 class CustomerInsights {
     constructor() {
@@ -10609,14 +10608,15 @@ document.addEventListener('DOMContentLoaded', function() {
         salesVolume.dispatchEvent(new Event('input'));
     }
 
-    // Add event listeners for receipt count calculations
+    // 
+
     if (morningReceiptCount && swingReceiptCount && graveyardReceiptCount) {
         morningReceiptCount.addEventListener('input', calculateReceiptTotal);
         swingReceiptCount.addEventListener('input', calculateReceiptTotal);
         graveyardReceiptCount.addEventListener('input', calculateReceiptTotal);
     }
 
-    // Add event listeners for sales volume calculations
+    // LMAO
     if (morningSalesVolume && swingSalesVolume && graveyardSalesVolume) {
         morningSalesVolume.addEventListener('input', calculateSalesTotal);
         swingSalesVolume.addEventListener('input', calculateSalesTotal);
