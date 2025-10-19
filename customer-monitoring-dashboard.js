@@ -445,7 +445,7 @@ addAccurateStyles() {
  getChartLabels() {
     if (this.dateRange === 'today') {
         // For today, show shifts instead of dates
-        return ['Morning', 'Swing', 'Graveyard'];
+        return ['Morning', 'Mid Day', 'Evening'];
     }
     
     if (!this.historicalData || this.historicalData.length === 0) return [];
