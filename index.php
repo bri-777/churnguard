@@ -2202,19 +2202,37 @@ function showConfirmationModal() {
       </div>
     </div>
     
-    <!-- Sample Data Preview - Shows first 3 transactions as examples -->
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
-      <h4 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">
-        <i class="fas fa-eye"></i> Sample Transactions (First 3)
-      </h4>
-      <div style="font-size: 12px; color: #666; max-height: 120px; overflow-y: auto;">
-        ${pendingTransactions.slice(0, 3).map((t, i) => `
-          <div style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 4px;">
-            <strong>#${i + 1}</strong>: ${t.customer_name || 'N/A'} | ${t.type_of_drink} | ₱${t.total_amount.toFixed(2)} | ${t.time_of_day}
+<!-- Transaction Preview - Shows ALL transactions from uploaded file -->
+<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+  <h4 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">
+    <i class="fas fa-list"></i> All Transactions (${pendingTransactions.length} total)
+  </h4>
+  <div style="font-size: 12px; color: #666; max-height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px;">
+    ${pendingTransactions.map((t, i) => `
+      <div style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid ${i % 2 === 0 ? '#2196F3' : '#4CAF50'};">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <strong style="color: #333;">#${i + 1}</strong> 
+            <span style="color: #666;">| ${t.customer_name || 'N/A'}</span>
           </div>
-        `).join('')}
+          <div style="flex: 1; text-align: center;">
+            <span style="color: #666;">${t.type_of_drink || 'N/A'}</span>
+          </div>
+          <div style="flex: 1; text-align: right;">
+            <strong style="color: #4CAF50;">₱${t.total_amount.toFixed(2)}</strong>
+            <span style="color: #999; font-size: 11px; margin-left: 8px;">${t.time_of_day || 'N/A'}</span>
+          </div>
+        </div>
+        <div style="margin-top: 4px; font-size: 11px; color: #999;">
+          <span><i class="fas fa-calendar"></i> ${t.date_visited || 'N/A'}</span>
+          <span style="margin-left: 12px;"><i class="fas fa-shopping-cart"></i> Qty: ${t.quantity_of_drinks || 0}</span>
+          ${t.gender ? `<span style="margin-left: 12px;"><i class="fas fa-user"></i> ${t.gender}</span>` : ''}
+          ${t.payment_method ? `<span style="margin-left: 12px;"><i class="fas fa-credit-card"></i> ${t.payment_method}</span>` : ''}
+        </div>
       </div>
-    </div>
+    `).join('')}
+  </div>
+</div>
     
     <!-- Action Buttons - Cancel (red) and Confirm (green) -->
     <div style="display: flex; gap: 12px; justify-content: center;">
