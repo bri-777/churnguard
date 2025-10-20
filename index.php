@@ -2268,35 +2268,33 @@ function saveToDatabase(transactions) {
     <div class="dashboard-wrapper">
         
         <!-- Top Navigation Bar -->
-        <nav class="top-navbar">
-            <div class="navbar-left">
-                <h1 class="brand-title">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-  <circle cx="12" cy="12" r="10"></circle>
-  <circle cx="12" cy="12" r="6"></circle>
-  <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
-</svg>
-
-                   Analytics Target
-                </h1>
-            </div>
-         
-            <div class="navbar-right">
-               
-                <button class="icon-btn" onclick="refreshAllData()" title="Refresh Data">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                    </svg>
-                </button>
-                <button class="btn-primary-small" onclick="openTargetModal()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 8v8M8 12h8"/>
-                    </svg>
-                    New Target
-                </button>
-            </div>
-        </nav>
+     <nav class="top-navbar" style="border-radius: 8px 8px 0 0;">
+    <div class="navbar-left">
+        <h1 class="brand-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+            </svg>
+            Analytics Target
+        </h1>
+    </div>
+ 
+    <div class="navbar-right">
+        <button class="icon-btn" onclick="refreshAllData()" title="Refresh Data">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+        </button>
+        <button class="btn-primary-small" onclick="openTargetModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v8M8 12h8"/>
+            </svg>
+            New Target
+        </button>
+    </div>
+</nav>
 
         <!-- Main Content -->
         <main class="dashboard-content">
