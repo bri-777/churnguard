@@ -5657,25 +5657,7 @@ body {
       <div style="color: #991b1b; font-size: 13px; margin-top: 4px;">customers likely to churn in next 30 days</div>
     </div>
     
-    <!-- Revenue Forecast -->
-    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #16a34a;">
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
-          <line x1="12" y1="1" x2="12" y2="23"/>
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-        <span style="color: #166534; font-weight: 600; font-size: 14px;">Revenue Forecast</span>
-      </div>
-      <div style="font-size: 32px; font-weight: 700; color: #14532d;" data-revenue-forecast>₱0</div>
-      <div style="color: #166534; font-size: 13px; margin-top: 4px;">Predicted revenue next month</div>
-      <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
-        <span style="color: #166534; font-size: 12px;">Confidence:</span>
-        <div style="flex: 1; height: 6px; background: #bbf7d0; border-radius: 3px; overflow: hidden;">
-          <div style="height: 100%; background: #16a34a; border-radius: 3px;" data-confidence-bar></div>
-        </div>
-        <span style="color: #14532d; font-weight: 600; font-size: 12px;" data-confidence-value>0%</span>
-      </div>
-    </div>
+   
     
     <!-- Trending Products -->
     <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #2563eb;">
