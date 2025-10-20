@@ -5566,6 +5566,151 @@ body {
 
     </div>
 
+<div class="intelligence-card traffic-card">
+  <div class="card-header-advanced">
+    <div class="header-group">
+      <div class="header-icon-wrapper">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <h2 class="card-title">Traffic & Visit Insights</h2>
+    </div>
+    <div class="status-badge" style="background: #10b981; color: white;">Live</div>
+  </div>
+  
+  <p style="color: #64748b; margin-bottom: 24px;">Real-time footfall and conversion analytics</p>
+  
+  <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; padding: 24px; margin-bottom: 20px;">
+    <div style="text-align: center;">
+      <div style="font-size: 48px; font-weight: 700; color: white;" data-daily-avg>0</div>
+      <div style="color: #94a3b8; margin-top: 8px;">Daily Avg Receipts</div>
+      <div style="display: flex; gap: 4px; justify-content: center; margin-top: 16px; height: 40px; align-items: flex-end;" data-mini-chart>
+        <!-- Mini bars will be injected here -->
+      </div>
+    </div>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+    <div style="background: #f8fafc; border-radius: 8px; padding: 16px; text-align: center;">
+      <div style="font-size: 32px; font-weight: 700; color: #0f172a;" data-conversion-rate>0%</div>
+      <div style="color: #64748b; font-size: 14px; margin-top: 4px;">Conversion Rate</div>
+    </div>
+    <div style="background: #f8fafc; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Peak Patterns</div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span style="color: #64748b; font-size: 13px;">Peak Day:</span>
+        <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-peak-day>-</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: #64748b; font-size: 13px;">Rush Hours:</span>
+        <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-rush-hours>-</span>
+      </div>
+    </div>
+  </div>
+  
+  <div style="background: #fff7ed; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 6px;" data-anomaly-container style="display: none;">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <span style="color: #92400e; font-weight: 600; font-size: 13px;">Traffic Anomaly Detected</span>
+    </div>
+    <div style="color: #78350f; font-size: 13px;" data-anomaly-text></div>
+  </div>
+</div>
+
+<!-- AI POWERED PREDICTIVE INTELLIGENCE CARD -->
+<div class="intelligence-card predictive-card">
+  <div class="card-header-advanced">
+    <div class="header-group">
+      <div class="header-icon-wrapper" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 2a10 10 0 0 1 7.94 16.06"/>
+          <path d="M12 2a10 10 0 0 0-7.94 16.06"/>
+          <path d="M12 12v8"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <h2 class="card-title">Predictive Intelligence</h2>
+    </div>
+    <div class="status-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white;">AI Powered</div>
+  </div>
+  
+  <p style="color: #64748b; margin-bottom: 24px;">AI-driven forecasts and actionable insights</p>
+  
+  <div style="display: grid; gap: 16px; margin-bottom: 24px;">
+    <!-- Churn Risk Alert -->
+    <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #dc2626;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span style="color: #991b1b; font-weight: 600; font-size: 14px;">Churn Risk Alert</span>
+      </div>
+      <div style="font-size: 32px; font-weight: 700; color: #7f1d1d;" data-churn-count>0</div>
+      <div style="color: #991b1b; font-size: 13px; margin-top: 4px;">customers likely to churn in next 30 days</div>
+    </div>
+    
+    <!-- Revenue Forecast -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #16a34a;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <span style="color: #166534; font-weight: 600; font-size: 14px;">Revenue Forecast</span>
+      </div>
+      <div style="font-size: 32px; font-weight: 700; color: #14532d;" data-revenue-forecast>₱0</div>
+      <div style="color: #166534; font-size: 13px; margin-top: 4px;">Predicted revenue next month</div>
+      <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="color: #166534; font-size: 12px;">Confidence:</span>
+        <div style="flex: 1; height: 6px; background: #bbf7d0; border-radius: 3px; overflow: hidden;">
+          <div style="height: 100%; background: #16a34a; border-radius: 3px;" data-confidence-bar></div>
+        </div>
+        <span style="color: #14532d; font-weight: 600; font-size: 12px;" data-confidence-value>0%</span>
+      </div>
+    </div>
+    
+    <!-- Trending Products -->
+    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #2563eb;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+          <polyline points="17 6 23 6 23 12"/>
+        </svg>
+        <span style="color: #1e40af; font-weight: 600; font-size: 14px;">Trending Products</span>
+      </div>
+      <div style="font-size: 20px; font-weight: 700; color: #1e3a8a;" data-trending-product>-</div>
+      <div style="color: #1e40af; font-size: 13px; margin-top: 4px;">Most popular this week</div>
+      <div style="margin-top: 8px; display: inline-block; background: #2563eb; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;" data-trending-growth>+0%</div>
+    </div>
+  </div>
+  
+  <!-- AI Insights -->
+  <div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+    <h3 style="color: #0f172a; font-size: 14px; font-weight: 600; margin-bottom: 12px;">AI Analytics Insights</h3>
+    <div style="display: flex; flex-direction: column; gap: 8px;" data-ai-insights>
+      <div style="display: flex; align-items: start; gap: 8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="margin-top: 2px;">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <span style="color: #475569; font-size: 13px;">Loading insights...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
     <!-- EXECUTIVE SUMMARY -->
     <div class="executive-summary">
       <h2 class="summary-title">Executive Performance Summary</h2>
@@ -5618,7 +5763,7 @@ class CustomerInsights {
         }
     }
     
-    async loadAllData() {
+   async loadAllData() {
         this.showLoading();
         
         try {
@@ -5642,7 +5787,14 @@ class CustomerInsights {
             this.renderChurnSegments(churnSegments);
             this.renderExecutiveSummary(executiveSummary);
             
+            // ✅ ADD THESE TWO NEW LINES
+            await this.loadTrafficInsights();
+            await this.loadAIPredictions();
+            
+            console.log('✅ All data rendered successfully');
+            
         } catch (error) {
+            console.error('❌ LoadAllData Error:', error);
             throw error;
         } finally {
             this.hideLoading();
@@ -5851,6 +6003,119 @@ class CustomerInsights {
         });
     }
 }
+
+ // ADD THESE NEW METHODS TO YOUR CLASS
+
+    async loadTrafficInsights() {
+        try {
+            const response = await fetch('api/traffic-insights.php');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            
+            console.log('✅ Traffic insights:', data);
+            this.renderTrafficInsights(data);
+        } catch (error) {
+            console.error('❌ Traffic insights error:', error);
+        }
+    }
+    
+    async loadAIPredictions() {
+        try {
+            const response = await fetch('api/ai-predictions.php');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            
+            console.log('✅ AI predictions:', data);
+            this.renderAIPredictions(data);
+        } catch (error) {
+            console.error('❌ AI predictions error:', error);
+        }
+    }
+    
+    renderTrafficInsights(data) {
+        // Daily average receipts
+        const dailyAvg = document.querySelector('[data-daily-avg]');
+        if (dailyAvg) dailyAvg.textContent = data.daily_avg_receipts || 0;
+        
+        // Conversion rate
+        const convRate = document.querySelector('[data-conversion-rate]');
+        if (convRate) convRate.textContent = (data.conversion_rate || 0) + '%';
+        
+        // Peak day and rush hours
+        const peakDay = document.querySelector('[data-peak-day]');
+        if (peakDay) peakDay.textContent = data.peak_day || 'N/A';
+        
+        const rushHours = document.querySelector('[data-rush-hours]');
+        if (rushHours) rushHours.textContent = data.rush_hours || 'N/A';
+        
+        // Mini chart
+        const chartContainer = document.querySelector('[data-mini-chart]');
+        if (chartContainer && data.mini_chart) {
+            chartContainer.innerHTML = data.mini_chart.map(height => `
+                <div style="width: 12px; background: linear-gradient(to top, #05dfd7, #088395); border-radius: 2px; height: ${height}%;"></div>
+            `).join('');
+        }
+        
+        // Anomaly detection
+        if (data.anomaly) {
+            const anomalyContainer = document.querySelector('[data-anomaly-container]');
+            const anomalyText = document.querySelector('[data-anomaly-text]');
+            if (anomalyContainer && anomalyText) {
+                anomalyText.textContent = `${data.anomaly.day} traffic dropped ${data.anomaly.drop}% - Analyzing cause`;
+                anomalyContainer.style.display = 'block';
+            }
+        }
+        
+        console.log('✅ Rendered traffic insights');
+    }
+    
+    renderAIPredictions(data) {
+        // Churn risk count
+        const churnCount = document.querySelector('[data-churn-count]');
+        if (churnCount) churnCount.textContent = data.churn_risk_count || 0;
+        
+        // Revenue forecast
+        const revenueForecast = document.querySelector('[data-revenue-forecast]');
+        if (revenueForecast) {
+            revenueForecast.textContent = '₱' + this.formatNumber(data.revenue_forecast || 0);
+        }
+        
+        // Forecast confidence
+        const confidenceBar = document.querySelector('[data-confidence-bar]');
+        const confidenceValue = document.querySelector('[data-confidence-value]');
+        if (confidenceBar && confidenceValue) {
+            const confidence = data.forecast_confidence || 0;
+            confidenceBar.style.width = confidence + '%';
+            confidenceValue.textContent = confidence + '%';
+        }
+        
+        // Trending product
+        const trendingProduct = document.querySelector('[data-trending-product]');
+        if (trendingProduct) {
+            trendingProduct.textContent = data.trending_product || 'N/A';
+        }
+        
+        const trendingGrowth = document.querySelector('[data-trending-growth]');
+        if (trendingGrowth) {
+            const growth = data.trending_growth || 0;
+            trendingGrowth.textContent = (growth > 0 ? '+' : '') + growth + '% this week';
+        }
+        
+        // AI insights
+        const insightsContainer = document.querySelector('[data-ai-insights]');
+        if (insightsContainer && data.ai_insights) {
+            insightsContainer.innerHTML = Object.values(data.ai_insights).map(insight => `
+                <div style="display: flex; align-items: start; gap: 8px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" style="margin-top: 2px; flex-shrink: 0;">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span style="color: #475569; font-size: 13px;">${insight}</span>
+                </div>
+            `).join('');
+        }
+        
+        console.log('✅ Rendered AI predictions');
+    }
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('cust-insight')) {
