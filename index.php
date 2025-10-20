@@ -5170,30 +5170,35 @@ body {
 
 
 <link rel = "stylesheet" href = "cust-insight.css">
+
 <div id="cust-insight" class="page">
-    <header class="executive-dashboard-header">
-      <div class="header-matrix">
-        <div class="header-left">
-          <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
-            <circle cx="24" cy="18" r="6.5" stroke="#000000" stroke-width="1.8" fill="none"/>
-            <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="33" cy="15" r="1.5" fill="#000000"/>
-            <path d="M30 20L33 17L36 20" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="33" y1="17" x2="33" y2="23" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <h1 class="platform-title">
-            <span class="title-primary">Customer Insight</span>
-          </h1>
-        </div>
-        
-        <div class="header-right">
-          <div class="realtime-badge">
-            <span class="status-dot"></span>
-            <span>Live</span>
-          </div>
-        </div>
-      </div>
-    </header>
+  <header style="background-color:#fff; padding:20px 40px; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center; font-family:'Segoe UI', Arial, sans-serif;">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <!-- Logo Icon -->
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+      <circle cx="24" cy="18" r="6.5" stroke="#000" stroke-width="2" fill="none"/>
+      <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="33" cy="15" r="1.5" fill="#000"/>
+      <path d="M30 20L33 17L36 20" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="33" y1="17" x2="33" y2="23" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+
+    <!-- Title -->
+    <h1 style="margin:0; font-size:24px; font-weight:600; color:#000;">
+      <span style="border-left:4px solid #000; padding-left:10px;">Customer Insight</span>
+    </h1>
+  </div>
+
+  <!-- Real-time Badge -->
+  <div style="display:flex; align-items:center; gap:6px; background-color:#f9fafb; border:1px solid #d1d5db; border-radius:20px; padding:6px 12px; font-size:14px; color:#000;">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7" stroke="#000" stroke-width="1.5"/>
+      <path d="M8 4V8L11 10" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span>Real-time</span>
+  </div>
+</header>
+
 
     <div class="analytics-grid-advanced">
       
@@ -5605,7 +5610,6 @@ body {
     </div>
 
   </div>
-
 
   <script>
 class CustomerInsights {
