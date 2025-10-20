@@ -5745,6 +5745,7 @@ body {
     </div>
 
   </div>
+
   <script>
 class CustomerInsights {
     constructor() {
@@ -5763,7 +5764,7 @@ class CustomerInsights {
         }
     }
     
-   async loadAllData() {
+    async loadAllData() {
         this.showLoading();
         
         try {
@@ -5787,7 +5788,7 @@ class CustomerInsights {
             this.renderChurnSegments(churnSegments);
             this.renderExecutiveSummary(executiveSummary);
             
-            // ✅ ADD THESE TWO NEW LINES
+            // Load new features
             await this.loadTrafficInsights();
             await this.loadAIPredictions();
             
@@ -5975,37 +5976,7 @@ class CustomerInsights {
         if (revenueEl) revenueEl.textContent = '₱' + this.formatNumber(summary.monthly_revenue);
     }
     
-    viewCustomerDetails(customerName) {
-        alert(`Viewing: ${customerName}\n\nWould open customer profile modal.`);
-    }
-    
-    exportInsights(format) {
-        alert(`Exporting as ${format.toUpperCase()}...`);
-    }
-    
-    formatNumber(num) {
-        return new Intl.NumberFormat('en-PH').format(Math.round(num));
-    }
-    
-    getChartColor(rank) {
-        return {1: '#05dfd7', 2: '#088395', 3: '#0a4d68'}[rank] || '#64748b';
-    }
-    
-    showLoading() { console.log('Loading...'); }
-    hideLoading() { console.log('Loaded'); }
-    showError(msg) { alert('Error: ' + msg); }
-    
-    setupEventListeners() {
-        document.querySelectorAll('[data-export]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.exportInsights(e.currentTarget.getAttribute('data-export'));
-            });
-        });
-    }
-}
-
- // ADD THESE NEW METHODS TO YOUR CLASS
-
+    // ✅ NEW METHODS - PROPERLY INSIDE THE CLASS
     async loadTrafficInsights() {
         try {
             const response = await fetch('api/traffic-insights.php');
@@ -6116,7 +6087,45 @@ class CustomerInsights {
         
         console.log('✅ Rendered AI predictions');
     }
+    
+    viewCustomerDetails(customerName) {
+        alert(`Viewing: ${customerName}\n\nWould open customer profile modal.`);
+    }
+    
+    exportInsights(format) {
+        alert(`Exporting as ${format.toUpperCase()}...`);
+    }
+    
+    formatNumber(num) {
+        return new Intl.NumberFormat('en-PH').format(Math.round(num));
+    }
+    
+    getChartColor(rank) {
+        return {1: '#05dfd7', 2: '#088395', 3: '#0a4d68'}[rank] || '#64748b';
+    }
+    
+    showLoading() { 
+        console.log('Loading...'); 
+    }
+    
+    hideLoading() { 
+        console.log('Loaded'); 
+    }
+    
+    showError(msg) { 
+        alert('Error: ' + msg); 
+    }
+    
+    setupEventListeners() {
+        document.querySelectorAll('[data-export]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.exportInsights(e.currentTarget.getAttribute('data-export'));
+            });
+        });
+    }
+}
 
+// ✅ INITIALIZATION - OUTSIDE THE CLASS (CORRECT PLACEMENT)
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('cust-insight')) {
         window.customerInsights = new CustomerInsights();
@@ -6127,7 +6136,7 @@ setInterval(() => {
     if (window.customerInsights) window.customerInsights.loadAllData();
 }, 300000); // 5 minutes
 
-  </script>
+    </script>
   
   
   
