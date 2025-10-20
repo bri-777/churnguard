@@ -1955,7 +1955,17 @@ function doLogout() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
+// ===== FILE UPLOAD CONFIRMATION MODAL =====
+// This section creates a preview modal before saving data
+
+let pendingTransactions = []; // Stores transactions waiting for confirmation
+let pendingTotals = {}; // Stores calculated totals for preview
+
 function handleFileUpload(event) {
+  // ===== DAILY UPLOAD LIMIT CHECK (COMMENTED OUT) =====
+  // Uncomment the line below to enforce one upload per day
+  // if (!checkDailyUploadLimit()) return;
+  
   const file = event.target.files[0];
   if (!file) return;
 
@@ -1994,10 +2004,9 @@ function processData(data) {
   const headers = data[0].map(h => String(h).trim().toLowerCase());
   
   // Find column indices
-
   const receiptCountIndex = headers.findIndex(h => h.includes('receipt count'));
   const customerNameIndex = headers.findIndex(h => h.includes('customer name'));
-  const genderIndex = headers.findIndex(h => h.includes('gender')); // NEW
+  const genderIndex = headers.findIndex(h => h.includes('gender'));
   const quantityIndex = headers.findIndex(h => h.includes('quantity'));
   const drinkTypeIndex = headers.findIndex(h => h.includes('type of drink'));
   const dateIndex = headers.findIndex(h => h.includes('date'));
@@ -2044,11 +2053,10 @@ function processData(data) {
     const dateStr = String(row[dateIndex] || '').trim();
     const dateVisited = parseExcelDate(dateStr);
     
-    // Get gender value - NEW
+    // Get gender value
     let gender = null;
     if (genderIndex !== -1) {
       const genderValue = String(row[genderIndex] || '').trim();
-      // Normalize gender value
       if (genderValue.toLowerCase() === 'male' || genderValue.toLowerCase() === 'm') {
         gender = 'Male';
       } else if (genderValue.toLowerCase() === 'female' || genderValue.toLowerCase() === 'f') {
@@ -2057,10 +2065,9 @@ function processData(data) {
     }
     
     transactions.push({
-
       receipt_count: receiptCount,
       customer_name: String(row[customerNameIndex] || '').trim(),
-      gender: gender, // NEW
+      gender: gender,
       quantity_of_drinks: parseInt(row[quantityIndex]) || 0,
       type_of_drink: String(row[drinkTypeIndex] || '').trim(),
       date_visited: dateVisited,
@@ -2088,46 +2095,281 @@ function processData(data) {
     }
   }
   
-  // Save to database
-  saveToDatabase(transactions);
+  // Store pending data for confirmation
+  pendingTransactions = transactions;
+  pendingTotals = {
+    totalReceipts,
+    totalSales,
+    totalCustomerTraffic,
+    morningReceipts,
+    morningSales,
+    middayReceipts,
+    middaySales,
+    eveningReceipts,
+    eveningSales
+  };
   
-  // Populate TOTAL fields
-  document.getElementById('receiptCount').value = totalReceipts;
-  document.getElementById('salesVolume').value = totalSales.toFixed(2);
-  document.getElementById('customerTraffic').value = totalCustomerTraffic;
+  // Show confirmation modal instead of directly saving
+  showConfirmationModal();
+}
+
+// ===== CONFIRMATION MODAL FUNCTIONS =====
+// Creates and displays a modal showing file data preview before upload
+function showConfirmationModal() {
+  // Create modal overlay - dark background that covers entire screen
+  const modal = document.createElement('div');
+  modal.id = 'uploadConfirmModal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+  `;
   
-  // Populate SHIFT fields
-  document.getElementById('morningReceiptCount').value = morningReceipts;
-  document.getElementById('morningSalesVolume').value = morningSales.toFixed(2);
-  document.getElementById('swingReceiptCount').value = middayReceipts;
-  document.getElementById('swingSalesVolume').value = middaySales.toFixed(2);
-  document.getElementById('graveyardReceiptCount').value = eveningReceipts;
-  document.getElementById('graveyardSalesVolume').value = eveningSales.toFixed(2);
+  // Create modal content box - white card in center
+  const modalContent = document.createElement('div');
+  modalContent.style.cssText = `
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+  `;
   
-  // Show success message
-  alert('File loaded successfully!\n\n' +
-        'TOTALS:\n' +
-        'Total Receipts: ' + totalReceipts + '\n' +
-        'Total Sales: ₱' + totalSales.toFixed(2) + '\n' +
-        'Customer Traffic: ' + totalCustomerTraffic + '\n\n' +
-        'SHIFTS:\n' +
-        'Morning: ' + morningReceipts + ' receipts, ₱' + morningSales.toFixed(2) + '\n' +
-        'Midday: ' + middayReceipts + ' receipts, ₱' + middaySales.toFixed(2) + '\n' +
-        'Evening: ' + eveningReceipts + ' receipts, ₱' + eveningSales.toFixed(2));
+  // Build modal HTML content with all data summary and preview
+  modalContent.innerHTML = `
+    <div style="text-align: center; margin-bottom: 25px;">
+      <div style="background: #4CAF50; width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+        <i class="fas fa-file-upload" style="color: white; font-size: 28px;"></i>
+      </div>
+      <h2 style="margin: 0; color: #333; font-size: 24px;">Confirm File Upload</h2>
+      <p style="color: #666; margin-top: 8px;">Review the data before uploading</p>
+    </div>
+    
+    <!-- Data Summary Section - Shows total transactions and sales -->
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+      <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px; border-bottom: 2px solid #4CAF50; padding-bottom: 8px;">
+        <i class="fas fa-chart-bar"></i> Data Summary
+      </h3>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #2196F3;">
+          <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Transactions</div>
+          <div style="color: #333; font-size: 22px; font-weight: bold;">${pendingTransactions.length}</div>
+        </div>
+        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #4CAF50;">
+          <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Sales</div>
+          <div style="color: #333; font-size: 22px; font-weight: bold;">₱${pendingTotals.totalSales.toFixed(2)}</div>
+        </div>
+      </div>
+      
+      <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #FF9800;">
+        <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Receipts</div>
+        <div style="color: #333; font-size: 22px; font-weight: bold;">${pendingTotals.totalReceipts}</div>
+      </div>
+    </div>
+    
+    <!-- Shift Breakdown Section - Shows morning, midday, evening data -->
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+      <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px; border-bottom: 2px solid #4CAF50; padding-bottom: 8px;">
+        <i class="fas fa-clock"></i> Shift Breakdown
+      </h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
+          <span style="color: #666;"><i class="fas fa-sun" style="color: #FFC107;"></i> Morning</span>
+          <span style="color: #333; font-weight: 600;">${pendingTotals.morningReceipts} receipts | ₱${pendingTotals.morningSales.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
+          <span style="color: #666;"><i class="fas fa-cloud-sun" style="color: #FF9800;"></i> Midday</span>
+          <span style="color: #333; font-weight: 600;">${pendingTotals.middayReceipts} receipts | ₱${pendingTotals.middaySales.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
+          <span style="color: #666;"><i class="fas fa-moon" style="color: #3F51B5;"></i> Evening</span>
+          <span style="color: #333; font-weight: 600;">${pendingTotals.eveningReceipts} receipts | ₱${pendingTotals.eveningSales.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sample Data Preview - Shows first 3 transactions as examples -->
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+      <h4 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">
+        <i class="fas fa-eye"></i> Sample Transactions (First 3)
+      </h4>
+      <div style="font-size: 12px; color: #666; max-height: 120px; overflow-y: auto;">
+        ${pendingTransactions.slice(0, 3).map((t, i) => `
+          <div style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 4px;">
+            <strong>#${i + 1}</strong>: ${t.customer_name || 'N/A'} | ${t.type_of_drink} | ₱${t.total_amount.toFixed(2)} | ${t.time_of_day}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <!-- Action Buttons - Cancel (red) and Confirm (green) -->
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <button onclick="cancelUpload()" style="
+        flex: 1;
+        padding: 12px 24px;
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+      " onmouseover="this.style.background='#d32f2f'" onmouseout="this.style.background='#f44336'">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button onclick="confirmUpload()" style="
+        flex: 1;
+        padding: 12px 24px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+      " onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">
+        <i class="fas fa-check"></i> Confirm Upload
+      </button>
+    </div>
+  `;
   
-  // Reset file input
+  // Add CSS animation keyframes for smooth modal appearance
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Add modal to page
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+}
+
+// ===== CONFIRM UPLOAD =====
+// User clicked "Confirm" button - proceed with saving data to database
+function confirmUpload() {
+  // Close and remove the modal from page
+  const modal = document.getElementById('uploadConfirmModal');
+  if (modal) modal.remove();
+  
+  // Save transactions to database via PHP endpoint
+  saveToDatabase(pendingTransactions);
+  
+  // Populate all form fields with calculated totals
+  document.getElementById('receiptCount').value = pendingTotals.totalReceipts;
+  document.getElementById('salesVolume').value = pendingTotals.totalSales.toFixed(2);
+  document.getElementById('customerTraffic').value = pendingTotals.totalCustomerTraffic;
+  
+  document.getElementById('morningReceiptCount').value = pendingTotals.morningReceipts;
+  document.getElementById('morningSalesVolume').value = pendingTotals.morningSales.toFixed(2);
+  document.getElementById('swingReceiptCount').value = pendingTotals.middayReceipts;
+  document.getElementById('swingSalesVolume').value = pendingTotals.middaySales.toFixed(2);
+  document.getElementById('graveyardReceiptCount').value = pendingTotals.eveningReceipts;
+  document.getElementById('graveyardSalesVolume').value = pendingTotals.eveningSales.toFixed(2);
+  
+  // ===== RECORD UPLOAD DATE (COMMENTED OUT) =====
+  // Uncomment the line below to save upload date for daily limit enforcement
+  // recordUploadDate();
+  
+  // Clear pending data from memory
+  pendingTransactions = [];
+  pendingTotals = {};
+  
+  // Reset file input so user can upload another file if needed
   document.getElementById('csvFileInput').value = '';
 }
 
+// ===== CANCEL UPLOAD =====
+// User clicked "Cancel" button - discard all data and close modal
+function cancelUpload() {
+  // Close and remove the modal from page
+  const modal = document.getElementById('uploadConfirmModal');
+  if (modal) modal.remove();
+  
+  // Clear all pending data from memory
+  pendingTransactions = [];
+  pendingTotals = {};
+  
+  // Reset file input
+  document.getElementById('csvFileInput').value = '';
+  
+  // Show cancellation confirmation to user
+  alert('Upload cancelled. No data was saved.');
+}
+
+// ===== DAILY UPLOAD LIMIT VALIDATION (COMMENTED OUT) =====
+// Uncomment this entire section when ready to enforce one upload per day
+
+/*
+// Check if user has already uploaded today
+function checkDailyUploadLimit() {
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Check localStorage for last upload date
+  const lastUploadDate = localStorage.getItem('lastUploadDate');
+  
+  // If last upload was today, block the upload
+  if (lastUploadDate === today) {
+    alert('⚠️ Upload Limit Reached\n\nYou have already uploaded a file today.\nPlease try again tomorrow.');
+    
+    // Reset file input
+    document.getElementById('csvFileInput').value = '';
+    
+    return false; // Block upload
+  }
+  
+  return true; // Allow upload
+}
+
+// Save today's date after successful upload
+function recordUploadDate() {
+  const today = new Date().toISOString().split('T')[0];
+  localStorage.setItem('lastUploadDate', today);
+  console.log('Upload date recorded:', today);
+}
+
+// TO ACTIVATE DAILY LIMIT:
+// 1. Uncomment this entire section
+// 2. In handleFileUpload(), uncomment the line: if (!checkDailyUploadLimit()) return;
+// 3. In confirmUpload(), uncomment the line: recordUploadDate();
+*/
+
+// ===== HELPER FUNCTIONS =====
+
+// Parse Excel date formats and convert to YYYY-MM-DD string
 function parseExcelDate(dateStr) {
-  // Handle Excel serial date numbers
+  // Handle Excel serial date numbers (days since 1900-01-01)
   if (!isNaN(dateStr) && dateStr.length > 4) {
     const excelEpoch = new Date(1899, 11, 30);
     const date = new Date(excelEpoch.getTime() + parseInt(dateStr) * 86400000);
     return date.toISOString().split('T')[0];
   }
   
-  // Handle regular date strings
+  // Handle regular date strings (MM/DD/YYYY or YYYY-MM-DD)
   if (dateStr.includes('/') || dateStr.includes('-')) {
     const date = new Date(dateStr);
     if (!isNaN(date.getTime())) {
@@ -2139,6 +2381,7 @@ function parseExcelDate(dateStr) {
   return new Date().toISOString().split('T')[0];
 }
 
+// Save transactions array to database via PHP endpoint
 function saveToDatabase(transactions) {
   console.log('=== SAVING TO DATABASE ===');
   console.log('Total transactions:', transactions.length);
@@ -2150,7 +2393,7 @@ function saveToDatabase(transactions) {
   
   console.log('Sample transaction:', transactions[0]);
   
-  // Send to PHP
+  // Send POST request to PHP with JSON payload
   fetch('upload_transactions.php', {
     method: 'POST',
     headers: {
