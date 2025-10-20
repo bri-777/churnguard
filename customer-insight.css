@@ -1,10 +1,10 @@
 /* ===================================
    CUSTOMER INSIGHT DASHBOARD
-   Ultra-Clean Minimalist Design System
+   Premium Minimalist Design System
    =================================== */
 
 /* ===================================
-   RESET & BASE STYLES
+   RESET & FOUNDATION
    =================================== */
 * {
   margin: 0;
@@ -13,87 +13,107 @@
 }
 
 .page {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background: #f8f9fa;
+  background: #fafafa;
   min-height: 100vh;
-  color: #1a1a1a;
-  line-height: 1.5;
+  color: #0a0a0a;
+  line-height: 1.6;
 }
 
 /* ===================================
-   HEADER SECTION - Pure Minimalist White
+   HEADER - Ultra Clean Minimalist
    =================================== */
 .executive-dashboard-header {
   background: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid #dedede;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .header-matrix {
-  max-width: 1440px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 28px 64px;
+  padding: 20px 60px;
   display: flex;
   align-items: center;
-  gap: 32px;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .logo-icon {
   flex-shrink: 0;
-  opacity: 0.9;
+  display: block;
 }
 
 .platform-title {
-  flex: 1;
   margin: 0;
 }
 
 .title-primary {
   color: #000000;
-  font-weight: 500;
-  font-size: 24px;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  font-size: 19px;
+  letter-spacing: -0.01em;
 }
 
 .realtime-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
+  gap: 7px;
+  padding: 5px 11px;
   background: #ffffff;
-  border-radius: 4px;
-  border: 1px solid #e8e8e8;
-  font-size: 12px;
+  border-radius: 3px;
+  border: 1px solid #dedede;
+  font-size: 11px;
   font-weight: 400;
   color: #000000;
   letter-spacing: 0.01em;
 }
 
-/* ===================================
-   MAIN GRID LAYOUT
-   =================================== */
-.analytics-grid-advanced {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 40px 64px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #000000;
+  flex-shrink: 0;
 }
 
 /* ===================================
-   INTELLIGENCE CARDS - Pure Minimalism
+   MAIN CONTAINER
+   =================================== */
+.analytics-grid-advanced {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 36px 60px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* ===================================
+   INTELLIGENCE CARDS
    =================================== */
 .intelligence-card {
   background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .card-matrix-overlay {
@@ -101,190 +121,190 @@
 }
 
 /* ===================================
-   CARD HEADER - Clean & Professional
+   CARD HEADER
    =================================== */
 .card-header-advanced {
-  padding: 32px 32px 24px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 28px 28px 22px;
+  border-bottom: 1px solid #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
 .header-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .header-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #f0f9ff;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #f7f7f7;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0284c7;
+  color: #1a1a1a;
   flex-shrink: 0;
 }
 
 .header-icon-wrapper.critical {
-  background: #fef2f2;
-  color: #dc2626;
+  background: #fff5f5;
+  color: #c53030;
 }
 
 .card-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-  letter-spacing: -0.015em;
+  font-size: 17px;
+  font-weight: 500;
+  color: #0a0a0a;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
 }
 
 .action-btn {
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 400;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
   background: #ffffff;
-  color: #374151;
+  color: #2a2a2a;
   cursor: pointer;
   white-space: nowrap;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
 }
 
 .action-btn.primary {
-  background: #2563eb;
+  background: #000000;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #000000;
 }
 
 /* ===================================
-   RISK INDICATOR - Clear Status
+   RISK INDICATOR
    =================================== */
 .risk-indicator {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
+  gap: 9px;
+  padding: 9px 13px;
+  background: #fff8f8;
+  border: 1px solid #ffd7d7;
+  border-radius: 5px;
 }
 
 .indicator-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #991b1b;
+  font-size: 10px;
+  font-weight: 500;
+  color: #8b0000;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .indicator-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  color: #c53030;
 }
 
 /* ===================================
    CUSTOMER INTELLIGENCE GRID
    =================================== */
 .customer-intelligence-grid {
-  padding: 32px;
+  padding: 28px;
 }
 
 .loading-state {
   text-align: center;
-  padding: 80px 20px;
-  color: #9ca3af;
-  font-size: 14px;
+  padding: 70px 20px;
+  color: #a0a0a0;
+  font-size: 13px;
   font-weight: 400;
 }
 
 /* ===================================
-   RETENTION MATRIX - Clean Layout
+   RETENTION MATRIX
    =================================== */
 .retention-matrix {
-  padding: 32px;
+  padding: 28px;
 }
 
 .matrix-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f5f5f5;
 }
 
 .matrix-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0a;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 
 .matrix-legend {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #6b7280;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #5a5a5a;
 }
 
 .legend-item::before {
   content: '';
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 2px;
   flex-shrink: 0;
 }
 
 .legend-item.healthy::before {
-  background: #10b981;
+  background: #16a34a;
 }
 
 .legend-item.at-risk::before {
-  background: #f59e0b;
+  background: #ea580c;
 }
 
 .legend-item.critical::before {
-  background: #ef4444;
+  background: #dc2626;
 }
 
 /* ===================================
-   HEALTH SEGMENTS - Grid Cards
+   HEALTH SEGMENTS
    =================================== */
 .health-segments {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
 .segment-card {
-  background: #fafbfc;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 24px;
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 7px;
+  padding: 22px;
   position: relative;
 }
 
@@ -295,149 +315,149 @@
   left: 0;
   width: 3px;
   height: 100%;
-  background: #d1d5db;
-  border-radius: 10px 0 0 10px;
+  background: #d0d0d0;
+  border-radius: 7px 0 0 7px;
 }
 
 .segment-card.healthy::before {
-  background: #10b981;
+  background: #16a34a;
 }
 
 .segment-card.at-risk::before {
-  background: #f59e0b;
+  background: #ea580c;
 }
 
 .segment-card.critical::before {
-  background: #ef4444;
+  background: #dc2626;
 }
 
 .segment-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 9px;
+  margin-bottom: 18px;
 }
 
 .segment-header svg {
-  color: #6b7280;
+  color: #5a5a5a;
   flex-shrink: 0;
 }
 
 .segment-card.healthy .segment-header svg {
-  color: #10b981;
+  color: #16a34a;
 }
 
 .segment-card.at-risk .segment-header svg {
-  color: #f59e0b;
+  color: #ea580c;
 }
 
 .segment-card.critical .segment-header svg {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 .segment-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: #2a2a2a;
 }
 
 .segment-stats {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
+  font-size: 30px;
+  font-weight: 600;
+  color: #0a0a0a;
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   letter-spacing: -0.02em;
 }
 
 .stat-percentage {
-  font-size: 12px;
-  font-weight: 500;
-  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 400;
+  color: #9a9a9a;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .segment-details {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .detail-row span:first-child {
-  color: #6b7280;
+  color: #5a5a5a;
   font-weight: 400;
 }
 
 .detail-row span:last-child {
-  color: #111827;
-  font-weight: 600;
+  color: #0a0a0a;
+  font-weight: 500;
 }
 
 /* ===================================
    AT-RISK CUSTOMERS
    =================================== */
 .at-risk-customers {
-  margin-top: 32px;
+  margin-top: 28px;
 }
 
 .at-risk-customers h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 20px;
-  letter-spacing: -0.01em;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin-bottom: 18px;
+  letter-spacing: -0.005em;
 }
 
 .risk-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 /* ===================================
-   PURCHASE ANALYTICS - Clean Data Display
+   PURCHASE ANALYTICS
    =================================== */
 .purchase-analytics {
-  padding: 32px;
+  padding: 28px;
 }
 
 .purchase-overview {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
 .overview-stat {
   display: flex;
-  gap: 16px;
-  padding: 24px;
-  background: #fafbfc;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  gap: 14px;
+  padding: 22px;
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 7px;
 }
 
 .stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #f0f9ff;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #f7f7f7;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0284c7;
+  color: #1a1a1a;
   flex-shrink: 0;
 }
 
@@ -446,74 +466,74 @@
 }
 
 .stat-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #6b7280;
-  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #5a5a5a;
+  margin-bottom: 7px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .stat-content .stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0a0a0a;
   margin-bottom: 4px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 .stat-change {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 400;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .stat-change.positive {
-  color: #10b981;
+  color: #16a34a;
 }
 
 .stat-change.negative {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 /* ===================================
-   PRODUCT PERFORMANCE - Structured List
+   PRODUCT PERFORMANCE
    =================================== */
 .product-performance {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .product-performance h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 20px;
-  letter-spacing: -0.01em;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin-bottom: 18px;
+  letter-spacing: -0.005em;
 }
 
 .combo-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .combo-item {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  background: #fafbfc;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
 }
 
 .combo-rank {
-  font-size: 18px;
-  font-weight: 600;
-  color: #9ca3af;
-  width: 32px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #9a9a9a;
+  width: 28px;
   text-align: center;
   flex-shrink: 0;
 }
@@ -523,154 +543,155 @@
 }
 
 .product {
-  font-size: 14px;
-  font-weight: 500;
-  color: #111827;
+  font-size: 13px;
+  font-weight: 400;
+  color: #0a0a0a;
 }
 
 .combo-stats {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-shrink: 0;
 }
 
 .frequency {
-  font-size: 13px;
-  font-weight: 500;
-  color: #6b7280;
+  font-size: 12px;
+  font-weight: 400;
+  color: #5a5a5a;
 }
 
 .revenue {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 5px;
-  background: #d1fae5;
-  color: #065f46;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: #e8f5e9;
+  color: #1b5e20;
 }
 
 .revenue.declining {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #ffebee;
+  color: #b71c1c;
 }
 
 /* ===================================
-   CATEGORY BREAKDOWN - Metric Grid
+   CATEGORY BREAKDOWN
    =================================== */
 .category-breakdown {
-  margin-top: 32px;
+  margin-top: 28px;
 }
 
 .category-breakdown h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 20px;
-  letter-spacing: -0.01em;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin-bottom: 18px;
+  letter-spacing: -0.005em;
 }
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
 }
 
 .category-cell {
-  padding: 24px;
-  background: #fafbfc;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  padding: 22px;
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 7px;
 }
 
 .category-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #2a2a2a;
+  margin-bottom: 14px;
 }
 
 .category-metrics {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .metric {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: -0.02em;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0a0a0a;
+  letter-spacing: -0.015em;
 }
 
 .metric-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 400;
+  color: #9a9a9a;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+  margin-bottom: 7px;
 }
 
 .metric-trend {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 7px;
+  border-radius: 3px;
   display: inline-block;
 }
 
 .metric-trend.positive {
-  background: #d1fae5;
-  color: #065f46;
+  background: #e8f5e9;
+  color: #1b5e20;
 }
 
 .metric-trend.negative {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #ffebee;
+  color: #b71c1c;
 }
 
 /* ===================================
-   EXECUTIVE SUMMARY - Professional Overview
+   EXECUTIVE SUMMARY
    =================================== */
 .executive-summary {
-  max-width: 1440px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 64px 40px;
+  padding: 0 60px 36px;
 }
 
 .summary-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 24px;
-  letter-spacing: -0.02em;
+  font-size: 18px;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin-bottom: 22px;
+  letter-spacing: -0.015em;
 }
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
 }
 
 .summary-card {
   display: flex;
-  gap: 20px;
-  padding: 28px;
+  gap: 18px;
+  padding: 26px;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .summary-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  background: #f0f9ff;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #f7f7f7;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0284c7;
+  color: #1a1a1a;
   flex-shrink: 0;
 }
 
@@ -679,72 +700,75 @@
 }
 
 .summary-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #6b7280;
-  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #5a5a5a;
+  margin-bottom: 7px;
 }
 
 .summary-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111827;
+  font-size: 26px;
+  font-weight: 600;
+  color: #0a0a0a;
   margin-bottom: 4px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 .summary-change {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 400;
 }
 
 .summary-change.positive {
-  color: #10b981;
+  color: #16a34a;
 }
 
 .summary-change.negative {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 /* ===================================
-   RESPONSIVE DESIGN - Mobile Optimized
+   RESPONSIVE DESIGN
    =================================== */
 @media (max-width: 1200px) {
   .header-matrix {
-    padding: 28px 48px;
+    padding: 20px 44px;
   }
 
   .analytics-grid-advanced {
-    padding: 32px 48px;
+    padding: 32px 44px;
   }
 
   .executive-summary {
-    padding: 0 48px 32px;
+    padding: 0 44px 32px;
   }
 }
 
 @media (max-width: 768px) {
   .header-matrix {
-    padding: 20px 24px;
-    gap: 16px;
+    padding: 18px 22px;
+  }
+
+  .header-left {
+    gap: 14px;
   }
 
   .title-primary {
-    font-size: 22px;
+    font-size: 17px;
   }
 
   .logo-icon {
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
   }
 
   .analytics-grid-advanced {
-    padding: 24px;
-    gap: 16px;
+    padding: 22px;
+    gap: 14px;
   }
 
   .card-header-advanced {
-    padding: 24px 24px 20px;
+    padding: 22px 22px 18px;
     flex-direction: column;
     align-items: flex-start;
   }
@@ -756,7 +780,6 @@
   .action-btn {
     flex: 1;
     text-align: center;
-    font-size: 12px;
   }
 
   .purchase-overview,
@@ -769,28 +792,28 @@
   .retention-matrix,
   .purchase-analytics,
   .customer-intelligence-grid {
-    padding: 24px;
+    padding: 22px;
   }
 
   .executive-summary {
-    padding: 0 24px 24px;
+    padding: 0 22px 22px;
   }
 
   .summary-title {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .matrix-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
 
   .combo-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
+    gap: 10px;
+    padding: 14px;
   }
 
   .combo-stats {
@@ -799,44 +822,52 @@
   }
 
   .stat-value {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .summary-value {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .metric {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 
 @media (max-width: 480px) {
   .header-matrix {
-    flex-wrap: wrap;
-    padding: 16px 20px;
+    padding: 16px 18px;
   }
 
-  .realtime-badge {
-    order: 3;
-    width: 100%;
-    justify-content: center;
+  .header-left {
+    gap: 12px;
   }
 
   .title-primary {
-    font-size: 20px;
+    font-size: 16px;
+  }
+
+  .logo-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .realtime-badge {
+    padding: 4px 9px;
+    font-size: 10px;
+  }
+
+  .status-dot {
+    width: 4px;
+    height: 4px;
   }
 
   .analytics-grid-advanced {
-    padding: 20px;
+    padding: 18px;
   }
 
   .card-header-advanced {
-    padding: 20px;
-  }
-
-  .health-segments {
-    grid-template-columns: 1fr;
+    padding: 18px;
   }
 
   .stat-value {
@@ -844,16 +875,16 @@
   }
 
   .summary-value {
-    font-size: 22px;
+    font-size: 20px;
   }
 }
 
 /* ===================================
-   ACCESSIBILITY & FOCUS STATES
+   ACCESSIBILITY
    =================================== */
 button:focus-visible,
 .action-btn:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #000000;
   outline-offset: 2px;
 }
 
@@ -876,10 +907,10 @@ button:focus-visible,
   }
 
   .header-matrix {
-    border-bottom: 2px solid #111827;
+    border-bottom: 2px solid #0a0a0a;
   }
 
   .card-header-advanced {
-    border-bottom: 1px solid #111827;
+    border-bottom: 1px solid #0a0a0a;
   }
 }
