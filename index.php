@@ -5170,8 +5170,8 @@ body {
 
 
 <link rel = "stylesheet" href = "cust-insight.css">
-
-<header style="background-color:#fff; padding:20px 40px; border:1px solid #e5e7eb; border-radius:12px; display:flex; justify-content:space-between; align-items:center; font-family:'Segoe UI', Arial, sans-serif; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+<div id="cust-insight" class="page">
+    <header style="background-color:#fff; padding:20px 40px; border:1px solid #e5e7eb; border-radius:12px; display:flex; justify-content:space-between; align-items:center; font-family:'Segoe UI', Arial, sans-serif; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
   <div style="display:flex; align-items:center; gap:12px;">
     <!-- Logo Icon -->
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
@@ -5199,6 +5199,417 @@ body {
 </header>
 
 
+    <div class="analytics-grid-advanced">
+      
+      <!-- LOYAL CUSTOMERS CARD -->
+      <div class="intelligence-card customer-profiles-card">
+        <div class="card-matrix-overlay"></div>
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Loyal Customer</h2>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn">Export List</button>
+            <button class="action-btn primary">Manage Segments</button>
+          </div>
+        </div>
+        
+        <!-- This will be populated by JavaScript -->
+        <div class="customer-intelligence-grid">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            Loading loyal customers...
+          </div>
+        </div>
+      </div>
+
+      <!-- RETENTION & RISK ANALYTICS CARD -->
+      <div class="intelligence-card retention-analytics-card" data-section="retention">
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper critical">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Retention & Risk Analytics</h2>
+          </div>
+          <div class="risk-indicator">
+            <span class="indicator-label">System Alert</span>
+            <span class="indicator-value critical" data-risk-total>0 At Risk</span>
+          </div>
+        </div>
+        
+        <div class="retention-matrix">
+          <div class="matrix-header">
+            <h3>At-Risk Segment Monitor</h3>
+            <div class="matrix-legend">
+              <span class="legend-item at-risk">This Week</span>
+              <span class="legend-item critical">This Month</span>
+            </div>
+          </div>
+          
+          <div class="health-segments" data-segment="dropped">
+            <div class="segment-card at-risk">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span class="segment-title">Dropped Visits This Week</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-dropped-week>0</div>
+                <div class="stat-percentage">Customers</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Avg Drop Rate</span>
+                  <span>-32%</span>
+                </div>
+                <div class="detail-row">
+                  <span>Revenue Impact</span>
+                  <span>₱84,200</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card critical">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span class="segment-title">Dropped Visits This Month</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-dropped-month>0</div>
+                <div class="stat-percentage">Customers</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Avg Drop Rate</span>
+                  <span>-45%</span>
+                </div>
+                <div class="detail-row">
+                  <span>Revenue Impact</span>
+                  <span>₱312,500</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="matrix-header">
+            <h3>Customer Health Matrix</h3>
+            <div class="matrix-legend">
+              <span class="legend-item healthy">Healthy</span>
+              <span class="legend-item at-risk">At Risk</span>
+              <span class="legend-item critical">Critical</span>
+            </div>
+          </div>
+          
+          <div class="health-segments" data-segment="health">
+            <div class="segment-card healthy">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span class="segment-title">Healthy Customers</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-health-low>0</div>
+                <div class="stat-percentage" data-health-low-pct>0%</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Avg Retention</span>
+                  <span>94.2%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card at-risk">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span class="segment-title">At Risk</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-health-medium>0</div>
+                <div class="stat-percentage" data-health-medium-pct>0%</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Churn Probability</span>
+                  <span>42%</span>
+                </div>
+                <div class="detail-row">
+                  <span>Last Active</span>
+                  <span>15+ days</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card critical">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span class="segment-title">Critical</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-health-high>0</div>
+                <div class="stat-percentage" data-health-high-pct>0%</div>
+              </div>
+              <div class="segment-details">
+                <div class="detail-row">
+                  <span>Churn Probability</span>
+                  <span>87%</span>
+                </div>
+                <div class="detail-row">
+                  <span>Immediate Action</span>
+                  <span>Required</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="at-risk-customers">
+            <h3>High-Value Customers at Risk</h3>
+            <div class="risk-list" data-risk-customers>
+              <div style="text-align: center; padding: 20px; color: #64748b;">
+                Loading at-risk customers...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PURCHASE INTELLIGENCE CARD -->
+      <div class="intelligence-card purchase-intelligence-card">
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Purchase Intelligence & Patterns</h2>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn" data-export="pdf">Export PDF</button>
+            <button class="action-btn primary" data-export="excel">Export Excel</button>
+          </div>
+        </div>
+        
+        <div class="purchase-analytics">
+          <div class="purchase-overview">
+            <div class="overview-stat">
+              <div class="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Avg Basket Size</div>
+                <div class="stat-value" data-basket-size>0 items</div>
+                <div class="stat-change positive">+12% vs last month</div>
+              </div>
+            </div>
+            
+            <div class="overview-stat">
+              <div class="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"/>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Avg Transaction</div>
+                <div class="stat-value" data-avg-transaction>₱0</div>
+                <div class="stat-change positive">+8.7% vs last month</div>
+              </div>
+            </div>
+            
+            <div class="overview-stat">
+              <div class="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Upsell Rate</div>
+                <div class="stat-value">34.2%</div>
+                <div class="stat-change positive">+5.4% vs last month</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="product-performance">
+            <h3>Top Products</h3>
+            <div class="combo-list" data-top-products>
+              <div style="text-align: center; padding: 20px; color: #64748b;">
+                Loading top products...
+              </div>
+            </div>
+          </div>
+          
+          <div class="product-performance">
+            <h3>Top-Selling vs. Declining Products</h3>
+            <div class="combo-list">
+              <div class="combo-item">
+                <div class="combo-rank">▼</div>
+                <div class="combo-products">
+                  <span class="product">Vanilla Latte</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">312 orders</span>
+                  <span class="revenue" style="color: #dc2626;">-24%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="product-performance">
+            <h3>Repeat Purchase Rate by Product</h3>
+            <div class="combo-list" data-repeat-products>
+              <div style="text-align: center; padding: 20px; color: #64748b;">
+                Loading repeat purchase data...
+              </div>
+            </div>
+          </div>
+          
+          <div class="category-breakdown">
+            <h3>Category Performance Matrix</h3>
+            <div class="category-grid">
+              <div class="category-cell">
+                <div class="category-name">Hot Beverages</div>
+                <div class="category-metrics">
+                  <div class="metric">₱842K</div>
+                  <div class="metric-label">Revenue</div>
+                  <div class="metric-trend positive">+18%</div>
+                </div>
+              </div>
+              <div class="category-cell">
+                <div class="category-name">Cold Beverages</div>
+                <div class="category-metrics">
+                  <div class="metric">₱756K</div>
+                  <div class="metric-label">Revenue</div>
+                  <div class="metric-trend positive">+22%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHURN RATE BY SEGMENT CARD -->
+      <div class="intelligence-card retention-analytics-card" data-section="churn-segments">
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Churn Rate by Segment</h2>
+          </div>
+        </div>
+        
+        <div class="retention-matrix">
+          <div class="health-segments">
+            <div class="segment-card">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                <span class="segment-title">By Gender</span>
+              </div>
+              <div class="segment-details" data-churn-gender>
+                <div style="text-align: center; padding: 20px; color: #64748b;">
+                  Loading gender segments...
+                </div>
+              </div>
+            </div>
+            
+            <div class="segment-card">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+                <span class="segment-title">By Category</span>
+              </div>
+              <div class="segment-details" data-churn-category>
+                <div style="text-align: center; padding: 20px; color: #64748b;">
+                  Loading category segments...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- EXECUTIVE SUMMARY -->
+    <div class="executive-summary">
+      <h2 class="summary-title">Executive Performance Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div class="summary-content">
+            <div class="summary-label">Monthly Sales Revenue</div>
+            <div class="summary-value" data-monthly-revenue>₱0</div>
+            <div class="summary-change positive">+0.3 pts</div>
+          </div>
+        </div>
+        
+        <div class="summary-card">
+          <div class="summary-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="summary-content">
+            <div class="summary-label">Customer Traffic</div>
+            <div class="summary-value" data-total-customers>0</div>
+            <div class="summary-change positive">+428 this month</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
   <script>
 class CustomerInsights {
     constructor() {
@@ -10201,7 +10612,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 
-
+    
     if (morningReceiptCount && swingReceiptCount && graveyardReceiptCount) {
         morningReceiptCount.addEventListener('input', calculateReceiptTotal);
         swingReceiptCount.addEventListener('input', calculateReceiptTotal);
