@@ -40,6 +40,7 @@ try {
     echo json_encode(['error' => $e->getMessage()]);
 }
 
+// ✅ CORRECT: This should only show NAMED customers (filter Customer_%)
 function getLoyalCustomers($pdo, $user_id) {
     $sql = "
         SELECT 
@@ -77,9 +78,11 @@ function getLoyalCustomers($pdo, $user_id) {
     return $customers;
 }
 
+// ✅ FIXED: Include ALL customers (removed Customer_% filter)
 function getRetentionAnalytics($pdo, $user_id) {
     $analytics = [];
     
+    // Dropped visits this week - ALL CUSTOMERS
     $sql_week = "
         SELECT COUNT(DISTINCT customer_name) as count
         FROM (
@@ -96,7 +99,6 @@ function getRetentionAnalytics($pdo, $user_id) {
             FROM transaction_logs t1
             WHERE user_id = :user_id
               AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-              AND customer_name NOT LIKE 'Customer_%'
             GROUP BY customer_name
             HAVING this_week_visits < last_week_visits
         ) as dropped
@@ -106,6 +108,7 @@ function getRetentionAnalytics($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $analytics['dropped_this_week'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
     
+    // Dropped visits this month - ALL CUSTOMERS
     $sql_month = "
         SELECT COUNT(DISTINCT customer_name) as count
         FROM (
@@ -122,7 +125,6 @@ function getRetentionAnalytics($pdo, $user_id) {
             FROM transaction_logs t1
             WHERE user_id = :user_id
               AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-              AND customer_name NOT LIKE 'Customer_%'
             GROUP BY customer_name
             HAVING this_month_visits < last_month_visits
         ) as dropped
@@ -132,6 +134,7 @@ function getRetentionAnalytics($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $analytics['dropped_this_month'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
     
+    // Health segments - ALL CUSTOMERS
     $sql_health = "
         SELECT 
             risk_level,
@@ -146,7 +149,6 @@ function getRetentionAnalytics($pdo, $user_id) {
                 END as risk_level
             FROM transaction_logs
             WHERE user_id = :user_id
-              AND customer_name NOT LIKE 'Customer_%'
             GROUP BY customer_name
         ) as customer_health
         GROUP BY risk_level
@@ -172,7 +174,7 @@ function getRetentionAnalytics($pdo, $user_id) {
         }
     }
     
-    // FIXED: Get the 5 customers who stopped visiting (15+ days inactive)
+    // High-value at-risk - Show NAMED customers only (for display purposes)
     $sql_risk = "
         SELECT 
             customer_name,
@@ -215,9 +217,11 @@ function getRetentionAnalytics($pdo, $user_id) {
     return $analytics;
 }
 
+// ✅ FIXED: Include ALL customers
 function getPurchaseIntelligence($pdo, $user_id) {
     $intelligence = [];
     
+    // Overview - ALL TRANSACTIONS
     $sql_overview = "
         SELECT 
             AVG(quantity_of_drinks) as avg_basket_size,
@@ -235,6 +239,7 @@ function getPurchaseIntelligence($pdo, $user_id) {
     $intelligence['avg_basket_size'] = round($overview['avg_basket_size'], 1);
     $intelligence['avg_transaction'] = round($overview['avg_transaction'], 0);
     
+    // Top products - ALL TRANSACTIONS
     $sql_products = "
         SELECT 
             type_of_drink as product,
@@ -252,7 +257,7 @@ function getPurchaseIntelligence($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $intelligence['top_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // FIXED: Calculate actual repeat purchase rate
+    // Repeat purchase rate - ALL CUSTOMERS
     $sql_repeat = "
         SELECT 
             product,
@@ -272,7 +277,6 @@ function getPurchaseIntelligence($pdo, $user_id) {
                 FROM transaction_logs
                 WHERE user_id = :user_id
                   AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
-                  AND customer_name NOT LIKE 'Customer_%'
                 GROUP BY type_of_drink, customer_name
             ) as customer_purchases
             GROUP BY type_of_drink
@@ -289,17 +293,18 @@ function getPurchaseIntelligence($pdo, $user_id) {
     return $intelligence;
 }
 
+// ✅ FIXED: Include ALL customers
 function getChurnSegments($pdo, $user_id) {
     $segments = [];
     
-    // FIXED: Calculate churn as customers who STOPPED visiting (0 visits in last 20 days)
+    // Churn by gender - ALL CUSTOMERS
     $sql_gender = "
         SELECT 
             gender,
             COUNT(DISTINCT customer_name) as total_customers,
-            SUM(CASE WHEN recent_visits = 0 AND days_inactive >= 20 THEN 1 ELSE 0 END) as churned_customers,
+            SUM(CASE WHEN days_inactive >= 15 THEN 1 ELSE 0 END) as churned_customers,
             ROUND(
-                (SUM(CASE WHEN recent_visits = 0 AND days_inactive >= 20 THEN 1 ELSE 0 END) / 
+                (SUM(CASE WHEN days_inactive >= 15 THEN 1 ELSE 0 END) / 
                  COUNT(DISTINCT customer_name)) * 100,
                 1
             ) as churn_rate
@@ -307,18 +312,11 @@ function getChurnSegments($pdo, $user_id) {
             SELECT 
                 customer_name,
                 gender,
-                MAX(date_visited) as last_visit,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive,
-                SUM(CASE 
-                    WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 20 DAY) 
-                    THEN 1 ELSE 0 
-                END) as recent_visits
+                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive
             FROM transaction_logs
             WHERE user_id = :user_id
-              AND customer_name NOT LIKE 'Customer_%'
               AND gender IS NOT NULL
               AND gender != ''
-              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
             GROUP BY customer_name, gender
         ) as customer_activity
         GROUP BY gender
@@ -330,13 +328,14 @@ function getChurnSegments($pdo, $user_id) {
     $stmt->execute(['user_id' => $user_id]);
     $segments['by_gender'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // Churn by category - ALL CUSTOMERS
     $sql_category = "
         SELECT 
             category,
             COUNT(DISTINCT customer_name) as total_customers,
-            SUM(CASE WHEN recent_visits = 0 AND days_inactive >= 20 THEN 1 ELSE 0 END) as churned_customers,
+            SUM(CASE WHEN days_inactive >= 15 THEN 1 ELSE 0 END) as churned_customers,
             ROUND(
-                (SUM(CASE WHEN recent_visits = 0 AND days_inactive >= 20 THEN 1 ELSE 0 END) / 
+                (SUM(CASE WHEN days_inactive >= 15 THEN 1 ELSE 0 END) / 
                  COUNT(DISTINCT customer_name)) * 100,
                 1
             ) as churn_rate
@@ -350,16 +349,9 @@ function getChurnSegments($pdo, $user_id) {
                         THEN 'Cold Beverages'
                     ELSE 'Other'
                 END as category,
-                MAX(date_visited) as last_visit,
-                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive,
-                SUM(CASE 
-                    WHEN date_visited >= DATE_SUB(CURDATE(), INTERVAL 20 DAY) 
-                    THEN 1 ELSE 0 
-                END) as recent_visits
+                DATEDIFF(CURDATE(), MAX(date_visited)) as days_inactive
             FROM transaction_logs
             WHERE user_id = :user_id
-              AND customer_name NOT LIKE 'Customer_%'
-              AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)
             GROUP BY customer_name, type_of_drink
         ) as customer_categories
         GROUP BY category
@@ -374,21 +366,23 @@ function getChurnSegments($pdo, $user_id) {
     return $segments;
 }
 
+// ✅ FIXED: Include ALL customers
 function getExecutiveSummary($pdo, $user_id) {
     $summary = [];
     
+    // Total customers - ALL CUSTOMERS
     $sql_customers = "
         SELECT COUNT(DISTINCT customer_name) as total
         FROM transaction_logs
         WHERE user_id = :user_id
           AND date_visited >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-          AND customer_name NOT LIKE 'Customer_%'
     ";
     
     $stmt = $pdo->prepare($sql_customers);
     $stmt->execute(['user_id' => $user_id]);
     $summary['total_customers'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
+    // Monthly revenue
     $sql_revenue = "
         SELECT SUM(sales_volume) as total
         FROM churn_data
