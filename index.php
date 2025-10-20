@@ -5487,27 +5487,7 @@ body {
             </div>
           </div>
           
-          <div class="category-breakdown">
-            <h3>Category Performance Matrix</h3>
-            <div class="category-grid">
-              <div class="category-cell">
-                <div class="category-name">Hot Beverages</div>
-                <div class="category-metrics">
-                  <div class="metric">₱842K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+18%</div>
-                </div>
-              </div>
-              <div class="category-cell">
-                <div class="category-name">Cold Beverages</div>
-                <div class="category-metrics">
-                  <div class="metric">₱756K</div>
-                  <div class="metric-label">Revenue</div>
-                  <div class="metric-trend positive">+22%</div>
-                </div>
-              </div>
-            </div>
-          </div>
+         
         </div>
       </div>
 
