@@ -1994,7 +1994,7 @@ function processData(data) {
   const headers = data[0].map(h => String(h).trim().toLowerCase());
   
   // Find column indices
-  const shopNameIndex = headers.findIndex(h => h.includes('shop name'));
+
   const receiptCountIndex = headers.findIndex(h => h.includes('receipt count'));
   const customerNameIndex = headers.findIndex(h => h.includes('customer name'));
   const genderIndex = headers.findIndex(h => h.includes('gender')); // NEW
@@ -2057,7 +2057,7 @@ function processData(data) {
     }
     
     transactions.push({
-      shop_name: String(row[shopNameIndex] || '').trim(),
+
       receipt_count: receiptCount,
       customer_name: String(row[customerNameIndex] || '').trim(),
       gender: gender, // NEW
