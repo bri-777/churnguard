@@ -9,18 +9,18 @@
             "depth": 4,
             "split": {
               "feature": "sales_volume",
-              "threshold": 30000,
+              "threshold": 25000,
               "yes": {
                 "split": {
-                  "feature": "sales_volume",
-                  "threshold": 45000,
-                  "yes": { "leaf": 0.10 },
+                  "feature": "receipt_count",
+                  "threshold": 200,
+                  "yes": { "leaf": -0.50 },
                   "no": {
                     "split": {
-                      "feature": "receipt_count",
-                      "threshold": 300,
-                      "yes": { "leaf": 0.20 },
-                      "no": { "leaf": 0.35 }
+                      "feature": "sales_volume",
+                      "threshold": 30000,
+                      "yes": { "leaf": -0.35 },
+                      "no": { "leaf": -0.20 }
                     }
                   }
                 }
@@ -28,33 +28,82 @@
               "no": {
                 "split": {
                   "feature": "sales_volume",
-                  "threshold": 15000,
+                  "threshold": 20000,
                   "yes": {
                     "split": {
                       "feature": "receipt_count",
-                      "threshold": 200,
-                      "yes": { "leaf": 0.50 },
-                      "no": { "leaf": 0.70 }
+                      "threshold": 150,
+                      "yes": { "leaf": -0.10 },
+                      "no": { "leaf": 0.10 }
                     }
                   },
-                  "no": { "leaf": 0.90 }
+                  "no": {
+                    "split": {
+                      "feature": "sales_volume",
+                      "threshold": 15000,
+                      "yes": {
+                        "split": {
+                          "feature": "receipt_count",
+                          "threshold": 120,
+                          "yes": { "leaf": 0.25 },
+                          "no": { "leaf": 0.40 }
+                        }
+                      },
+                      "no": {
+                        "split": {
+                          "feature": "sales_volume",
+                          "threshold": 10000,
+                          "yes": { "leaf": 0.60 },
+                          "no": { "leaf": 0.80 }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           {
             "id": 1,
-            "depth": 3,
+            "depth": 4,
             "split": {
-              "feature": "transaction_drop",
-              "threshold": -10,
-              "yes": { "leaf": 0.60 },
+              "feature": "receipt_count",
+              "threshold": 200,
+              "yes": {
+                "split": {
+                  "feature": "receipt_count",
+                  "threshold": 250,
+                  "yes": { "leaf": -0.45 },
+                  "no": { "leaf": -0.25 }
+                }
+              },
               "no": {
                 "split": {
-                  "feature": "traffic_change",
-                  "threshold": -10,
-                  "yes": { "leaf": 0.45 },
-                  "no": { "leaf": 0.25 }
+                  "feature": "receipt_count",
+                  "threshold": 150,
+                  "yes": {
+                    "split": {
+                      "feature": "transaction_drop",
+                      "threshold": -5,
+                      "yes": { "leaf": -0.05 },
+                      "no": { "leaf": 0.15 }
+                    }
+                  },
+                  "no": {
+                    "split": {
+                      "feature": "receipt_count",
+                      "threshold": 100,
+                      "yes": {
+                        "split": {
+                          "feature": "transaction_drop",
+                          "threshold": -15,
+                          "yes": { "leaf": 0.35 },
+                          "no": { "leaf": 0.55 }
+                        }
+                      },
+                      "no": { "leaf": 0.75 }
+                    }
+                  }
                 }
               }
             }
@@ -63,41 +112,86 @@
             "id": 2,
             "depth": 3,
             "split": {
-              "feature": "peak_hours_revenue",
-              "threshold": 40,
-              "yes": { "leaf": 0.20 },
+              "feature": "transaction_drop",
+              "threshold": -5,
+              "yes": { "leaf": -0.30 },
               "no": {
                 "split": {
-                  "feature": "historical_trend",
-                  "threshold": 0,
-                  "yes": { "leaf": 0.40 },
-                  "no": { "leaf": 0.30 }
+                  "feature": "transaction_drop",
+                  "threshold": -15,
+                  "yes": {
+                    "split": {
+                      "feature": "traffic_change",
+                      "threshold": -10,
+                      "yes": { "leaf": 0.05 },
+                      "no": { "leaf": 0.25 }
+                    }
+                  },
+                  "no": {
+                    "split": {
+                      "feature": "transaction_drop",
+                      "threshold": -30,
+                      "yes": { "leaf": 0.45 },
+                      "no": { "leaf": 0.70 }
+                    }
+                  }
                 }
               }
             }
           },
           {
             "id": 3,
-            "depth": 2,
+            "depth": 3,
             "split": {
-              "feature": "transactions",
-              "threshold": 300,
-              "yes": { "leaf": 0.20 },
-              "no": { "leaf": 0.45 }
+              "feature": "peak_hours_revenue",
+              "threshold": 50,
+              "yes": { "leaf": -0.25 },
+              "no": {
+                "split": {
+                  "feature": "peak_hours_revenue",
+                  "threshold": 40,
+                  "yes": { "leaf": 0.00 },
+                  "no": {
+                    "split": {
+                      "feature": "peak_hours_revenue",
+                      "threshold": 30,
+                      "yes": { "leaf": 0.25 },
+                      "no": { "leaf": 0.45 }
+                    }
+                  }
+                }
+              }
             }
           },
           {
             "id": 4,
-            "depth": 2,
+            "depth": 3,
             "split": {
-              "feature": "daily_revenue",
-              "threshold": 40000,
-              "yes": { "leaf": 0.15 },
-              "no": { "leaf": 0.55 }
+              "feature": "traffic_change",
+              "threshold": 0,
+              "yes": { "leaf": -0.20 },
+              "no": {
+                "split": {
+                  "feature": "traffic_change",
+                  "threshold": -10,
+                  "yes": { "leaf": 0.10 },
+                  "no": {
+                    "split": {
+                      "feature": "traffic_change",
+                      "threshold": -20,
+                      "yes": { "leaf": 0.35 },
+                      "no": { "leaf": 0.60 }
+                    }
+                  }
+                }
+              }
             }
           }
         ]
       }
+    },
+    "learner_model_param": {
+      "base_score": "0.0"
     }
   },
   "objective": "binary:logistic"
