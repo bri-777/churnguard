@@ -9778,13 +9778,7 @@ function createFallbackVisitPatternChart() {
   });
 }
 
-// Enhanced refresh function
-async function refreshTrafficChart() {
-  const select = document.getElementById('trafficPeriod');
-  const currentPeriod = select ? select.value : 'today';
-  console.log(`Refreshing traffic chart for ${currentPeriod}...`);
-  await loadTraffic(currentPeriod);
-}
+
 // Fixed and Enhanced Purchase Behavior Analysis
 async function loadPurchaseBehavior() {
   try {
