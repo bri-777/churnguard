@@ -2011,7 +2011,7 @@ function processData(data) {
   const drinkTypeIndex = headers.findIndex(h => h.includes('type of drink'));
   const dateIndex = headers.findIndex(h => h.includes('date'));
   const dayIndex = headers.findIndex(h => h.includes('day'));
-  const timeOfDayIndex = headers.findIndex(h => h.includes('time of day'));
+  const timeOfDayIndex = headers.findIndex(h => h.includes('time'));  // Changed to detect 'time'
   const totalAmountIndex = headers.findIndex(h => h.includes('total amount'));
   const paymentMethodIndex = headers.findIndex(h => h.includes('payment method'));
   
@@ -2042,12 +2042,19 @@ function processData(data) {
     if (!row || row.length === 0) continue;
     
     const receiptCount = parseInt(row[receiptCountIndex]) || 0;
-    const timeOfDay = String(row[timeOfDayIndex] || '').trim().toLowerCase();
+    
+    // ===== NEW: PARSE TIME FROM EXCEL =====
+    const timeValue = String(row[timeOfDayIndex] || '').trim();
+    const parsedTime = parseTimeValue(timeValue);  // Convert to time object
+    
     const totalAmountStr = String(row[totalAmountIndex] || '').replace(/[₱,\s]/g, '');
     const totalAmount = parseFloat(totalAmountStr) || 0;
     
     // Skip empty rows
-    if (!timeOfDay || totalAmount === 0) continue;
+    if (!parsedTime || totalAmount === 0) continue;
+    
+    // ===== DETERMINE SHIFT BASED ON TIME =====
+    const shiftCategory = determineShift(parsedTime.hour, parsedTime.minute);
     
     // Prepare transaction object for database
     const dateStr = String(row[dateIndex] || '').trim();
@@ -2072,7 +2079,9 @@ function processData(data) {
       type_of_drink: String(row[drinkTypeIndex] || '').trim(),
       date_visited: dateVisited,
       day: String(row[dayIndex] || '').trim(),
-      time_of_day: String(row[timeOfDayIndex] || '').trim(),
+      time_of_day: parsedTime.formatted,  // Store formatted time (e.g., "9:30 AM")
+      time_original: timeValue,  // Store original value from Excel
+      shift_category: shiftCategory,  // Store shift: Morning, Lunch, Evening
       total_amount: totalAmount,
       payment_method: String(row[paymentMethodIndex] || '').trim()
     });
@@ -2082,14 +2091,14 @@ function processData(data) {
     totalSales += totalAmount;
     totalCustomerTraffic += 1;
     
-    // Map to SHIFTS
-    if (timeOfDay.includes('morning')) {
+    // ===== MAP TO SHIFTS BASED ON TIME RANGES =====
+    if (shiftCategory === 'Morning') {
       morningReceipts += receiptCount;
       morningSales += totalAmount;
-    } else if (timeOfDay.includes('lunch') || timeOfDay.includes('midday')) {
+    } else if (shiftCategory === 'Lunch') {
       middayReceipts += receiptCount;
       middaySales += totalAmount;
-    } else if (timeOfDay.includes('evening') || timeOfDay.includes('night')) {
+    } else if (shiftCategory === 'Evening') {
       eveningReceipts += receiptCount;
       eveningSales += totalAmount;
     }
@@ -2111,6 +2120,101 @@ function processData(data) {
   
   // Show confirmation modal instead of directly saving
   showConfirmationModal();
+}
+
+// ===== TIME PARSING FUNCTION =====
+// Converts various time formats to standardized format
+// Supports: 9am, 9:30am, 09:30, 0930, 21:30 (military), etc.
+function parseTimeValue(timeStr) {
+  if (!timeStr) return null;
+  
+  timeStr = String(timeStr).trim().toLowerCase();
+  
+  let hour = 0;
+  let minute = 0;
+  
+  // Pattern 1: "9am", "11pm", "9:30am", "11:45pm"
+  const pattern1 = /(\d{1,2}):?(\d{2})?\s*(am|pm)/i;
+  const match1 = timeStr.match(pattern1);
+  
+  if (match1) {
+    hour = parseInt(match1[1]);
+    minute = match1[2] ? parseInt(match1[2]) : 0;
+    const period = match1[3].toLowerCase();
+    
+    // Convert to 24-hour format
+    if (period === 'pm' && hour !== 12) {
+      hour += 12;
+    } else if (period === 'am' && hour === 12) {
+      hour = 0;
+    }
+  } 
+  // Pattern 2: Military time "21:30", "09:00", "2130", "0900"
+  else {
+    // Remove all non-digits
+    const digits = timeStr.replace(/[^\d]/g, '');
+    
+    if (digits.length === 3 || digits.length === 4) {
+      // "930" = 9:30, "2130" = 21:30
+      if (digits.length === 3) {
+        hour = parseInt(digits.substring(0, 1));
+        minute = parseInt(digits.substring(1, 3));
+      } else {
+        hour = parseInt(digits.substring(0, 2));
+        minute = parseInt(digits.substring(2, 4));
+      }
+    } else if (digits.length === 1 || digits.length === 2) {
+      // Just hour: "9" or "21"
+      hour = parseInt(digits);
+      minute = 0;
+    } else {
+      return null; // Invalid format
+    }
+  }
+  
+  // Validate hour and minute
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    return null;
+  }
+  
+  // Format for display (12-hour with AM/PM)
+  const displayHour = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const formatted = `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+  
+  return {
+    hour: hour,           // 24-hour format (0-23)
+    minute: minute,       // 0-59
+    formatted: formatted, // "9:30 AM", "11:45 PM"
+    military: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`  // "09:30", "23:45"
+  };
+}
+
+// ===== SHIFT DETERMINATION FUNCTION =====
+// Determines shift category based on time ranges
+// Morning: 9:00 AM - 11:59 AM
+// Lunch: 12:00 PM - 5:59 PM
+// Evening: 6:00 PM - 11:00 PM
+function determineShift(hour, minute) {
+  // Convert to total minutes for easier comparison
+  const totalMinutes = hour * 60 + minute;
+  
+  // Morning: 9:00 AM (540 min) to 11:59 AM (719 min)
+  if (totalMinutes >= 540 && totalMinutes <= 719) {
+    return 'Morning';
+  }
+  // Lunch: 12:00 PM (720 min) to 5:59 PM (1079 min)
+  else if (totalMinutes >= 720 && totalMinutes <= 1079) {
+    return 'Lunch';
+  }
+  // Evening: 6:00 PM (1080 min) to 11:00 PM (1380 min)
+  else if (totalMinutes >= 1080 && totalMinutes <= 1380) {
+    return 'Evening';
+  }
+  // Outside business hours
+  else {
+    return 'Other';
+  }
 }
 
 // ===== CONFIRMATION MODAL FUNCTIONS =====
@@ -2209,7 +2313,11 @@ function showConfirmationModal() {
   </h4>
   <div style="font-size: 12px; color: #666; max-height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px;">
     ${pendingTransactions.map((t, i) => `
-      <div style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid ${i % 2 === 0 ? '#2196F3' : '#4CAF50'};">
+      <div style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid ${
+        t.shift_category === 'Morning' ? '#FFC107' : 
+        t.shift_category === 'Lunch' ? '#FF9800' : 
+        t.shift_category === 'Evening' ? '#3F51B5' : '#999'
+      };">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <strong style="color: #333;">#${i + 1}</strong> 
@@ -2220,7 +2328,9 @@ function showConfirmationModal() {
           </div>
           <div style="flex: 1; text-align: right;">
             <strong style="color: #4CAF50;">₱${t.total_amount.toFixed(2)}</strong>
-            <span style="color: #999; font-size: 11px; margin-left: 8px;">${t.time_of_day || 'N/A'}</span>
+            <span style="color: #999; font-size: 11px; margin-left: 8px;">
+              <i class="fas fa-clock"></i> ${t.time_of_day} (${t.shift_category})
+            </span>
           </div>
         </div>
         <div style="margin-top: 4px; font-size: 11px; color: #999;">
