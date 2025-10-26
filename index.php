@@ -1869,8 +1869,8 @@ function doLogout() {
         </div>
 
         <!-- Shift-Based Performance -->
-        <!-- Shift-Based Performance (Fully Invisible but Functional) -->
-<div class="data-card" style="opacity:0; pointer-events:auto;">
+  <!-- Shift-Based Performance -->
+<div class="data-card">
   <div class="card-header">
     <i class="fas fa-info-circle tooltip" title="Shift Performance for Churn Analysis"></i>
     <div class="header-content">
@@ -1884,52 +1884,46 @@ function doLogout() {
   </div>
   <div class="card-body">
     <div class="form-grid">
-      
       <div class="form-group">
         <label for="morningReceiptCount"> Morning Receipt Count <span class="required">*</span>
           <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count"></i>
         </label>
         <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required>
       </div>
-
       <div class="form-group">
         <label for="morningSalesVolume"> Morning Sales Volume (₱) <span class="required">*</span>
           <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance"></i>
         </label>
         <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required>
       </div>
-
       <div class="form-group">
         <label for="swingReceiptCount"> Midday Receipt Count <span class="required">*</span>
           <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count"></i>
         </label>
         <input type="number" id="swingReceiptCount" placeholder="e.g., 130" min="0" required>
       </div>
-
       <div class="form-group">
         <label for="swingSalesVolume"> Midday Sales Volume (₱) <span class="required">*</span>
           <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
         </label>
         <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required>
       </div>
-
       <div class="form-group">
         <label for="graveyardReceiptCount"> Evening Receipt Count <span class="required">*</span>
           <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count"></i>
         </label>
         <input type="number" id="graveyardReceiptCount" placeholder="e.g., 95" min="0" required>
       </div>
-
       <div class="form-group">
         <label for="graveyardSalesVolume"> Evening Sales Volume (₱) <span class="required">*</span>
           <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
         </label>
         <input type="number" id="graveyardSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required>
       </div>
-
     </div>
   </div>
 </div>
+
 
       </div>
 
