@@ -1834,7 +1834,7 @@ function doLogout() {
             <div class="form-group">
   <label for="date">Date <span class="required">*</span></label>
   <input id="date" name="date" type="date" required />
-</div>
+
 
 
 
