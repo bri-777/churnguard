@@ -4330,7 +4330,7 @@ console.log('[APP] Sales Analytics Dashboard Script Loaded')
 <style>
 .history-section {
   position: absolute;
-  top: 675px;
+  top: 975px;
   left: 60%;
   transform: translateX(-50%);
   width: 80%; /* wide, but still leaves some margin */
@@ -7243,11 +7243,6 @@ cgx_log('Ready', {tz: Intl.DateTimeFormat().resolvedOptions().timeZone, debug: c
 
 
 <div id="customer-monitoring" class="page">
-  <div class="alert-banner" id="riskAlertBanner">
-    <div class="alert-icon">⚠️</div>
-    <span id="riskAlertMessage">High churn risk detected! Immediate action recommended.</span>
-    <button class="alert-close" onclick="dismissRiskAlert()">×</button>
-  </div>
 
   <div class="dashboard-header">
     <div class="header-content">
