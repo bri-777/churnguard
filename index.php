@@ -6189,8 +6189,7 @@ body {
   
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
     <div style="background: #f8fafc; border-radius: 8px; padding: 16px; text-align: center;">
-      <div style="font-size: 32px; font-weight: 700; color: #0f172a;" data-conversion-rate>0%</div>
-      <div style="color: #64748b; font-size: 14px; margin-top: 4px;">Conversion Rate</div>
+      
     </div>
     <div style="background: #f8fafc; border-radius: 8px; padding: 16px;">
       <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Peak Patterns</div>
