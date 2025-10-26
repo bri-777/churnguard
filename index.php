@@ -9305,6 +9305,7 @@ function v(id) { return document.getElementById(id)?.value || $('#' + id)?.value
 // Enhanced traffic loading with 14-day support
 // Enhanced traffic loading with 14-day support and today's shift breakdown
 // Enhanced traffic loading with 14-day support and accurate customer visit patterns
+// Fixed Load Traffic - Using Purchase Behavior's Accurate Logic
 async function loadTraffic(period) {
   try {
     const select = $('#trafficPeriod') || document.getElementById('trafficPeriod');
@@ -9312,68 +9313,123 @@ async function loadTraffic(period) {
     
     console.log(`Loading traffic data for period: ${chosen}`);
     
-    let labels, values, totalToday, peakTraffic, trendPct;
-    let visitPatternLabels = [];
-    let visitPatternValues = [];
-    
-    // Get comprehensive data like purchase behavior does
-    const trafficData = await apiTry([
+    // Use same data fetching approach as purchase behavior
+    const data = await apiTry([
       'api/churn_data.php?action=recent&limit=30&ts=' + Date.now(),
       'api/traffic_data.php?period=today&ts=' + Date.now(),
-      'api/churn_data.php?action=latest&ts=' + Date.now()
+      'api/churn_data.php?action=analytics'
     ]);
+
+    console.log('Traffic raw data:', data);
+
+    let labels = [];
+    let values = [];
+    let visitPatternLabels = [];
+    let visitPatternValues = [];
+    let totalToday = 0;
+    let peakTraffic = 0;
+    let trendPct = 0;
     
-    console.log('Traffic data response:', trafficData);
-    
-    if (trafficData && (trafficData.item || trafficData.data)) {
-      const dataSource = trafficData.item || (Array.isArray(trafficData.data) ? trafficData.data[0] : trafficData);
+    // Process data the SAME way as purchase behavior does
+    if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+      const businessData = data.data;
+      const latest = businessData[0]; // Most recent day
+      console.log('Latest traffic data:', latest);
       
-      // Extract shift data
-      const morning = parseInt(dataSource.morning_receipt_count || 0);
-      const swing = parseInt(dataSource.swing_receipt_count || 0);  
-      const graveyard = parseInt(dataSource.graveyard_receipt_count || 0);
-      const totalCustomerTraffic = parseInt(dataSource.customer_traffic || 0);
+      // Calculate traffic metrics using purchase behavior's approach
+      const totals = businessData.reduce((acc, row) => {
+        const traffic = parseInt(row.customer_traffic || 0);
+        const morningReceipts = parseInt(row.morning_receipt_count || 0);
+        const swingReceipts = parseInt(row.swing_receipt_count || 0);
+        const graveyardReceipts = parseInt(row.graveyard_receipt_count || 0);
+        
+        return {
+          traffic: acc.traffic + traffic,
+          morningReceipts: acc.morningReceipts + morningReceipts,
+          swingReceipts: acc.swingReceipts + swingReceipts,
+          graveyardReceipts: acc.graveyardReceipts + graveyardReceipts,
+          days: acc.days + 1
+        };
+      }, { 
+        traffic: 0,
+        morningReceipts: 0, 
+        swingReceipts: 0, 
+        graveyardReceipts: 0,
+        days: 0
+      });
+
+      console.log('Calculated traffic totals:', totals);
       
-      // Calculate other traffic (difference between total traffic and shift receipts)
-      const totalShiftReceipts = morning + swing + graveyard;
-      const other = Math.max(0, totalCustomerTraffic - totalShiftReceipts);
+      // Extract shift data from latest day (today)
+      const morning = parseInt(latest.morning_receipt_count || 0);
+      const swing = parseInt(latest.swing_receipt_count || 0);
+      const graveyard = parseInt(latest.graveyard_receipt_count || 0);
+      const customerTraffic = parseInt(latest.customer_traffic || 0);
       
-      // For today's bar chart
-      labels = ['Morning', 'Mid Day', 'Evening'];
-      values = [morning, swing, graveyard, other];
-      totalToday = totalCustomerTraffic;
+      // Calculate metrics
+      totalToday = customerTraffic;
       peakTraffic = Math.max(morning, swing, graveyard);
-      trendPct = parseFloat(dataSource.transaction_drop_percentage || 0);
       
-      // For customer visit pattern - calculate percentages like purchase behavior
-      const visitTotal = morning + swing + graveyard;
-      if (visitTotal > 0) {
-        visitPatternLabels = [
-          'Morning Shift',
-          'Swing Shift',
-          'Graveyard Shift'
-        ];
-        visitPatternValues = [
-          (morning / visitTotal) * 100,
-          (swing / visitTotal) * 100,
-          (graveyard / visitTotal) * 100
-        ];
+      // Calculate trend (compare today vs average)
+      const avgDailyTraffic = totals.days > 0 ? totals.traffic / totals.days : 0;
+      trendPct = avgDailyTraffic > 0 ? ((totalToday - avgDailyTraffic) / avgDailyTraffic) * 100 : 0;
+      
+      // Today's bar chart data - absolute shift counts
+      labels = ['Morning', 'Swing', 'Graveyard'];
+      values = [morning, swing, graveyard];
+      
+      // Visit pattern percentages - EXACTLY like purchase behavior does it
+      const totalShiftReceipts = morning + swing + graveyard;
+      if (totalShiftReceipts > 0) {
+        const morningPercentage = (morning / totalShiftReceipts) * 100;
+        const swingPercentage = (swing / totalShiftReceipts) * 100;
+        const graveyardPercentage = (graveyard / totalShiftReceipts) * 100;
+        
+        visitPatternLabels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
+        visitPatternValues = [morningPercentage, swingPercentage, graveyardPercentage];
       } else {
         visitPatternLabels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
         visitPatternValues = [0, 0, 0];
       }
       
-      console.log('Processed traffic data:', {
-        morning, swing, graveyard, other,
-        totalCustomerTraffic, totalShiftReceipts,
-        visitPatternLabels, visitPatternValues
+      console.log('Processed traffic metrics:', {
+        morning, swing, graveyard,
+        totalToday, peakTraffic, trendPct,
+        visitPatternValues
       });
       
+    } else if (data.item) {
+      // Fallback to item structure
+      const dataSource = data.item;
+      
+      const morning = parseInt(dataSource.morning_receipt_count || 0);
+      const swing = parseInt(dataSource.swing_receipt_count || 0);
+      const graveyard = parseInt(dataSource.graveyard_receipt_count || 0);
+      
+      totalToday = parseInt(dataSource.customer_traffic || 0);
+      peakTraffic = Math.max(morning, swing, graveyard);
+      trendPct = parseFloat(dataSource.transaction_drop_percentage || 0);
+      
+      labels = ['Morning', 'Swing', 'Graveyard'];
+      values = [morning, swing, graveyard];
+      
+      const totalShiftReceipts = morning + swing + graveyard;
+      if (totalShiftReceipts > 0) {
+        visitPatternLabels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
+        visitPatternValues = [
+          (morning / totalShiftReceipts) * 100,
+          (swing / totalShiftReceipts) * 100,
+          (graveyard / totalShiftReceipts) * 100
+        ];
+      } else {
+        visitPatternLabels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
+        visitPatternValues = [0, 0, 0];
+      }
     } else {
-      // Fallback
+      // Default fallback
       console.log('No traffic data, using defaults');
-      labels = ['Morning', 'Swing', 'Graveyard', ''];
-      values = [0, 0, 0, 0];
+      labels = ['Morning', 'Swing', 'Graveyard'];
+      values = [0, 0, 0];
       totalToday = 0;
       peakTraffic = 0;
       trendPct = 0;
@@ -9387,50 +9443,43 @@ async function loadTraffic(period) {
     const trendEl = $('#trafficTrend') || document.getElementById('trafficTrend');
     
     if (totalTodayEl) {
-      totalTodayEl.textContent = String(totalToday);
+      totalTodayEl.textContent = new Intl.NumberFormat('en-US').format(totalToday);
     }
     if (peakEl) {
-      peakEl.textContent = String(peakTraffic);
+      peakEl.textContent = new Intl.NumberFormat('en-US').format(peakTraffic);
     }
     if (trendEl) {
       const sign = trendPct >= 0 ? '+' : '';
-      trendEl.textContent = `${sign}${trendPct.toFixed(1)}% (vs prev)`;
+      trendEl.textContent = `${sign}${trendPct.toFixed(1)}%`;
+      trendEl.className = trendPct >= 0 ? 'text-success' : 'text-danger';
     }
 
-    // Update traffic chart (bar chart for today's shift counts)
+    // Create Traffic Bar Chart (Today's Shift Counts)
     const ctx = $('#trafficChart') || document.getElementById('trafficChart');
     if (ctx && window.Chart) {
       ensureCanvasMinH('trafficChart');
       destroyChart(charts.traffic);
       
-      // Chart colors for today's shifts
-      const todayColors = {
-        backgroundColor: [
-          'rgba(255, 206, 86, 0.8)',   // Morning - Yellow
-          'rgba(54, 162, 235, 0.8)',   // Swing - Blue  
-          'rgba(153, 102, 255, 0.8)',  // Graveyard - Purple
-          'rgba(201, 203, 207, 0.8)'   // Other - Gray
-        ],
-        borderColor: [
-          'rgba(255, 206, 86, 1)',
-          'rgba(54, 162, 235, 1)', 
-          'rgba(153, 102, 255, 1)',
-          'rgba(201, 203, 207, 1)'
-        ]
-      };
-      
-      // Chart configuration for today's absolute counts
-      const chartConfig = {
+      charts.traffic = new Chart(ctx, {
         type: 'bar',
         data: { 
           labels, 
           datasets: [{ 
-            label: 'Shift Traffic',
+            label: 'Customer Count by Shift',
             data: values, 
-            backgroundColor: todayColors.backgroundColor,
-            borderColor: todayColors.borderColor,
+            backgroundColor: [
+              'rgba(255, 206, 86, 0.8)',   // Morning - Yellow
+              'rgba(54, 162, 235, 0.8)',   // Swing - Blue  
+              'rgba(153, 102, 255, 0.8)'   // Graveyard - Purple
+            ],
+            borderColor: [
+              'rgba(255, 206, 86, 1)',
+              'rgba(54, 162, 235, 1)', 
+              'rgba(153, 102, 255, 1)'
+            ],
             borderWidth: 2,
-            borderRadius: 4
+            borderRadius: 6,
+            borderSkipped: false
           }] 
         },
         options: { 
@@ -9439,30 +9488,43 @@ async function loadTraffic(period) {
           plugins: { 
             legend: { display: false },
             tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
               callbacks: {
-                title: (context) => {
-                  const label = context[0].label;
-                  return `Shift: ${label}`;
+                title: (items) => items[0]?.label || '',
+                label: (ctx) => {
+                  const value = ctx.parsed.y;
+                  return ` ${new Intl.NumberFormat('en-US').format(value)} customers`;
                 },
-                label: (context) => {
-                  const value = context.parsed.y;
-                  const shiftNames = ['Morning', 'Mid Day', 'Evening', 'Other'];
-                  const shiftName = shiftNames[context.dataIndex] || 'Unknown';
-                  return ` ${value} customers (${shiftName} shift)`;
+                afterLabel: (ctx) => {
+                  const descriptions = {
+                    'Morning': '6 AM - 2 PM',
+                    'Swing': '2 PM - 10 PM',
+                    'Graveyard': '10 PM - 6 AM'
+                  };
+                  return descriptions[ctx.label] || '';
                 }
               }
             }
           }, 
           scales: { 
             y: { 
-              beginAtZero: true, 
-              ticks: { precision: 0 },
+              beginAtZero: true,
+              grid: { color: 'rgba(0, 0, 0, 0.05)', drawBorder: false },
+              ticks: { 
+                precision: 0,
+                callback: function(value) {
+                  return new Intl.NumberFormat('en-US').format(value);
+                }
+              },
               title: {
                 display: true,
                 text: 'Customer Count'
               }
             },
             x: {
+              grid: { display: false },
               title: {
                 display: true,
                 text: 'Shift Period'
@@ -9470,64 +9532,43 @@ async function loadTraffic(period) {
             }
           },
           animation: {
-            duration: 1000,
+            duration: 1200,
             easing: 'easeOutQuart'
           }
         }
-      };
-      
-      charts.traffic = new Chart(ctx, chartConfig);
-      
-      console.log(`Traffic chart loaded successfully for today:`, {
-        dataPoints: values.length,
-        total: totalToday,
-        peak: peakTraffic,
-        trend: trendPct,
-        shifts: {
-          morning: values[0] || 0,
-          swing: values[1] || 0, 
-          graveyard: values[2] || 0,
-          other: values[3] || 0
-        }
       });
+      
+      console.log('Traffic bar chart created:', { values, total: totalToday });
     }
 
-    // Update customer visit pattern chart (doughnut for percentages)
+    // Create Visit Pattern Doughnut Chart (Shift Percentages)
     const visitPatternCtx = document.getElementById('customerVisitPatternChart');
     if (visitPatternCtx && window.Chart) {
       ensureCanvasMinH('customerVisitPatternChart');
       destroyChart(charts.visitPattern || null);
       
-      const visitPatternColors = {
-        backgroundColor: [
-          'rgba(255, 206, 86, 0.8)',   // Morning - Yellow
-          'rgba(54, 162, 235, 0.8)',   // Swing - Blue
-          'rgba(153, 102, 255, 0.8)'   // Graveyard - Purple
-        ],
-        borderColor: [
-          'rgba(255, 206, 86, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(153, 102, 255, 1)'
-        ]
-      };
-      
       charts.visitPattern = new Chart(visitPatternCtx, {
         type: 'doughnut',
         data: {
-          labels: visitPatternLabels.map((label, idx) => {
-            const percentage = visitPatternValues[idx] || 0;
-            return `${label} (${percentage.toFixed(1)}%)`;
-          }),
+          labels: visitPatternLabels,
           datasets: [{
             data: visitPatternValues,
-            backgroundColor: visitPatternColors.backgroundColor,
-            borderColor: visitPatternColors.borderColor,
+            backgroundColor: [
+              'rgba(255, 206, 86, 0.8)',   // Morning
+              'rgba(54, 162, 235, 0.8)',   // Swing
+              'rgba(153, 102, 255, 0.8)'   // Graveyard
+            ],
+            borderColor: [
+              'rgba(255, 206, 86, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(153, 102, 255, 1)'
+            ],
             borderWidth: 2,
             hoverOffset: 8,
             hoverBackgroundColor: [
-              'rgba(255, 206, 86, 0.9)',
-              'rgba(54, 162, 235, 0.9)',
-              'rgba(153, 102, 255, 0.9)'
+              'rgba(255, 206, 86, 0.95)',
+              'rgba(54, 162, 235, 0.95)',
+              'rgba(153, 102, 255, 0.95)'
             ]
           }]
         },
@@ -9540,7 +9581,16 @@ async function loadTraffic(period) {
               labels: {
                 usePointStyle: true,
                 padding: 15,
-                font: { size: 11 }
+                font: { size: 11 },
+                generateLabels: (chart) => {
+                  const data = chart.data;
+                  return data.labels.map((label, i) => ({
+                    text: `${label}: ${visitPatternValues[i].toFixed(1)}%`,
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    hidden: false,
+                    index: i
+                  }));
+                }
               }
             },
             tooltip: {
@@ -9551,18 +9601,14 @@ async function loadTraffic(period) {
               borderWidth: 1,
               cornerRadius: 8,
               callbacks: {
-                title: (context) => {
-                  const labels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
-                  return labels[context[0].dataIndex];
-                },
+                title: (context) => visitPatternLabels[context[0].dataIndex],
                 label: (context) => {
-                  const value = context.parsed;
-                  return ` Distribution: ${value.toFixed(1)}%`;
-                },
-                afterLabel: (context) => {
-                  const index = context.dataIndex;
-                  const counts = [values[0], values[1], values[2]];
-                  return ` Customers: ${counts[index]}`;
+                  const percentage = visitPatternValues[context.dataIndex];
+                  const count = values[context.dataIndex];
+                  return [
+                    ` Percentage: ${percentage.toFixed(1)}%`,
+                    ` Count: ${new Intl.NumberFormat('en-US').format(count)} customers`
+                  ];
                 }
               }
             }
@@ -9576,12 +9622,14 @@ async function loadTraffic(period) {
         }
       });
       
-      console.log('Customer visit pattern chart created:', {
+      console.log('Visit pattern doughnut chart created:', {
         labels: visitPatternLabels,
         percentages: visitPatternValues,
-        counts: [values[0], values[1], values[2]]
+        counts: values
       });
     }
+    
+    console.log('Traffic loading completed successfully');
     
   } catch (error) {
     console.error('[loadTraffic] Error:', error);
@@ -9591,13 +9639,66 @@ async function loadTraffic(period) {
     const peakEl = document.getElementById('peakHourTraffic');
     const trendEl = document.getElementById('trafficTrend');
     
-    if (totalTodayEl) totalTodayEl.textContent = 'No Data';
+    if (totalTodayEl) totalTodayEl.textContent = '0';
     if (peakEl) peakEl.textContent = '0';
     if (trendEl) trendEl.textContent = '0%';
     
-    // Create fallback charts
-    createFallbackTrafficChart();
-    createFallbackVisitPatternChart();
+    // Create fallback charts with demo data
+    createFallbackTrafficCharts();
+  }
+}
+
+// Fallback charts for error states
+function createFallbackTrafficCharts() {
+  // Fallback bar chart
+  const ctx = document.getElementById('trafficChart');
+  if (ctx && window.Chart) {
+    destroyChart(charts.traffic);
+    charts.traffic = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Morning', 'Swing', 'Graveyard'],
+        datasets: [{
+          label: 'Demo Data',
+          data: [95, 120, 65],
+          backgroundColor: [
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(153, 102, 255, 0.8)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+  
+  // Fallback doughnut chart
+  const visitCtx = document.getElementById('customerVisitPatternChart');
+  if (visitCtx && window.Chart) {
+    destroyChart(charts.visitPattern);
+    charts.visitPattern = new Chart(visitCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Morning: 33.9%', 'Swing: 42.9%', 'Graveyard: 23.2%'],
+        datasets: [{
+          data: [33.9, 42.9, 23.2],
+          backgroundColor: [
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(153, 102, 255, 0.8)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
   }
 }
 
