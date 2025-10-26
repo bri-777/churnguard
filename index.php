@@ -6100,7 +6100,7 @@ body {
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
               </svg>
             </div>
-            <h2 class="card-title">Purchase Intelligence & Patterns</h2>
+            <h2 class="card-title">Purchase Patterns</h2>
           </div>
           <div class="header-actions">
             <button class="action-btn" data-export="pdf">Export PDF</button>
