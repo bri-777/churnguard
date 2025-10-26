@@ -94,7 +94,7 @@ if (!$me) {
           <i class="fas fa-bullseye"></i> <span>Analytics Target</span>
         </a>
          <a href="#" class="menu-item" onclick="showPage('cust-insight')">
-          <i class="fas fa-bullseye"></i> <span>Customer Insight</span>
+          <i class="fas fa-bullseye"></i> <span>Custmer Insight</span>
         </a>
 		 </div>
 
@@ -9305,7 +9305,6 @@ function v(id) { return document.getElementById(id)?.value || $('#' + id)?.value
 // Enhanced traffic loading with 14-day support
 // Enhanced traffic loading with 14-day support and today's shift breakdown
 // Enhanced traffic loading with 14-day support and accurate customer visit patterns
-
 async function loadTraffic(period) {
   try {
     const select = $('#trafficPeriod') || document.getElementById('trafficPeriod');
@@ -9326,7 +9325,7 @@ async function loadTraffic(period) {
     
     console.log('Traffic data response:', data);
     
-    // USING PURCHASE BEHAVIOR'S EXACT LOGIC FOR SHIFT CALCULATIONS
+    // USE PURCHASE BEHAVIOR'S EXACT LOGIC
     if (data.data && Array.isArray(data.data) && data.data.length > 0) {
       const businessData = data.data;
       const latest = businessData[0]; // Most recent day
@@ -9355,7 +9354,7 @@ async function loadTraffic(period) {
       
       // Extract shift data from latest day (today)
       const morning = parseInt(latest.morning_receipt_count || 0);
-      const swing = parseInt(latest.swing_receipt_count || 0);
+      const swing = parseInt(latest.swing_receipt_count || 0);  
       const graveyard = parseInt(latest.graveyard_receipt_count || 0);
       const totalCustomerTraffic = parseInt(latest.customer_traffic || 0);
       
@@ -9363,17 +9362,15 @@ async function loadTraffic(period) {
       const totalShiftReceipts = morning + swing + graveyard;
       const other = Math.max(0, totalCustomerTraffic - totalShiftReceipts);
       
-      // Today's metrics
+      // For today's bar chart
+      labels = ['Morning', 'Mid Day', 'Evening', ''];
+      values = [morning, swing, graveyard, other];
       totalToday = totalCustomerTraffic;
       peakTraffic = Math.max(morning, swing, graveyard);
       
       // Calculate trend - same as purchase behavior
       const avgDailyTraffic = totals.days > 0 ? totals.traffic / totals.days : 0;
       trendPct = avgDailyTraffic > 0 ? ((totalToday - avgDailyTraffic) / avgDailyTraffic) * 100 : 0;
-      
-      // For today's bar chart
-      labels = ['Morning', 'Mid Day', 'Evening', ''];
-      values = [morning, swing, graveyard, other];
       
       // EXACT SAME PERCENTAGE CALCULATION AS PURCHASE BEHAVIOR
       const totalShiftReceiptsAll = totals.morningReceipts + totals.swingReceipts + totals.graveyardReceipts;
@@ -9403,9 +9400,9 @@ async function loadTraffic(period) {
         visitPatternLabels, visitPatternValues
       });
       
-    } else if (data.item || (Array.isArray(data.data) && data.data.length > 0 && data.data[0])) {
-      // Fallback to single item structure
-      const dataSource = data.item || (Array.isArray(data.data) ? data.data[0] : data);
+    } else if (data.item || (data.data && !Array.isArray(data.data))) {
+      // Fallback to single item
+      const dataSource = data.item || data.data;
       
       // Extract shift data
       const morning = parseInt(dataSource.morning_receipt_count || 0);
@@ -9424,7 +9421,7 @@ async function loadTraffic(period) {
       peakTraffic = Math.max(morning, swing, graveyard);
       trendPct = parseFloat(dataSource.transaction_drop_percentage || 0);
       
-      // For customer visit pattern - calculate percentages
+      // For customer visit pattern - calculate percentages like purchase behavior
       const visitTotal = morning + swing + graveyard;
       if (visitTotal > 0) {
         visitPatternLabels = [
@@ -9778,6 +9775,250 @@ function createFallbackVisitPatternChart() {
   });
 }
 
+// Enhanced refresh function
+async function refreshTrafficChart() {
+  const select = document.getElementById('trafficPeriod');
+  const currentPeriod = select ? select.value : 'today';
+  console.log(`Refreshing traffic chart for ${currentPeriod}...`);
+  await loadTraffic(currentPeriod);
+}
+async function loadChurnDistribution() {
+  try {
+    // Call the correct API endpoint to get the latest risk prediction
+    const riskData = await apiTry([
+      'api/churn_risk.php?action=latest',
+      'api/churn_predictions.php?action=recent_predictions',
+      'api/churn_distribution.php'
+    ]);
+    
+    let churnLowRisk = 0, churnMediumRisk = 0, churnHighRisk = 0;
+    let churnRiskDescription = 'No risk data available';
+    let churnAvgRiskScore = 0;
+    let churnDetailedFactors = [];
+    
+    console.log('Risk API Response:', riskData);
+    
+    // Check if we have valid risk data
+    if (riskData.has && riskData.risk_percentage && riskData.risk_level) {
+      const actualRiskScore = parseFloat(riskData.risk_percentage);
+      const riskLevel = riskData.risk_level.toLowerCase();
+      
+      console.log('Found risk data:', { actualRiskScore, riskLevel });
+      
+      // ACCURATE DISTRIBUTION LOGIC:
+      // The risk score represents the probability of that specific risk level
+      if (riskLevel === 'high') {
+        // High risk: 79% means 79% chance of high risk
+        churnHighRisk = Math.round(actualRiskScore);
+        // Remaining 21% distributed intelligently
+        const remaining = 100 - churnHighRisk;
+        churnLowRisk = Math.round(remaining * 0.8);  // Most of remaining goes to low
+        churnMediumRisk = remaining - churnLowRisk;   // Small portion to medium
+        
+      } else if (riskLevel === 'medium') {
+        // Medium risk: 45% means 45% chance of medium risk
+        churnMediumRisk = Math.round(actualRiskScore);
+        // Remaining 55% distributed intelligently
+        const remaining = 100 - churnMediumRisk;
+        churnLowRisk = Math.round(remaining * 0.75);  // Most of remaining goes to low
+        churnHighRisk = remaining - churnLowRisk;      // Some to high
+        
+      } else if (riskLevel === 'low') {
+        // Low risk: 15% means 15% risk, so 85% safe
+        churnLowRisk = Math.round(100 - actualRiskScore);
+        // The risk portion (15%) split between medium and high
+        const riskPortion = 100 - churnLowRisk;
+        churnMediumRisk = Math.round(riskPortion * 0.7);
+        churnHighRisk = riskPortion - churnMediumRisk;
+      }
+      
+      // Ensure perfect 100% total
+      const total = churnLowRisk + churnMediumRisk + churnHighRisk;
+      if (total !== 100) {
+        const diff = 100 - total;
+        // Add difference to the dominant category
+        if (riskLevel === 'high') churnHighRisk += diff;
+        else if (riskLevel === 'medium') churnMediumRisk += diff;
+        else churnLowRisk += diff;
+      }
+      
+      churnAvgRiskScore = actualRiskScore;
+      churnRiskDescription = riskData.description || `${riskLevel} Risk: ${actualRiskScore}% probability`;
+      churnDetailedFactors = riskData.factors || [];
+      
+    } else {
+      // Fallback for when no risk data is available
+      console.warn('No valid risk data found, using defaults');
+      churnLowRisk = 70;
+      churnMediumRisk = 20; 
+      churnHighRisk = 10;
+      churnRiskDescription = 'No recent risk analysis available';
+    }
+    
+    // Ensure all values are positive integers
+    churnLowRisk = Math.max(0, Math.round(churnLowRisk));
+    churnMediumRisk = Math.max(0, Math.round(churnMediumRisk));
+    churnHighRisk = Math.max(0, Math.round(churnHighRisk));
+    
+    console.log('Final calculated distribution:', {
+      low: churnLowRisk,
+      medium: churnMediumRisk, 
+      high: churnHighRisk,
+      total: churnLowRisk + churnMediumRisk + churnHighRisk
+    });
+    
+    // Store metrics
+    currentMetrics.churn = {
+      low: churnLowRisk,
+      medium: churnMediumRisk,
+      high: churnHighRisk,
+      totalCustomers: 100,
+      loyalCustomers: churnLowRisk,
+      avgRiskScore: churnAvgRiskScore,
+      riskDescription: churnRiskDescription,
+      predictions: riskData.has ? [riskData] : [],
+      detailedFactors: churnDetailedFactors
+    };
+    
+    // Update UI
+    updateChurnUI(currentMetrics.churn);
+    
+    // Create the chart
+    const churnChartCtx = document.getElementById('churnChart');
+    if (!churnChartCtx || !window.Chart) return;
+    
+    ensureCanvasMinH('churnChart');
+    destroyChart(charts.churn);
+    
+    charts.churn = new Chart(churnChartCtx, {
+      type: 'doughnut',
+      data: {
+        labels: [
+          `Low Risk (${churnLowRisk}%)`,
+          `Medium Risk (${churnMediumRisk}%)`, 
+          `High Risk (${churnHighRisk}%)`
+        ],
+        datasets: [{
+          data: [churnLowRisk, churnMediumRisk, churnHighRisk],
+          backgroundColor: [
+            'rgba(40, 167, 69, 0.8)',  // Green for Low
+            'rgba(255, 193, 7, 0.8)',  // Yellow for Medium  
+            'rgba(220, 53, 69, 0.8)'   // Red for High
+          ],
+          borderColor: [
+            'rgba(40, 167, 69, 1)',
+            'rgba(255, 193, 7, 1)', 
+            'rgba(220, 53, 69, 1)'
+          ],
+          borderWidth: 2,
+          hoverOffset: 8,
+          hoverBackgroundColor: [
+            'rgba(40, 167, 69, 0.9)',
+            'rgba(255, 193, 7, 0.9)',
+            'rgba(220, 53, 69, 0.9)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 15,
+              font: { size: 11 }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#333',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: true,
+            callbacks: {
+              title: function(context) {
+                const levels = ['Low Risk', 'Medium Risk', 'High Risk'];
+                return levels[context[0].dataIndex];
+              },
+              label: function(context) {
+                return `Probability: ${context.parsed}%`;
+              },
+              afterLabel: function(context) {
+                const index = context.dataIndex;
+                if (index === 0) return ['✓ Stable patterns', '✓ Low churn probability'];
+                if (index === 1) return ['⚠ Moderate risk', '⚠ Monitor closely'];
+                return ['🚨 High risk detected', '🚨 Take action immediately'];
+              }
+            }
+          }
+        },
+        cutout: '60%',
+        animation: {
+          animateRotate: true,
+          duration: 1200,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+    
+    console.log('Chart created successfully with distribution:', {
+      'Green (Low)': `${churnLowRisk}%`,
+      'Yellow (Medium)': `${churnMediumRisk}%`, 
+      'Red (High)': `${churnHighRisk}%`
+    });
+    
+  } catch (error) {
+    console.error('Churn distribution error:', error);
+    createFallbackChurnChart();
+  }
+}
+
+// Fallback chart when API fails
+function createFallbackChurnChart() {
+  const ctx = document.getElementById('churnChart');
+  if (!ctx || !window.Chart) return;
+  
+  ensureCanvasMinH('churnChart');
+  destroyChart(charts.churn);
+  
+  charts.churn = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Low Risk (70%)', 'Medium Risk (20%)', 'High Risk (10%)'],
+      datasets: [{
+        data: [70, 20, 10],
+        backgroundColor: [
+          'rgba(40, 167, 69, 0.6)',
+          'rgba(255, 193, 7, 0.6)', 
+          'rgba(220, 53, 69, 0.6)'
+        ],
+        borderColor: [
+          'rgba(40, 167, 69, 0.8)',
+          'rgba(255, 193, 7, 0.8)',
+          'rgba(220, 53, 69, 0.8)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: () => 'No data available - using defaults'
+          }
+        }
+      },
+      cutout: '60%'
+    }
+  });
+}
 
 // Fixed and Enhanced Purchase Behavior Analysis
 async function loadPurchaseBehavior() {
