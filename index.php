@@ -1768,10 +1768,7 @@ function doLogout() {
   setTimeout(() => { try { el.blur(); } catch(_) {} }, 0);
 })();
 </script>
-    <script>
-  document.getElementById('date').value = new Date().toISOString().split('T')[0];
-</script>
-
+    
 
       <!-- CHARTSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS -->
      <!-- Charts -->
@@ -1836,8 +1833,7 @@ function doLogout() {
             <div class="form-grid">
             <div class="form-group">
   <label for="date">Date <span class="required">*</span></label>
-<input id="date" name="date" type="date" required readonly style="background:#eee;pointer-events:none;">
-
+  <input id="date" name="date" type="date" required />
 
 
 
