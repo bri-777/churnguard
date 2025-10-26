@@ -6133,7 +6133,7 @@ body {
           </div>
           
           <div class="product-performance">
-            <h3>Top-Selling vs. Declining Products</h3>
+            <h3>Declining Products</h3>
             <div class="combo-list">
               <div class="combo-item">
                 <div class="combo-rank">▼</div>
