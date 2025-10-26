@@ -902,24 +902,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 <style>
-/* Hide the entire Shift-Based Performance section visually but keep functionality */
-.data-card {
-  background: #ffffff !important; /* white background */
-  color: #ffffff !important; /* make all text white */
-  border: none !important;
-}
-
-.data-card * {
-  background: #ffffff !important;
-  color: #ffffff !important;
-  border-color: #ffffff !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-
-
-
 /* Base Styles */
 :root {
   --bg: #f7f8fa; /* Background */
@@ -1888,66 +1870,59 @@ function doLogout() {
         </div>
 
         <!-- Shift-Based Performance -->
-<div class="data-card" style="background:#fff;color:#fff;border:none;">
-  <div class="card-header" style="background:#fff;color:#fff;border:none;">
-    <i class="fas fa-info-circle tooltip" title="Shift Performance for Churn Analysis" style="color:#fff;"></i>
-    <div class="header-content" style="background:#fff;color:#fff;">
-      <i class="fas fa-clock" style="color:#fff;"></i>
-      <div style="background:#fff;color:#fff;">
-        <h3 style="background:#fff;color:#fff;">⏰ Shift-Based Performance</h3>
-        <p style="background:#fff;color:#fff;">Shift-level transaction logs for customer behavior simulation</p>
-      </div>
-    </div>
-    <div class="data-quality high" style="background:#fff;color:#fff;">Essential for Pattern Detection</div>
-  </div>
-  <div class="card-body" style="background:#fff;color:#fff;">
-    <div class="form-grid" style="background:#fff;color:#fff;">
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="morningReceiptCount" style="background:#fff;color:#fff;"> Morning Receipt Count <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count" style="color:#fff;"></i>
-        </label>
-        <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required style="background:#fff;color:#fff;border-color:#fff;">
-      </div>
-
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="morningSalesVolume" style="background:#fff;color:#fff;"> Morning Sales Volume (₱) <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance" style="color:#fff;"></i>
-        </label>
-        <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required style="background:#fff;color:#fff;border-color:#fff;">
-      </div>
-
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="swingReceiptCount" style="background:#fff;color:#fff;"> Midday Receipt Count <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count" style="color:#fff;"></i>
-        </label>
-        <input type="number" id="swingReceiptCount" placeholder="e.g., 130" min="0" required style="background:#fff;color:#fff;border-color:#fff;">
-      </div>
-
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="swingSalesVolume" style="background:#fff;color:#fff;"> Midday Sales Volume (₱) <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance" style="color:#fff;"></i>
-        </label>
-        <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required style="background:#fff;color:#fff;border-color:#fff;">
-      </div>
-
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="graveyardReceiptCount" style="background:#fff;color:#fff;"> Evening Receipt Count <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count" style="color:#fff;"></i>
-        </label>
-        <input type="number" id="graveyardReceiptCount" placeholder="e.g., 95" min="0" required style="background:#fff;color:#fff;border-color:#fff;">
-      </div>
-
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="graveyardSalesVolume" style="background:#fff;color:#fff;"> Evening Sales Volume (₱) <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance" style="color:#fff;"></i>
-        </label>
-        <input type="number" id="graveyardSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required style="background:#fff;color:#fff;border-color:#fff;">
-      </div>
-
-    </div>
-  </div>
-</div>
-
+        <div class="data-card">
+          <div class="card-header">
+            <i class="fas fa-info-circle tooltip" title="Shift Performance for Churn Analysis"></i>
+            <div class="header-content">
+              <i class="fas fa-clock"></i>
+              <div>
+                <h3>⏰ Shift-Based Performance</h3>
+                <p>Shift-level transaction logs for customer behavior simulation</p>
+              </div>
+            </div>
+            <div class="data-quality high">Essential for Pattern Detection</div>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="morningReceiptCount"> Morning Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count"></i>
+                </label>
+                <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required>
+              </div>
+			    <div class="form-group">
+                <label for="morningSalesVolume"> Morning Sales Volume (₱) <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance"></i>
+                </label>
+                <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label for="swingReceiptCount"> Midday Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count"></i>
+                </label>
+                <input type="number" id="swingReceiptCount" placeholder="e.g., 130" min="0" required>
+              </div>
+			      <div class="form-group">
+                <label for="swingSalesVolume"> Midday Sales Volume (₱) <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
+                </label>
+                <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label for="graveyardReceiptCount"> Evening Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count"></i>
+                </label>
+                <input type="number" id="graveyardReceiptCount" placeholder="e.g., 95" min="0" required>
+              </div>
+              <div class="form-group">
+                <label for="graveyardSalesVolume"> Evening Sales Volume (₱) <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
+                </label>
+                <input type="number" id="graveyardSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
 
@@ -6193,7 +6168,7 @@ body {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <h2 class="card-title">Customer Gender Distribution</h2>
+            <h2 class="card-title">Churn Rate by Segment</h2>
           </div>
         </div>
         
@@ -6214,7 +6189,20 @@ body {
               </div>
             </div>
             
-            
+            <div class="segment-card">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+                <span class="segment-title">By Category</span>
+              </div>
+              <div class="segment-details" data-churn-category>
+                <div style="text-align: center; padding: 20px; color: #64748b;">
+                  Loading category segments...
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
