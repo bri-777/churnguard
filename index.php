@@ -1808,68 +1808,59 @@ function doLogout() {
 
 </div>
 
-    <div id="data-input" class="page" style="width:100%;">
-  <div class="content-wrapper" style="width:70%;">
-
-    <div class="page-header" style="text-align:center;">
-      <h1><i class="fas fa-store"></i> Churn Prediction Data Input</h1>
-      <p>Real-time transaction data collection for customer disengagement pattern detection</p>
-    </div>
-
-    <div class="content-grid">
-      <!-- Transaction Data Collection -->
-      <div class="data-card" style="width:100%;margin:0 auto;">
-
-        <div class="card-header">
-          <i class="fas fa-info-circle tooltip" title="Transaction Metrics for Churn Detection"></i>
-          <div class="header-content">
-            <i class="fas fa-receipt"></i>
-            <div>
-              <h3>📊 Transaction Data Collection</h3>
-              <p>Aggregate transaction data for churn pattern detection</p>
-            </div>
-          </div>
-          <div class="data-quality high">Critical for Churn Prediction</div>
-        </div>
-
-        <div class="card-body">
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label for="date">Date <span class="required">*</span></label>
-              <input id="date" name="date" type="date" required>
-            </div>
-
-            <div class="form-group">
-              <label for="receiptCount"> Receipt Count <span class="required">*</span>
-                <i class="fas fa-info-circle tooltip" title="Total number of receipts/transactions - key churn indicator"></i>
-              </label>
-              <input type="number" id="receiptCount" placeholder="e.g., 280" min="0" required>
-            </div>
-
-            <div class="form-group">
-              <label for="salesVolume"> Sales Volume (₱) <span class="required">*</span>
-                <i class="fas fa-info-circle tooltip" title="Total sales volume - primary churn detection metric"></i>
-              </label>
-              <input type="number" id="salesVolume" placeholder="e.g., 45000" min="0" step="0.01" required>
-            </div>
-
-            <div class="form-group">
-              <label for="customerTraffic"> Customer Traffic <span class="required">*</span>
-                <i class="fas fa-info-circle tooltip" title="Total customer count - essential for churn pattern analysis"></i>
-              </label>
-              <input type="number" id="customerTraffic" placeholder="e.g., 320" min="0" required>
-            </div>
-
-          </div>
-        </div>
-
+    <div id="data-input" class="page">
+      <div class="page-header">
+        <h1><i class="fas fa-store"></i>  Churn Prediction Data Input</h1>
+        <p>Real-time transaction data collection for customer disengagement pattern detection</p>
       </div>
-    </div>
 
-  </div>
+      <div class="content-grid">
+        <!-- Transaction Data Collection -->
+        <div class="data-card">
+          <div class="card-header">
+            <i class="fas fa-info-circle tooltip" title="Transaction Metrics for Churn Detection"></i>
+            <div class="header-content">
+              <i class="fas fa-receipt"></i>
+              <div>
+                <h3>📊 Transaction Data Collection</h3>
+                <p>Aggregate transaction data for churn pattern detection</p>
+              </div>
+            </div>
+            <div class="data-quality high">Critical for Churn Prediction</div>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+            <div class="form-group">
+  <label for="date">Date <span class="required">*</span></label>
+  <input id="date" name="date" type="date" required />
 </div>
 
+
+
+
+              <div class="form-group">
+                <label for="receiptCount"> Receipt Count <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="Total number of receipts/transactions - key churn indicator"></i>
+                </label>
+                <input type="number" id="receiptCount" placeholder="e.g., 280" min="0" required>
+              </div>
+
+              <div class="form-group">
+                <label for="salesVolume"> Sales Volume (₱) <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="Total sales volume - primary churn detection metric"></i>
+                </label>
+                <input type="number" id="salesVolume" placeholder="e.g., 45000" min="0" step="0.01" required>
+              </div>
+
+              <div class="form-group">
+                <label for="customerTraffic"> Customer Traffic <span class="required">*</span>
+                  <i class="fas fa-info-circle tooltip" title="Total customer count - essential for churn pattern analysis"></i>
+                </label>
+                <input type="number" id="customerTraffic" placeholder="e.g., 320" min="0" required>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Shift-Based Performance -->
         <!-- Shift-Based Performance (Fully Invisible but Functional) -->
