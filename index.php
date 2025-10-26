@@ -8196,7 +8196,7 @@ console.log('✓ Transaction logs with date filter loaded');
   </div>
 
   <div class="avatar-info" style="line-height:1.3;">
-    <h4 id="profileName" style="margin:0;font-size:16px;font-weight:600;color:#000;">—</h4>
+   
     <p id="profileRole" style="margin:0;font-size:13px;color:#555;">—</p>
   </div>
 
