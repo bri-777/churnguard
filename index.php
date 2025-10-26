@@ -6159,7 +6159,7 @@ body {
         </div>
       </div>
 
-  
+	
     </div>
 
 <div class="intelligence-card traffic-card">
@@ -6238,22 +6238,11 @@ body {
     <div class="status-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white;">AI Powered</div>
   </div>
   
-  <p style="color: #64748b; margin-bottom: 24px;">AI-driven forecasts and actionable insights</p>
+ 
   
   <div style="display: grid; gap: 16px; margin-bottom: 24px;">
     <!-- Churn Risk Alert -->
-    <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #dc2626;">
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <span style="color: #991b1b; font-weight: 600; font-size: 14px;">Churn Risk Alert</span>
-      </div>
-      <div style="font-size: 32px; font-weight: 700; color: #7f1d1d;" data-churn-count>0</div>
-      <div style="color: #991b1b; font-size: 13px; margin-top: 4px;">customers likely to churn in next 30 days</div>
-    </div>
+    
     
    
     
