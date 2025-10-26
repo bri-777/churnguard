@@ -6289,13 +6289,7 @@ body {
     
   </div>
 
-  <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #E91E63;">
-  <span style="color: #64748b; font-size: 13px; display: flex; align-items: center;">
-    <i class="fas fa-fire" style="color: #E91E63; margin-right: 6px;"></i>
-    Rush Hours:
-  </span>
-  <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-rush-hours>-</span>
-</div>
+  
   
   <div style="background: #fff7ed; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 6px;" data-anomaly-container style="display: none;">
     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
