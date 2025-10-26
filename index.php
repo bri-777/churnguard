@@ -6074,71 +6074,9 @@ body {
             </div>
           </div>
           
-          <div class="matrix-header">
-            <h3>Customer Health Matrix</h3>
-            <div class="matrix-legend">
-              <span class="legend-item healthy">Healthy</span>
-              <span class="legend-item at-risk">At Risk</span>
-              <span class="legend-item critical">Critical</span>
-            </div>
-          </div>
+       
           
-          <div class="health-segments" data-segment="health">
-            <div class="segment-card healthy">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                <span class="segment-title">Healthy Customers</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value" data-health-low>0</div>
-                <div class="stat-percentage" data-health-low-pct>0%</div>
-              </div>
-              <div class="segment-details">
-                
-              </div>
-            </div>
-            
-            <div class="segment-card at-risk">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                  <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span class="segment-title">At Risk</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value" data-health-medium>0</div>
-                <div class="stat-percentage" data-health-medium-pct>0%</div>
-              </div>
-              <div class="segment-details">
-                
-              
-              </div>
-            </div>
-            
-            <div class="segment-card critical">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="16"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span class="segment-title">Critical</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value" data-health-high>0</div>
-                <div class="stat-percentage" data-health-high-pct>0%</div>
-              </div>
-              <div class="segment-details">
-                
-                
-              </div>
-            </div>
-          </div>
+          
           
           <div class="at-risk-customers">
             <h3>High-Value Customers at Risk</h3>
