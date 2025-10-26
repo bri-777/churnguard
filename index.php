@@ -6385,7 +6385,7 @@ class CustomerInsights {
                     <div class="rank-badge ${customer.rank === 1 ? 'gold' : customer.rank === 2 ? 'gold' : 'silver'}">${customer.rank}</div>
                 </div>
                 <div class="profile-identity">
-                    <div class="profile-avatar">${customer.initials}</div>
+                    <div class="profile-avatar1">${customer.initials}</div>
                     <div class="profile-details">
                         <div class="profile-name">${customer.customer_name}</div>
                     </div>
