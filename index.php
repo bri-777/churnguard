@@ -5994,10 +5994,7 @@ body {
             </div>
             <h2 class="card-title">Loyal Customer</h2>
           </div>
-          <div class="header-actions">
-            <button class="action-btn">Export List</button>
-            <button class="action-btn primary">Manage Segments</button>
-          </div>
+          
         </div>
         
         <!-- This will be populated by JavaScript -->
