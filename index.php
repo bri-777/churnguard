@@ -5973,13 +5973,7 @@ body {
   </div>
 
   <!-- Real-time Badge -->
-  <div style="display:flex; align-items:center; gap:6px; background-color:#f9fafb; border:1px solid #d1d5db; border-radius:30px; padding:6px 14px; font-size:14px; color:#000;">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="7" stroke="#000" stroke-width="1.5"/>
-      <path d="M8 4V8L11 10" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <span>Real-time</span>
-  </div>
+  
 </header>
 
 
