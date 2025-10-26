@@ -1120,7 +1120,7 @@ html, body {
   margin-right: 10px;
   box-shadow: inset 0 0 0 2px var(--hairline-2);
   transition: transform 0.4s ease-out;
-  width: max-content;
+  
 }
 
 /* Hover Effect for Header Icon */
@@ -6159,57 +6159,7 @@ body {
         </div>
       </div>
 
-      <!-- CHURN RATE BY SEGMENT CARD -->
-      <div class="intelligence-card retention-analytics-card" data-section="churn-segments">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Churn Rate by Segment</h2>
-          </div>
-        </div>
-        
-        <div class="retention-matrix">
-          <div class="health-segments">
-            <div class="segment-card">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 6v6l4 2"/>
-                </svg>
-                <span class="segment-title">By Gender</span>
-              </div>
-              <div class="segment-details" data-churn-gender>
-                <div style="text-align: center; padding: 20px; color: #64748b;">
-                  Loading gender segments...
-                </div>
-              </div>
-            </div>
-            
-            <div class="segment-card">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                  <line x1="7" y1="7" x2="7.01" y2="7"/>
-                </svg>
-                <span class="segment-title">By Category</span>
-              </div>
-              <div class="segment-details" data-churn-category>
-                <div style="text-align: center; padding: 20px; color: #64748b;">
-                  Loading category segments...
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+  
     </div>
 
 <div class="intelligence-card traffic-card">
