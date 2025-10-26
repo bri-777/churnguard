@@ -1832,11 +1832,9 @@ function doLogout() {
           <div class="card-body">
             <div class="form-grid">
             <div class="form-group">
-<label for="date">Date <span class="required">*</span></label>
-<input id="date" name="date" type="date" required readonly style="background:#eee;pointer-events:none;">
-<script>
-  document.getElementById('date').value = new Date().toISOString().split('T')[0];
-</script>
+  <label for="date">Date <span class="required">*</span></label>
+  <input id="date" name="date" type="date" required />
+</div>
 
 
 
