@@ -6017,7 +6017,7 @@ body {
                 <line x1="23" y1="11" x2="17" y2="11"/>
               </svg>
             </div>
-            <h2 class="card-title">Retention & Risk Analytics</h2>
+            <h2 class="card-title">Risk Analytics</h2>
           </div>
           <div class="risk-indicator">
             <span class="indicator-label">System Alert</span>
