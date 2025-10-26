@@ -1870,61 +1870,62 @@ function doLogout() {
         </div>
 
         <!-- Shift-Based Performance -->
-        <!-- Shift-Based Performance -->
-<div class="data-card" style="background:#fff;color:#fff;border:none;">
-  <div class="card-header" style="background:#fff;color:#fff;border:none;">
-    <i class="fas fa-info-circle tooltip" title="Shift Performance for Churn Analysis" style="color:#fff;"></i>
-    <div class="header-content" style="background:#fff;color:#fff;">
-      <i class="fas fa-clock" style="color:#fff;"></i>
-      <div style="background:#fff;color:#fff;">
-        <h3 style="background:#fff;color:#fff;">⏰ Shift-Based Performance</h3>
-        <p style="background:#fff;color:#fff;">Shift-level transaction logs for customer behavior simulation</p>
+        <!-- Shift-Based Performance (Fully Invisible but Functional) -->
+<div class="data-card" style="opacity:0; pointer-events:auto;">
+  <div class="card-header">
+    <i class="fas fa-info-circle tooltip" title="Shift Performance for Churn Analysis"></i>
+    <div class="header-content">
+      <i class="fas fa-clock"></i>
+      <div>
+        <h3>⏰ Shift-Based Performance</h3>
+        <p>Shift-level transaction logs for customer behavior simulation</p>
       </div>
     </div>
-    <div class="data-quality high" style="background:#fff;color:#fff;">Essential for Pattern Detection</div>
+    <div class="data-quality high">Essential for Pattern Detection</div>
   </div>
-  <div class="card-body" style="background:#fff;color:#fff;">
-    <div class="form-grid" style="background:#fff;color:#fff;">
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="morningReceiptCount" style="background:#fff;color:#fff;"> Morning Receipt Count <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count" style="color:#fff;"></i>
+  <div class="card-body">
+    <div class="form-grid">
+      
+      <div class="form-group">
+        <label for="morningReceiptCount"> Morning Receipt Count <span class="required">*</span>
+          <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift transaction count"></i>
         </label>
-        <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required style="background:#fff;color:#fff;border-color:#fff;">
+        <input type="number" id="morningReceiptCount" placeholder="e.g., 95" min="0" required>
       </div>
 
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="morningSalesVolume" style="background:#fff;color:#fff;"> Morning Sales Volume (₱) <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance" style="color:#fff;"></i>
+      <div class="form-group">
+        <label for="morningSalesVolume"> Morning Sales Volume (₱) <span class="required">*</span>
+          <i class="fas fa-info-circle tooltip" title="6:00 AM to 2:00 PM - Morning shift sales performance"></i>
         </label>
-        <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required style="background:#fff;color:#fff;border-color:#fff;">
+        <input type="number" id="morningSalesVolume" placeholder="e.g., 15,000" min="0" step="0.01" required>
       </div>
 
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="swingReceiptCount" style="background:#fff;color:#fff;"> Midday Receipt Count <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count" style="color:#fff;"></i>
+      <div class="form-group">
+        <label for="swingReceiptCount"> Midday Receipt Count <span class="required">*</span>
+          <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift transaction count"></i>
         </label>
-        <input type="number" id="swingReceiptCount" placeholder="e.g., 130" min="0" required style="background:#fff;color:#fff;border-color:#fff;">
+        <input type="number" id="swingReceiptCount" placeholder="e.g., 130" min="0" required>
       </div>
 
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="swingSalesVolume" style="background:#fff;color:#fff;"> Midday Sales Volume (₱) <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance" style="color:#fff;"></i>
+      <div class="form-group">
+        <label for="swingSalesVolume"> Midday Sales Volume (₱) <span class="required">*</span>
+          <i class="fas fa-info-circle tooltip" title="2:00 PM to 10:00 PM - Swing shift sales performance"></i>
         </label>
-        <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required style="background:#fff;color:#fff;border-color:#fff;">
+        <input type="number" id="swingSalesVolume" placeholder="e.g., 10,000" min="0" step="0.01" required>
       </div>
 
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="graveyardReceiptCount" style="background:#fff;color:#fff;"> Evening Receipt Count <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count" style="color:#fff;"></i>
+      <div class="form-group">
+        <label for="graveyardReceiptCount"> Evening Receipt Count <span class="required">*</span>
+          <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift transaction count"></i>
         </label>
-        <input type="number" id="graveyardReceiptCount" placeholder="e.g., 95" min="0" required style="background:#fff;color:#fff;border-color:#fff;">
+        <input type="number" id="graveyardReceiptCount" placeholder="e.g., 95" min="0" required>
       </div>
 
-      <div class="form-group" style="background:#fff;color:#fff;">
-        <label for="graveyardSalesVolume" style="background:#fff;color:#fff;"> Evening Sales Volume (₱) <span class="required" style="background:#fff;color:#fff;">*</span>
-          <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance" style="color:#fff;"></i>
+      <div class="form-group">
+        <label for="graveyardSalesVolume"> Evening Sales Volume (₱) <span class="required">*</span>
+          <i class="fas fa-info-circle tooltip" title="10:00 PM to 6:00 AM - Graveyard shift sales performance"></i>
         </label>
-        <input type="number" id="graveyardSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required style="background:#fff;color:#fff;border-color:#fff;">
+        <input type="number" id="graveyardSalesVolume" placeholder="e.g., 20,000" min="0" step="0.01" required>
       </div>
 
     </div>
