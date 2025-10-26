@@ -6118,11 +6118,7 @@ body {
                   <line x1="8" y1="12" x2="16" y2="12"/>
                 </svg>
               </div>
-              <div class="stat-content">
-                <div class="stat-label">Avg Basket Size</div>
-                <div class="stat-value" data-basket-size>0 items</div>
-                <div class="stat-change positive">+12% vs last month</div>
-              </div>
+            
             </div>
             
             <div class="overview-stat">
