@@ -1120,6 +1120,7 @@ html, body {
   margin-right: 10px;
   box-shadow: inset 0 0 0 2px var(--hairline-2);
   transition: transform 0.4s ease-out;
+  width: max-content;
 }
 
 /* Hover Effect for Header Icon */
