@@ -1808,8 +1808,8 @@ function doLogout() {
 
 </div>
 
-    <div id="data-input" class="page" style="display:flex;justify-content:center;width:100%;">
-  <div class="content-wrapper" style="width:70%;">
+    <div id="data-input" class="page" style="display:flex;justify-content:center;">
+  <div class="content-wrapper">
 
     <div class="page-header" style="text-align:center;">
       <h1><i class="fas fa-store"></i> Churn Prediction Data Input</h1>
