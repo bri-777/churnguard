@@ -2346,7 +2346,7 @@ function showConfirmationModal() {
     
     <!-- Scrollable Content Area -->
     <div style="
-      max-height: calc(90vh - 320px);
+      max-height: calc(90vh - 380px);
       overflow-y: auto;
       padding: 30px 40px;
     ">
@@ -2387,7 +2387,7 @@ function showConfirmationModal() {
             overflow: hidden;
           ">
             <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-            <div style="color: rgba(255, 255, 255, 0.9); font-size: 12px; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Transactions</div>
+            <div style="color: rgba(255, 255, 255, 0.9); font-size: 12px; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Customer Traffic</div>
             <div style="color: white; font-size: 32px; font-weight: 800; position: relative;">${pendingTransactions.length}</div>
             <div style="position: absolute; bottom: 10px; right: 15px; opacity: 0.2;">
               <i class="fas fa-receipt" style="font-size: 40px; color: white;"></i>
@@ -5803,7 +5803,7 @@ body {
     border-radius: var(--radius-2xl);
     width: 90%;
     max-width: 600px;
-    max-height: 95vh;
+    max-height: 100vh;
     overflow-y: auto;
     box-shadow: var(--shadow-2xl);
     animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
