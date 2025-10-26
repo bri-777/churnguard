@@ -6054,16 +6054,7 @@ body {
                 <div class="stat-value" data-dropped-week>0</div>
                 <div class="stat-percentage">Customers</div>
               </div>
-              <div class="segment-details">
-                <div class="detail-row">
-                  <span>Avg Drop Rate</span>
-                  <span>-32%</span>
-                </div>
-                <div class="detail-row">
-                  <span>Revenue Impact</span>
-                  <span>₱84,200</span>
-                </div>
-              </div>
+             
             </div>
             
             <div class="segment-card critical">
@@ -6079,16 +6070,7 @@ body {
                 <div class="stat-value" data-dropped-month>0</div>
                 <div class="stat-percentage">Customers</div>
               </div>
-              <div class="segment-details">
-                <div class="detail-row">
-                  <span>Avg Drop Rate</span>
-                  <span>-45%</span>
-                </div>
-                <div class="detail-row">
-                  <span>Revenue Impact</span>
-                  <span>₱312,500</span>
-                </div>
-              </div>
+            
             </div>
           </div>
           
@@ -6115,10 +6097,7 @@ body {
                 <div class="stat-percentage" data-health-low-pct>0%</div>
               </div>
               <div class="segment-details">
-                <div class="detail-row">
-                  <span>Avg Retention</span>
-                  <span>94.2%</span>
-                </div>
+                
               </div>
             </div>
             
@@ -6136,14 +6115,8 @@ body {
                 <div class="stat-percentage" data-health-medium-pct>0%</div>
               </div>
               <div class="segment-details">
-                <div class="detail-row">
-                  <span>Churn Probability</span>
-                  <span>42%</span>
-                </div>
-                <div class="detail-row">
-                  <span>Last Active</span>
-                  <span>15+ days</span>
-                </div>
+                
+              
               </div>
             </div>
             
@@ -6161,14 +6134,8 @@ body {
                 <div class="stat-percentage" data-health-high-pct>0%</div>
               </div>
               <div class="segment-details">
-                <div class="detail-row">
-                  <span>Churn Probability</span>
-                  <span>87%</span>
-                </div>
-                <div class="detail-row">
-                  <span>Immediate Action</span>
-                  <span>Required</span>
-                </div>
+                
+                
               </div>
             </div>
           </div>
