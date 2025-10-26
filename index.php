@@ -2011,7 +2011,7 @@ function processData(data) {
   const drinkTypeIndex = headers.findIndex(h => h.includes('type of drink'));
   const dateIndex = headers.findIndex(h => h.includes('date'));
   const dayIndex = headers.findIndex(h => h.includes('day'));
-  const timeOfDayIndex = headers.findIndex(h => h.includes('time'));  // Changed to detect 'time'
+  const timeOfDayIndex = headers.findIndex(h => h.includes('time'));
   const totalAmountIndex = headers.findIndex(h => h.includes('total amount'));
   const paymentMethodIndex = headers.findIndex(h => h.includes('payment method'));
   
@@ -2043,9 +2043,9 @@ function processData(data) {
     
     const receiptCount = parseInt(row[receiptCountIndex]) || 0;
     
-    // ===== NEW: PARSE TIME FROM EXCEL =====
+    // ===== PARSE TIME FROM EXCEL =====
     const timeValue = String(row[timeOfDayIndex] || '').trim();
-    const parsedTime = parseTimeValue(timeValue);  // Convert to time object
+    const parsedTime = parseTimeValue(timeValue);
     
     const totalAmountStr = String(row[totalAmountIndex] || '').replace(/[₱,\s]/g, '');
     const totalAmount = parseFloat(totalAmountStr) || 0;
@@ -2071,6 +2071,7 @@ function processData(data) {
       }
     }
     
+    // Push transaction with hour and minute included
     transactions.push({
       receipt_count: receiptCount,
       customer_name: String(row[customerNameIndex] || '').trim(),
@@ -2079,9 +2080,11 @@ function processData(data) {
       type_of_drink: String(row[drinkTypeIndex] || '').trim(),
       date_visited: dateVisited,
       day: String(row[dayIndex] || '').trim(),
-      time_of_day: parsedTime.formatted,  // Store formatted time (e.g., "9:30 AM")
-      time_original: timeValue,  // Store original value from Excel
-      shift_category: shiftCategory,  // Store shift: Morning, Lunch, Evening
+      time_of_day: parsedTime.formatted,
+      time_original: timeValue,
+      hour: parsedTime.hour,              // Store hour (0-23) for rush hours calculation
+      minute: parsedTime.minute,          // Store minute (0-59)
+      shift_category: shiftCategory,
       total_amount: totalAmount,
       payment_method: String(row[paymentMethodIndex] || '').trim()
     });
@@ -2104,6 +2107,44 @@ function processData(data) {
     }
   }
   
+  // ===== CALCULATE RUSH HOURS BASED ON TIME DATA =====
+  // Count transactions per hour to find busiest time
+  const hourCounts = {}; // Store count per hour: {9: 5, 10: 12, 11: 8, ...}
+  
+  transactions.forEach(transaction => {
+    if (transaction.hour !== undefined) {
+      const hour = transaction.hour;
+      hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+    }
+  });
+  
+  // Find the hour(s) with most transactions
+  let maxCount = 0;
+  let rushHoursList = [];
+  
+  for (const hour in hourCounts) {
+    if (hourCounts[hour] > maxCount) {
+      maxCount = hourCounts[hour];
+      rushHoursList = [parseInt(hour)];
+    } else if (hourCounts[hour] === maxCount) {
+      rushHoursList.push(parseInt(hour));
+    }
+  }
+  
+  // Format rush hours for display
+  let rushHoursText = 'N/A';
+  if (rushHoursList.length > 0) {
+    rushHoursList.sort((a, b) => a - b); // Sort chronologically
+    
+    rushHoursText = rushHoursList.map(hour => {
+      const displayHour = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      return `${displayHour}${period}`;
+    }).join(', ');
+    
+    rushHoursText += ` (${maxCount} transactions)`;
+  }
+  
   // Store pending data for confirmation
   pendingTransactions = transactions;
   pendingTotals = {
@@ -2115,7 +2156,10 @@ function processData(data) {
     middayReceipts,
     middaySales,
     eveningReceipts,
-    eveningSales
+    eveningSales,
+    rushHours: rushHoursText,        // Add rush hours to totals
+    rushHoursCount: maxCount,        // Store max count
+    rushHoursList: rushHoursList     // Store hour numbers
   };
   
   // Show confirmation modal instead of directly saving
@@ -2281,6 +2325,13 @@ function showConfirmationModal() {
       <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #FF9800;">
         <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Receipts</div>
         <div style="color: #333; font-size: 22px; font-weight: bold;">${pendingTotals.totalReceipts}</div>
+
+          <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #E91E63;">
+      <div style="color: #666; font-size: 12px; margin-bottom: 4px;">
+        <i class="fas fa-fire"></i> Rush Hours
+      </div>
+      <div style="color: #333; font-size: 16px; font-weight: bold;">${pendingTotals.rushHours || 'N/A'}</div>
+    </div>
       </div>
     </div>
     
@@ -5954,10 +6005,13 @@ body {
         <span style="color: #64748b; font-size: 13px;">Peak Day:</span>
         <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-peak-day>-</span>
       </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span style="color: #64748b; font-size: 13px;">Rush Hours:</span>
-        <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-rush-hours>-</span>
-      </div>
+   <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #E91E63;">
+  <span style="color: #64748b; font-size: 13px; display: flex; align-items: center;">
+    <i class="fas fa-fire" style="color: #E91E63; margin-right: 6px;"></i>
+    Rush Hours:
+  </span>
+  <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-rush-hours>-</span>
+</div>
     </div>
   </div>
   
