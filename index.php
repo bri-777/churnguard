@@ -9305,7 +9305,6 @@ function v(id) { return document.getElementById(id)?.value || $('#' + id)?.value
 // Enhanced traffic loading with 14-day support
 // Enhanced traffic loading with 14-day support and today's shift breakdown
 // Enhanced traffic loading with 14-day support and accurate customer visit patterns
-// Fixed and Accurate Load Traffic - Using Purchase Behavior Logic
 async function loadTraffic(period) {
   try {
     const select = $('#trafficPeriod') || document.getElementById('trafficPeriod');
@@ -9313,76 +9312,40 @@ async function loadTraffic(period) {
     
     console.log(`Loading traffic data for period: ${chosen}`);
     
-    // Use same data fetching approach as purchase behavior
-    const data = await apiTry([
-      'api/churn_data.php?action=recent&limit=30&ts=' + Date.now(),
-      'api/traffic_data.php?period=today&ts=' + Date.now(),
-      'api/churn_data.php?action=analytics'
-    ]);
-
-    console.log('Traffic raw data:', data);
-
-    let labels = [];
-    let values = [];
+    let labels, values, totalToday, peakTraffic, trendPct;
     let visitPatternLabels = [];
     let visitPatternValues = [];
-    let totalToday = 0;
-    let peakTraffic = 0;
-    let trendPct = 0;
     
-    // Process data EXACTLY like purchase behavior does
-    if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-      const businessData = data.data;
-      const latest = businessData[0]; // Most recent day
-      console.log('Latest traffic data:', latest);
+    // Get comprehensive data like purchase behavior does
+    const trafficData = await apiTry([
+      'api/churn_data.php?action=recent&limit=30&ts=' + Date.now(),
+      'api/traffic_data.php?period=today&ts=' + Date.now(),
+      'api/churn_data.php?action=latest&ts=' + Date.now()
+    ]);
+    
+    console.log('Traffic data response:', trafficData);
+    
+    if (trafficData && (trafficData.item || trafficData.data)) {
+      const dataSource = trafficData.item || (Array.isArray(trafficData.data) ? trafficData.data[0] : trafficData);
       
-      // Calculate traffic metrics using purchase behavior's reduce approach
-      const totals = businessData.reduce((acc, row) => {
-        const traffic = parseInt(row.customer_traffic || 0);
-        const morningReceipts = parseInt(row.morning_receipt_count || 0);
-        const swingReceipts = parseInt(row.swing_receipt_count || 0);
-        const graveyardReceipts = parseInt(row.graveyard_receipt_count || 0);
-        
-        return {
-          traffic: acc.traffic + traffic,
-          morningReceipts: acc.morningReceipts + morningReceipts,
-          swingReceipts: acc.swingReceipts + swingReceipts,
-          graveyardReceipts: acc.graveyardReceipts + graveyardReceipts,
-          days: acc.days + 1
-        };
-      }, { 
-        traffic: 0,
-        morningReceipts: 0, 
-        swingReceipts: 0, 
-        graveyardReceipts: 0,
-        days: 0
-      });
-
-      console.log('Calculated traffic totals:', totals);
-      
-      // Extract shift data from latest day (today)
-      const morning = parseInt(latest.morning_receipt_count || 0);
-      const swing = parseInt(latest.swing_receipt_count || 0);
-      const graveyard = parseInt(latest.graveyard_receipt_count || 0);
-      const totalCustomerTraffic = parseInt(latest.customer_traffic || 0);
+      // Extract shift data
+      const morning = parseInt(dataSource.morning_receipt_count || 0);
+      const swing = parseInt(dataSource.swing_receipt_count || 0);  
+      const graveyard = parseInt(dataSource.graveyard_receipt_count || 0);
+      const totalCustomerTraffic = parseInt(dataSource.customer_traffic || 0);
       
       // Calculate other traffic (difference between total traffic and shift receipts)
       const totalShiftReceipts = morning + swing + graveyard;
       const other = Math.max(0, totalCustomerTraffic - totalShiftReceipts);
       
-      // Calculate metrics
+      // For today's bar chart
+      labels = ['Morning', 'Mid Day', 'Evening'];
+      values = [morning, swing, graveyard, other];
       totalToday = totalCustomerTraffic;
       peakTraffic = Math.max(morning, swing, graveyard);
+      trendPct = parseFloat(dataSource.transaction_drop_percentage || 0);
       
-      // Calculate trend (compare today vs average) - like purchase behavior
-      const avgDailyTraffic = totals.days > 0 ? totals.traffic / totals.days : 0;
-      trendPct = avgDailyTraffic > 0 ? ((totalToday - avgDailyTraffic) / avgDailyTraffic) * 100 : 0;
-      
-      // For today's bar chart - with 4 values including "other"
-      labels = ['Morning', 'Mid Day', 'Evening', ''];
-      values = [morning, swing, graveyard, other];
-      
-      // For customer visit pattern - calculate percentages EXACTLY like purchase behavior
+      // For customer visit pattern - calculate percentages like purchase behavior
       const visitTotal = morning + swing + graveyard;
       if (visitTotal > 0) {
         visitPatternLabels = [
@@ -9403,45 +9366,13 @@ async function loadTraffic(period) {
       console.log('Processed traffic data:', {
         morning, swing, graveyard, other,
         totalCustomerTraffic, totalShiftReceipts,
-        totalToday, peakTraffic, trendPct,
         visitPatternLabels, visitPatternValues
       });
       
-    } else if (data.item || (data.data && !Array.isArray(data.data))) {
-      // Fallback to item structure
-      const dataSource = data.item || data.data;
-      
-      const morning = parseInt(dataSource.morning_receipt_count || 0);
-      const swing = parseInt(dataSource.swing_receipt_count || 0);
-      const graveyard = parseInt(dataSource.graveyard_receipt_count || 0);
-      const totalCustomerTraffic = parseInt(dataSource.customer_traffic || 0);
-      
-      const totalShiftReceipts = morning + swing + graveyard;
-      const other = Math.max(0, totalCustomerTraffic - totalShiftReceipts);
-      
-      totalToday = totalCustomerTraffic;
-      peakTraffic = Math.max(morning, swing, graveyard);
-      trendPct = parseFloat(dataSource.transaction_drop_percentage || 0);
-      
-      labels = ['Morning', 'Mid Day', 'Evening', ''];
-      values = [morning, swing, graveyard, other];
-      
-      const visitTotal = morning + swing + graveyard;
-      if (visitTotal > 0) {
-        visitPatternLabels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
-        visitPatternValues = [
-          (morning / visitTotal) * 100,
-          (swing / visitTotal) * 100,
-          (graveyard / visitTotal) * 100
-        ];
-      } else {
-        visitPatternLabels = ['Morning Shift', 'Swing Shift', 'Graveyard Shift'];
-        visitPatternValues = [0, 0, 0];
-      }
     } else {
-      // Default fallback
+      // Fallback
       console.log('No traffic data, using defaults');
-      labels = ['Morning', 'Mid Day', 'Evening', ''];
+      labels = ['Morning', 'Swing', 'Graveyard', ''];
       values = [0, 0, 0, 0];
       totalToday = 0;
       peakTraffic = 0;
@@ -9775,6 +9706,7 @@ async function refreshTrafficChart() {
   console.log(`Refreshing traffic chart for ${currentPeriod}...`);
   await loadTraffic(currentPeriod);
 }
+
 async function loadChurnDistribution() {
   try {
     // Call the correct API endpoint to get the latest risk prediction
