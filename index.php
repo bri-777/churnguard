@@ -902,6 +902,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 <style>
+/* Hide the entire Shift-Based Performance section visually but keep functionality */
+.data-card {
+  background: #ffffff !important; /* white background */
+  color: #ffffff !important; /* make all text white */
+  border: none !important;
+}
+
+.data-card * {
+  background: #ffffff !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+
+
 /* Base Styles */
 :root {
   --bg: #f7f8fa; /* Background */
