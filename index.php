@@ -1726,82 +1726,6 @@ function doLogout() {
 </div>
 
 
-
-    
-
-      <!-- CHARTSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS -->
-     <!-- Charts -->
-<div class="charts-grid">
-  <div class="chart-card large">
-    <div class="chart-header">
-      <h3><i class="fas fa-chart-area"></i> Customer Visit Pattern
-        <i class="fas fa-info-circle tooltip" title="Shows customer counts with period selection"></i>
-      </h3>
-      <div class="chart-controls">
-      <h3 class="traffic-period-title">Today's Traffic</h3>
-      
-      </div>
-    </div>
-    <div class="chart-container"><canvas id="trafficChart"></canvas></div>
-   <div class="chart-stats" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); background: linear-gradient(90deg, rgba(0,123,255,0.02) 0%, rgba(108,117,125,0.02) 100%);">
- 
-  
-</div>
-  </div>
-  <div class="chart-card medium">
-    <div class="chart-header">
-      <h3><i class="fas fa-chart-pie"></i> Customer Churn Distribution
-        <i class="fas fa-info-circle tooltip" title="Risk distribution from today analysis"></i>
-      </h3>
-    </div>
-    <div class="chart-container"><canvas id="churnChart"></canvas></div>
-  </div>
-  <div class="chart-card medium">
-    <div class="chart-header">
-      <h3><i class="fas fa-chart-bar"></i> Purchase Behavior
-        <i class="fas fa-info-circle tooltip" title="Business metrics based on 14-day averages"></i>
-      </h3>
-    </div>
-    <div class="chart-container"><canvas id="purchaseBehaviorChart"></canvas></div>
-  </div>
-</div>
-
-</div>
-
-
-
-
-
-
-
-
-    <div id="data-input" class="page">
-      <div class="page-header">
-        <h1><i class="fas fa-store"></i>  Churn Prediction Data Input</h1>
-        <p>Real-time transaction data collection for customer disengagement pattern detection</p>
-      </div>
-
-      <div class="content-grid">
-        <!-- Transaction Data Collection -->
-        <div class="data-card">
-          <div class="card-header">
-            <i class="fas fa-info-circle tooltip" title="Transaction Metrics for Churn Detection"></i>
-            <div class="header-content">
-              <i class="fas fa-receipt"></i>
-              <div>
-                <h3>📊 Transaction Data Collection</h3>
-                <p>Aggregate transaction data for churn pattern detection</p>
-              </div>
-            </div>
-            <div class="data-quality high">Critical for Churn Prediction</div>
-          </div>
-          <div class="card-body">
-            <div class="form-grid">
-            <div class="form-group">
-  <label for="date">Date <span class="required">*</span></label>
-  <input id="date" name="date" type="date" required />
-</div>
-
 <script>
 (function () {
   const el = document.getElementById('date');
@@ -1843,31 +1767,109 @@ function doLogout() {
   setTimeout(() => { try { el.blur(); } catch(_) {} }, 0);
 })();
 </script>
+    
 
+      <!-- CHARTSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS -->
+     <!-- Charts -->
+<div class="charts-grid">
+  <div class="chart-card large">
+    <div class="chart-header">
+      <h3><i class="fas fa-chart-area"></i> Customer Visit Pattern
+        <i class="fas fa-info-circle tooltip" title="Shows customer counts with period selection"></i>
+      </h3>
+      <div class="chart-controls">
+      <h3 class="traffic-period-title">Today's Traffic</h3>
+      
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="trafficChart"></canvas></div>
+   <div class="chart-stats" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); background: linear-gradient(90deg, rgba(0,123,255,0.02) 0%, rgba(108,117,125,0.02) 100%);">
+ 
+  
+</div>
+  </div>
+  <div class="chart-card medium">
+    <div class="chart-header">
+      <h3><i class="fas fa-chart-pie"></i> Customer Churn Distribution
+        <i class="fas fa-info-circle tooltip" title="Risk distribution from today analysis"></i>
+      </h3>
+    </div>
+    <div class="chart-container"><canvas id="churnChart"></canvas></div>
+  </div>
+  <div class="chart-card medium">
+    <div class="chart-header">
+      <h3><i class="fas fa-chart-bar"></i> Purchase Behavior
+        <i class="fas fa-info-circle tooltip" title="Business metrics based on 14-day averages"></i>
+      </h3>
+    </div>
+    <div class="chart-container"><canvas id="purchaseBehaviorChart"></canvas></div>
+  </div>
+</div>
 
-              <div class="form-group">
-                <label for="receiptCount"> Receipt Count <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Total number of receipts/transactions - key churn indicator"></i>
-                </label>
-                <input type="number" id="receiptCount" placeholder="e.g., 280" min="0" required>
-              </div>
+</div>
 
-              <div class="form-group">
-                <label for="salesVolume"> Sales Volume (₱) <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Total sales volume - primary churn detection metric"></i>
-                </label>
-                <input type="number" id="salesVolume" placeholder="e.g., 45000" min="0" step="0.01" required>
-              </div>
+    <div id="data-input" class="page" style="display:flex;justify-content:center;width:100%;">
+  <div class="content-wrapper" style="width:70%;">
 
-              <div class="form-group">
-                <label for="customerTraffic"> Customer Traffic <span class="required">*</span>
-                  <i class="fas fa-info-circle tooltip" title="Total customer count - essential for churn pattern analysis"></i>
-                </label>
-                <input type="number" id="customerTraffic" placeholder="e.g., 320" min="0" required>
-              </div>
+    <div class="page-header" style="text-align:center;">
+      <h1><i class="fas fa-store"></i> Churn Prediction Data Input</h1>
+      <p>Real-time transaction data collection for customer disengagement pattern detection</p>
+    </div>
+
+    <div class="content-grid">
+      <!-- Transaction Data Collection -->
+      <div class="data-card" style="width:100%;margin:0 auto;">
+
+        <div class="card-header">
+          <i class="fas fa-info-circle tooltip" title="Transaction Metrics for Churn Detection"></i>
+          <div class="header-content">
+            <i class="fas fa-receipt"></i>
+            <div>
+              <h3>📊 Transaction Data Collection</h3>
+              <p>Aggregate transaction data for churn pattern detection</p>
             </div>
           </div>
+          <div class="data-quality high">Critical for Churn Prediction</div>
         </div>
+
+        <div class="card-body">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="date">Date <span class="required">*</span></label>
+              <input id="date" name="date" type="date" required>
+            </div>
+
+            <div class="form-group">
+              <label for="receiptCount"> Receipt Count <span class="required">*</span>
+                <i class="fas fa-info-circle tooltip" title="Total number of receipts/transactions - key churn indicator"></i>
+              </label>
+              <input type="number" id="receiptCount" placeholder="e.g., 280" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label for="salesVolume"> Sales Volume (₱) <span class="required">*</span>
+                <i class="fas fa-info-circle tooltip" title="Total sales volume - primary churn detection metric"></i>
+              </label>
+              <input type="number" id="salesVolume" placeholder="e.g., 45000" min="0" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+              <label for="customerTraffic"> Customer Traffic <span class="required">*</span>
+                <i class="fas fa-info-circle tooltip" title="Total customer count - essential for churn pattern analysis"></i>
+              </label>
+              <input type="number" id="customerTraffic" placeholder="e.g., 320" min="0" required>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
         <!-- Shift-Based Performance -->
         <!-- Shift-Based Performance (Fully Invisible but Functional) -->
