@@ -6079,7 +6079,7 @@ body {
           
           
           <div class="at-risk-customers">
-            <h3>High-Value Customers at Risk</h3>
+            <h3> Customers at Risk</h3>
             <div class="risk-list" data-risk-customers>
               <div style="text-align: center; padding: 20px; color: #64748b;">
                 Loading at-risk customers...
