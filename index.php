@@ -2447,7 +2447,7 @@ function showConfirmationModal() {
           ">
             <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
             <div style="color: rgba(255, 255, 255, 0.9); font-size: 12px; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
-              <i class="fas fa-fire"></i> Rush Hours
+              <i class="fas fa-fire"></i> Peak Hours
             </div>
             <div style="color: white; font-size: 18px; font-weight: 700; position: relative; line-height: 1.3;">${pendingTotals.rushHours || 'N/A'}</div>
             <div style="position: absolute; bottom: 10px; right: 15px; opacity: 0.2;">
