@@ -814,6 +814,7 @@ body {
     border: 1px solid var(--gray-200);
     transition: var(--transition);
     overflow: hidden;
+    width: -webkit-fill-available;
    
 }
 
