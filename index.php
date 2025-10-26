@@ -8185,16 +8185,23 @@ console.log('✓ Transaction logs with date filter loaded');
         </div>
       </div>
       <div class="card-body">
-        <div class="profile-avatar">
-          <div class="avatar-container">
-            <img src="uploads/avatars/default-icon.png" alt="Profile Avatar" id="profileAvatar">
-            <button class="avatar-upload" onclick="uploadAvatar()"><i class="fas fa-camera"></i></button>
-          </div>
-          <div class="avatar-info">
-            <h4 id="profileName">—</h4>
-            <p id="profileRole">—</p>
-          </div>
-        </div>
+       <div class="profile-avatar" style="display:flex;flex-direction:column;align-items:center;gap:10px;font-family:Arial, sans-serif;text-align:center;">
+  
+  <div class="avatar-container" style="position:relative;width:120px;height:120px;border-radius:50%;overflow:hidden;border:2px solid #000;background:#fff;display:flex;align-items:center;justify-content:center;">
+    <img src="uploads/avatars/default-icon.png" alt="Profile Avatar" id="profileAvatar" style="width:100%;height:100%;object-fit:cover;">
+    
+    <button class="avatar-upload" onclick="uploadAvatar()" style="position:absolute;bottom:5px;right:5px;width:32px;height:32px;border:none;border-radius:50%;background:#000;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <i class="fas fa-camera"></i>
+    </button>
+  </div>
+
+  <div class="avatar-info" style="line-height:1.3;">
+    <h4 id="profileName" style="margin:0;font-size:16px;font-weight:600;color:#000;">—</h4>
+    <p id="profileRole" style="margin:0;font-size:13px;color:#555;">—</p>
+  </div>
+
+</div>
+
 
         <form class="profile-form" onsubmit="return false;">
           <div class="form-group">
