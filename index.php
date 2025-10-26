@@ -94,7 +94,7 @@ if (!$me) {
           <i class="fas fa-bullseye"></i> <span>Analytics Target</span>
         </a>
          <a href="#" class="menu-item" onclick="showPage('cust-insight')">
-          <i class="fas fa-bullseye"></i> <span>Custmer Insight</span>
+          <i class="fas fa-bullseye"></i> <span>Customer Insight</span>
         </a>
 		 </div>
 
