@@ -2291,7 +2291,7 @@ function showConfirmationModal() {
     padding: 0;
     max-width: 900px;
     width: 100%;
-    max-height: 90vh;
+    max-height: 100vh;
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
     animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2346,7 +2346,7 @@ function showConfirmationModal() {
     
     <!-- Scrollable Content Area -->
     <div style="
-      max-height: calc(90vh - 380px);
+      max-height: calc(100vh - 380px);
       overflow-y: auto;
       padding: 30px 40px;
     ">
