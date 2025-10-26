@@ -2273,157 +2273,504 @@ function showConfirmationModal() {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 20px;
   `;
   
   // Create modal content box - white card in center
   const modalContent = document.createElement('div');
   modalContent.style.cssText = `
-    background: white;
-    border-radius: 12px;
-    padding: 30px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s ease;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 0;
+    max-width: 850px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   `;
   
   // Build modal HTML content with all data summary and preview
   modalContent.innerHTML = `
-    <div style="text-align: center; margin-bottom: 25px;">
-      <div style="background: #4CAF50; width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-        <i class="fas fa-file-upload" style="color: white; font-size: 28px;"></i>
-      </div>
-      <h2 style="margin: 0; color: #333; font-size: 24px;">Confirm File Upload</h2>
-      <p style="color: #666; margin-top: 8px;">Review the data before uploading</p>
-    </div>
-    
-    <!-- Data Summary Section - Shows total transactions and sales -->
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-      <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px; border-bottom: 2px solid #4CAF50; padding-bottom: 8px;">
-        <i class="fas fa-chart-bar"></i> Data Summary
-      </h3>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #2196F3;">
-          <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Transactions</div>
-          <div style="color: #333; font-size: 22px; font-weight: bold;">${pendingTransactions.length}</div>
-        </div>
-        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #4CAF50;">
-          <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Sales</div>
-          <div style="color: #333; font-size: 22px; font-weight: bold;">₱${pendingTotals.totalSales.toFixed(2)}</div>
-        </div>
+    <!-- Header Section - Clean and Minimal -->
+    <div style="
+      padding: 40px 40px 30px 40px;
+      border-bottom: 1px solid #f1f5f9;
+    ">
+      <div style="
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+      ">
+        <i class="fas fa-cloud-upload-alt" style="color: white; font-size: 32px;"></i>
       </div>
       
-      <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #FF9800;">
-        <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Receipts</div>
-        <div style="color: #333; font-size: 22px; font-weight: bold;">${pendingTotals.totalReceipts}</div>
-
-          <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #E91E63;">
-      <div style="color: #666; font-size: 12px; margin-bottom: 4px;">
-        <i class="fas fa-fire"></i> Rush Hours
-      </div>
-      <div style="color: #333; font-size: 16px; font-weight: bold;">${pendingTotals.rushHours || 'N/A'}</div>
-    </div>
-      </div>
+      <h2 style="
+        margin: 0 0 8px 0;
+        color: #0f172a;
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+      ">Confirm File Upload</h2>
+      <p style="
+        color: #64748b;
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.5;
+      ">Review your transaction data before uploading to the system</p>
     </div>
     
-    <!-- Shift Breakdown Section - Shows morning, midday, evening data -->
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-      <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px; border-bottom: 2px solid #4CAF50; padding-bottom: 8px;">
-        <i class="fas fa-clock"></i> Shift Breakdown
-      </h3>
+    <!-- Scrollable Content Area -->
+    <div style="
+      max-height: calc(90vh - 280px);
+      overflow-y: auto;
+      padding: 32px 40px;
+    ">
       
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
-          <span style="color: #666;"><i class="fas fa-sun" style="color: #FFC107;"></i> Morning</span>
-          <span style="color: #333; font-weight: 600;">${pendingTotals.morningReceipts} receipts | ₱${pendingTotals.morningSales.toFixed(2)}</span>
+      <!-- Data Summary Cards - Minimalist Grid -->
+      <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+      ">
+        <!-- Total Transactions -->
+        <div style="
+          background: #fafafa;
+          padding: 24px;
+          border-radius: 16px;
+          border: 1px solid #f1f5f9;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#f1f5f9'; this.style.transform='translateY(0)';">
+          <div style="
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+          ">Transactions</div>
+          <div style="
+            color: #0f172a;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+          ">${pendingTransactions.length}</div>
         </div>
-        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
-          <span style="color: #666;"><i class="fas fa-cloud-sun" style="color: #FF9800;"></i> Midday</span>
-          <span style="color: #333; font-weight: 600;">${pendingTotals.middayReceipts} receipts | ₱${pendingTotals.middaySales.toFixed(2)}</span>
+        
+        <!-- Total Sales -->
+        <div style="
+          background: #fafafa;
+          padding: 24px;
+          border-radius: 16px;
+          border: 1px solid #f1f5f9;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.borderColor='#10b981'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#f1f5f9'; this.style.transform='translateY(0)';">
+          <div style="
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+          ">Total Sales</div>
+          <div style="
+            color: #10b981;
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+          ">₱${pendingTotals.totalSales.toFixed(2)}</div>
         </div>
-        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
-          <span style="color: #666;"><i class="fas fa-moon" style="color: #3F51B5;"></i> Evening</span>
-          <span style="color: #333; font-weight: 600;">${pendingTotals.eveningReceipts} receipts | ₱${pendingTotals.eveningSales.toFixed(2)}</span>
+        
+        <!-- Total Receipts -->
+        <div style="
+          background: #fafafa;
+          padding: 24px;
+          border-radius: 16px;
+          border: 1px solid #f1f5f9;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.borderColor='#f59e0b'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#f1f5f9'; this.style.transform='translateY(0)';">
+          <div style="
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+          ">Receipts</div>
+          <div style="
+            color: #0f172a;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+          ">${pendingTotals.totalReceipts}</div>
+        </div>
+        
+        <!-- Rush Hours -->
+        <div style="
+          background: #fafafa;
+          padding: 24px;
+          border-radius: 16px;
+          border: 1px solid #f1f5f9;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.borderColor='#ef4444'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#f1f5f9'; this.style.transform='translateY(0)';">
+          <div style="
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+          ">
+            <i class="fas fa-fire-alt" style="margin-right: 4px;"></i>Rush Hours
+          </div>
+          <div style="
+            color: #0f172a;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.3;
+          ">${pendingTotals.rushHours || 'N/A'}</div>
         </div>
       </div>
+      
+      <!-- Shift Breakdown - Clean Horizontal Layout -->
+      <div style="margin-bottom: 32px;">
+        <h3 style="
+          margin: 0 0 16px 0;
+          color: #0f172a;
+          font-size: 14px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">Shift Performance</h3>
+        
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 16px;
+        ">
+          <!-- Morning Shift -->
+          <div style="
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+          ">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <div style="
+                width: 40px;
+                height: 40px;
+                background: #fef3c7;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="fas fa-sun" style="color: #f59e0b; font-size: 18px;"></i>
+              </div>
+              <div>
+                <div style="color: #0f172a; font-size: 14px; font-weight: 600;">Morning</div>
+                <div style="color: #94a3b8; font-size: 12px;">9:00 AM - 11:59 AM</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+              <div>
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px;">Receipts</div>
+                <div style="color: #0f172a; font-size: 20px; font-weight: 700;">${pendingTotals.morningReceipts}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px;">Sales</div>
+                <div style="color: #10b981; font-size: 20px; font-weight: 700;">₱${pendingTotals.morningSales.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Midday Shift -->
+          <div style="
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+          ">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <div style="
+                width: 40px;
+                height: 40px;
+                background: #fed7aa;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="fas fa-cloud-sun" style="color: #ea580c; font-size: 18px;"></i>
+              </div>
+              <div>
+                <div style="color: #0f172a; font-size: 14px; font-weight: 600;">Midday</div>
+                <div style="color: #94a3b8; font-size: 12px;">12:00 PM - 5:59 PM</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+              <div>
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px;">Receipts</div>
+                <div style="color: #0f172a; font-size: 20px; font-weight: 700;">${pendingTotals.middayReceipts}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px;">Sales</div>
+                <div style="color: #10b981; font-size: 20px; font-weight: 700;">₱${pendingTotals.middaySales.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Evening Shift -->
+          <div style="
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+          ">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <div style="
+                width: 40px;
+                height: 40px;
+                background: #ddd6fe;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="fas fa-moon" style="color: #7c3aed; font-size: 18px;"></i>
+              </div>
+              <div>
+                <div style="color: #0f172a; font-size: 14px; font-weight: 600;">Evening</div>
+                <div style="color: #94a3b8; font-size: 12px;">6:00 PM - 11:00 PM</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+              <div>
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px;">Receipts</div>
+                <div style="color: #0f172a; font-size: 20px; font-weight: 700;">${pendingTotals.eveningReceipts}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px;">Sales</div>
+                <div style="color: #10b981; font-size: 20px; font-weight: 700;">₱${pendingTotals.eveningSales.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Transaction List - Minimalist Clean Design -->
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <h3 style="
+            margin: 0;
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">Transaction Details</h3>
+          <span style="
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+          ">${pendingTransactions.length} items</span>
+        </div>
+        
+        <div style="
+          background: white;
+          border: 1px solid #f1f5f9;
+          border-radius: 12px;
+          overflow: hidden;
+        ">
+          <div style="
+            max-height: 360px;
+            overflow-y: auto;
+          ">
+            ${pendingTransactions.map((t, i) => `
+              <div style="
+                padding: 16px 20px;
+                border-bottom: 1px solid #f8fafc;
+                transition: background 0.2s ease;
+              " onmouseover="this.style.background='#fafafa';" onmouseout="this.style.background='white';">
+                
+                <!-- Main Row -->
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px;">
+                  <!-- Number Badge -->
+                  <div style="
+                    min-width: 32px;
+                    height: 32px;
+                    background: #f1f5f9;
+                    color: #64748b;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 600;
+                    font-size: 13px;
+                  ">${i + 1}</div>
+                  
+                  <!-- Customer & Drink Info -->
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="
+                      color: #0f172a;
+                      font-weight: 600;
+                      font-size: 14px;
+                      margin-bottom: 4px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    ">${t.customer_name || 'N/A'}</div>
+                    <div style="
+                      color: #64748b;
+                      font-size: 13px;
+                      display: flex;
+                      align-items: center;
+                      gap: 6px;
+                    ">
+                      <i class="fas fa-coffee" style="font-size: 11px;"></i>
+                      ${t.type_of_drink || 'N/A'}
+                    </div>
+                  </div>
+                  
+                  <!-- Amount & Time -->
+                  <div style="text-align: right;">
+                    <div style="
+                      color: #10b981;
+                      font-weight: 700;
+                      font-size: 16px;
+                      margin-bottom: 4px;
+                    ">₱${t.total_amount.toFixed(2)}</div>
+                    <div style="
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 4px;
+                      background: ${
+                        t.shift_category === 'Morning' ? '#fef3c7' : 
+                        t.shift_category === 'Lunch' ? '#fed7aa' : 
+                        t.shift_category === 'Evening' ? '#ddd6fe' : '#f1f5f9'
+                      };
+                      color: ${
+                        t.shift_category === 'Morning' ? '#92400e' : 
+                        t.shift_category === 'Lunch' ? '#9a3412' : 
+                        t.shift_category === 'Evening' ? '#5b21b6' : '#64748b'
+                      };
+                      padding: 3px 8px;
+                      border-radius: 6px;
+                      font-size: 11px;
+                      font-weight: 600;
+                    ">
+                      <i class="fas fa-clock" style="font-size: 10px;"></i>
+                      ${t.time_of_day}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Details Row -->
+                <div style="
+                  display: flex;
+                  gap: 16px;
+                  padding-left: 48px;
+                  font-size: 12px;
+                  color: #94a3b8;
+                  flex-wrap: wrap;
+                ">
+                  <span style="display: flex; align-items: center; gap: 4px;">
+                    <i class="fas fa-calendar-day" style="font-size: 10px;"></i>
+                    ${t.date_visited || 'N/A'}
+                  </span>
+                  <span style="display: flex; align-items: center; gap: 4px;">
+                    <i class="fas fa-shopping-bag" style="font-size: 10px;"></i>
+                    Qty: ${t.quantity_of_drinks || 0}
+                  </span>
+                  ${t.gender ? `
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                      <i class="fas fa-user" style="font-size: 10px;"></i>
+                      ${t.gender}
+                    </span>
+                  ` : ''}
+                  ${t.payment_method ? `
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                      <i class="fas fa-credit-card" style="font-size: 10px;"></i>
+                      ${t.payment_method}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      
     </div>
     
-<!-- Transaction Preview - Shows ALL transactions from uploaded file -->
-<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
-  <h4 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">
-    <i class="fas fa-list"></i> All Transactions (${pendingTransactions.length} total)
-  </h4>
-  <div style="font-size: 12px; color: #666; max-height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px;">
-    ${pendingTransactions.map((t, i) => `
-      <div style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid ${
-        t.shift_category === 'Morning' ? '#FFC107' : 
-        t.shift_category === 'Lunch' ? '#FF9800' : 
-        t.shift_category === 'Evening' ? '#3F51B5' : '#999'
-      };">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="flex: 1;">
-            <strong style="color: #333;">#${i + 1}</strong> 
-            <span style="color: #666;">| ${t.customer_name || 'N/A'}</span>
-          </div>
-          <div style="flex: 1; text-align: center;">
-            <span style="color: #666;">${t.type_of_drink || 'N/A'}</span>
-          </div>
-          <div style="flex: 1; text-align: right;">
-            <strong style="color: #4CAF50;">₱${t.total_amount.toFixed(2)}</strong>
-            <span style="color: #999; font-size: 11px; margin-left: 8px;">
-              <i class="fas fa-clock"></i> ${t.time_of_day} (${t.shift_category})
-            </span>
-          </div>
-        </div>
-        <div style="margin-top: 4px; font-size: 11px; color: #999;">
-          <span><i class="fas fa-calendar"></i> ${t.date_visited || 'N/A'}</span>
-          <span style="margin-left: 12px;"><i class="fas fa-shopping-cart"></i> Qty: ${t.quantity_of_drinks || 0}</span>
-          ${t.gender ? `<span style="margin-left: 12px;"><i class="fas fa-user"></i> ${t.gender}</span>` : ''}
-          ${t.payment_method ? `<span style="margin-left: 12px;"><i class="fas fa-credit-card"></i> ${t.payment_method}</span>` : ''}
-        </div>
-      </div>
-    `).join('')}
-  </div>
-</div>
-    
-    <!-- Action Buttons - Cancel (red) and Confirm (green) -->
-    <div style="display: flex; gap: 12px; justify-content: center;">
+    <!-- Footer Action Buttons - Clean Minimal Style -->
+    <div style="
+      padding: 24px 40px;
+      background: #fafafa;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      gap: 12px;
+    ">
       <button onclick="cancelUpload()" style="
         flex: 1;
-        padding: 12px 24px;
-        background: #f44336;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
+        padding: 14px 24px;
+        background: white;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition: background 0.3s;
-      " onmouseover="this.style.background='#d32f2f'" onmouseout="this.style.background='#f44336'">
-        <i class="fas fa-times"></i> Cancel
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      " 
+      onmouseover="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc';" 
+      onmouseout="this.style.borderColor='#e2e8f0'; this.style.background='white';">
+        <i class="fas fa-times"></i>
+        Cancel
       </button>
+      
       <button onclick="confirmUpload()" style="
-        flex: 1;
-        padding: 12px 24px;
-        background: #4CAF50;
+        flex: 2;
+        padding: 14px 24px;
+        background: #3b82f6;
         color: white;
         border: none;
-        border-radius: 6px;
-        font-size: 16px;
+        border-radius: 12px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition: background 0.3s;
-      " onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">
-        <i class="fas fa-check"></i> Confirm Upload
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+      " 
+      onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 12px -1px rgba(59, 130, 246, 0.4)';" 
+      onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(59, 130, 246, 0.3)';">
+        <i class="fas fa-check"></i>
+        Confirm Upload
       </button>
     </div>
   `;
@@ -2436,8 +2783,30 @@ function showConfirmationModal() {
       to { opacity: 1; }
     }
     @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from { 
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Minimalist Custom Scrollbar */
+    #uploadConfirmModal *::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    #uploadConfirmModal *::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #uploadConfirmModal *::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    #uploadConfirmModal *::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
     }
   `;
   document.head.appendChild(style);
@@ -2469,6 +2838,12 @@ function confirmUpload() {
   document.getElementById('graveyardReceiptCount').value = pendingTotals.eveningReceipts;
   document.getElementById('graveyardSalesVolume').value = pendingTotals.eveningSales.toFixed(2);
   
+  // Update Rush Hours Display
+  const rushHoursElement = document.querySelector('[data-rush-hours]');
+  if (rushHoursElement && pendingTotals.rushHours) {
+    rushHoursElement.textContent = pendingTotals.rushHours;
+  }
+  
   // ===== RECORD UPLOAD DATE (COMMENTED OUT) =====
   // Uncomment the line below to save upload date for daily limit enforcement
   // recordUploadDate();
@@ -2498,7 +2873,6 @@ function cancelUpload() {
   // Show cancellation confirmation to user
   alert('Upload cancelled. No data was saved.');
 }
-
 // ===== DAILY UPLOAD LIMIT VALIDATION (COMMENTED OUT) =====
 // Uncomment this entire section when ready to enforce one upload per day
 
