@@ -6492,10 +6492,7 @@ class CustomerInsights {
                         <span class="label">Monthly Avg</span>
                         <span class="value">₱${this.formatNumber(customer.monthly_avg)}</span>
                     </div>
-                    <div class="metric-item">
-                        <span class="label">Visit Frequency</span>
-                        <span class="value">${customer.monthly_visits}x/month</span>
-                    </div>
+                    
                     <div class="metric-item">
                         <span class="label">Last Visit</span>
                         <span class="value">${customer.last_visit_formatted}</span>
