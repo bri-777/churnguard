@@ -104,7 +104,7 @@ if (!$me) {
       <div class="menu-section">
         <div class="menu-title">Data Management</div>
         <a href="#" class="menu-item" onclick="showPage('data-input')">
-          <i class="fas fa-database"></i> <span>Store Data Input</span>
+          <i class="fas fa-database"></i> <span>Store Data</span>
         </a>
        
       </div>
