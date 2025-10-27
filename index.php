@@ -6427,7 +6427,7 @@ class CustomerInsights {
                             <div class="customer-avatar">${customer.initials}</div>
                             <div class="customer-details">
                                 <div class="customer-name">${customer.customer_name}</div>
-                                <div class="customer-meta">Last: ${customer.days_inactive} days ago</div>
+                               
                             </div>
                         </div>
                     </div>
