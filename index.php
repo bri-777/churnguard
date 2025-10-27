@@ -1628,12 +1628,6 @@ html, body {
 
 
 
-<script>
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('date').value = today;
-</script>
-
-
 
 
 
@@ -1653,7 +1647,16 @@ function doLogout() {
     </div>
   </aside>
 
-
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const el = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    el.value = today;        // set today's date
+    el.readOnly = true;      // prevents editing but still submits value
+    // (optional) also prevent pointer to stop calendar popup:
+    el.style.pointerEvents = 'none';
+  });
+</script>
 
   <!-- Main Content Area -->
   <main class="main-content">
