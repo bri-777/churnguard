@@ -16,7 +16,7 @@ function loadEnv($file = __DIR__ . '/../../.env') {
 loadEnv();
 
 /**
- * Call OpenAI API for intelligent store-wide recommendations
+ * Call OpenAI API for intelligent coffee shop recommendations
  */
 function getAIRecommendations($context) {
   $apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
@@ -30,11 +30,11 @@ function getAIRecommendations($context) {
   $peakShift = 'morning';
   $peakSales = $context['morning_sales'];
   if ($context['swing_sales'] > $peakSales) {
-    $peakShift = 'swing';
+    $peakShift = 'afternoon';
     $peakSales = $context['swing_sales'];
   }
   if ($context['graveyard_sales'] > $peakSales) {
-    $peakShift = 'graveyard';
+    $peakShift = 'evening';
     $peakSales = $context['graveyard_sales'];
   }
 
@@ -43,83 +43,134 @@ function getAIRecommendations($context) {
   $salesMomentum = $context['sales_drop_pct'] <= 0 ? 'growing' : 'declining';
 
   $prompt = <<<PROMPT
-You are an expert retail operations consultant specializing in Philippine convenience stores (sari-sari stores, 7-Eleven style shops). Analyze AGGREGATE store performance data and provide strategic recommendations.
+You are an expert coffee shop operations consultant specializing in Philippine coffee culture and café management (independent cafés, specialty coffee shops, third-wave coffee establishments). Analyze AGGREGATE shop performance data and provide strategic recommendations to REDUCE CUSTOMER CHURN and INCREASE LOYALTY.
 
-STORE PERFORMANCE OVERVIEW:
+COFFEE SHOP PERFORMANCE OVERVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Overall Health:
-- Churn Risk: {$context['risk_level']} ({$context['risk_percentage']}%)
-- Store Traffic: {$trafficHealth} ({$context['traffic_trend']}% vs yesterday)
+Overall Health & Churn Indicators:
+- Customer Churn Risk: {$context['risk_level']} ({$context['risk_percentage']}%)
+- Customer Traffic: {$trafficHealth} ({$context['traffic_trend']}% vs yesterday)
 - Sales Momentum: {$salesMomentum} ({$context['sales_drop_pct']}% change)
 
-Daily Aggregates:
+Daily Performance Metrics:
 - Total Sales: ₱{$context['sales_volume']}
-- Total Transactions: {$context['receipt_count']} receipts
-- Customer Footfall: {$context['customer_traffic']} people
-- Average Basket: ₱{$avgReceiptValue}
-- Weekly Avg Basket: ₱{$context['weekly_avg_basket']} (Δ {$context['basket_delta_pct']}%)
+- Total Orders: {$context['receipt_count']} transactions
+- Customer Footfall: {$context['customer_traffic']} visitors
+- Average Ticket Size: ₱{$avgReceiptValue}
+- Weekly Avg Ticket: ₱{$context['weekly_avg_basket']} (Δ {$context['basket_delta_pct']}%)
 
-Shift Performance (Peak: {$peakShift}):
-- Morning (6AM-2PM): {$context['morning_receipts']} receipts = ₱{$context['morning_sales']}
-- Swing (2PM-10PM): {$context['swing_receipts']} receipts = ₱{$context['swing_sales']}
-- Graveyard (10PM-6AM): {$context['graveyard_receipts']} receipts = ₱{$context['graveyard_sales']}
-- Shift Imbalance: {$context['shift_imbalance']}%
+Daypart Performance (Peak: {$peakShift}):
+- Morning Rush (6AM-11AM): {$context['morning_receipts']} orders = ₱{$context['morning_sales']}
+- Afternoon (11AM-5PM): {$context['swing_receipts']} orders = ₱{$context['swing_sales']}
+- Evening (5PM-10PM): {$context['graveyard_receipts']} orders = ₱{$context['graveyard_sales']}
+- Daypart Imbalance: {$context['shift_imbalance']}%
 
-Trends:
-- Transaction Volume: {$context['txn_drop_pct']}% change
-- Sales Drop: {$context['sales_drop_pct']}%
+Trend Analysis:
+- Transaction Volume Change: {$context['txn_drop_pct']}%
+- Sales Growth/Decline: {$context['sales_drop_pct']}%
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-YOUR TASK:
-Generate 5 strategic, store-wide recommendations focusing on:
+YOUR PRIMARY OBJECTIVE: REDUCE CUSTOMER CHURN & BUILD LOYALTY
 
-✓ STORE OPERATIONS (staffing, layout, checkout efficiency)
-✓ MERCHANDISING (product placement, displays, signage)
-✓ PROMOTIONS & PRICING (discounts, bundles, time-based offers)
-✓ INVENTORY & PRODUCT MIX (what to stock more/less)
-✓ CUSTOMER EXPERIENCE (ambiance, service quality, convenience)
-✓ TRAFFIC OPTIMIZATION (attracting more customers during slow hours)
+Generate 5 strategic recommendations with DUAL FOCUS:
+1. **Retain at-risk customers** (especially those contributing to churn risk)
+2. **Deepen loyalty** among existing regular customers
 
-✗ DO NOT recommend individual customer targeting
-✗ DO NOT mention customer databases or CRM
-✗ DO NOT suggest personalized marketing to specific people
+RECOMMENDATION FOCUS AREAS:
 
-CONTEXT-SPECIFIC GUIDANCE:
-- High Risk (>67%): Focus on URGENT operational fixes and aggressive promotions
-- Medium Risk (34-67%): Balance prevention (service improvements) with growth tactics
-- Low Risk (<34%): Focus on GROWTH and optimization strategies
+✓ LOYALTY PROGRAMS & REWARDS (stamp cards, membership perks, surprise delights)
+✓ CUSTOMER EXPERIENCE ENHANCEMENT (service speed, ambiance, personalization)
+✓ MENU OPTIMIZATION (seasonal drinks, food pairings, value offerings)
+✓ ENGAGEMENT & COMMUNITY (events, workshops, social media)
+✓ OPERATIONAL EXCELLENCE (queue management, consistency, quality control)
+✓ RETENTION PROMOTIONS (comeback offers, frequency incentives, referral programs)
 
-Philippines Market Factors:
-- Cash is still king (mobile wallets growing)
-- Price sensitivity is high
-- Payday cycles affect spending (15th & 30th)
-- Sari-sari stores are main competition
-- Load (mobile prepaid) is essential
-- Convenience trumps variety
-- Peak hours: before work (7-9AM), lunch (12-1PM), after work (5-7PM)
+✗ DO NOT recommend individual customer targeting by name
+✗ DO NOT suggest complex CRM systems beyond basic loyalty tracking
+✗ DO NOT propose tactics that compromise coffee quality or brand integrity
+
+CHURN RISK RESPONSE STRATEGY:
+- **High Risk (>67%)**: URGENT retention tactics - aggressive loyalty rewards, service recovery, win-back campaigns
+- **Medium Risk (34-67%)**: PREVENTIVE measures - strengthen loyalty programs, enhance experience, address service gaps
+- **Low Risk (<34%)**: GROWTH & DEEPENING - elevate experience, introduce premium offerings, build community
+
+Philippine Coffee Shop Context:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Market Dynamics:
+- Coffee culture is RAPIDLY GROWING (especially among millennials/Gen Z)
+- Price-conscious but willing to pay for QUALITY and EXPERIENCE
+- Strong competition from international chains (Starbucks, Coffee Bean) and local players (Bo's Coffee, CBTL)
+- Social media influence is MASSIVE - Instagram-worthy drinks/spaces drive traffic
+- Work-from-café culture is strong (students, freelancers, remote workers)
+
+Customer Behavior Patterns:
+- Morning: Quick grab-and-go, value conscious, needs caffeine fix FAST
+- Midday-Afternoon: Longer stays, work/study sessions, higher spend per visit
+- Evening: Social gatherings, dates, relaxation, ambiance-focused
+
+Key Purchasing Drivers:
+- WiFi quality and power outlets availability (CRITICAL for work-from-café crowd)
+- Consistency in taste and service
+- Comfort and ambiance (AC, music, lighting, seating)
+- Value for money (not just cheap, but worth the price)
+- Unique/Instagram-worthy offerings
+
+Loyalty Factors (What Makes Customers Return):
+- Friendly, familiar baristas who remember orders
+- Consistent drink quality
+- Comfortable "third place" atmosphere
+- Rewards/recognition for regular visits
+- Exclusive perks for members
+- Community feeling and belonging
+
+Peak Traffic Windows:
+- 7-9AM (breakfast rush, commuters)
+- 10AM-12PM (brunch crowd, freelancers settling in)
+- 2-4PM (afternoon coffee break, students)
+- 6-8PM (after work, social meetups)
+
+Filipino Coffee Preferences:
+- Iced drinks dominate (tropical climate)
+- Sweet flavors popular (caramel, vanilla, hazelnut)
+- Milk tea crossover appeal
+- Local flavors gaining traction (ube, pandan, calamansi)
+- Value meals with pastries/sandwiches
 
 Output EXACTLY 5 recommendations in this JSON format:
 [
   {
     "priority": "High|Medium|Low",
-    "title": "Short actionable title (max 50 chars)",
-    "description": "Detailed implementation steps (3-4 sentences). Be specific about WHAT to do, WHERE in store, WHEN to implement, and HOW it helps overall store performance.",
-    "impact": "Quantified expected outcome (e.g., '+15-20% traffic during off-peak', '₱5K-8K daily revenue increase')",
-    "eta": "Implementation timeline (e.g., '2-3 days', '1 week')",
+    "title": "Short actionable title focused on retention/loyalty (max 60 chars)",
+    "description": "Detailed implementation steps (4-5 sentences). Be SPECIFIC about: WHAT loyalty/retention tactic, HOW it reduces churn, WHERE/WHEN to implement, WHAT makes it compelling for Filipino coffee drinkers, and HOW it builds long-term loyalty.",
+    "impact": "Quantified expected outcome focusing on CHURN REDUCTION and LOYALTY metrics (e.g., '-15-20% churn rate within 30 days', '+25-30% repeat visit frequency', '₱8K-12K from retained customers')",
+    "eta": "Implementation timeline (e.g., '3-5 days', '1 week', '2 weeks')",
     "cost": "Low|Medium|High",
-    "effectiveness": 70-95,
-    "reasoning": "1-2 sentence explanation linking this to the specific data patterns shown above",
-    "category": "Operations|Merchandising|Promotions|Inventory|Experience|Traffic"
+    "effectiveness": 75-95,
+    "reasoning": "2-3 sentence explanation linking this recommendation to the SPECIFIC churn risk data and customer behavior patterns shown above. Explain WHY this will reduce churn and increase loyalty.",
+    "category": "Loyalty Program|Experience|Menu|Community|Operations|Retention"
   }
 ]
 
-QUALITY REQUIREMENTS:
-1. Each recommendation must be independently actionable
-2. Focus on aggregate patterns (traffic, sales, shifts) NOT individual customers
-3. Be specific to Philippines convenience store context
-4. Provide concrete numbers and timeframes
-5. Explain the data-driven reasoning
-6. Ensure recommendations address the risk level appropriately
+QUALITY REQUIREMENTS FOR RECOMMENDATIONS:
+1. **Churn-focused**: Every recommendation must DIRECTLY address customer retention or loyalty building
+2. **Actionable**: Shop owner can implement within the stated timeline
+3. **Data-driven**: Clear connection to the metrics showing churn risk
+4. **Context-appropriate**: Suited to Philippine coffee shop culture and customer expectations
+5. **Loyalty-building**: Goes beyond one-time tactics to create lasting customer relationships
+6. **Effectiveness scoring**: Higher scores (90+) for proven retention tactics, 80-89 for strong loyalty builders, 75-79 for supporting measures
+7. **Cost-conscious**: Filipinos appreciate value - recommendations should offer strong ROI
+
+EXAMPLES OF GOOD RECOMMENDATIONS:
+✓ "Launch 'Coffee Lover's Card' - 9th drink free, special birthday treat, early access to new drinks"
+✓ "Barista Recognition Training - teach staff to remember regular customers' names and usual orders"
+✓ "Afternoon Happy Hour (2-4PM) - 20% off for loyalty members to drive off-peak visits"
+✓ "Monthly Coffee Tasting Event - free for members, builds community and product knowledge"
+
+EXAMPLES OF POOR RECOMMENDATIONS:
+✗ "Send personalized emails to John Doe and Maria Santos" (too specific to individuals)
+✗ "Install expensive enterprise CRM software" (too complex, not actionable)
+✗ "Lower prices on all drinks by 50%" (unsustainable, devalues brand)
+✗ "Open 5 new branches" (not addressing current churn issue)
 
 Return ONLY valid JSON array. No markdown, no explanations outside JSON.
 PROMPT;
@@ -127,11 +178,11 @@ PROMPT;
   $payload = [
     'model' => $model,
     'messages' => [
-      ['role' => 'system', 'content' => 'You are a Philippine retail operations expert. Provide strategic store-wide recommendations based on aggregate data. Never suggest individual customer targeting. Respond only with valid JSON arrays.'],
+      ['role' => 'system', 'content' => 'You are a Philippine coffee shop retention specialist. Your primary goal is to reduce customer churn and build loyalty through strategic, data-driven recommendations. Focus on aggregate customer patterns and proven retention tactics. Respond only with valid JSON arrays.'],
       ['role' => 'user', 'content' => $prompt]
     ],
-    'temperature' => 0.8,
-    'max_tokens' => 2500
+    'temperature' => 0.7,
+    'max_tokens' => 3000
   ];
 
   $ch = curl_init('https://api.openai.com/v1/chat/completions');
@@ -185,7 +236,7 @@ function level_from_pct(float $p): string {
 }
 
 /**
- * Improved fallback recommendations (store-wide focus)
+ * Improved fallback recommendations (coffee shop churn reduction focus)
  */
 function rec($priority, $title, $desc, $impact, $eta, $cost, $effectiveness, $reasoning, $category) {
   return [
@@ -284,103 +335,127 @@ try {
     // Enrich with metrics
     foreach ($recommendations as &$rec) {
       $rec['metrics'] = [
-        "Risk: {$riskPct}%",
+        "Churn Risk: {$riskPct}%",
         "Category: {$rec['category']}",
-        "Effectiveness: {$rec['effectiveness']}%",
+        "Retention Impact: {$rec['effectiveness']}%",
         $rec['impact'] ?? '',
         $rec['cost'] ?? ''
       ];
       $rec['ai_generated'] = true;
     }
   } catch (Exception $e) {
-    // Improved fallback recommendations (store-wide focus)
+    // Improved fallback recommendations (coffee shop churn reduction focus)
     error_log("AI recommendation failed: " . $e->getMessage());
     
     if ($riskPct >= 67) {
-      // HIGH RISK - Urgent operational interventions
+      // HIGH RISK - Urgent retention interventions
       $recommendations[] = rec(
         'High', 
-        'Flash Weekend Sale - High-Margin Items',
-        'Launch a 3-day flash promotion on your top 20 best-selling items with 10-15% discount. Display prominently at entrance and checkout counter. Use bright signage "WEEKEND SALE!" to catch attention of passing foot traffic. Train staff to mention promo to every customer.',
-        '₱8K-12K weekend revenue boost, +25-35% footfall',
-        '2 days',
+        'Launch Emergency Loyalty Rescue Program',
+        'Implement immediate "We Miss You" campaign: For customers who haven\'t visited in 7+ days, offer "Welcome Back" card with free upgrade on next visit (grande → venti). Train baristas to hand these personally with warm greeting. Track redemption rates daily. Combine with digital push via SMS/social media if possible.',
+        '-20-25% churn rate within 2 weeks, ₱15K-20K recovered revenue',
+        '2-3 days',
+        'Low',
+        92,
+        'High churn risk ('.$riskPct.'%) demands immediate win-back tactics. Filipino coffee drinkers value personal recognition and "sulit" (value) - free upgrade creates emotional connection while being cost-effective.',
+        'Retention'
+      );
+      
+      $recommendations[] = rec(
+        'High',
+        'Express Queue + Order-Ahead System',
+        'Create dedicated express lane for regulars during peak hours. Start simple: Regular customers show loyalty card, skip to front during morning rush (7-9AM). Phase 2: Add mobile order-ahead via Viber/Messenger. Reduces wait anxiety which is #1 churn driver for morning customers.',
+        '-15-20% morning churn, +25-30% repeat frequency',
+        '3-5 days',
         'Low',
         88,
-        'High churn risk with declining traffic requires immediate aggressive promotion to reverse momentum',
-        'Promotions'
+        'Daypart imbalance of '.$shiftImbalance.'% shows capacity issues. Filipino professionals hate wasting time - fast service for regulars builds fierce loyalty and word-of-mouth.',
+        'Operations'
       );
       
       $recommendations[] = rec(
         'High',
-        'Express Checkout Lane + Queue Management',
-        'Designate one counter as express lane (5 items or less) during peak hours identified in your shift data. Add queue markers on floor and "Next Customer" signage. This reduces perceived wait time which is a major churn driver.',
-        '+20-30% checkout speed, -15% cart abandonment',
-        '3 days',
+        'Barista Memory Training & Regular Recognition',
+        'Institute "Know Your Regulars" program: Baristas memorize top 20 regular customers\' names and usual orders within 1 week. Create quick reference cards with photos (with permission). Greet by name, have order ready before asking. Small gestures = massive loyalty impact.',
+        '-18-22% churn among regulars, +₱8K-12K weekly retention',
+        '5-7 days',
         'Low',
-        85,
-        'Shift imbalance of '.$shiftImbalance.'% indicates capacity bottlenecks causing customer frustration',
-        'Operations'
-      );
-      
-      $recommendations[] = rec(
-        'High',
-        'Extend High-Value Hours Staffing',
-        'Add one extra staff member during your peak shift ('.$maxShift.' receipts). Position them to help with restocking, bagging, and customer queries to speed up overall flow. Peak efficiency = more customers served = less churn.',
-        '₱5K-8K daily uplift, +15-20% transaction capacity',
-        '5 days',
-        'Medium',
-        82,
-        'Peak shift congestion is limiting revenue potential during high-demand windows',
-        'Operations'
+        90,
+        'Declining traffic ('.$trend.'%) suggests relationship breakdown. Filipinos crave "suki" relationships - being remembered creates emotional bond that transcends price competition.',
+        'Experience'
       );
     } elseif ($riskPct >= 34) {
-      // MEDIUM RISK - Preventive measures
+      // MEDIUM RISK - Preventive loyalty building
       $recommendations[] = rec(
         'Medium',
-        'Bundle Builder Program (Meal Deals)',
-        'Create 3 fixed-price bundles: Breakfast (₱65), Lunch (₱85), Snack (₱50). Place bundle cards near related products. Bundle high-margin items with slower movers. Update bundles monthly based on what sells.',
-        '+8-12% basket size, ₱4K-6K daily increase',
+        'Tiered Loyalty Program with Monthly Perks',
+        'Launch 3-tier Coffee Club: Bronze (5 visits/month) gets 10% off, Silver (10 visits) gets free pastry weekly + 15% off, Gold (15 visits) gets one free drink + 20% off + exclusive new drink previews. Make tiers visible via card stamps or app. Reset monthly to drive frequency.',
+        '+30-40% visit frequency, -12-15% churn rate, ₱10K-15K monthly lift',
         '1 week',
-        'Low',
-        78,
-        'Average basket ₱'.$avgBasket.' is '.$basketDelta.'% below weekly average - bundles encourage larger purchases',
-        'Merchandising'
+        'Medium',
+        85,
+        'Medium churn risk with '.$basketDelta.'% basket change indicates loyalty erosion. Tiered system taps into Filipino "goal-oriented" mindset and status recognition while driving consistent visits.',
+        'Loyalty Program'
       );
       
       $recommendations[] = rec(
         'Medium',
-        'Happy Hour Pricing (Off-Peak Traffic)',
-        'Introduce 2-4PM "Happy Hour" with ₱5-10 discount on drinks/snacks. Promotes during slow afternoon period to redistribute traffic. Advertise with window posters and social media.',
-        '+15-25% off-peak traffic, ₱2K-4K new revenue',
-        '5 days',
+        'Afternoon Work-From-Café Package',
+        'Create 2-4PM "Productivity Bundle": ₱199 for any drink + pastry + 3-hour WiFi guarantee + reserved power outlet. Target freelancers, students, remote workers. Promote as "your afternoon office". Limit to 15 seats to maintain availability. Require loyalty card sign-up.',
+        '+20-25% afternoon traffic, -10-15% off-peak churn, ₱6K-9K daily',
+        '5-7 days',
         'Low',
-        75,
-        'Traffic shows imbalance - need to attract customers during traditionally slow hours',
-        'Promotions'
+        82,
+        'Afternoon utilization gap shows untapped potential. Work-from-café culture is huge in PH - creating reliable "third space" builds daily habit and recurring revenue.',
+        'Menu'
       );
-    } else {
-      // LOW RISK - Growth and optimization
+      
       $recommendations[] = rec(
-        'Low',
-        'Premium Product Line Introduction',
-        'Add 10-15 premium items (imported snacks, specialty drinks, organic options) at 20-30% higher margins. Target growing middle-class segment. Place at eye level on main aisle.',
-        '+₱3K-5K daily, +5-8% margin improvement',
+        'Medium',
+        'Monthly Coffee Appreciation Event for Members',
+        'Host monthly "Coffee Circle" (last Saturday, 4-6PM): Free for loyalty members, ₱150 for non-members. Feature latte art workshop, new drink sampling, meet-the-roaster session. Limit to 25 people. Create Instagram moments. Build community beyond transactions.',
+        '+15-20% member engagement, -8-10% churn, 40-50 new sign-ups/event',
         '2 weeks',
         'Medium',
-        72,
-        'Low churn risk allows experimentation with higher-margin offerings',
-        'Inventory'
+        80,
+        'Building community reduces churn by creating social bonds. Filipinos love events, learning, and sharing on social media - this hits all three while deepening brand connection.',
+        'Community'
+      );
+    } else {
+      // LOW RISK - Loyalty deepening and premiumization
+      $recommendations[] = rec(
+        'Low',
+        'VIP Inner Circle Premium Membership',
+        'Launch exclusive ₱499/month "Kapihan Insider" subscription: Unlimited 15% discount, one free specialty drink weekly, priority seating, exclusive seasonal drinks 1 week early, birthday gift, plus-one guest privileges. Position as premium status symbol. Limit to 100 members.',
+        '+₱20K-30K monthly recurring revenue, 85-90% retention rate',
+        '2 weeks',
+        'Medium',
+        78,
+        'Low churn risk allows premium tier introduction. Filipino aspirational consumers will pay for elevated status and exclusive access - subscription model creates predictable revenue and deepest loyalty.',
+        'Loyalty Program'
       );
       
       $recommendations[] = rec(
         'Low',
-        'Store Ambiance Upgrade',
-        'Improve lighting (LED), add background music, ensure AC works well, keep floors spotless. Small touches that make customers stay longer = higher basket value. Schedule deep clean weekly.',
-        '+3-5% dwell time, +2-4% basket size',
+        'Seasonal Limited Edition Series (Monthly)',
+        'Launch monthly exclusive drink featuring Filipino ingredients: Month 1: Ube Cloud Latte, Month 2: Calamansi Honey Cold Brew, Month 3: Pandan Cream Frappe. Create FOMO with "available this month only" messaging. Loyalty members get 20% off + first access. Make drinks Instagram-worthy.',
+        '+₱8K-12K monthly from specialty sales, +5-8% traffic increase',
         '1 week',
+        'Medium',
+        75,
+        'Low churn creates opportunity for innovation. Seasonal exclusivity drives repeat visits ("got to try before it\'s gone") while Filipino flavor profiles differentiate from chain competitors.',
+        'Menu'
+      );
+      
+      $recommendations[] = rec(
         'Low',
-        70,
-        'Stable metrics allow focus on customer experience enhancements for gradual growth',
+        'Ambiance & "Third Place" Experience Upgrade',
+        'Invest in comfort: Add 4-6 plush lounge chairs, upgrade WiFi to 100Mbps fiber, install USB/wireless charging stations at all tables, curate Spotify playlist (lo-fi, acoustic), improve AC zones. Create designated "quiet work zone" and "social zone". Make café the preferred hangout spot.',
+        '+8-12% dwell time, +₱5K-8K weekly from extended stays',
+        '1-2 weeks',
+        'Medium',
+        77,
+        'Stable metrics allow experience investment. Filipino customers value "sulit sa oras" (time well spent) - superior ambiance justifies higher prices and transforms casual visitors into daily regulars.',
         'Experience'
       );
     }
@@ -389,37 +464,37 @@ try {
     if ($basketDelta < -5) {
       $recommendations[] = rec(
         'Medium',
-        'Checkout Counter Impulse Display Refresh',
-        'Rotate impulse items at checkout weekly: Week 1: Candy/gum, Week 2: Small beverages, Week 3: Load cards, Week 4: Batteries/lighters. Strategic placement drives last-minute additions to basket.',
-        '+₱2K-4K daily from impulse buys',
-        '3 days',
+        'Drink+Pastry Pairing Recommendations',
+        'Train baristas to suggest optimal food pairings with every coffee order: "That Americano pairs perfectly with our ensaymada!" Create pairing cards at counter. Offer combo discount (₱20-30 off) when purchased together. Rotate featured pairings weekly to maintain interest.',
+        '+₱4K-7K daily from upsells, +15-20% basket size recovery',
+        '3-5 days',
         'Low',
-        80,
-        'Declining basket size suggests customers buying less per visit - impulse placement recovers margin',
-        'Merchandising'
+        83,
+        'Declining basket size ('.$basketDelta.'%) suggests missed upsell opportunities. Strategic pairing suggestions feel helpful (not pushy) and increase ticket while introducing customers to more menu items.',
+        'Experience'
       );
     }
     
     if ($shiftImbalance > 30) {
       $recommendations[] = rec(
         'Medium',
-        'Shift-Based Pricing Strategy',
-        'Test price optimization by shift: Morning (premium pricing on breakfast), Swing (competitive on basics), Graveyard (convenience premium). Maximize revenue per traffic pattern.',
-        '+₱3K-6K weekly revenue optimization',
+        'Daypart-Specific Loyalty Multipliers',
+        'Implement "Smart Rewards" system: Morning visits (6-11AM) earn 1x points, Afternoon (11AM-5PM) earn 2x points, Evening (5PM-close) earn 3x points. Incentivizes visits during slower periods while maintaining full-price revenue. Communicate via table tents and social media.',
+        '+18-25% off-peak traffic, -₱3K-5K operational waste reduction',
         '1 week',
         'Low',
-        76,
-        'High shift imbalance ('.$shiftImbalance.'%) shows different customer behaviors by time - pricing should reflect this',
-        'Promotions'
+        81,
+        'High daypart imbalance ('.$shiftImbalance.'%) shows optimization opportunity. Variable point system redistributes traffic without devaluing product while making customers feel smart for visiting off-peak.',
+        'Loyalty Program'
       );
     }
     
     // Add metrics to fallback recommendations
     foreach ($recommendations as &$rec) {
       $rec['metrics'] = [
-        "Risk: {$riskPct}%",
+        "Churn Risk: {$riskPct}%",
         "Category: {$rec['category']}",
-        "Effectiveness: {$rec['effectiveness']}%",
+        "Retention Impact: {$rec['effectiveness']}%",
         $rec['impact'] ?? '',
         $rec['cost'] ?? ''
       ];
@@ -434,13 +509,13 @@ try {
   while (count($recommendations) < 5) {
     $recommendations[] = rec(
       'Low',
-      'Daily Sales Dashboard Review',
-      'Spend 10 minutes each morning reviewing yesterday\'s performance. Look for patterns in shifts, products, and traffic. Data-driven decisions consistently beat gut feelings.',
-      'Better decision quality, trend spotting',
+      'Daily Customer Feedback Ritual',
+      'Spend 15 minutes each morning reading customer comments (Google reviews, social media, direct feedback). Identify patterns in complaints and praise. Respond to all negative reviews within 24 hours with genuine concern and solution. Track recurring issues weekly.',
+      'Improved retention through responsiveness, trend identification',
       'Daily habit',
       'Low',
-      70,
-      'Consistent monitoring enables proactive rather than reactive management',
+      72,
+      'Consistent monitoring enables proactive churn prevention - addressing issues before customers leave permanently',
       'Operations'
     );
   }
