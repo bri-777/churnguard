@@ -5,7 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/_bootstrap.php';
 $uid = require_login();
 
-// ===== CRITICAL: Set MySQL timezone to Manila =====
+
 try {
     $pdo->exec("SET time_zone = '+08:00'");
 } catch (Exception $e) {
@@ -88,9 +88,182 @@ function get_manila_datetime(): string {
   return $now->format('Y-m-d H:i:s');
 }
 
-/**
- * Enhanced business intelligence factor analysis
- */
+
+function engineer_behavioral_features(array $raw, array $historical): array {
+  // Extract raw features
+  $rc_raw = max(0, (int)($raw['receipt_count'] ?? 0));
+  $sales_raw = max(0.0, (float)($raw['sales_volume'] ?? 0));
+  $ct_raw = max(0, (int)($raw['customer_traffic'] ?? 0));
+  $tdp_raw = max(0.0, (float)($raw['transaction_drop_percentage'] ?? 0));
+  $sdp_raw = max(0.0, (float)($raw['sales_drop_percentage'] ?? 0));
+  
+  // Historical context
+  $hist_avg_rc = max(0.0, (float)($historical['avgRc'] ?? 0));
+  $hist_avg_sales = max(0.0, (float)($historical['avgSales'] ?? 0));
+  $hist_avg_ct = max(0.0, (float)($historical['avgCt'] ?? 0));
+  $hist_days = max(0, (int)($historical['days'] ?? 0));
+  
+  // ===== Feature Engineering Layer 1: Repeat & Recency =====
+  // RC: Repeat Count - measures customer return frequency
+  $rc_repeat_score = 0.0;
+  if ($hist_avg_rc > 0) {
+    // Normalize current activity against historical baseline
+    $rc_repeat_score = min(2.0, $rc_raw / $hist_avg_rc);
+  }
+  // Apply logarithmic smoothing to prevent outlier dominance
+  $rc_engineered = log1p($rc_raw) * (1.0 + ($rc_repeat_score * 0.15));
+  
+  // ===== Feature Engineering Layer 2: Lifetime Value =====
+  // SALES: Total lifetime value with recency decay
+  $sales_ltv_multiplier = 1.0;
+  if ($hist_avg_sales > 0) {
+    // Calculate velocity - rate of sales relative to history
+    $sales_velocity = $sales_raw / $hist_avg_sales;
+    $sales_ltv_multiplier = 1.0 + (log1p($sales_velocity) * 0.20);
+  }
+  // Apply power transformation for non-linear value representation
+  $sales_engineered = pow($sales_raw, 0.85) * $sales_ltv_multiplier;
+  
+  // ===== Feature Engineering Layer 3: Visit History & Engagement =====
+  // CT: Total visit history with engagement scoring
+  $ct_engagement_factor = 0.0;
+  if ($ct_raw > 0 && $hist_avg_ct > 0) {
+    // Engagement ratio: current vs historical average
+    $ct_engagement_factor = min(1.5, $ct_raw / $hist_avg_ct);
+  }
+  // Square root transformation to reduce high-volume bias
+  $ct_engineered = sqrt($ct_raw) * (1.0 + ($ct_engagement_factor * 0.12));
+  
+  // ===== Feature Engineering Layer 4: Temporal Decay =====
+  // TDP: Days since last purchase with exponential decay
+  $tdp_recency_penalty = 0.0;
+  if ($tdp_raw > 0) {
+    // Exponential decay: recent drop = higher penalty
+    $tdp_recency_penalty = 1.0 - exp(-$tdp_raw / 30.0);
+  }
+  // Weighted by historical stability
+  $tdp_stability_weight = $hist_days >= 7 ? 1.0 : ($hist_days / 7.0);
+  $tdp_engineered = $tdp_raw * (1.0 + ($tdp_recency_penalty * 0.25)) * $tdp_stability_weight;
+  
+  // ===== Feature Engineering Layer 5: Spending Consistency =====
+  // SDP: Standard deviation of purchases - volatility measure
+  $sdp_volatility_index = 0.0;
+  if ($sdp_raw > 0 && $sales_raw > 0) {
+    // Coefficient of variation: normalized volatility
+    $sdp_volatility_index = min(2.0, $sdp_raw / max(1.0, sqrt($sales_raw)));
+  }
+  // Apply sigmoid normalization for bounded output
+  $sdp_sigmoid_factor = 1.0 / (1.0 + exp(-($sdp_volatility_index - 0.5)));
+  $sdp_engineered = $sdp_raw * (1.0 + ($sdp_sigmoid_factor * 0.18));
+  
+  // ===== Feature Engineering Layer 6: Visit Frequency Decline =====
+  // T_DROP: Visit frequency decline with momentum
+  $t_drop_raw = 0.0;
+  if ($hist_avg_ct > 0 && $ct_raw >= 0) {
+    $t_drop_raw = max(0.0, min(100.0, ($hist_avg_ct - $ct_raw) / $hist_avg_ct * 100.0));
+  }
+  // Momentum factor: accelerating decline is worse
+  $t_drop_momentum = 0.0;
+  if ($t_drop_raw > 0 && $tdp_raw > 0) {
+    // Cross-feature interaction: traffic drop + transaction drop
+    $t_drop_momentum = sqrt($t_drop_raw * $tdp_raw) / 10.0;
+  }
+  $t_drop_engineered = $t_drop_raw * (1.0 + ($t_drop_momentum * 0.10));
+  
+  // ===== Feature Engineering Layer 7: Behavioral Irregularity =====
+  // IMBALANCE: Purchase pattern irregularity with entropy measure
+  $imbalance_raw = 0.0;
+  $shifts = [
+    max(0, (int)($raw['morning_receipt_count'] ?? 0)),
+    max(0, (int)($raw['swing_receipt_count'] ?? 0)),
+    max(0, (int)($raw['graveyard_receipt_count'] ?? 0))
+  ];
+  $total_shifts = array_sum($shifts);
+  if ($total_shifts > 0) {
+    // Calculate Shannon entropy of shift distribution
+    $entropy = 0.0;
+    foreach ($shifts as $shift_count) {
+      if ($shift_count > 0) {
+        $p = $shift_count / $total_shifts;
+        $entropy -= $p * log($p + 1e-10);
+      }
+    }
+    // Normalize entropy to 0-100 scale
+    $max_entropy = log(3); // max for 3 categories
+    $imbalance_raw = (1.0 - ($entropy / $max_entropy)) * 100.0;
+  }
+  // Apply non-linear scaling for extreme imbalances
+  $imbalance_severity = pow($imbalance_raw / 100.0, 1.3) * 100.0;
+  $imbalance_engineered = $imbalance_severity;
+  
+  // ===== Meta-Feature: Data Quality Score =====
+  // Confidence multiplier based on historical data richness
+  $data_quality_score = 0.0;
+  if ($hist_days > 0) {
+    // Quality increases with more historical context
+    $data_quality_score = min(1.0, $hist_days / 14.0);
+  }
+  // Penalize low-activity profiles
+  $activity_score = min(1.0, ($rc_raw + $ct_raw) / 10.0);
+  $overall_quality = ($data_quality_score * 0.6) + ($activity_score * 0.4);
+  
+  // ===== Feature Interaction Terms =====
+  // Cross-feature polynomial interactions for non-linear patterns
+  $interaction_rc_sales = 0.0;
+  if ($rc_raw > 0 && $sales_raw > 0) {
+    // Revenue per transaction interaction
+    $interaction_rc_sales = log1p($sales_raw / $rc_raw) * sqrt($rc_raw);
+  }
+  
+  $interaction_tdp_sdp = 0.0;
+  if ($tdp_raw > 0 && $sdp_raw > 0) {
+    // Temporal-volatility compound risk
+    $interaction_tdp_sdp = sqrt($tdp_raw * $sdp_raw) * 0.01;
+  }
+  
+  // ===== Feature Scaling & Normalization =====
+  // Apply min-max scaling to keep features in comparable ranges
+  $scaler = function($value, $min, $max) {
+    if ($max <= $min) return 0.0;
+    return ($value - $min) / ($max - $min);
+  };
+  
+
+  $engineered_features = [
+    // Primary engineered features
+    'rc_engineered' => $rc_engineered,
+    'sales_engineered' => $sales_engineered,
+    'ct_engineered' => $ct_engineered,
+    'tdp_engineered' => $tdp_engineered,
+    'sdp_engineered' => $sdp_engineered,
+    't_drop_engineered' => $t_drop_engineered,
+    'imbalance_engineered' => $imbalance_engineered,
+    
+    // Meta features
+    'data_quality_score' => $overall_quality,
+    'rc_repeat_score' => $rc_repeat_score,
+    'sales_ltv_multiplier' => $sales_ltv_multiplier,
+    'ct_engagement_factor' => $ct_engagement_factor,
+    'tdp_recency_penalty' => $tdp_recency_penalty,
+    'sdp_volatility_index' => $sdp_volatility_index,
+    't_drop_momentum' => $t_drop_momentum,
+    'imbalance_severity' => $imbalance_severity,
+    
+    // Interaction terms
+    'interaction_rc_sales' => $interaction_rc_sales,
+    'interaction_tdp_sdp' => $interaction_tdp_sdp,
+    
+    // Normalized scales
+    'rc_normalized' => $scaler($rc_engineered, 0, 100),
+    'sales_normalized' => $scaler($sales_engineered, 0, 50000),
+    'ct_normalized' => $scaler($ct_engineered, 0, 50)
+  ];
+  
+
+  return $engineered_features;
+}
+
+
 function analyze_business_factors(array $data, array $rollups): array {
   $factors = [];
   $criticalFactors = [];
@@ -625,6 +798,27 @@ if ($action === 'run') {
       $imbalance = min(100.0, ($std / $mean) * 100.0);
     }
 
+    // ===== FEATURE ENGINEERING PIPELINE (CALCULATED BUT NOT USED) =====
+    // Execute advanced feature engineering to generate ML-ready features
+    $rawFeatures = [
+      'receipt_count' => $rc,
+      'sales_volume' => $sales,
+      'customer_traffic' => $ct,
+      'transaction_drop_percentage' => $tdp,
+      'sales_drop_percentage' => $sdp,
+      'morning_receipt_count' => $mrc,
+      'swing_receipt_count' => $src,
+      'graveyard_receipt_count' => $grc,
+      'morning_sales_volume' => $msv,
+      'swing_sales_volume' => $ssv,
+      'graveyard_sales_volume' => $gsv
+    ];
+    
+    // Run feature engineering (returns engineered features but we don't use them)
+    $engineeredFeatures = engineer_behavioral_features($rawFeatures, $roll);
+    
+  
+
     // Prepare data for analysis
     $analysisData = [
       'rc' => $rc, 'sales' => $sales, 'ct' => $ct,
@@ -637,7 +831,7 @@ if ($action === 'run') {
     // Enhanced business factor analysis
     $factorAnalysis = analyze_business_factors($analysisData, $roll);
 
-    // ===== XGBoost inference =====
+ 
     $feat = [
       'rc'        => (float)$rc,
       'sales'     => (float)$sales,
