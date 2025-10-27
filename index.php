@@ -1710,19 +1710,7 @@ function doLogout() {
   </div>
 
   <!-- Churn Risk -->
-  <div class="kpi-card risk">
-    <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
-    <div class="kpi-content">
-      <div class="kpi-value" id="churnRisk">0%</div>
-      <div class="kpi-label">
-        Churn Risk
-        <span class="kpi-tooltip" title="Estimated percentage of customers at risk of leaving. Calculated from predictive churn models. Hover to see top 5 at-risk users and average risk score.">
-          <i class="fas fa-info-circle"></i>
-        </span>
-      </div>
-      <div class="kpi-change negative" id="riskChange"><i class="fas fa-arrow-down"></i> 0%</div>
-    </div>
-  </div>
+  
 
 </div>
 
