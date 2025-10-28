@@ -2096,23 +2096,23 @@
     <!-- Left: concise system summary -->
     <div class="about-copy fade-in">
       <p>
-        ChurnGuard Analytics is a real time churn prediction system for Philippine convenience stores.
-        It reads POS and shift logs, scores churn risk, and suggests simple actions so staff can respond early.
+        ChurnGuard Analytics is a real-time customer retention prediction system for Philippine coffee shops.
+        It analyzes uploaded sales data and customer visit patterns, calculates churn risk scores, and provides actionable insights to help staff retain customers before they stop visiting.
       </p>
 
       <h3>What the system does</h3>
       <ul class="keypoints">
-        <li>Turns receipts and shift performance into churn risk scores for 7, 14, and 30 day windows</li>
-        <li>Highlights at risk segments and the hours or days that need attention</li>
-        <li>Suggests actions like quick promos or shift review with clear next steps</li>
-        <li>Updates continuously and works across branches even with spotty connectivity</li>
+        <li>Analyzes uploaded coffee shop transaction data to predict customer churn risk for 7, 14, and 30-day periods</li>
+        <li>Identifies at-risk customer segments and pinpoints specific time periods that need attention</li>
+        <li>Recommends targeted actions like personalized promotions, loyalty rewards, or service improvements with clear implementation steps</li>
+        <li>Processes data files quickly and provides insights that work across multiple coffee shop branches</li>
       </ul>
 
       <h3>Data it uses</h3>
       <ul class="keypoints">
-        <li>Store level logs only: customer or receipt id, store id, timestamp, total, items, promo id</li>
-        <li>Optional signals: e wallet top ups, loyalty points, delivery orders</li>
-        <li>No personal profiling required to run</li>
+        <li>Upload files containing: customer or transaction ID, date and time, order total, items purchased, loyalty or promo codes</li>
+        <li>Optional data: digital payment records, loyalty points balance, delivery or pickup orders, customer frequency</li>
+        <li>No sensitive personal information required—system works with transaction patterns only</li>
       </ul>
     </div>
 
@@ -2121,28 +2121,28 @@
       <div class="card hover-scale">
         <h3 class="card-title">Core features</h3>
         <ul class="mini-list">
-          <li>Risk scores by store and shift</li>
-          <li>At risk segment highlights</li>
-          <li>Alerts with suggested actions</li>
-          <li>Simple trend views for sales and receipts</li>
+          <li>Churn risk scores by shop location and time period</li>
+          <li>At-risk customer segment identification</li>
+          <li>Smart alerts with recommended retention strategies</li>
+          <li>Easy-to-read trend charts for sales and customer visits</li>
         </ul>
       </div>
 
       <div class="card hover-scale">
         <h3 class="card-title">How it works</h3>
         <ol class="mini-ol">
-          <li>Ingest POS logs and clean fields</li>
-          <li>Engineer features from visits, time gaps, basket mix, and promo response</li>
-          <li>Score with XGBoost and refresh in near real time</li>
+          <li>Upload your coffee shop transaction data file (CSV or Excel)</li>
+          <li>XGBoost algorithm analyzes visit frequency, purchase patterns, time gaps between visits, and order preferences</li>
+          <li>System generates churn risk scores and actionable insights within minutes</li>
         </ol>
       </div>
 
       <div class="card hover-scale">
         <h3 class="card-title">What managers see</h3>
         <ul class="mini-list">
-          <li>Shift and day risk summary</li>
-          <li>Top hours to watch</li>
-          <li>Action tips ready for staff</li>
+          <li>Daily and weekly customer retention risk summary</li>
+          <li>Peak hours and days with highest churn risk</li>
+          <li>Ready-to-use action plans for your baristas and staff</li>
         </ul>
       </div>
 
