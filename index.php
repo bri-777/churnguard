@@ -6003,10 +6003,7 @@ body {
             </div>
             <h2 class="card-title">Risk Analytics</h2>
           </div>
-          <div class="risk-indicator">
-            <span class="indicator-label">System Alert</span>
-            <span class="indicator-value critical" data-risk-total>0 At Risk</span>
-          </div>
+        
         </div>
         
         <div class="retention-matrix">
