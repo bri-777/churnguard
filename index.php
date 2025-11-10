@@ -1923,8 +1923,8 @@ function doLogout() {
 
 
 
-       <button type="button" class="btn-primary" onclick="saveChurnData()" style="background-color: #28a745; border-color: #28a745; cursor: not-allowed; opacity: 0.6;">
-  <i class="fas fa-save"></i> Save Churn Data
+       <button type="button" class="btn-primary" onclick="saveChurnData()" style="background-color: #28a745; border-color: #28a745; cursor: not-allowed; opacity: 0.3;">
+  <i class="fas fa-save"></i> Saved Churn Data
 </button>
       
         <button type="button" class="btn-secondary" onclick="clearForm()">
