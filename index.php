@@ -1587,7 +1587,29 @@ html, body {
 </style>
 
 
+<style>
+  .btn-saved {
+    background-color: #28a745 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+  }
+</style>
 
+<script>
+function saveChurnData() {
+  const btn = document.getElementById('saveChurnBtn');
+  
+  // Your existing save logic here
+  // ...
+  
+  // After successful save, update button state
+  btn.classList.remove('btn-primary');
+  btn.classList.add('btn-saved');
+  btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+  btn.disabled = true;
+  btn.onclick = null; // Remove click handler
+}
+</script>
 <!-- Optional Tooltip Styling -->
 <style>
 .kpi-tooltip {
@@ -1923,9 +1945,9 @@ function doLogout() {
 
 
 
-        <button type="button" class="btn-primary" onclick="saveChurnData()">
-          <i class="fas fa-save"></i> Save Churn Data
-        </button>
+       <button type="button" class="btn-primary" id="saveChurnBtn" onclick="saveChurnData()">
+  <i class="fas fa-save"></i> Save Churn Data
+</button>
       
         <button type="button" class="btn-secondary" onclick="clearForm()">
           <i class="fas fa-eraser"></i> Clear All Fields
