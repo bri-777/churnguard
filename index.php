@@ -5990,11 +5990,7 @@ body {
         </div>
       </div>
 
-      <div style="display:flex; gap:8px; background:#f1f5f9; padding:4px; border-radius:8px;">
-    <button class="filter-btn active" data-period="week" style="padding:8px 20px; border:none; border-radius:6px; background:white; font-weight:600; cursor:pointer; transition:all 0.3s;">Week</button>
-    <button class="filter-btn" data-period="month" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Month</button>
-    <button class="filter-btn" data-period="year" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Year</button>
-  </div>
+      
 
       <!-- RETENTION & RISK ANALYTICS CARD -->
       <div class="intelligence-card retention-analytics-card" data-section="retention">
@@ -6069,7 +6065,13 @@ body {
           </div>
         </div>
       </div>
-
+ <!-- Date Filter -->
+  <div style="display:flex; gap:8px; background:#f1f5f9; padding:4px; border-radius:8px;">
+    <button class="filter-btn active" data-period="week" style="padding:8px 20px; border:none; border-radius:6px; background:white; font-weight:600; cursor:pointer; transition:all 0.3s;">Week</button>
+    <button class="filter-btn" data-period="month" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Month</button>
+    <button class="filter-btn" data-period="year" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Year</button>
+  </div>
+      
       <!-- PURCHASE INTELLIGENCE CARD -->
       <div class="intelligence-card purchase-intelligence-card">
         <div class="card-header-advanced">
