@@ -5944,6 +5944,7 @@ body {
 <div id="cust-insight" class="page">
     <header style="background-color:#fff; padding:20px 40px; border:1px solid #e5e7eb; border-radius:12px; display:flex; justify-content:space-between; align-items:center; font-family:'Segoe UI', Arial, sans-serif; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
   <div style="display:flex; align-items:center; gap:12px;">
+    <!-- Logo Icon -->
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
       <circle cx="24" cy="18" r="6.5" stroke="#000" stroke-width="2" fill="none"/>
       <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#000" stroke-width="2" stroke-linecap="round"/>
@@ -5952,17 +5953,14 @@ body {
       <line x1="33" y1="17" x2="33" y2="23" stroke="#000" stroke-width="2" stroke-linecap="round"/>
     </svg>
 
+    <!-- Title -->
     <h1 style="margin:0; font-size:24px; font-weight:600; color:#000;">
       <span style="border-left:4px solid #000; padding-left:10px;">Customer Insight</span>
     </h1>
   </div>
 
-  <!-- Date Filter -->
-  <div style="display:flex; gap:8px; background:#f1f5f9; padding:4px; border-radius:8px;">
-    <button class="filter-btn active" data-period="week" style="padding:8px 20px; border:none; border-radius:6px; background:white; font-weight:600; cursor:pointer; transition:all 0.3s;">Week</button>
-    <button class="filter-btn" data-period="month" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Month</button>
-    <button class="filter-btn" data-period="year" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Year</button>
-  </div>
+  <!-- Real-time Badge -->
+  
 </header>
 
 
@@ -5983,14 +5981,13 @@ body {
           
         </div>
         
-        <div class="customer-intelligence-grid" data-loyal-customers>
+        <!-- This will be populated by JavaScript -->
+        <div class="customer-intelligence-grid">
           <div style="text-align: center; padding: 40px; color: #64748b;">
             Loading loyal customers...
           </div>
         </div>
       </div>
-
-      
 
       <!-- RETENTION & RISK ANALYTICS CARD -->
       <div class="intelligence-card retention-analytics-card" data-section="retention">
@@ -6055,6 +6052,10 @@ body {
             </div>
           </div>
           
+       
+          
+          
+          
           <div class="at-risk-customers">
             <h3> Customers at Risk</h3>
             <div class="risk-list" data-risk-customers>
@@ -6065,13 +6066,7 @@ body {
           </div>
         </div>
       </div>
- <!-- Date Filter -->
-  <div style="display:flex; gap:8px; background:#f1f5f9; padding:4px; border-radius:8px;">
-    <button class="filter-btn active" data-period="week" style="padding:8px 20px; border:none; border-radius:6px; background:white; font-weight:600; cursor:pointer; transition:all 0.3s;">Week</button>
-    <button class="filter-btn" data-period="month" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Month</button>
-    <button class="filter-btn" data-period="year" style="padding:8px 20px; border:none; border-radius:6px; background:transparent; font-weight:600; cursor:pointer; transition:all 0.3s;">Year</button>
-  </div>
-      
+
       <!-- PURCHASE INTELLIGENCE CARD -->
       <div class="intelligence-card purchase-intelligence-card">
         <div class="card-header-advanced">
@@ -6093,13 +6088,18 @@ body {
         
         <div class="purchase-analytics">
           <div class="purchase-overview">
+          
+            
             <div class="overview-stat">
+             
               <div class="stat-content">
                 <div class="stat-label">Avg Transaction</div>
                 <div class="stat-value" data-avg-transaction>₱0</div>
-                <div class="stat-change positive" data-avg-change>+8.7% vs last period</div>
+                <div class="stat-change positive">+8.7% vs last month</div>
               </div>
             </div>
+            
+          
           </div>
           
           <div class="product-performance">
@@ -6113,9 +6113,16 @@ body {
           
           <div class="product-performance">
             <h3>Declining Products</h3>
-            <div class="combo-list" data-declining-products>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
-                Loading declining products...
+            <div class="combo-list">
+              <div class="combo-item">
+                <div class="combo-rank">▼</div>
+                <div class="combo-products">
+                  <span class="product">Vanilla Latte</span>
+                </div>
+                <div class="combo-stats">
+                  <span class="frequency">312 orders</span>
+                  <span class="revenue" style="color: #dc2626;">-24%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -6128,8 +6135,12 @@ body {
               </div>
             </div>
           </div>
+          
+         
         </div>
       </div>
+
+	
     </div>
 
 <div class="intelligence-card traffic-card">
@@ -6153,8 +6164,9 @@ body {
   <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; padding: 24px; margin-bottom: 20px;">
     <div style="text-align: center;">
       <div style="font-size: 48px; font-weight: 700; color: white;" data-daily-avg>0</div>
-      <div style="color: #94a3b8; margin-top: 8px;" data-daily-label>Daily Avg Receipts</div>
+      <div style="color: #94a3b8; margin-top: 8px;">Daily Avg Receipts</div>
       <div style="display: flex; gap: 4px; justify-content: center; margin-top: 16px; height: 40px; align-items: flex-end;" data-mini-chart>
+        <!-- Mini bars will be injected here -->
       </div>
     </div>
   </div>
@@ -6169,10 +6181,14 @@ body {
         <span style="color: #64748b; font-size: 13px;">Peak Day:</span>
         <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-peak-day>-</span>
       </div>
+   
     </div>
+    
   </div>
 
-  <div style="background: #fff7ed; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 6px;" data-anomaly-container>
+  
+  
+  <div style="background: #fff7ed; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 6px;" data-anomaly-container style="display: none;">
     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -6202,7 +6218,15 @@ body {
     <div class="status-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white;">AI Powered</div>
   </div>
   
+ 
+  
   <div style="display: grid; gap: 16px; margin-bottom: 24px;">
+    <!-- Churn Risk Alert -->
+    
+    
+   
+    
+    <!-- Trending Products -->
     <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #2563eb;">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
@@ -6212,11 +6236,12 @@ body {
         <span style="color: #1e40af; font-weight: 600; font-size: 14px;">Trending Products</span>
       </div>
       <div style="font-size: 20px; font-weight: 700; color: #1e3a8a;" data-trending-product>-</div>
-      <div style="color: #1e40af; font-size: 13px; margin-top: 4px;" data-trending-label>Most popular this period</div>
+      <div style="color: #1e40af; font-size: 13px; margin-top: 4px;">Most popular this week</div>
       <div style="margin-top: 8px; display: inline-block; background: #2563eb; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;" data-trending-growth>+0%</div>
     </div>
   </div>
   
+  <!-- AI Insights -->
   <div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
     <h3 style="color: #0f172a; font-size: 14px; font-weight: 600; margin-bottom: 12px;">AI Analytics Insights</h3>
     <div style="display: flex; flex-direction: column; gap: 8px;" data-ai-insights>
@@ -6231,6 +6256,8 @@ body {
   </div>
 </div>
 
+
+
     <!-- EXECUTIVE SUMMARY -->
     <div class="executive-summary">
       <h2 class="summary-title">Executive Performance Summary</h2>
@@ -6242,9 +6269,9 @@ body {
             </svg>
           </div>
           <div class="summary-content">
-            <div class="summary-label" data-revenue-label>Monthly Sales Revenue</div>
+            <div class="summary-label">Monthly Sales Revenue</div>
             <div class="summary-value" data-monthly-revenue>₱0</div>
-            <div class="summary-change positive" data-revenue-change>+0.3 pts</div>
+            <div class="summary-change positive">+0.3 pts</div>
           </div>
         </div>
         
@@ -6258,330 +6285,13 @@ body {
           <div class="summary-content">
             <div class="summary-label">Customer Traffic</div>
             <div class="summary-value" data-total-customers>0</div>
-            <div class="summary-change positive" data-traffic-change>+428 this period</div>
+            <div class="summary-change positive">+428 this month</div>
           </div>
         </div>
       </div>
     </div>
 
   </div>
-
-<script>
-const staticData = {
-  week: {
-    loyalCustomers: [
-      { name: 'Maria Santos', visits: 12, spending: 8500, status: 'VIP' },
-      { name: 'Juan Cruz', visits: 10, spending: 6200, status: 'Gold' },
-      { name: 'Ana Reyes', visits: 8, spending: 5400, status: 'Silver' }
-    ],
-    riskTotal: 8,
-    droppedWeek: 5,
-    droppedMonth: 15,
-    atRiskCustomers: [
-      { name: 'Pedro Garcia', lastVisit: '3 days ago', risk: 'medium' },
-      { name: 'Sofia Lopez', lastVisit: '5 days ago', risk: 'high' }
-    ],
-    avgTransaction: 450,
-    avgChange: '+8.7%',
-    topProducts: [
-      { name: 'Caramel Macchiato', orders: 156, revenue: '+32%' },
-      { name: 'Iced Latte', orders: 142, revenue: '+28%' },
-      { name: 'Cappuccino', orders: 128, revenue: '+15%' }
-    ],
-    decliningProducts: [
-      { name: 'Vanilla Latte', orders: 85, revenue: '-12%' }
-    ],
-    repeatProducts: [
-      { name: 'Espresso', rate: '78%', orders: 98 },
-      { name: 'Americano', rate: '65%', orders: 76 }
-    ],
-    dailyAvg: 145,
-    dailyLabel: 'Daily Avg Receipts',
-    miniChart: [35, 42, 38, 45, 52, 48, 55],
-    peakDay: 'Saturday',
-    anomalyText: '15% traffic drop detected on Wednesday',
-    trendingProduct: 'Caramel Macchiato',
-    trendingLabel: 'Most popular this week',
-    trendingGrowth: '+32%',
-    aiInsights: [
-      'Week shows strong weekend performance',
-      'Weekday traffic could be optimized',
-      'Caramel drinks trending upward'
-    ],
-    monthlyRevenue: '₱156,450',
-    revenueLabel: 'Weekly Sales Revenue',
-    revenueChange: '+12.5%',
-    totalCustomers: 1247,
-    trafficChange: '+145 this week'
-  },
-  month: {
-    loyalCustomers: [
-      { name: 'Maria Santos', visits: 48, spending: 34200, status: 'VIP' },
-      { name: 'Juan Cruz', visits: 42, spending: 28500, status: 'VIP' },
-      { name: 'Ana Reyes', visits: 38, spending: 24800, status: 'Gold' },
-      { name: 'Luis Mendoza', visits: 35, spending: 22100, status: 'Gold' }
-    ],
-    riskTotal: 23,
-    droppedWeek: 12,
-    droppedMonth: 23,
-    atRiskCustomers: [
-      { name: 'Pedro Garcia', lastVisit: '12 days ago', risk: 'high' },
-      { name: 'Sofia Lopez', lastVisit: '15 days ago', risk: 'high' },
-      { name: 'Carlos Rivera', lastVisit: '8 days ago', risk: 'medium' }
-    ],
-    avgTransaction: 485,
-    avgChange: '+15.3%',
-    topProducts: [
-      { name: 'Caramel Macchiato', orders: 624, revenue: '+28%' },
-      { name: 'Iced Latte', orders: 598, revenue: '+24%' },
-      { name: 'Cappuccino', orders: 512, revenue: '+18%' },
-      { name: 'Mocha', orders: 487, revenue: '+12%' }
-    ],
-    decliningProducts: [
-      { name: 'Vanilla Latte', orders: 312, revenue: '-24%' },
-      { name: 'Hot Chocolate', orders: 245, revenue: '-18%' }
-    ],
-    repeatProducts: [
-      { name: 'Espresso', rate: '82%', orders: 425 },
-      { name: 'Americano', rate: '71%', orders: 356 },
-      { name: 'Flat White', rate: '68%', orders: 298 }
-    ],
-    dailyAvg: 187,
-    dailyLabel: 'Daily Avg Receipts',
-    miniChart: [165, 178, 182, 175, 195, 188, 205, 198, 192, 187, 210, 215, 225, 220, 218, 230, 235, 228, 240, 245, 238, 250, 255, 248, 260, 265, 258, 270, 275, 268],
-    peakDay: 'Saturdays',
-    anomalyText: 'Mid-month slowdown detected (Days 14-17)',
-    trendingProduct: 'Caramel Macchiato',
-    trendingLabel: 'Most popular this month',
-    trendingGrowth: '+28%',
-    aiInsights: [
-      'Month shows consistent weekend peaks',
-      'Consider promotions for mid-month periods',
-      'Cold brew products gaining traction',
-      'Customer retention rate improving'
-    ],
-    monthlyRevenue: '₱687,250',
-    revenueLabel: 'Monthly Sales Revenue',
-    revenueChange: '+18.7%',
-    totalCustomers: 5618,
-    trafficChange: '+428 this month'
-  },
-  year: {
-    loyalCustomers: [
-      { name: 'Maria Santos', visits: 520, spending: 412000, status: 'VIP' },
-      { name: 'Juan Cruz', visits: 485, spending: 378000, status: 'VIP' },
-      { name: 'Ana Reyes', visits: 445, spending: 325000, status: 'VIP' },
-      { name: 'Luis Mendoza', visits: 420, spending: 298000, status: 'VIP' },
-      { name: 'Carmen Villa', visits: 398, spending: 276000, status: 'Gold' },
-      { name: 'Rico Tan', visits: 375, spending: 254000, status: 'Gold' }
-    ],
-    riskTotal: 67,
-    droppedWeek: 28,
-    droppedMonth: 67,
-    atRiskCustomers: [
-      { name: 'Pedro Garcia', lastVisit: '45 days ago', risk: 'critical' },
-      { name: 'Sofia Lopez', lastVisit: '52 days ago', risk: 'critical' },
-      { name: 'Carlos Rivera', lastVisit: '38 days ago', risk: 'high' },
-      { name: 'Elena Morales', lastVisit: '41 days ago', risk: 'high' }
-    ],
-    avgTransaction: 520,
-    avgChange: '+22.8%',
-    topProducts: [
-      { name: 'Caramel Macchiato', orders: 7845, revenue: '+35%' },
-      { name: 'Iced Latte', orders: 7234, revenue: '+31%' },
-      { name: 'Cappuccino', orders: 6512, revenue: '+25%' },
-      { name: 'Mocha', orders: 5987, revenue: '+18%' },
-      { name: 'Cold Brew', orders: 5234, revenue: '+42%' }
-    ],
-    decliningProducts: [
-      { name: 'Vanilla Latte', orders: 3842, revenue: '-28%' },
-      { name: 'Hot Chocolate', orders: 2956, revenue: '-35%' },
-      { name: 'Tea Latte', orders: 2134, revenue: '-18%' }
-    ],
-    repeatProducts: [
-      { name: 'Espresso', rate: '88%', orders: 5876 },
-      { name: 'Americano', rate: '79%', orders: 4987 },
-      { name: 'Flat White', rate: '75%', orders: 4234 },
-      { name: 'Latte', rate: '72%', orders: 3865 }
-    ],
-    dailyAvg: 198,
-    dailyLabel: 'Daily Avg Receipts (Yearly)',
-    miniChart: [150, 155, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210],
-    peakDay: 'December (Holidays)',
-    anomalyText: 'Summer months showed 20% increase vs winter',
-    trendingProduct: 'Cold Brew Coffee',
-    trendingLabel: 'Breakthrough product of the year',
-    trendingGrowth: '+42%',
-    aiInsights: [
-      'Year shows strong seasonal patterns',
-      'Cold brew category is fastest growing',
-      'Q4 performance exceeded expectations by 15%',
-      'Customer lifetime value increased by 22%',
-      'Weekend traffic consistently 30% higher'
-    ],
-    monthlyRevenue: '₱8,456,780',
-    revenueLabel: 'Annual Sales Revenue',
-    revenueChange: '+24.3%',
-    totalCustomers: 72450,
-    trafficChange: '+12,340 this year'
-  }
-};
-
-let currentPeriod = 'week';
-
-function updateDashboard(period) {
-  const data = staticData[period];
-  
-  // Update loyal customers
-  const loyalContainer = document.querySelector('[data-loyal-customers]');
-  loyalContainer.innerHTML = data.loyalCustomers.map(c => `
-    <div style="background:white; border-radius:8px; padding:16px; border:1px solid #e5e7eb;">
-      <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
-        <div>
-          <div style="font-weight:600; color:#0f172a; margin-bottom:4px;">${c.name}</div>
-          <div style="font-size:12px; color:#64748b;">${c.visits} visits</div>
-        </div>
-        <span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600;">${c.status}</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding-top:12px; border-top:1px solid #f1f5f9;">
-        <span style="font-size:13px; color:#64748b;">Total Spent</span>
-        <span style="font-weight:600; color:#0f172a;">₱${c.spending.toLocaleString()}</span>
-      </div>
-    </div>
-  `).join('');
-  
-  // Update risk analytics
-  document.querySelector('[data-risk-total]').textContent = `${data.riskTotal} At Risk`;
-  document.querySelector('[data-dropped-week]').textContent = data.droppedWeek;
-  document.querySelector('[data-dropped-month]').textContent = data.droppedMonth;
-  
-  // Update at-risk customers
-  const riskContainer = document.querySelector('[data-risk-customers]');
-  riskContainer.innerHTML = data.atRiskCustomers.map(c => {
-    const riskColors = {
-      critical: '#dc2626',
-      high: '#f59e0b',
-      medium: '#eab308'
-    };
-    return `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:white; border-radius:6px; border-left:3px solid ${riskColors[c.risk]}; margin-bottom:8px;">
-        <div>
-          <div style="font-weight:600; color:#0f172a; margin-bottom:2px;">${c.name}</div>
-          <div style="font-size:12px; color:#64748b;">Last visit: ${c.lastVisit}</div>
-        </div>
-        <span style="background:${riskColors[c.risk]}; color:white; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:600; text-transform:uppercase;">${c.risk}</span>
-      </div>
-    `;
-  }).join('');
-  
-  // Update purchase patterns
-  document.querySelector('[data-avg-transaction]').textContent = `₱${data.avgTransaction}`;
-  document.querySelector('[data-avg-change]').textContent = `${data.avgChange} vs last period`;
-  
-  // Update top products
-  const topProductsContainer = document.querySelector('[data-top-products]');
-  topProductsContainer.innerHTML = data.topProducts.map((p, i) => `
-    <div class="combo-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border-radius:6px; margin-bottom:8px;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:24px; height:24px; background:#10b981; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;">${i + 1}</div>
-        <span style="font-weight:500; color:#0f172a;">${p.name}</span>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:13px; color:#64748b;">${p.orders} orders</div>
-        <span style="color:#10b981; font-weight:600; font-size:13px;">${p.revenue}</span>
-      </div>
-    </div>
-  `).join('');
-  
-  // Update declining products
-  const decliningContainer = document.querySelector('[data-declining-products]');
-  decliningContainer.innerHTML = data.decliningProducts.map(p => `
-    <div class="combo-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#fef2f2; border-radius:6px; margin-bottom:8px;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="color:#dc2626; font-size:18px;">▼</div>
-        <span style="font-weight:500; color:#0f172a;">${p.name}</span>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:13px; color:#64748b;">${p.orders} orders</div>
-        <span style="color:#dc2626; font-weight:600; font-size:13px;">${p.revenue}</span>
-      </div>
-    </div>
-  `).join('');
-  
-  // Update repeat products
-  const repeatContainer = document.querySelector('[data-repeat-products]');
-  repeatContainer.innerHTML = data.repeatProducts.map(p => `
-    <div class="combo-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border-radius:6px; margin-bottom:8px;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:48px; height:48px; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px;">${p.rate}</div>
-        <span style="font-weight:500; color:#0f172a;">${p.name}</span>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:13px; color:#64748b;">${p.orders} repeat orders</div>
-      </div>
-    </div>
-  `).join('');
-  
-  // Update traffic insights
-  document.querySelector('[data-daily-avg]').textContent = data.dailyAvg;
-  document.querySelector('[data-daily-label]').textContent = data.dailyLabel;
-  document.querySelector('[data-peak-day]').textContent = data.peakDay;
-  document.querySelector('[data-anomaly-text]').textContent = data.anomalyText;
-  
-  // Update mini chart
-  const chartContainer = document.querySelector('[data-mini-chart]');
-  const maxVal = Math.max(...data.miniChart);
-  chartContainer.innerHTML = data.miniChart.map(val => {
-    const height = (val / maxVal) * 100;
-    return `<div style="flex:1; background:#3b82f6; border-radius:2px; height:${height}%;"></div>`;
-  }).join('');
-  
-  // Update predictive intelligence
-  document.querySelector('[data-trending-product]').textContent = data.trendingProduct;
-  document.querySelector('[data-trending-label]').textContent = data.trendingLabel;
-  document.querySelector('[data-trending-growth]').textContent = data.trendingGrowth;
-  
-  // Update AI insights
-  const insightsContainer = document.querySelector('[data-ai-insights]');
-  insightsContainer.innerHTML = data.aiInsights.map(insight => `
-    <div style="display:flex; align-items:start; gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" style="margin-top:2px; flex-shrink:0;">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span style="color:#475569; font-size:13px;">${insight}</span>
-    </div>
-  `).join('');
-  
-  // Update executive summary
-  document.querySelector('[data-revenue-label]').textContent = data.revenueLabel;
-  document.querySelector('[data-monthly-revenue]').textContent = data.monthlyRevenue;
-  document.querySelector('[data-revenue-change]').textContent = data.revenueChange;
-  document.querySelector('[data-total-customers]').textContent = data.totalCustomers.toLocaleString();
-  document.querySelector('[data-traffic-change]').textContent = data.trafficChange;
-}
-
-// Filter button handling
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(b => {
-      b.classList.remove('active');
-      b.style.background = 'transparent';
-      b.style.color = '#64748b';
-    });
-    
-    this.classList.add('active');
-    this.style.background = 'white';
-    this.style.color = '#0f172a';
-    this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-    
-    currentPeriod = this.dataset.period;
-    updateDashboard(currentPeriod);
-  });
-});
-
-// Initialize with week data
-updateDashboard('week');
-</script>
 
   <script>
 class CustomerInsights {
