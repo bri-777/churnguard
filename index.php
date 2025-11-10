@@ -1923,24 +1923,9 @@ function doLogout() {
 
 
 
-       <button type="button" class="btn-primary" id="saveChurnBtn" onclick="saveChurnData()">
+       <button type="button" class="btn-primary" onclick="saveChurnData()" style="background-color: #28a745; border-color: #28a745; cursor: not-allowed; opacity: 0.6;">
   <i class="fas fa-save"></i> Save Churn Data
 </button>
-
-<script>
-function saveChurnData() {
-  const btn = document.getElementById('saveChurnBtn');
-  
-  // Disable button and change color to green
-  btn.disabled = true;
-  btn.style.backgroundColor = '#28a745';
-  btn.style.borderColor = '#28a745';
-  btn.style.cursor = 'not-allowed';
-  
-  // Your existing save logic goes here
-  // ...
-}
-</script>
       
         <button type="button" class="btn-secondary" onclick="clearForm()">
           <i class="fas fa-eraser"></i> Clear All Fields
