@@ -1923,9 +1923,33 @@ function doLogout() {
 
 
 
-        <button type="button" class="btn-primary" onclick="saveChurnData()">
-          <i class="fas fa-save"></i> Save Churn Data
-        </button>
+       <button type="button" class="btn-primary" id="saveChurnBtn" onclick="saveChurnData()">
+  <i class="fas fa-save"></i> Save Churn Data
+</button>
+
+<style>
+  .btn-saved {
+    background-color: #28a745 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+  }
+</style>
+
+<script>
+function saveChurnData() {
+  const btn = document.getElementById('saveChurnBtn');
+  
+  // Your existing save logic here
+  // ...
+  
+  // After successful save, update button state
+  btn.classList.remove('btn-primary');
+  btn.classList.add('btn-saved');
+  btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+  btn.disabled = true;
+  btn.onclick = null; // Remove click handler
+}
+</script>
       
         <button type="button" class="btn-secondary" onclick="clearForm()">
           <i class="fas fa-eraser"></i> Clear All Fields
@@ -5940,358 +5964,264 @@ body {
 
 
 
-<link rel = "stylesheet" href = "cust-insight.css">
-<div id="cust-insight" class="page">
-    <header style="background-color:#fff; padding:20px 40px; border:1px solid #e5e7eb; border-radius:12px; display:flex; justify-content:space-between; align-items:center; font-family:'Segoe UI', Arial, sans-serif; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-  <div style="display:flex; align-items:center; gap:12px;">
-    <!-- Logo Icon -->
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-      <circle cx="24" cy="18" r="6.5" stroke="#000" stroke-width="2" fill="none"/>
-      <path d="M12 38C12 32.4772 16.4772 28 22 28H26C31.5228 28 36 32.4772 36 38" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="33" cy="15" r="1.5" fill="#000"/>
-      <path d="M30 20L33 17L36 20" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="33" y1="17" x2="33" y2="23" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-    </svg>
+<!-- Date Filter Tabs -->
+<div class="filter-tabs" style="display: flex; gap: 10px; margin-bottom: 20px;">
+  <button class="filter-tab" onclick="filterData('day')" style="padding: 8px 20px; border: 2px solid #e0e0e0; background: white; border-radius: 6px; cursor: pointer; font-weight: 500;">Today</button>
+  <button class="filter-tab active" onclick="filterData('week')" style="padding: 8px 20px; border: 2px solid #007bff; background: #007bff; color: white; border-radius: 6px; cursor: pointer; font-weight: 500;">This Week</button>
+  <button class="filter-tab" onclick="filterData('month')" style="padding: 8px 20px; border: 2px solid #e0e0e0; background: white; border-radius: 6px; cursor: pointer; font-weight: 500;">This Month</button>
+  <button class="filter-tab" onclick="filterData('year')" style="padding: 8px 20px; border: 2px solid #e0e0e0; background: white; border-radius: 6px; cursor: pointer; font-weight: 500;">This Year</button>
+</div>
 
-    <!-- Title -->
-    <h1 style="margin:0; font-size:24px; font-weight:600; color:#000;">
-      <span style="border-left:4px solid #000; padding-left:10px;">Customer Insight</span>
-    </h1>
-  </div>
-
-  <!-- Real-time Badge -->
+<!-- Risk Analytics Section -->
+<div class="risk-analytics">
+  <h2>Risk Analytics</h2>
+  <h3>At-Risk Segment Monitor</h3>
   
-</header>
-
-
-    <div class="analytics-grid-advanced">
-      
-      <!-- LOYAL CUSTOMERS CARD -->
-      <div class="intelligence-card customer-profiles-card">
-        <div class="card-matrix-overlay"></div>
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Loyal Customer</h2>
-          </div>
-          
-        </div>
-        
-        <!-- This will be populated by JavaScript -->
-        <div class="customer-intelligence-grid">
-          <div style="text-align: center; padding: 40px; color: #64748b;">
-            Loading loyal customers...
-          </div>
-        </div>
-      </div>
-
-      <!-- RETENTION & RISK ANALYTICS CARD -->
-      <div class="intelligence-card retention-analytics-card" data-section="retention">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper critical">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="8.5" cy="7" r="4"/>
-                <line x1="20" y1="8" x2="20" y2="14"/>
-                <line x1="23" y1="11" x2="17" y2="11"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Risk Analytics</h2>
-          </div>
-          <div class="risk-indicator">
-            <span class="indicator-label">System Alert</span>
-            <span class="indicator-value critical" data-risk-total>0 At Risk</span>
-          </div>
-        </div>
-        
-        <div class="retention-matrix">
-          <div class="matrix-header">
-            <h3>At-Risk Segment Monitor</h3>
-            <div class="matrix-legend">
-              <span class="legend-item at-risk">This Week</span>
-              <span class="legend-item critical">This Month</span>
-            </div>
-          </div>
-          
-          <div class="health-segments" data-segment="dropped">
-            <div class="segment-card at-risk">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                  <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span class="segment-title">Dropped Visits This Week</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value" data-dropped-week>0</div>
-                <div class="stat-percentage">Customers</div>
-              </div>
-             
-            </div>
-            
-            <div class="segment-card critical">
-              <div class="segment-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="16"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span class="segment-title">Dropped Visits This Month</span>
-              </div>
-              <div class="segment-stats">
-                <div class="stat-value" data-dropped-month>0</div>
-                <div class="stat-percentage">Customers</div>
-              </div>
-            
-            </div>
-          </div>
-          
-       
-          
-          
-          
-          <div class="at-risk-customers">
-            <h3> Customers at Risk</h3>
-            <div class="risk-list" data-risk-customers>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
-                Loading at-risk customers...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PURCHASE INTELLIGENCE CARD -->
-      <div class="intelligence-card purchase-intelligence-card">
-        <div class="card-header-advanced">
-          <div class="header-group">
-            <div class="header-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Purchase Patterns</h2>
-          </div>
-          <div class="header-actions">
-            <button class="action-btn" data-export="pdf">Export PDF</button>
-            <button class="action-btn primary" data-export="excel">Export Excel</button>
-          </div>
-        </div>
-        
-        <div class="purchase-analytics">
-          <div class="purchase-overview">
-          
-            
-            <div class="overview-stat">
-             
-              <div class="stat-content">
-                <div class="stat-label">Avg Transaction</div>
-                <div class="stat-value" data-avg-transaction>₱0</div>
-                <div class="stat-change positive">+8.7% vs last month</div>
-              </div>
-            </div>
-            
-          
-          </div>
-          
-          <div class="product-performance">
-            <h3>Top Products</h3>
-            <div class="combo-list" data-top-products>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
-                Loading top products...
-              </div>
-            </div>
-          </div>
-          
-          <div class="product-performance">
-            <h3>Declining Products</h3>
-            <div class="combo-list">
-              <div class="combo-item">
-                <div class="combo-rank">▼</div>
-                <div class="combo-products">
-                  <span class="product">Vanilla Latte</span>
-                </div>
-                <div class="combo-stats">
-                  <span class="frequency">312 orders</span>
-                  <span class="revenue" style="color: #dc2626;">-24%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="product-performance">
-            <h3>Repeat Purchase Rate by Product</h3>
-            <div class="combo-list" data-repeat-products>
-              <div style="text-align: center; padding: 20px; color: #64748b;">
-                Loading repeat purchase data...
-              </div>
-            </div>
-          </div>
-          
-         
-        </div>
-      </div>
-
-	
-    </div>
-
-<div class="intelligence-card traffic-card">
-  <div class="card-header-advanced">
-    <div class="header-group">
-      <div class="header-icon-wrapper">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-      </div>
-      <h2 class="card-title">Traffic & Visit Insights</h2>
-    </div>
-    <div class="status-badge" style="background: #10b981; color: white;">Live</div>
-  </div>
-  
-  <p style="color: #64748b; margin-bottom: 24px;">Real-time footfall and conversion analytics</p>
-  
-  <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; padding: 24px; margin-bottom: 20px;">
-    <div style="text-align: center;">
-      <div style="font-size: 48px; font-weight: 700; color: white;" data-daily-avg>0</div>
-      <div style="color: #94a3b8; margin-top: 8px;">Daily Avg Receipts</div>
-      <div style="display: flex; gap: 4px; justify-content: center; margin-top: 16px; height: 40px; align-items: flex-end;" data-mini-chart>
-        <!-- Mini bars will be injected here -->
-      </div>
+  <div class="stats-section">
+    <div class="stat-card">
+      <div id="droppedVisitsLabel">Dropped Visits This Week</div>
+      <div id="droppedVisitsValue" style="font-size: 32px; font-weight: bold;">0</div>
+      <div>Customers</div>
     </div>
   </div>
-  
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-    <div style="background: #f8fafc; border-radius: 8px; padding: 16px; text-align: center;">
-      
-    </div>
-    <div style="background: #f8fafc; border-radius: 8px; padding: 16px;">
-      <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Peak Patterns</div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-        <span style="color: #64748b; font-size: 13px;">Peak Day:</span>
-        <span style="color: #0f172a; font-weight: 600; font-size: 13px;" data-peak-day>-</span>
-      </div>
-   
-    </div>
-    
+
+  <h4>Customers at Risk</h4>
+  <div id="customersAtRisk">
+    <div>MK - Michael King</div>
+    <div>JL - Jennifer Lee</div>
+    <div>CB - Christopher Brown</div>
+    <div>AT - Amanda Torres</div>
+    <div>DW - David Wilson</div>
   </div>
 
+  <h3>Purchase Patterns</h3>
+  <button>Export PDF</button>
+  <button>Export Excel</button>
   
+  <div>
+    <div>Avg Transaction</div>
+    <div id="avgTransaction" style="font-size: 24px; font-weight: bold;">₱156</div>
+    <div id="avgTransactionChange">+8.7% vs last month</div>
+  </div>
+
+  <h4>Top Products</h4>
+  <div id="topProducts">
+    <div>1. Frappe - 1715 orders • ₱298,357</div>
+    <div>2. Iced Coffee - 1440 orders • ₱219,071</div>
+    <div>3. Cappuccino - 1207 orders • ₱186,196</div>
+  </div>
+
+  <h4>Declining Products</h4>
+  <div>▼ Vanilla Latte - 312 orders • -24%</div>
+
+  <h4>Repeat Purchase Rate by Product</h4>
+  <div id="repeatPurchase">
+    <div>1. Hot Coffee - Repeat Rate: 100% • 17 customers</div>
+    <div>2. Boss Brew (22 oz, Premium Drink) - Repeat Rate: 100% • 11 customers</div>
+    <div>3. Hot Moca (12 oz) - Repeat Rate: 94% • 17 customers</div>
+  </div>
+
+  <h3>Traffic & Visit Insights</h3>
+  <div>Live - Real-time footfall and conversion analytics</div>
   
-  <div style="background: #fff7ed; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 6px;" data-anomaly-container style="display: none;">
-    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/>
-        <line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-      <span style="color: #92400e; font-weight: 600; font-size: 13px;">Traffic Anomaly Detected</span>
-    </div>
-    <div style="color: #78350f; font-size: 13px;" data-anomaly-text></div>
+  <div>
+    <div id="receiptsLabel">Daily Avg Receipts</div>
+    <div id="receiptsValue" style="font-size: 24px; font-weight: bold;">132</div>
+  </div>
+
+  <div>
+    <h4>Peak Patterns</h4>
+    <div>Peak Day: <span id="peakDay">Thursday</span></div>
+  </div>
+
+  <div>
+    <strong>Traffic Anomaly Detected</strong>
+    <div id="anomalyText">Sunday traffic dropped 20% - Analyzing cause</div>
+  </div>
+
+  <h3>Predictive Intelligence - AI Powered</h3>
+  
+  <h4>Trending Products</h4>
+  <div>
+    <div>Iced Coffee</div>
+    <div id="trendingStats">Most popular this week • -100% this week</div>
+  </div>
+
+  <h4>AI Analytics Insights</h4>
+  <div>
+    <p>Customers tend to purchase on average 2-3 items per transaction, indicating a potential opportunity to upsell or cross-sell products.</p>
+    <p>The popularity of Frappe as the top product suggests a high demand for cold beverages. Consider expanding the cold beverage menu to cater to customer preferences and potentially increase revenue.</p>
+    <p>With nearly 1,000 unique customers, there is a significant opportunity to implement a loyalty program to retain customers and encourage repeat visits, ultimately driving growth in customer loyalty and revenue.</p>
   </div>
 </div>
 
-<!-- AI POWERED PREDICTIVE INTELLIGENCE CARD -->
-<div class="intelligence-card predictive-card">
-  <div class="card-header-advanced">
-    <div class="header-group">
-      <div class="header-icon-wrapper" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-          <path d="M12 2a10 10 0 0 1 7.94 16.06"/>
-          <path d="M12 2a10 10 0 0 0-7.94 16.06"/>
-          <path d="M12 12v8"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </div>
-      <h2 class="card-title">Predictive Intelligence</h2>
-    </div>
-    <div class="status-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white;">AI Powered</div>
-  </div>
+<script>
+const data = {
+  day: {
+    droppedVisits: 12,
+    avgTransaction: '₱145',
+    avgTransactionChange: '+5.2% vs yesterday',
+    receiptsLabel: 'Today\'s Receipts',
+    receiptsValue: 89,
+    peakDay: 'Today (Peak: 2:00 PM)',
+    anomalyText: 'Morning traffic 15% lower than usual - Monitor closely',
+    trendingStats: 'Most popular today • +15% vs yesterday',
+    topProducts: [
+      '1. Iced Coffee - 142 orders • ₱21,587',
+      '2. Frappe - 118 orders • ₱20,534',
+      '3. Americano - 95 orders • ₱14,250'
+    ],
+    repeatPurchase: [
+      '1. Hot Coffee - Repeat Rate: 100% • 8 customers',
+      '2. Espresso - Repeat Rate: 92% • 12 customers',
+      '3. Latte - Repeat Rate: 88% • 16 customers'
+    ],
+    customersAtRisk: [
+      'SM - Sarah Miller',
+      'JD - John Davis',
+      'ER - Emily Rodriguez'
+    ]
+  },
+  week: {
+    droppedVisits: 0,
+    avgTransaction: '₱156',
+    avgTransactionChange: '+8.7% vs last week',
+    receiptsLabel: 'Daily Avg Receipts',
+    receiptsValue: 132,
+    peakDay: 'Thursday',
+    anomalyText: 'Sunday traffic dropped 20% - Analyzing cause',
+    trendingStats: 'Most popular this week • -100% this week',
+    topProducts: [
+      '1. Frappe - 1715 orders • ₱298,357',
+      '2. Iced Coffee - 1440 orders • ₱219,071',
+      '3. Cappuccino - 1207 orders • ₱186,196'
+    ],
+    repeatPurchase: [
+      '1. Hot Coffee - Repeat Rate: 100% • 17 customers',
+      '2. Boss Brew (22 oz, Premium Drink) - Repeat Rate: 100% • 11 customers',
+      '3. Hot Moca (12 oz) - Repeat Rate: 94% • 17 customers'
+    ],
+    customersAtRisk: [
+      'MK - Michael King',
+      'JL - Jennifer Lee',
+      'CB - Christopher Brown',
+      'AT - Amanda Torres',
+      'DW - David Wilson'
+    ]
+  },
+  month: {
+    droppedVisits: 352,
+    avgTransaction: '₱168',
+    avgTransactionChange: '+12.4% vs last month',
+    receiptsLabel: 'Daily Avg Receipts',
+    receiptsValue: 145,
+    peakDay: 'Saturdays',
+    anomalyText: 'Week 3 showed 18% traffic decline - Rainy season impact',
+    trendingStats: 'Most popular this month • +8% vs last month',
+    topProducts: [
+      '1. Frappe - 7,420 orders • ₱1,291,480',
+      '2. Iced Coffee - 6,180 orders • ₱940,392',
+      '3. Cappuccino - 5,230 orders • ₱806,722'
+    ],
+    repeatPurchase: [
+      '1. Hot Coffee - Repeat Rate: 98% • 124 customers',
+      '2. Boss Brew (22 oz, Premium Drink) - Repeat Rate: 96% • 89 customers',
+      '3. Caramel Macchiato - Repeat Rate: 94% • 156 customers'
+    ],
+    customersAtRisk: [
+      'RJ - Robert Johnson',
+      'MG - Maria Garcia',
+      'JW - James Wilson',
+      'LM - Linda Martinez',
+      'DT - Daniel Taylor',
+      'SA - Susan Anderson',
+      'CT - Charles Thomas',
+      'NH - Nancy Harris'
+    ]
+  },
+  year: {
+    droppedVisits: 1847,
+    avgTransaction: '₱162',
+    avgTransactionChange: '+18.9% vs last year',
+    receiptsLabel: 'Daily Avg Receipts',
+    receiptsValue: 138,
+    peakDay: 'December (Holiday Season)',
+    anomalyText: 'Q2 showed seasonal dip of 22% - Expected pattern',
+    trendingStats: 'Most popular this year • +25% vs last year',
+    topProducts: [
+      '1. Frappe - 89,120 orders • ₱15,508,880',
+      '2. Iced Coffee - 74,280 orders • ₱11,300,712',
+      '3. Cappuccino - 62,850 orders • ₱9,699,630'
+    ],
+    repeatPurchase: [
+      '1. Hot Coffee - Repeat Rate: 97% • 1,842 customers',
+      '2. Boss Brew (22 oz, Premium Drink) - Repeat Rate: 95% • 1,245 customers',
+      '3. Caramel Macchiato - Repeat Rate: 93% • 2,156 customers'
+    ],
+    customersAtRisk: [
+      'PW - Patricia White',
+      'ML - Mark Lopez',
+      'BH - Barbara Hall',
+      'KA - Kevin Allen',
+      'DD - Dorothy Davis',
+      'SY - Steven Young',
+      'HC - Helen Clark',
+      'ER - Edward Robinson',
+      'SW - Sandra Walker',
+      'BL - Brian Lewis'
+    ]
+  }
+};
+
+function filterData(period) {
+  // Update active tab styling
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.style.border = '2px solid #e0e0e0';
+    tab.style.background = 'white';
+    tab.style.color = 'black';
+  });
+  event.target.style.border = '2px solid #007bff';
+  event.target.style.background = '#007bff';
+  event.target.style.color = 'white';
+
+  const periodData = data[period];
+
+  // Update dropped visits
+  const labelText = period === 'day' ? 'Dropped Visits Today' : 
+                   period === 'week' ? 'Dropped Visits This Week' : 
+                   period === 'month' ? 'Dropped Visits This Month' : 
+                   'Dropped Visits This Year';
   
- 
-  
-  <div style="display: grid; gap: 16px; margin-bottom: 24px;">
-    <!-- Churn Risk Alert -->
-    
-    
-   
-    
-    <!-- Trending Products -->
-    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; padding: 20px; border-left: 4px solid #2563eb;">
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-          <polyline points="17 6 23 6 23 12"/>
-        </svg>
-        <span style="color: #1e40af; font-weight: 600; font-size: 14px;">Trending Products</span>
-      </div>
-      <div style="font-size: 20px; font-weight: 700; color: #1e3a8a;" data-trending-product>-</div>
-      <div style="color: #1e40af; font-size: 13px; margin-top: 4px;">Most popular this week</div>
-      <div style="margin-top: 8px; display: inline-block; background: #2563eb; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;" data-trending-growth>+0%</div>
-    </div>
-  </div>
-  
-  <!-- AI Insights -->
-  <div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
-    <h3 style="color: #0f172a; font-size: 14px; font-weight: 600; margin-bottom: 12px;">AI Analytics Insights</h3>
-    <div style="display: flex; flex-direction: column; gap: 8px;" data-ai-insights>
-      <div style="display: flex; align-items: start; gap: 8px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="margin-top: 2px;">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35"/>
-        </svg>
-        <span style="color: #475569; font-size: 13px;">Loading insights...</span>
-      </div>
-    </div>
-  </div>
-</div>
+  document.getElementById('droppedVisitsLabel').textContent = labelText;
+  document.getElementById('droppedVisitsValue').textContent = periodData.droppedVisits;
 
+  // Update avg transaction
+  document.getElementById('avgTransaction').textContent = periodData.avgTransaction;
+  document.getElementById('avgTransactionChange').textContent = periodData.avgTransactionChange;
 
+  // Update receipts
+  document.getElementById('receiptsLabel').textContent = periodData.receiptsLabel;
+  document.getElementById('receiptsValue').textContent = periodData.receiptsValue;
 
-    <!-- EXECUTIVE SUMMARY -->
-    <div class="executive-summary">
-      <h2 class="summary-title">Executive Performance Summary</h2>
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <div class="summary-content">
-            <div class="summary-label">Monthly Sales Revenue</div>
-            <div class="summary-value" data-monthly-revenue>₱0</div>
-            <div class="summary-change positive">+0.3 pts</div>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-            </svg>
-          </div>
-          <div class="summary-content">
-            <div class="summary-label">Customer Traffic</div>
-            <div class="summary-value" data-total-customers>0</div>
-            <div class="summary-change positive">+428 this month</div>
-          </div>
-        </div>
-      </div>
-    </div>
+  // Update peak day
+  document.getElementById('peakDay').textContent = periodData.peakDay;
 
-  </div>
+  // Update anomaly text
+  document.getElementById('anomalyText').textContent = periodData.anomalyText;
+
+  // Update trending stats
+  document.getElementById('trendingStats').textContent = periodData.trendingStats;
+
+  // Update top products
+  document.getElementById('topProducts').innerHTML = periodData.topProducts.map(p => `<div>${p}</div>`).join('');
+
+  // Update repeat purchase
+  document.getElementById('repeatPurchase').innerHTML = periodData.repeatPurchase.map(p => `<div>${p}</div>`).join('');
+
+  // Update customers at risk
+  document.getElementById('customersAtRisk').innerHTML = periodData.customersAtRisk.map(c => `<div>${c}</div>`).join('');
+}
+</script>
 
   <script>
 class CustomerInsights {
