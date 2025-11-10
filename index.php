@@ -5972,44 +5972,113 @@ body {
   <button class="filter-tab" onclick="filterData('year')" style="padding: 8px 20px; border: 2px solid #e0e0e0; background: white; border-radius: 6px; cursor: pointer; font-weight: 500;">This Year</button>
 </div>
 
-<!-- Risk Analytics Section -->
-<div class="risk-analytics">
-  <h2>Risk Analytics</h2>
-  <h3>At-Risk Segment Monitor</h3>
+  <!-- Real-time Badge -->
   
-  <div class="stats-section">
-    <div class="stat-card">
-      <div id="droppedVisitsLabel">Dropped Visits This Week</div>
-      <div id="droppedVisitsValue" style="font-size: 32px; font-weight: bold;">0</div>
-      <div>Customers</div>
-    </div>
-  </div>
+</header>
 
-  <h4>Customers at Risk</h4>
-  <div id="customersAtRisk">
-    <div>MK - Michael King</div>
-    <div>JL - Jennifer Lee</div>
-    <div>CB - Christopher Brown</div>
-    <div>AT - Amanda Torres</div>
-    <div>DW - David Wilson</div>
-  </div>
 
-  <h3>Purchase Patterns</h3>
-  <button>Export PDF</button>
-  <button>Export Excel</button>
-  
-  <div>
-    <div>Avg Transaction</div>
-    <div id="avgTransaction" style="font-size: 24px; font-weight: bold;">₱156</div>
-    <div id="avgTransactionChange">+8.7% vs last month</div>
-  </div>
+    <div class="analytics-grid-advanced">
+      
+      <!-- LOYAL CUSTOMERS CARD -->
+      <div class="intelligence-card customer-profiles-card">
+        <div class="card-matrix-overlay"></div>
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Loyal Customer</h2>
+          </div>
+          
+        </div>
+        
+        <!-- This will be populated by JavaScript -->
+        <div class="customer-intelligence-grid">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            Loading loyal customers...
+          </div>
+        </div>
+      </div>
 
-  <h4>Top Products</h4>
-  <div id="topProducts">
-    <div>1. Frappe - 1715 orders • ₱298,357</div>
-    <div>2. Iced Coffee - 1440 orders • ₱219,071</div>
-    <div>3. Cappuccino - 1207 orders • ₱186,196</div>
-  </div>
+      <!-- RETENTION & RISK ANALYTICS CARD -->
+      <div class="intelligence-card retention-analytics-card" data-section="retention">
+        <div class="card-header-advanced">
+          <div class="header-group">
+            <div class="header-icon-wrapper critical">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Risk Analytics</h2>
+          </div>
+          <div class="risk-indicator">
+            <span class="indicator-label">System Alert</span>
+            <span class="indicator-value critical" data-risk-total>0 At Risk</span>
+          </div>
+        </div>
+        
+        <div class="retention-matrix">
+          <div class="matrix-header">
+            <h3>At-Risk Segment Monitor</h3>
+            <div class="matrix-legend">
+              <span class="legend-item at-risk">This Week</span>
+              <span class="legend-item critical">This Month</span>
+            </div>
+          </div>
+          
+          <div class="health-segments" data-segment="dropped">
+            <div class="segment-card at-risk">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span class="segment-title">Dropped Visits This Week</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-dropped-week>0</div>
+                <div class="stat-percentage">Customers</div>
+              </div>
+             
+            </div>
+            
+            <div class="segment-card critical">
+              <div class="segment-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span class="segment-title">Dropped Visits This Month</span>
+              </div>
+              <div class="segment-stats">
+                <div class="stat-value" data-dropped-month>0</div>
+                <div class="stat-percentage">Customers</div>
+              </div>
+            
+            </div>
+          </div>
+          
+       
+          
+          
+          
+          <div class="at-risk-customers">
+            <h3> Customers at Risk</h3>
+            <div class="risk-list" data-risk-customers>
+              <div style="text-align: center; padding: 20px; color: #64748b;">
+                Loading at-risk customers...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
   <h4>Declining Products</h4>
   <div>▼ Vanilla Latte - 312 orders • -24%</div>
